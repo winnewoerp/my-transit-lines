@@ -1,0 +1,488 @@
+/* Basic styles for MTL theme */
+
+/* created by Johannes Bouchain, 2015-04-11 */
+
+/* # general # */
+
+* {
+	margin:0;
+	padding:0;
+}
+
+/* basic font settings */
+html {
+	font-size:16px;
+	line-height:1.4em;
+	font-weight:normal;
+	color:#808080;
+	font-family:'Open Sans',Arial,Helvetica,sans-serif;
+}
+
+input,
+textarea,
+select,
+option {
+	font-family:inherit;
+	font-size:inherit;
+	line-height:inherit;
+	color:inherit;
+}
+
+body, html {
+	width:100%;
+	height:100%;
+}
+
+body {
+	text-align:center;
+	background:url('../images/linien.png') top center repeat-x;
+}
+
+img {
+	border:none;
+}
+
+strong {
+	font-weight:bold;
+	font-size:inherit;
+}
+
+small, sub, sup {
+	font-size:80%;
+}
+
+a {
+	outline:none;
+	text-decoration:none;
+	color:#E6137E;
+}
+
+a:hover,
+a:focus,
+a:active {
+	color:#00AEEF;
+}
+
+big {
+	font-size:120%;
+}
+
+h1, h2, h3, h4, h5 {
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	line-height:1.4em;
+}
+
+/* basic setup for page, containing all content elements */
+#page {
+	padding:10px;
+	text-align:center;
+}
+
+/* # site header # */
+
+header.site-header {
+	margin-bottom:30px;
+}
+
+header.site-header .site-branding {
+	max-width:500px;
+	min-width:300px;
+	margin:auto;
+}
+
+header.site-header div.header-logo {
+	margin-bottom:15px;
+}
+
+header.site-header div.header-logo img {
+	max-width:70%;
+	background:white;
+	display:inline-block;
+	padding:15px;
+}
+
+header.site-header h2.site-description {
+	font-size:135%;
+	margin-bottom:50px;
+	background:white;
+}
+
+h2.site-description span {
+
+}
+
+h1.site-title,
+.menu-toggle,
+.screen-reader-text {
+	display:none;
+}
+
+nav.main-navigation {
+	max-width:900px;
+	min-width:300px;
+	margin:auto;
+}
+
+nav.main-navigation  li {
+	display:inline-block;
+	list-style:none;
+	margin:0 8px 8px 0;
+}
+
+nav.main-navigation  li a {
+	display:inline-block;
+	padding:2px 6px;
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	color:white;
+	font-size:90%;
+	background:#00AEEF;
+}
+
+nav.main-navigation  li a:hover,
+nav.main-navigation  li a:active,
+nav.main-navigation  li a:focus,
+nav.main-navigation  li.current_page_item a,
+nav.main-navigation  li.current-page-ancestor a {
+	background:#E6137E;
+}
+
+nav.top-navigation  {
+	max-width:900px;
+	text-align:right;
+	margin:0 auto 15px;
+}
+
+nav.top-navigation aside {
+	display:inline;
+}
+
+nav.top-navigation h1.widget-title {
+	font-size:inherit;
+	display:inline;
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:75%;
+}
+
+nav.top-navigation h1.widget-title strong {
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:inherit;
+	color:black;
+}
+
+nav.not-logged-in h1.widget-title {
+	display:none;
+}
+
+nav.top-navigation li {
+	display:inline;
+	padding-left:10px;
+	line-height:20px;
+	background:white;
+}	
+
+nav.top-navigation li a {
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:75%;
+	color:#808080;
+}
+
+nav.top-navigation li a:hover,
+nav.top-navigation li a:active,
+nav.top-navigation li a:focus {
+	color:black;
+}
+
+nav.top-navigation  ul,  
+nav.top-navigation  div{
+	display:inline;
+}
+
+#content {
+	max-width:900px;
+	min-width:300px;
+	margin:0 auto;
+	text-align:left;
+}
+
+body.single #content .entry-content {
+	padding-bottom:20px;
+}
+
+#content h1, #content h2, #content h3, #content h4, #content h5 {
+	text-align:center;
+	line-height:1.4em;
+}
+
+#content h1 {
+	color:#00AEEF;
+	font-size:145%;
+	margin-bottom:30px;
+}
+
+#content p,
+#content ul,
+#content ol,
+#content table {
+	margin-bottom:12px;
+}
+
+#content a {
+	color:#E6137E;
+}
+
+#content a:hover,
+#content a:focus,
+#content a:active {
+	color:black;
+}
+
+#content .thickbox {
+	background:#00AEEF;
+	color:white;
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	padding:10px;
+	text-align:center;
+	font-size:120%;
+	margin-bottom:12px;
+}
+
+#content .thickbox  a {
+	color:white;
+	font-family:inherit;
+}
+
+#content .colored {
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	color:#E6137E;
+}
+
+#content h1 .colored {
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:inherit;
+}
+
+#content h1 span { 
+	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
+	font-weight:200;
+	font-size:inherit;
+}
+
+#content .important {
+	font-size:110%;
+	color:#00AEEF;
+}
+
+#content h2,
+#content h3  {
+	font-size:16px;
+	text-align:left;
+	padding-bottom:9px;
+}
+
+#content h2 {
+	padding-top:18px;
+}
+
+#content .important strong {
+	font-weight:bold;
+	font-size:inherit;
+	color:inherit;
+}
+
+#content .important a {
+	font-weight:bold;
+}
+
+#content footer.entry-footer {
+	padding-bottom:30px;
+}
+
+#content ul,
+#content ol {
+	margin-left:20px;
+}
+
+#content div.nav-links {
+	width:100%;
+}
+
+#content div.nav-links:after {
+	display:block;
+	content:" ";
+	clear:both;
+}
+
+#content div.nav-links a {
+	font-weight:bold;
+}	
+
+#content div.nav-previous {
+	float:left;
+	display:inline-block;
+	padding-right:20px;
+	max-width:45%;
+	min-width:300px;
+	padding-bottom:20px;
+}
+
+#content div.nav-next {
+	display:inline-block;
+	text-align:right;
+	float:right;
+	padding-left:20px;
+	max-width:45%;
+	min-width:300px;
+	padding-bottom:20px;
+}
+
+#content a.largelink {
+	display:inline-block;
+	width:49%;
+	min-width:300px;
+	margin-right:0%;
+	text-align:center;
+	padding:3px 0;
+	color:white;
+	font-weight:bold;
+	background:#999999;
+}
+
+#content a.largelink.strassenbahn {
+	background:#E6137E;
+}
+
+#content a.largelink.ubahn {
+	background:#00AEEF;
+}
+
+#content a.largelink.right {
+	margin:0;
+}
+
+body.single #content .entry-thumbnail {
+	padding-bottom:20px;
+}
+
+body.single #content .entry-meta {
+	padding-bottom:20px;
+	font-size:90%;
+	color:black;
+}
+
+/* form */
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+textarea {
+	border:1px solid #cccccc;
+	background:#f9fffa;
+	width:100%;
+	box-sizing:border-box;
+	padding:4px 6px;
+	font-size:120%;
+	color:#666666;
+}
+
+input[type="file"] {
+	border:1px solid #cccccc;
+	padding:4px 6px;
+	font-size:105%;
+}
+
+input[type="submit"],
+button {
+	color:white;
+	background:#00AEEF;
+	padding:4px 30px;
+	font-weight:bold;
+	border:none;
+	text-transform:uppercase;
+	font-size:105%;
+	cursor:pointer;
+}
+
+/* content widgets */
+
+#content .widget-box {
+	background:#f0f0f0;
+	padding:10px 10px 5px 10px;
+	position:relative;
+	margin-bottom:20px;
+}
+
+#content .entry-content div.widget {
+	display:inline-block;
+	width:48%;
+	min-width:280px;
+	vertical-align:top;
+	margin-right:2%;
+}
+
+#content .entry-content div.widget h2 {
+	padding-top:0;
+}
+
+#content .entry-content div.widget h4 {
+	text-align:left;
+}
+
+#content .entry-content div.widget ul {
+	margin-left:0;
+}
+
+#content .entry-content div.widget li {
+	list-style:none;
+	margin-bottom:5px;
+}
+
+/* Theme my login */
+
+#content .tml-action-links {
+	margin-left:0;
+	padding-left:0;
+}
+
+#content .tml-action-links li {
+	list-style:none;
+}
+	
+
+/* Footer */
+
+.site-footer {
+	clear:both;
+	margin:auto;
+	max-width:600px;
+	padding:80px 0 50px;
+}
+
+.site-footer p {
+	font-size:90%;
+	margin-bottom:10px;
+}
+
+.site-footer img {
+	vertical-align:top;
+}
+
+/* END Footer */
+
+.clear {
+	clear:both;
+}
+
+.alignright,
+.rightalign {
+	text-align:right;
+}

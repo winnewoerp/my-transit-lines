@@ -1,0 +1,97 @@
+/* Styles for MTL single proposal */
+
+/* created by Johannes Bouchain, 2015-04-11 */
+
+/* tag list */
+
+#content div.post-tags {
+	padding:20px 0 0 0;
+	margin-bottom:20px;
+}
+#content div.post-tags h3 {
+	text-align:left;
+	font-family:'Open Sans',Arial,Helvetica,sans-serif;
+	font-weight:bold;
+	padding:0;
+	margin:0;
+}
+
+#content div.post-tags ul,
+#content div.post-tags li {
+	display:inline;
+	margin:0;
+}
+
+#content div.post-tags li {
+	line-height:1.6em;
+}
+
+#content div.post-tags li a {
+	padding:0 6px;
+	background:#999999;
+	color:white;
+	font-weight:bold;
+	white-space:nowrap;
+}
+
+#content div.post-tags p {
+	padding-top:12px;
+}
+
+
+p.mtl-metadata {
+	background:#f0f0f0;
+	padding:3px 5px;
+}
+
+/* comment form */
+
+#commentform label {
+	display:block;
+}
+
+#commentform label[for="comment"]:before {
+	content: "Dein ";
+}
+
+#commentform label[for="comment"] {
+	font-weight:bold;
+}
+
+#commentform input[type="text"],
+#commentform input[type="email"],
+#commentform input[type="url"],
+#commentform textarea {
+	border:1px solid #cccccc;
+	background:#f9fffa;
+	width:100%;
+	box-sizing:border-box;
+	padding:4px 6px;
+	font-size:120%;
+	color:#666666;
+}
+
+#commentform .form-allowed-tags {
+	display:none;
+}
+
+h2.comments-title {
+	clear:both;
+	padding-top:18px;
+}
+
+ol.comment-list {
+	margin-left:0;
+}
+
+img.avatar {
+	display:none;
+}
+
+li.comment {
+	list-style:none;
+	margin-bottom:12px;
+	background:#f0ffee;
+	border-radius:3px;
+	padding:5px 10px;
+}

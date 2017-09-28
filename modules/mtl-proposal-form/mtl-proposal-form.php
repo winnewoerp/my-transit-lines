@@ -57,59 +57,28 @@ function mtl_proposal_form_output( $atts ){
 		
 		// create all necessary strings for this page containing either post type or edit type 
 		$mtl_string['logged-out-notice']['mtlproposal'] = sprintf(__('<strong>Important notice:</strong> You are about to write a proposal without being logged in. You won\'t be able to edit your proposal after publishing. Please <a href="%s">login here</a> to have full access to your proposal after publishing it.','my-transit-lines'),wp_login_url().'?redirect_to='.urlencode(add_query_arg(array('posttype'=>$postType),get_permalink())));
-		$mtl_string['logged-out-notice']['mtlconcept'] = sprintf(__('<strong>Important notice:</strong> Please <a href="%1$s">login here</a> to create a concept as this function is reserved to logged-in users. However, you are invited to <a href="%2$s">add a new single proposal</a> without being logged in.','my-transit-lines'),wp_login_url().'?redirect_to='.urlencode(add_query_arg(array('posttype'=>$postType),get_permalink())),add_query_arg(array('posttype' => 'mtlproposal'), get_permalink($post->ID)));
 		$mtl_string['posttype-selector']['mtlproposal'] = __('Add a single proposal','my-transit-lines');
-		$mtl_string['posttype-selector']['mtlconcept'] = __('Add a concept','my-transit-lines');
 		$mtl_string['mail-subject']['mtlproposal']['add'] = __('New proposal','my-transit-lines');
 		$mtl_string['mail-subject']['mtlproposal']['update'] = __('Updated proposal','my-transit-lines');
-		$mtl_string['mail-subject']['mtlconcept']['add'] = __('New concept','my-transit-lines');
-		$mtl_string['mail-subject']['mtlconcept']['update'] = __('Updated concept','my-transit-lines');
 		$mtl_string['mail-text']['mtlproposal']['add'] = sprintf(__('A new proposal has been added to your site "%s".','my-transit-lines'),get_settings('blogname'));
 		$mtl_string['mail-text']['mtlproposal']['update'] = sprintf(__('A proposal has been updated at your site "%s".','my-transit-lines'),get_settings('blogname'));
-		$mtl_string['mail-text']['mtlconcept']['add'] = sprintf(__('A new concept has been added to your site "%s".','my-transit-lines'),get_settings('blogname'));
-		$mtl_string['mail-text']['mtlconcept']['update'] = sprintf(__('A concept has been updated at your site "%s".','my-transit-lines'),get_settings('blogname'));
 		$mtl_string['view-text']['mtlproposal'] = __('View proposal','my-transit-lines');
-		$mtl_string['view-text']['mtlconcept'] = __('View concept','my-transit-lines');
 		$mtl_string['view-here-text']['mtlproposal'] = __('See your proposal here','my-transit-lines');
-		$mtl_string['view-here-text']['mtlconcept'] = __('See your concept here','my-transit-lines');
 		$mtl_string['edit-text']['mtlproposal'] = __('Edit proposal','my-transit-lines');
-		$mtl_string['edit-text']['mtlconcept'] = __('Edit concept','my-transit-lines');
 		$mtl_string['check-content']['mtlproposal']['add'] = __('The proposal has already been published. Please check if everything\'s alright with it.','my-transit-lines');
 		$mtl_string['check-content']['mtlproposal']['update'] = __('Please have a look at the updated proposal to see if everything\'s alright with it.','my-transit-lines');
-		$mtl_string['check-content']['mtlconcept']['add'] = __('The concept has already been published. Please check if everything\'s alright with it.','my-transit-lines');
-		$mtl_string['check-content']['mtlconcept']['update'] = __('Please have a look at the updated concept to see if everything\'s alright with it.','my-transit-lines');
 		$mtl_string['success-notice']['mtlproposal']['add'] = __( 'Thank you! Your proposal has been added successfully.', 'my-transit-lines' );
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
-		$mtl_string['success-notice']['mtlconcept']['add'] = __( 'Thank you! Your concept has been added successfully.', 'my-transit-lines' );
-		$mtl_string['success-notice']['mtlconcept']['update'] = __( 'Thank you! Your concept has been updated successfully.', 'my-transit-lines' );
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
-		$mtl_string['failure-notice']['mtlconcept']['add'] = __( 'Your concept couldn\'t be added.', 'my-transit-lines' );
-		$mtl_string['failure-notice']['mtlconcept']['update'] = __( 'Your concept couldn\'t be updated.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
-		$mtl_string['form-title']['mtlconcept'] = __( 'Title of your concept', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
-		$mtl_string['form-description']['mtlconcept'] = __( 'Description of your concept', 'my-transit-lines' );
 		$mtl_string['form-submit']['mtlproposal']['add'] = __( 'Add your proposal', 'my-transit-lines' );
 		$mtl_string['form-submit']['mtlproposal']['update'] = __( 'Update your proposal', 'my-transit-lines' );
-		$mtl_string['form-submit']['mtlconcept']['add'] = __( 'Add your concept', 'my-transit-lines' );
-		$mtl_string['form-submit']['mtlconcept']['update'] = __( 'Update you concept', 'my-transit-lines' );
 		$mtl_string['add-new']['mtlproposal']  = __( 'Add new proposal', 'my-transit-lines' );
-		$mtl_string['add-new']['mtlconcept']  = __( 'Add new concept', 'my-transit-lines' );
 
 		$output = '';
 		$action = '';
 		if(isset($_POST['action'])) $action = $_POST['action'];
-		
-		// output post type selector tabs - LATER
-		/* uncomment later when concept functionality ready
-		$output .= '<ul class="post-type-selector">'."\r\n";
-		$selectable_posttypes = array('mtlproposal','mtlconcept');
-		foreach($selectable_posttypes as $selectable_posttype) {
-			$get_posttype = '';
-			if(isset($_GET['posttype'])) $get_posttype = $_GET['posttype'];
-			$output .= '<li><a '.($selectable_posttype == $get_posttype ? 'class="current" ' : '').'href="'.add_query_arg( array('posttype' => $selectable_posttype), get_permalink($post->ID) ).'">'.$mtl_string['posttype-selector'][$selectable_posttype].'</a></li>';
-		}
-		$output .= '</ul>';*/
 		
 		// output a notice for not logged in users
 		if(!is_user_logged_in() &&  'POST' != $_SERVER['REQUEST_METHOD'] && empty( $action )) {
@@ -129,7 +98,6 @@ function mtl_proposal_form_output( $atts ){
 			if ($postType == 'mtlproposal') {
 				if(!isset($_POST['cat'])) $err['cat']=true;
 			}
-			if ($postType == 'mtlconcept' && !isset($_POST['proposals'])) $err['proposals']=true;
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
 			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
 			if (!is_user_logged_in()) {
@@ -173,16 +141,6 @@ function mtl_proposal_form_output( $atts ){
 					if (getenv('HTTP_X_FORWARDED_FOR')) $realip = getenv('HTTP_X_FORWARDED_FOR');
 					elseif (getenv('HTTP_CLIENT_IP')) $realip = getenv('HTTP_CLIENT_IP');
 					else $realip = getenv('REMOTE_ADDR');
-				}
-				
-				// anonymous IP
-				$realip_exploded = explode('.',$realip);
-				$count_realip_parts = 0;
-				$realip = '';
-				foreach($realip_exploded as $realip_part) {
-					if($count_realip_parts<(sizeof($realip_exploded)-1)) $realip .= $realip_part.'.';
-					else $realip .= 'XXX';
-					$count_realip_parts++;
 				}
 				
 				// update/add personal data of unregistered users
@@ -256,7 +214,6 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '</div>'."\r\n";
 		}
 		
-		if(!is_user_logged_in() && $postType == 'mtlconcept') $hideform = true;
 		if((!$action || $err) && !$hideform) {
 			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data">'."\r\n";
 			$output .= '<p><label for="title"><strong>'.$mtl_string['form-title'][$postType].'</strong><br />'."\r\n";
@@ -302,7 +259,7 @@ function mtl_proposal_form_output( $atts ){
 				}
 			}
 			$output .= '}; </script>'."\r\n";
-			$output .= '<script type="text/javascript" src="https://openlayers.org/api/2.13/OpenLayers.js"></script>'."\r\n";
+			$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
 			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/Editor/Lang/de.js"></script>'."\r\n";
 			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/loader.js"></script>'."\r\n";
 			$output .= mtl_localize_script(true);
@@ -380,25 +337,6 @@ function mtl_proposal_form_output( $atts ){
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
 			$output .= mtl_load_wp_editor($current_description,'description',$settings);
 			
-			// proposal information for posttype 'mtlconcept'
-			if($postType == 'mtlconcept') {
-				$output .= '<p class="alignleft"><strong>'.__('Select the proposals to be used within this concept','my-transit-lines').'</strong></p>';
-				$query_string =  'posts_per_page=-1&post_type=mtlproposal';
-				$second_query = new WP_Query($query_string);
-				$output .= '<div class="proposals-select-box">';
-				while($second_query->have_posts()) : $second_query->the_post(); global $post;
-					if(get_post_meta($post->ID,'author-name',true)) $author = get_post_meta($post->ID,'author-name',true);
-					else $author = esc_html( get_the_author() );
-					$category = get_the_category($post->ID);
-					$post_category = $category[0]->slug;
-					$catid = $category[0]->cat_ID;
-					$bgcolor = $mtl_options['mtl-color-cat'.$catid];
-					$output .= '<div class="proposal-select-box"><p class="'.$category[0]->slug.'" style="background:'.$bgcolor.'"><label for="proposal-'.$post->ID.'"><input type="checkbox" name="proposals" id="proposal-'.$post->ID.'" value="'.$post->ID.'"><strong class="proposaltitle">'.get_the_title().'</strong><br />('.sprintf(__('by <span class="author">%s</span>','my-transit-lines'),$author).')</label><a href="#" title="'.sprintf(__('show only proposals by %s','my-transit-lines'),$author).'" class="filter-author">'.$author.'</a> &nbsp; <a href="#" title="'.sprintf(__('show only proposals in %s category','my-transit-lines'),$category[0]->name).'" class="filter-transitmode">'.$category[0]->name.'</a> &nbsp; <a title="'.__('view the proposal in a new tab','my-transit-lines').'" href="'.get_permalink($post->ID).'" target="_blank">'.__('view','my-transit-lines').'</a></p></div>';
-				endwhile;
-				wp_reset_postdata();
-				$output .= '</div>';
-			}
-		
 			if (!is_user_logged_in()) {
 				$output .= '<h3>'.__( 'Your personal data', 'my-transit-lines' ).'</h3>'."\r\n";
 				$output .= '<p><label for="authname"><strong>'.__( 'Your name or nickname', 'my-transit-lines' ).'</strong></label>'."\r\n";

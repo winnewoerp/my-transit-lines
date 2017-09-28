@@ -11,7 +11,7 @@
 mtl_main_domain_redirect();
 
 // redirect to start page if current proposal not within selected categories
-if(is_single() && (get_post_type()=='mtlproposal' || get_post_type()=='mtlproposal2')) {
+if(is_single() && get_post_type()=='mtlproposal') {
 	$category = get_the_category($post->ID);
 	$catid = $category[0]->cat_ID;
 	$mtl_options = get_option('mtl-option-name');

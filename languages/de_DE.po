@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2016-06-21 07:31+0200\n"
-"PO-Revision-Date: 2016-06-21 07:32+0200\n"
+"POT-Creation-Date: 2015-11-04 20:13+0100\n"
+"PO-Revision-Date: 2015-11-04 20:20+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.8\n"
+"X-Generator: Poedit 1.8.4\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -166,7 +166,7 @@ msgstr "1 Kommentar"
 msgid "% Comments"
 msgstr "% Kommentare"
 
-#: ../footer.php:37
+#: ../footer.php:19
 msgid "A project by:"
 msgstr "Ein Projekt von:"
 
@@ -1614,12 +1614,12 @@ msgid "You already rated this proposal"
 msgstr "Du hast diesen Vorschlag bereits bewertet"
 
 #: ../modules/mtl-star-rating/mtl-star-rating.php:303
-#: ../modules/mtl-tile-list/mtl-tile-list.php:153
+#: ../modules/mtl-tile-list/mtl-tile-list.php:149
 msgid "Rating"
 msgstr "Bewertung"
 
 #: ../modules/mtl-star-rating/mtl-star-rating.php:303
-#: ../modules/mtl-tile-list/mtl-tile-list.php:154
+#: ../modules/mtl-tile-list/mtl-tile-list.php:150
 msgid "Number of ratings"
 msgstr "Anzahl der Bewertungen"
 
@@ -1738,73 +1738,65 @@ msgstr ""
 "Hinweise an und entscheide, ob du mit deinem Vorschlag bereits in die "
 "Bewertungsphase wechseln möchtest."
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:101
+#: ../modules/mtl-tile-list/mtl-tile-list.php:100
 msgid "Filter:"
 msgstr "Filtern:"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:106
+#: ../modules/mtl-tile-list/mtl-tile-list.php:105
 msgid "All transit modes"
 msgstr "Alle Verkehrsmittel"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:121
+#: ../modules/mtl-tile-list/mtl-tile-list.php:119
 msgid "All users (incl. unregistered)"
 msgstr "Alle Benutzer (inkl. unregistrierte)"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:136
+#: ../modules/mtl-tile-list/mtl-tile-list.php:133
 msgid "All regions"
 msgstr "Alle Gebiete"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:149
+#: ../modules/mtl-tile-list/mtl-tile-list.php:145
 msgid "Sort:"
 msgstr "Sortieren:"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:150
+#: ../modules/mtl-tile-list/mtl-tile-list.php:146
 msgid "Date"
 msgstr "Datum"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:151
+#: ../modules/mtl-tile-list/mtl-tile-list.php:147
 msgid "Number of comments"
 msgstr "Anzahl Kommentare"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:156
+#: ../modules/mtl-tile-list/mtl-tile-list.php:152
 msgid "Random"
 msgstr "Zufall"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:157
+#: ../modules/mtl-tile-list/mtl-tile-list.php:153
 msgid "Descendent"
 msgstr "Absteigend"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:157
+#: ../modules/mtl-tile-list/mtl-tile-list.php:153
 msgid "Ascendent"
 msgstr "Aufsteigend"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:159
+#: ../modules/mtl-tile-list/mtl-tile-list.php:155
 msgid "Filter/sort"
 msgstr "Filtern/sortieren"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:187
+#: ../modules/mtl-tile-list/mtl-tile-list.php:182
 msgid "Loading new set of proposals..."
 msgstr "Neue Vorschlagsauswahl wird geladen..."
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:205
+#: ../modules/mtl-tile-list/mtl-tile-list.php:196
 msgid "Add a new proposal with map and description"
 msgstr "Ergänze deinen eigenen Streckenvorschlag"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:205
+#: ../modules/mtl-tile-list/mtl-tile-list.php:196
 msgid "Contribute to the collection!"
 msgstr "Erweitere die Sammlung!"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:227
+#: ../modules/mtl-tile-list/mtl-tile-list.php:215
 msgid "Proposal not yet completed"
 msgstr "Vorschlag noch in Arbeit"
-
-#: ../modules/mtl-tile-list/mtl-tile-list.php:228
-msgid "non-competitive"
-msgstr "außer Konkurrenz"
-
-#: ../modules/mtl-tile-list/mtl-tile-list.php:237
-msgid "attention: no user account!"
-msgstr ""
 
 #: ../search.php:16
 #, php-format

@@ -24,26 +24,6 @@ function mtl_posttype_init() {
 			'singular' => __('Proposal','my-transit-lines'),
 			'plural' => __('Proposals','my-transit-lines')
 		),
-		/*array(
-			'name' => 'mtlproposal2',
-			'slug' => 'proposal2',
-			'singular' => __('External Proposal','my-transit-lines'),
-			'plural' => __('External Proposals','my-transit-lines'),
-			'menu' => __('Ext. Proposals','my-transit-lines'),
-		),
-		array(
-			'name' => 'mtlconcept',
-			'slug' => 'concept',
-			'singular' => __('Concept','my-transit-lines'),
-			'plural' => __('Concepts','my-transit-lines')
-		),
-		array(
-			'name' => 'mtlconcept2',
-			'slug' => 'concept2',
-			'singular' => __('External Concept','my-transit-lines'),
-			'plural' => __('External Concepts','my-transit-lines'),
-			'menu' => __('Ext. Concepts','my-transit-lines'),
-		)*/		
 	);
 	foreach($mtl_posttypes as $mtl_posttype) {
 		$menu_name = (isset($mtl_posttype['menu']) ? $mtl_posttype['menu'] : $mtl_posttype['plural']);

@@ -153,7 +153,6 @@
 	margin:-210px 0 0 -10px;
 	padding:190px 10px 0 10px;
 	width:190px;
-	font-family:'Novecentowide',Arial,Helvetica,sans-serif;
 	font-weight:bold;
 	height:37px;
 	overflow:hidden;
@@ -193,15 +192,6 @@
 	padding:5px;
 	width:110px;
 	font-size:85%;
-	line-height:1.2em;
-}
-
-#content .mtl-post-tile p.flag-proposal-phase {
-	position:absolute;
-	font-size:75%;
-	top:0px;
-	width:103px;
-	padding:5px;
 	line-height:1.2em;
 }
 

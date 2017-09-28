@@ -18,7 +18,7 @@ $post_category = $category[0]->slug;
 	<header class="entry-header">
 		<h1 class="entry-title"><a href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a></h1>
 
-		<?php if ( 'post' == get_post_type() || 'mtlproposal' == get_post_type() || 'mtlproposal2' == get_post_type()) : ?>
+		<?php if ( 'post' == get_post_type() || 'mtlproposal' == get_post_type()) : ?>
 		<div class="entry-meta">
 			<?php mtl_posted_on2(); ?>
 		</div><!-- .entry-meta -->

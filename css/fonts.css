@@ -3,100 +3,58 @@
 /* created by Johannes Bouchain, 2015-04-11 */
 
 /* ### Webfonts ###
- * My Transit Lines theme is using Novecentowide webfont for headlines
- * (need to change this because of license issues)
- * For content text, Open Sans from Google Fonts is used
+ * My Transit Lines theme is using Open Sans font (extracted from Google Fonts)
  * ################ */
-
-/* @license
- * MyFonts Webfont Build ID 2434305, 2012-12-19T06:37:52-0500
- * 
- * The fonts listed in this notice are subject to the End User License
- * Agreement(s) entered into by the website owner. All other parties are 
- * explicitly restricted from using the Licensed Webfonts(s).
- * 
- * You may obtain a valid license at the URLs below.
- * 
- * Webfont: Novecento Wide Bold by Synthview
- * URL: http://www.myfonts.com/fonts/synthview/novecento/wide-bold/
- * Licensed pageviews: Unlimited
- * 
- * Webfont: Novecento Wide Light by Synthview
- * URL: http://www.myfonts.com/fonts/synthview/novecento/wide-light/
- * Licensed pageviews: Unlimited
- * 
- * Webfont: Novecento Wide DemiBold by Synthview
- * URL: http://www.myfonts.com/fonts/synthview/novecento/wide-demibold/
- * Licensed pageviews: Unlimited
- * 
- * Webfont: Novecento Wide Book by Synthview
- * URL: http://www.myfonts.com/fonts/synthview/novecento/wide-book/
- * Licensed pageviews: Unlimited
- * 
- * Webfont: Novecento Wide Normal by Synthview
- * URL: http://www.myfonts.com/fonts/synthview/novecento/wide-normal/
- * Licensed pageviews: Unlimited
- * 
- * Webfont: Novecento Wide Medium by Synthview
- * URL: http://www.myfonts.com/fonts/synthview/novecento/wide-medium/
- * Licensed pageviews: Unlimited
- * 
- * 
- * License: http://www.myfonts.com/viewlicense?type=web&buildid=2434305
- * Webfonts copyright: Copyright &#x00A9; 2011 by Jan Tonellato. All rights reserved.
- * 
- * © 2012 Bitstream Inc
-*/
-
-@font-face {
-	font-family: 'Novecentowide';
-	src: url('../webfonts/252501_0_0.eot');
-	src: url('../webfonts/252501_0_0.eot?#iefix') format('embedded-opentype'),url('../webfonts/252501_0_0.woff') format('woff'),url('../webfonts/252501_0_0.ttf') format('truetype');
-	font-weight:700;
-	font-style:normal;
+ 
+ @font-face {
+    font-family: 'Open Sans';
+    src: url('../webfonts/opensans-bold-webfont.woff2') format('woff2'),
+         url('../webfonts/opensans-bold-webfont.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
 }
 
 @font-face {
-	font-family: 'Novecentowide';
-	src: url('../webfonts/252501_1_0.eot');
-	src: url('../webfonts/252501_1_0.eot?#iefix') format('embedded-opentype'),url('../webfonts/252501_1_0.woff') format('woff'),url('../webfonts/252501_1_0.ttf') format('truetype');
-	font-weight:100;
-	font-style:normal;
+    font-family: 'Open Sans';
+    src: url('../webfonts/opensans-bolditalic-webfont.woff2') format('woff2'),
+         url('../webfonts/opensans-bolditalic-webfont.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
 }
 
 @font-face {
-	font-family: 'Novecentowide';
-	src: url('../webfonts/252501_2_0.eot');
-	src: url('../webfonts/252501_2_0.eot?#iefix') format('embedded-opentype'),url('../webfonts/252501_2_0.woff') format('woff'),url('../webfonts/252501_2_0.ttf') format('truetype');
-	font-weight:bold;
-	font-style:normal;
+    font-family: 'Open Sans';
+    src: url('../webfonts/opensans-italic-webfont.woff2') format('woff2'),
+         url('../webfonts/opensans-italic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
 }
 
 @font-face {
-	font-family: 'Novecentowide';
-	src: url('../webfonts/252501_3_0.eot');
-	src: url('../webfonts/252501_3_0.eot?#iefix') format('embedded-opentype'),url('../webfonts/252501_3_0.woff') format('woff'),url('../webfonts/252501_3_0.ttf') format('truetype');
-	font-weight:200;
-	font-style:normal;
+    font-family: 'Open Sans';
+    src: url('../webfonts/opensans-light-webfont.woff2') format('woff2'),
+         url('../webfonts/opensans-light-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
 }
 
 @font-face {
-	font-family: 'Novecentowide';
-	src: url('../webfonts/252501_4_0.eot');
-	src: url('../webfonts/252501_4_0.eot?#iefix') format('embedded-opentype'),url('../webfonts/252501_4_0.woff') format('woff'),url('../webfonts/252501_4_0.ttf') format('truetype');
-	font-weight:normal;
-	font-style:normal;
+    font-family: 'Open Sans';
+    src: url('../webfonts/opensans-lightitalic-webfont.woff2') format('woff2'),
+         url('../webfonts/opensans-lightitalic-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+
 }
 
 @font-face {
-	font-family: 'Novecentowide';
-	src: url('../webfonts/252501_5_0.eot');
-	src: url('../webfonts/252501_5_0.eot?#iefix') format('embedded-opentype'),url('../webfonts/252501_5_0.woff') format('woff'),url('../webfonts/252501_5_0.ttf') format('truetype');
-	font-weight:500;
-	font-style:normal;
-}
+    font-family: 'Open Sans';
+    src: url('../webfonts/opensans-regular-webfont.woff2') format('woff2'),
+         url('../webfonts/opensans-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 
-/* ### END Webfonts ### */
+}
 
 /* ### Iconfonts ### */
 

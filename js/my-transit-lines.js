@@ -52,37 +52,6 @@ $(document).ready(function(){
 		if($('body.options-discussion-php #comments_notify').length) $('body.options-discussion-php #comments_notify').parents('tr').remove();
 	}
 	
-	// actions for concept form
-	if($('.proposals-select-box').length) {
-		$('.proposal-select-box input[type="checkbox"]').each(function(){
-			if($(this).is(':checked')) $(this).parent().parent().parent().addClass('selected');
-			$(this).change(function(){
-				if($(this).is(':checked')) $(this).parent().parent().parent().addClass('selected');
-				else $(this).parent().parent().parent().removeClass('selected');
-			});	
-		});
-		$('.filter-author').each(function(){
-			$(this).click(function(elem){
-				elem.preventDefault();
-				var nameCheck = $(this).parent().find('.author').html();
-				$('.proposal-select-box').each(function(){
-					if($(this).find('.author').html()!= nameCheck) $(this).hide();
-					else $(this).show();
-				});
-			});
-		});
-		$('.filter-transitmode').each(function(){
-			$(this).click(function(elem){
-				elem.preventDefault();
-				var classCheck = $(this).parent().attr('class');
-				$('.proposal-select-box').each(function(){
-					if($(this).find('p').attr('class')!= classCheck) $(this).hide();
-					else $(this).show();
-				});
-			});
-		});
-	}
-	
 	if(typeof suggestUrl != 'undefined') $("#mtl-tag-select").suggest(suggestUrl,{multiple:true, multipleSep: ","});
 });
 
@@ -111,10 +80,10 @@ function initMyTransitLines() {
 		}
 	));
 	
-	/*// add OSM Transport
+	/* // add OSM Transport
 	mapLayers.push(new OpenLayers.Layer.OSM(
 		objectL10n.titleTransport,
-		["https://a.tile.hosted.thunderforest.com/${z}/${x}/${y}.png","https://b.tile.hosted.thunderforest.com${z}/${x}/${y}.png","https://c.tile.hosted.thunderforest.com${z}/${x}/${y}.png"],
+		["http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png","http://b.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png","http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png"],
 		{
 			numZoomLevels: 19,
 			displayInLayerSwitcher: true,
@@ -147,8 +116,8 @@ function initMyTransitLines() {
 	var lonlat = new OpenLayers.LonLat(mtlCenterLon,mtlCenterLat);
 	lonlat.transform(proj4326, projmerc);
 	
-	// center map
-	map.setCenter(lonlat, 6);
+	// center map to Hamburg
+	map.setCenter(lonlat, 13);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
 	
 	// load vector data from WKT string

@@ -139,8 +139,7 @@ function mtl_tile_list_output($atts) {
 					$tag_link = add_query_arg( array('mtl-tag' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page']));
 					$selected = '';
 					if($get_tag == $current_tag->term_id) $selected = ' selected="selected"';
-					//if($count_posts>0)
-					$output .= "<option".$selected." value='{$current_tag->term_id}'>{$current_tag->name} </option>";
+					if($count_posts>0) $output .= "<option".$selected." value='{$current_tag->term_id}'>{$current_tag->name} </option>";
 				}
 				$output .= '</select></p>';
 			}
@@ -179,7 +178,7 @@ function mtl_tile_list_output($atts) {
 		$output .= mtl_localize_script(true);
 		
 		// load the necessary scripts and set some JS variables
-		if(!$hidethumbs) $output .= '<script type="text/javascript" src="https://openlayers.org/api/2.13/OpenLayers.js"></script>'."\r\n";
+		if(!$hidethumbs) $output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
 		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ""; var vectorLabelsData = ""; var editMode = false; </script>'."\r\n";
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>';
 		if(!$hidethumbs) $output .= '<script type="text/javascript"> var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
@@ -223,21 +222,10 @@ function mtl_tile_list_output($atts) {
 					$output .= mtl_thumblist_map();
 				}
 				$output .= mtl_load_template_part( 'content', get_post_format() );
-				if(get_post_meta($post->ID,'mtl-under-construction',true)=='on' || get_post_meta($post->ID,'mtl-proposal-phase',true)=='elaboration-phase') {
-					if(get_post_meta($post->ID,'mtl-proposal-status-nok',true)!='on') $output .= '<p class="flag-under-construction" style="background:'.$bgcolor.'">'.__('Proposal not yet completed','my-transit-lines').'</p>';
-					//else $output .= '<p class="flag-under-construction" style="background:'.$bgcolor.'">'.__('non-competitive','my-transit-lines').'</p>';
-				}
-				if(current_user_can('manage_options') && $type == 'mtlproposal') {
-					if(!get_post_meta($post->ID,'author-name',true)) {
-						$output .= '<p class="flag-proposal-phase" style="background:'.$bgcolor.'">'.get_post_meta($post->ID,'mtl-proposal-phase',true);
-						if(strlen(get_post_meta($post->ID,'mtl-editors-hints',true))>10) $output .= ' and hints text ready';
-						$output .= '</p>';
-					}
-					else {
-						$output .= '<p class="flag-proposal-phase" style="background:'.$bgcolor.'">'.__('attention: no user account!','my-transit-lines');
-						$output .= '</p>';
-					}
-				}
+				if(get_post_meta($post->ID,'mtl-under-construction',true)=='on' || get_post_meta($post->ID,'mtl-proposal-phase',true)=='elaboration-phase') $output .= '<p class="flag-under-construction" style="background:'.$bgcolor.'">'.__('Proposal not yet completed','my-transit-lines').'</p>';
+				if(current_user_can('manage_options')) $output .= '<p class="flag-proposal-phase" style="position:absolute;font-size:80%;top:80px;background:'.$bgcolor.'">'.__('Current proposal phase (for admins)','my-transit-lines').': <strong>'.get_post_meta($post->ID,'mtl-proposal-phase',true);
+				if(current_user_can('manage_options') && strlen(get_post_meta($post->ID,'mtl-editors-hints',true))>10) $output .= ' and hints text ready';
+				$output .= '</strong></p>';
 				$output .= '</div>';
 			}
 		endwhile;

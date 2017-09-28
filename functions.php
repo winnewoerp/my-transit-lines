@@ -28,6 +28,7 @@ include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comme
 include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php'); // proposal meta boxes for dashboard post edit view
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
 include( get_template_directory() . '/modules/mtl-star-rating/mtl-star-rating.php'); // star rating functioanlity
+include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
 /**
  * Set the content width based on the theme's design and stylesheet.
  */
@@ -121,10 +122,9 @@ require get_template_directory() . '/inc/jetpack.php';
  * Enqueue scripts and styles for the My Transit Line theme.
  */
 function my_transit_lines_scripts() {
-	// Google Open Sans font. TO DO: Maybe download the font and pot it to the theme fonts folder?
-	wp_enqueue_style( 'fonts-style', 'http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' );
 
 	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri() );
+
 	// get the style for the Openlayers Editor
 	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css',array());
 	
@@ -289,14 +289,14 @@ function mtl_localize_script($getVar = false) {
 }
 
 /**
- * add custom post types to search results. So far: mtlproposal, mtlproposal2. If new custom post types are created within the theme, add them to the array
+ * add custom post type mtlproposal. If new custom post types are created within the theme, add them to the array
  */
 if (!function_exists('my_theme_filter')) {
     function my_theme_filter( $query ){
 
     if ( $query->is_main_query() )
         if ( $query->get( 'tag' ) OR is_search() )
-            $query->set( 'post_type', array( 'mtlproposal','mtlproposal2' ) );
+            $query->set( 'post_type', array( 'mtlproposal' ) );
 
     return $query;
 }}
@@ -440,6 +440,3 @@ function curPageURL() {
  }
  return $pageURL;
 }
-
-
-

@@ -202,7 +202,6 @@ function mtl_star_rating($content) {
 			if(get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-ready-phase') $output .= '<div class="mtl-rating-section"><em>'.__('This proposal can\'t yet be rated. The editors of the proposal must enable rating first.','my-transit-lines').'</em></div>';
 			else $output .= '<div class="mtl-rating-section"><em>'.__('This proposal can\'t yet be rated. The editors and the author of the proposal must enable rating first.','my-transit-lines').'</em></div>';
 		}
-		if(get_post_type($post->ID) == 'mtlproposal2') $output .= '<div class="mtl-rating-section"><em>'.__('This is an external proposal and thus can\'t be rated. External proposals must be integrated into the respective regional platform before they can be prepared for rating. The respective platform doesn\'t yet exists? Contact us if you\'re interested in creating it.','my-transit-lines').'</em></div>';
 	}
 	
 	if(is_single() && $mtl_options2['mtl-current-project-phase']=='rate') return $output;

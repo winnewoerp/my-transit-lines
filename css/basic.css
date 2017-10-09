@@ -110,6 +110,13 @@ header.site-header h2.site-description {
 	text-transform:uppercase;
 }
 
+header.forkMeOnGithub {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 0;
+}
+
 h2.site-description span {
 
 }
@@ -201,6 +208,7 @@ nav.top-navigation  ul,
 nav.top-navigation  div{
 	display:inline;
 }
+
 
 #content {
 	max-width:900px;

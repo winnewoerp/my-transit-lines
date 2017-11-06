@@ -1,5 +1,5 @@
 # My Transit Lines
-[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg)](https://github.com/Luensche/my-transit-lines/releases/latest)
+[![GitHub release](https://img.shields.io/github/release/Luensche/my-transit-lines.svg)](https://github.com/Luensche/my-transit-lines/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/Luensche/my-transit-lines.svg?style=flat-square)](https://github.com/Luensche/my-transit-lines/issues)
 [![GitHub pull requets](https://img.shields.io/github/issues-pr/Luensche/my-transit-lines.svg?style=flat-square)](https://github.com/Luensche/my-transit-lines/pulls)
 

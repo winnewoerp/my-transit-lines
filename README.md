@@ -1,4 +1,8 @@
 # My Transit Lines
+[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg)](https://github.com/Luensche/my-transit-lines/releases/latest)
+[![GitHub issues](https://img.shields.io/github/issues/Luensche/my-transit-lines.svg?style=flat-square)](https://github.com/Luensche/my-transit-lines/issues)
+[![GitHub pull requets](https://img.shields.io/github/issues-pr/Luensche/my-transit-lines.svg?style=flat-square)](https://github.com/Luensche/my-transit-lines/pulls)
+
 
 My Transit Lines is a Wordpress theme that adds a map-based framework for proposing new public transit lines, including vector data (lines and named or unnamed stations), title, description and transit mode. A front-end form is provided to enter such data and new transit line and/or station proposals are being saved as a custom "proposal" Wordpress post type. A tile-layout list shows all existing proposals including transit mode, title, and map.
 

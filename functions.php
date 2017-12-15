@@ -321,7 +321,8 @@ function mtl_posted_on2() {
 /**
  * make all users selectable for user dropdown in admin edit proposal page
  */
-add_filter('wp_dropdown_users', 'mtl_switch_user');
+/* DEACTIVATED BECAUSE OF FATAL PROBLEMS ON BULK EDITING OF POSTS!!! */
+/*add_filter('wp_dropdown_users', 'mtl_switch_user');
 function mtl_switch_user()
 {
     global $post; // remove if not needed
@@ -341,7 +342,7 @@ function mtl_switch_user()
     }
     echo'</select>';
 
-}
+}*/
 
 /**
  * add tinyMCE editor to comment form

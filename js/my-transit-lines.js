@@ -44,23 +44,23 @@ $(window).bind('beforeunload', function() {
 $(document).ready(function(){
 	//actions for frontend
 	if($('#mtl-map').length && initMap) initMyTransitLines();
-	
+
 	//actions for backend
 	else {
 		initMyTransitLinesDashboard();
 		if($('.mtl-color-picker-field').length) $('.mtl-color-picker-field').wpColorPicker();
 		if($('body.options-discussion-php #comments_notify').length) $('body.options-discussion-php #comments_notify').parents('tr').remove();
 	}
-	
+
 	if(typeof suggestUrl != 'undefined') $("#mtl-tag-select").suggest(suggestUrl,{multiple:true, multipleSep: ","});
 });
 
 function initMyTransitLines() {
 	OpenLayers.Lang.setCode('de');
-	
-	// define map div	
+
+	// define map div
 	map = new OpenLayers.Map('mtl-map');
-	
+
 	// Create OePNV-Karte map layer
 	var mapLayers = new Array();
 	// add OSM OePNV Layer
@@ -79,24 +79,7 @@ function initMyTransitLines() {
 			opacity: defaultOpacity
 		}
 	));
-	
-	/* // add OSM Transport
-	mapLayers.push(new OpenLayers.Layer.OSM(
-		objectL10n.titleTransport,
-		["http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png","http://b.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png","http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png"],
-		{
-			numZoomLevels: 19,
-			displayInLayerSwitcher: true,
-			buffer: 0,
-			tileOptions: {
-				crossOriginKeyword: null
-			},
-			attribution: objectL10n.attributionTransport,
-			keyname: 'transport',
-			opacity: defaultOpacity
-		}
-	));*/
-	
+
 	// add OSM Mapnik Layer
 	mapLayers.push(new OpenLayers.Layer.OSM(objectL10n.titleOSM));
 	mapLayers[mapLayers.length-1].setOpacity(defaultOpacity);
@@ -110,19 +93,19 @@ function initMyTransitLines() {
 	// create vectors layer
 	vectors = new OpenLayers.Layer.Vector(objectL10n.vectorLayerTitle, { styleMap: new OpenLayers.StyleMap(style), rendererOptions: { zIndexing: true } });
 	map.addLayer(vectors);
-	
+
 	// projection transformation
 
 	var lonlat = new OpenLayers.LonLat(mtlCenterLon,mtlCenterLat);
 	lonlat.transform(proj4326, projmerc);
-	
+
 	// center map to Hamburg
 	map.setCenter(lonlat, 13);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
-	
+
 	// load vector data from WKT string
 	wkt = new OpenLayers.Format.WKT();
-	
+
 	if(vectorData) {
 		if(vectorData.replace('POINT','') != vectorData || vectorData.replace('LINESTRING','') != vectorData) {
 			features = wkt.read(vectorData);
@@ -137,7 +120,7 @@ function initMyTransitLines() {
 			$('#features-data').val(vectorData);
 		}
 	}
-	
+
 	// load labels data from separate field
 	if(vectorLabelsData) {
 		var vectorLabelsArray = vectorLabelsData.split(',');
@@ -150,7 +133,7 @@ function initMyTransitLines() {
 		}
 		$('#features-label-data').val(vectorLabelsData);
 	}
-	
+
 	// add editing toolbar from "ole" framework, if editMode == true
 	if(editMode) {
 		editor = new OpenLayers.Editor(map, {
@@ -160,10 +143,10 @@ function initMyTransitLines() {
 		});
 		editor.startEditMode();
 	}
-		
-	// set styles of lines to selected transport mode	
+
+	// set styles of lines to selected transport mode
 	changeLinetype();
-	
+
 	// set preferences when map is loaded
 	layerOSM.events.register('loadend', layerOSM, setMapOpacity);
 	layerOSM.events.register('loadend', layerOSM, setToolPreferences);
@@ -191,7 +174,7 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 		externalGraphicUrl = transportModeStyleData[selectedTransportMode][1];
 		externalGraphicUrlSelected = transportModeStyleData[selectedTransportMode][2];
 	}
-	
+
 	// redraw all features on vector layer using the selected style
 	for(var i =0; i < vectorsLayer.features.length; i++) {
 		var featureString = vectorsLayer.features[i].geometry.toString();
@@ -215,7 +198,7 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 			labelYOffset: 0,
 			labelOutlineColor: fillColor,
 			labelOutlineWidth: 4
-		};			
+		};
 		else vectorsLayer.features[i].style = {
 			fillColor: fillColor,
 			strokeColor: strokeColor,
@@ -224,7 +207,7 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 		}
 	}
 	setToolPreferences();
-	
+
 	// unselecting all features needed to avoid problems when feature styles are changed
 	vectorsLayer.redraw();
 }
@@ -284,8 +267,8 @@ function setToolPreferences() {
              e.preventDefault();
          }
      });
-	 
-	// tool usage hints	 
+
+	// tool usage hints
 	$('.olEditorControlDrawPointItemInactive').click(function(){
 		$('.mtl-tool-hint').css('display','none');
 		$('.mtl-tool-hint.point').css('display','inline');
@@ -310,7 +293,7 @@ function setToolPreferences() {
 		$('.mtl-tool-hint').css('display','none');
 		$('.mtl-tool-hint.navigate').css('display','inline');
 	});
-	
+
 	$('.olControlSelectFeatureItemActive, .olControlSelectFeatureItemInactive').css('background-image','url('+themeUrl+'/images/selectFeatureAddName.png)');
 	$('#title, #description').on('input propertychange paste',function() {
 		warningMessage = 'Seite wirklich verlassen?';
@@ -332,13 +315,13 @@ function updateFeaturesData(changeType) {
 	var featuresLabelData = [];
 	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';;
 	if(vectors.features[vectors.features.length-1]) var featureString = vectors.features[vectors.features.length-1].geometry.toString();
-	
+
 	// set label for new point feature
 	if(changeType =='added' && featureString.replace('POINT','')!=featureString && $('#feature-textinput').val()!='') {
 		var labelText = $('#feature-textinput').val();
 		vectors.features[vectors.features.length-1].attributes = { name: labelText };
 	}
-	
+
 	// set label for updated point feature
 	if(changeType == 'unselected' && stationSelected>=0) {
 		var labelText = $('#feature-textinput').val();
@@ -348,7 +331,7 @@ function updateFeaturesData(changeType) {
 		$('#feature-textinput').val('');
 		$('.set-name').css('display','none');
 	}
-	
+
 	if(changeType =='added') {
 		countFeatures++;
 		var featureString = vectors.features[vectors.features.length-1].geometry.toString();
@@ -357,13 +340,13 @@ function updateFeaturesData(changeType) {
 
 	countStations=0;
 	lineLength=0;
-	
+
 	// redefine styles of all features
 	for(var i =0; i < vectors.features.length; i++) {
-		
+
 		var featureString = vectors.features[i].geometry.toString();
 		if(vectors.selectedFeatures.indexOf(vectors.features[i])==0) {
-			
+
 			// if a point feature has been selected: open text entry box
 			if(featureString.replace('POINT','')!=featureString && changeType == 'selected') {
 				$('#feature-textinput').val(vectors.features[i].attributes.name);
@@ -374,7 +357,7 @@ function updateFeaturesData(changeType) {
 				});
 				stationSelected = i;
 			}
-			
+
 			// if a feature is selected: set 'selected' styles
 			if(($('.olControlSelectFeatureItemActive').length || $('.olEditorControlDragFeatureItemActive').length) && changeType != 'unselected') {
 				if(featureString.replace('POINT','')!=featureString) {
@@ -406,7 +389,7 @@ function updateFeaturesData(changeType) {
 			}
 		}
 		else {
-		
+
 			// set styles for unselected features
 			if(featureString.replace('POINT','')!=featureString) {
 				if(!$('.olControlModifyFeatureItemActive').length) {
@@ -437,15 +420,15 @@ function updateFeaturesData(changeType) {
 				}
 			}
 		}
-		
+
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
 		if(featureString.replace('LINESTRING','')!=featureString) lineLength = lineLength + transformedFeature.getGeodesicLength();
-		
+
 		// write all features data to array as WKT
 		if(i < countFeatures) featuresData.push(transformedFeature.toString());
-		
+
 		// write all features label data to array
-		// replace commas, quotes, and apostrophes 
+		// replace commas, quotes, and apostrophes
 		if(i < countFeatures) {
 			var modFeaturesLabelData;
 			modFeaturesLabelData = '';
@@ -456,10 +439,10 @@ function updateFeaturesData(changeType) {
 			}
 			featuresLabelData.push(modFeaturesLabelData);
 		}
-		
+
 		vectors.features[i].geometry.transform(proj4326,projmerc);
 	}
-	
+
 	// write WKT features data to html element (will be saved to database on form submit)
 	var collection = 'GEOMETRYCOLLECTION('+featuresData+')';
 	var labelCollection = featuresLabelData.join();
@@ -467,9 +450,9 @@ function updateFeaturesData(changeType) {
 	$('#mtl-feature-labels-data').val(labelCollection);
 	$('#mtl-count-stations').val(countStations);
 	$('#mtl-line-length').val(lineLength);
-	
+
 	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
-	
+
 	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
 	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
 }
@@ -507,7 +490,7 @@ function mtlFullscreenMap() {
 		$('#mtl-box').find('.fullscreen').removeClass('fullscreen');
 		$('#mtl-fullscreen-link .fullscreen-open').css('display','none');
 		$('#mtl-fullscreen-link .fullscreen-closed').css('display','block');
-		viewFullscreen = false;		
+		viewFullscreen = false;
 	}
 	map.updateSize();
 	$('#mtl-fullscreen-link').blur();
@@ -536,27 +519,27 @@ function initMyTransitLinesDashboard() {
 			changeMapMarker();
 		});
 	}
-	
+
 	// handle image upload fields
-	
+
 	var custom_uploader;
 	var url_field;
 	var current_button;
 	var image_field;
- 
+
     $('.upload_image_button').unbind('click').on('click',function(e) {
- 
+
         e.preventDefault();
 		current_button = $(this);
 		url_field = $(this).prev();
 		if($(this).next().find('img').attr('src')) image_field = $(this).next().find('img');
-		
+
         //If the uploader object has already been created, reopen the dialog
         if (custom_uploader) {
             custom_uploader.open();
             return;
         }
- 
+
         //Extend the wp.media object
         custom_uploader = wp.media.frames.file_frame = wp.media({
             title: 'Choose Image',
@@ -565,7 +548,7 @@ function initMyTransitLinesDashboard() {
             },
             multiple: false
         });
- 
+
         //When a file is selected, grab the URL and set it as the text field's value
         custom_uploader.on('select', function() {
             attachment = custom_uploader.state().get('selection').first().toJSON();
@@ -573,12 +556,12 @@ function initMyTransitLinesDashboard() {
 			if(image_field) image_field.attr('src',attachment.url);
 			else current_button.after(' &nbsp; <span style="height:30px;overflow:visible;display:inline-block"><img src="'+attachment.url+'" style="vertical-align:top;margin-top:-3px;max-height:60px" alt="" /></span>');
         });
- 
+
         //Open the uploader dialog
         custom_uploader.open();
- 
+
     });
-	
+
 	// hide not used category image and color fields
 	$('.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
 	$('.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
@@ -605,18 +588,18 @@ function addAdminMapCenter() {
 	var layerOSM = new OpenLayers.Layer.OSM();
 	admin_map.addLayer( layerOSM );
 	admin_map.setCenter(new OpenLayers.LonLat(0,0).transform(proj4326,projmerc), 1);
-	
+
 	// get current center position as marker if exists
 	if(mapCenterLon != '' && mapCenterLat != '') {
 		var lonLat = new OpenLayers.LonLat(mapCenterLon,mapCenterLat).transform(proj4326,projmerc);
 		admin_map.setCenter (lonLat, 12);
 	}
-	  
+
 	markers = new OpenLayers.Layer.Markers( "Markers" );
     admin_map.addLayer(markers);
-	  
+
 	if(mapCenterLon != '' && mapCenterLat != '') markers.addMarker(new OpenLayers.Marker(lonLat));
-	
+
 	admin_map.events.register("click", admin_map, function(evt) {
 		markers.clearMarkers();
 		var pos = admin_map.getLonLatFromPixel(evt.xy);
@@ -626,10 +609,10 @@ function addAdminMapCenter() {
 		pos.transform(projmerc,proj4326);
 		$('#mtl-center-lon').val(pos.lon);
 		$('#mtl-center-lat').val(pos.lat);
-		
+
 	});
- 
- 
+
+
 }
 
 function changeMapMarker() {
@@ -652,4 +635,3 @@ function manipulateTitle(newTitle) {
 	$('title').html(newTitle);
 	$('h1.entry-title').html(newTitle);
 }
-

@@ -37,7 +37,7 @@ var paginationClicked = false;
 jQuery(document).ready(function($){
 	if(currentHash.replace('#!','')!=currentHash ) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
 
-	$('.mtl-paginate-links a').live('click', function(e)  {
+	$('.mtl-paginate-links a').on('click', function(e)  {
 		e.preventDefault();
 		window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
 		

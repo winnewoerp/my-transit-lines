@@ -78,6 +78,10 @@ function mtl_proposal_map($content) {
 		if($averageDistance) $output2 .= __('Average station distance','my-transit-lines').': '.$averageDistanceOutput.'<br /><small>'.__('Attention: average station distance calculation is currently only correct when there is one contiguous line with the first and the last station on the respective end of line.','my-transit-lines').'</small><br />';
 		$output2 .= '</p>'."\r\n";
 		if($mtl_options3['mtl-show-districts']) $output2 .= mtl_taglist(true);
+		
+		/*$authorid = get_the_author_ID();
+		if(get_user_meta($authorid,'enable-contact-button',true)) $output2 .= '
+			<p><button><a href="'.add_query_arg(array('proposal-id' => $post->ID,'author-id' => $authorid),get_permalink(60459)).'">[IN ARBEIT]'.esc_html('Contact the author of this proposal','my-transit-lines').'</a></button></p>';*/
 
 		$output2 .= '<script type="text/javascript"> currentCat = "'.$catid .'"; </script>';
 		

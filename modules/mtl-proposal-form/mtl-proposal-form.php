@@ -163,6 +163,13 @@ function mtl_proposal_form_output( $atts ){
 					delete_post_meta($current_post_id,'mtl-under-construction','');
 				}
 				
+				// enable/disable contact button for current user
+				if(is_user_logged_in()) {
+					$userid = get_current_user_id();
+					update_user_meta($userid,'enable-contact-button',$_POST['enable-contact-button']);
+					$output .= get_user_meta($userid,'enable-contact-button',true).' - '.$_POST['enable-contact-button'];
+				}
+				
 				// preparing user info for mail notification			
 				global $current_user;
 				get_currentuserinfo();
@@ -349,6 +356,20 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<label for="mtl_input_code" class="lapkarte-code"><strong>'.__("Please enter the captcha code (case-sensitive)",'my-transit-lines').'</strong></label>'."\r\n";
 				$output .= '<input type="text" name="code" id="mtl_input_code" autocomplete="off" /></p>'."\r\n";
 				$output .= '<p><label class="dataprivacy" for="dataprivacy"><strong>'.sprintf( __( 'I have read and accepted the <a href="%s">data privacy statement</a>:','my-transit-lines' ), esc_url(get_permalink(111)) ).' &nbsp; <input type="checkbox" name="dataprivacy"'.($_POST['dataprivacy'] ? ' checked="ckecked"' : '').' /></strong></label></p>'."\r\n";
+			}
+			else {
+				$userid = get_current_user_id();
+				$enable_checked = false;
+				if(get_user_meta($userid,'enable-contact-button',true)) $enable_checked = true;
+				if(isset($_POST['enable-contact-button'])) {
+					if($_POST['enable-contact-button']) $enable_checked = true;
+					else $enable_checked = false;
+				}
+				else {
+					if('POST' == $_SERVER['REQUEST_METHOD']) $enable_checked = false;
+				}
+				$output .= '<p class="alignleft">&nbsp;<br /><label for="enable-contact-button"><input type="checkbox" id="enable-contact-button" '.($enable_checked ? 'checked="checked"' : '').'name="enable-contact-button" /> [IN ARBEIT] <strong>'.esc_html__('Enable contact button for my finished proposals','my-transit-lines').'</strong></label>
+				<small>'.esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him. The button is not visible as long as your prposal is still in elaboration phase.','my-transit-lines').' <strong>'.esc_html__('Important: This global option is being set for all of your finished proposals, not only for this one.','my-transit-lines').'<strong></small></p>'."\r\n";
 			}
 			// send post
 			// select box for proposal phase

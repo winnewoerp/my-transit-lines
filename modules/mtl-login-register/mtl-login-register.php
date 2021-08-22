@@ -36,10 +36,10 @@ function mtl_login_register_widget($args) {
 		get_currentuserinfo();
 		echo $before_title . __('Hello','my-transit-lines').' <strong>'.$user_login.'</strong>!' . $after_title;
 		echo $after_widget;
+		$widget_content .= '<li><a href="'.get_permalink($mtl_options3['mtl-proposal-page-id']).'?mtl-userid='.get_current_user_id().'">'.esc_html__('My proposals','my-transit-lines').'</a></li>';
 		$widget_content .= '<ul><li><a href="'.wp_logout_url().'">'.__('Logout','my-transit-lines').'</a></li>'."\n\r";
 		$link2=get_bloginfo('wpurl').'/wp-login.php?action=lostpassword';
 		$widget_content .= '<li><a href="'.$link2.'">'.__('Change password','my-transit-lines').'</a></li></ul></li>'."\n\r";
-		$widget_content .= '<li><a href="'.get_permalink($mtl_options3['mtl-proposal-page-id']).'?mtl-userid='.get_current_user_id().'">'.esc_html__('My proposals','my-transit-lines').'</a></li>';
 		echo $widget_content;
 		
 	}

@@ -653,3 +653,13 @@ function manipulateTitle(newTitle) {
 	$('h1.entry-title').html(newTitle);
 }
 
+// Proposal contact form
+$(document).ready(function(){
+	if($('#proposal-author-contact-form').length) {
+		$('#proposal-author-contact-form .pacf-toggle').on('click',function(e){
+			e.preventDefault();
+			$(this).closest('div').find('form').slideToggle();
+		});
+	}		
+});
+

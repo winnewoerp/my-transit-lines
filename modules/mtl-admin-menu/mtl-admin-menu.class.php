@@ -152,6 +152,8 @@ class MtlSettingsPage
                 // This prints out all hidden setting fields
 				settings_fields('mtl-settings-group-general');
 				settings_fields('mtl-settings-group-general2');
+				settings_fields('mtl-settings-group-general3');
+				settings_fields('mtl-settings-group-general4');
 				do_settings_sections( 'mtl-settings-general');
 				submit_button(); 
 			?>
@@ -212,6 +214,8 @@ class MtlSettingsPage
     {        
         register_setting('mtl-settings-group-general', 'mtl-option-name3', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-general2', 'mtl-option-name3', array( $this, 'sanitize' ));
+		register_setting('mtl-settings-group-general3', 'mtl-option-name3', array( $this, 'sanitize' ));
+		register_setting('mtl-settings-group-general4', 'mtl-option-name3', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-map1', 'mtl-option-name', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-map2', 'mtl-option-name', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-categories', 'mtl-option-name', array( $this, 'sanitize' ));
@@ -226,6 +230,7 @@ class MtlSettingsPage
         add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
         add_settings_field('mtl-proposal-page-id', __('ID of proposal page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-proposal-page-id','type' => 'text','option_name'=>'mtl-option-name3')); 
 		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'checkbox','option_name'=>'mtl-option-name3'));  		
+
 		
 		// settings section map1
         add_settings_section('mtl-settings-group-map1', __('Map Settings','my-transit-lines'), array( $this, 'print_map_section_content1' ), 'mtl-settings');  
@@ -258,6 +263,15 @@ class MtlSettingsPage
 		add_settings_field('mtl-current-project-phase', __('Current phase of the project','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-current-project-phase','option_name'=>'mtl-option-name2','type' => 'select','options' => array(array('collect',__('Collecting phase','my-transit-lines')),array('rate',__('Rating phase','my-transit-lines')))));
 		add_settings_field('mtl-prevent-new-proposals', __('No new proposals allowed, only editing','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-prevent-new-proposals','option_name'=>'mtl-option-name2','type' => 'checkbox'));
 		
+		// settings section general texts
+        add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
+		add_settings_field('mtl-proposal-contact-form-title', __('Title for intro of proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-title','option_name'=>'mtl-option-name3','type' => 'text'));
+		add_settings_field('mtl-proposal-contact-form-intro', __('Intro text for proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-intro','option_name'=>'mtl-option-name3','type' => 'textarea'));
+
+		// settings section general texts
+        add_settings_section('mtl-settings-group-general4', __('ReCAPTCHA settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
+		add_settings_field('mtl-recaptcha-website-key', __('ReCAPTCHA website key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-website-key','option_name'=>'mtl-option-name3','type' => 'text'));
+		add_settings_field('mtl-recaptcha-secret-key', __('ReCAPTCHA secret key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-secret-key','option_name'=>'mtl-option-name3','type' => 'text'));
 	}
 
     /**
@@ -271,6 +285,12 @@ class MtlSettingsPage
 		if( isset( $input['mtl-main-logo'] ) && $input['mtl-main-logo'] != 'http://') $new_input['mtl-main-logo'] = $input['mtl-main-logo'];
 		if( isset( $input['mtl-proposal-page-id'] ) ) $new_input['mtl-proposal-page-id'] = $input['mtl-proposal-page-id'];
 		if( isset( $input['mtl-show-districts'] ) ) $new_input['mtl-show-districts'] = $input['mtl-show-districts'];
+		
+		if( isset( $input['mtl-proposal-contact-form-title'] ) ) $new_input['mtl-proposal-contact-form-title'] = $input['mtl-proposal-contact-form-title'];
+		if( isset( $input['mtl-proposal-contact-form-intro'] ) ) $new_input['mtl-proposal-contact-form-intro'] = $input['mtl-proposal-contact-form-intro'];
+		
+		if( isset( $input['mtl-recaptcha-website-key'] ) ) $new_input['mtl-recaptcha-website-key'] = $input['mtl-recaptcha-website-key'];		
+		if( isset( $input['mtl-recaptcha-secret-key'] ) ) $new_input['mtl-recaptcha-secret-key'] = $input['mtl-recaptcha-secret-key'];
 		
         if( isset( $input['mtl-center-lon'] ) ) $new_input['mtl-center-lon'] = floatval( $input['mtl-center-lon'] );
         if( isset( $input['mtl-center-lat'] ) ) $new_input['mtl-center-lat'] = floatval( $input['mtl-center-lat'] );
@@ -352,6 +372,8 @@ class MtlSettingsPage
 		
 		// field output by type
 		if($type == 'text' || $type == 'hidden') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$option_name.'['.$field_name.']" value="%s" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
+		
+		if($type == 'textarea') printf( '<textarea'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$option_name.'['.$field_name.']">%s</textarea>', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
 		
 		if($type == 'colorpicker')  printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="text" id="'.$field_name.'" name="'.$option_name.'['.$field_name.']" value="%s" class="mtl-color-picker-field" data-default-color="#000000" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : ''); 
 		

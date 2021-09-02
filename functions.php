@@ -13,6 +13,11 @@
  * 3) please enqueue all scripts and styles for *all* modules using the respective section below
  * 4) please include all strings needed for l10n in the theme and theme module js files into the mtl_localize_script() funtion below
  */
+ 
+if ( ! defined( '_MTL_VERSION' ) ) {
+	// Replace the version number of the theme on each release.
+	define( '_MTL_VERSION', '1.7' );
+}
 
  /**
  * include module functions files
@@ -123,10 +128,10 @@ require get_template_directory() . '/inc/jetpack.php';
  */
 function my_transit_lines_scripts() {
 
-	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri() );
+	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri(), array(), _MTL_VERSION );
 
 	// get the style for the Openlayers Editor
-	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css',array());
+	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css', array(), _MTL_VERSION );
 	
 	// enable jQuery
 	wp_enqueue_script( 'jquery');
@@ -135,13 +140,13 @@ function my_transit_lines_scripts() {
 	wp_enqueue_script( 'suggest' );
 	
 	// AJAX form plugin
-	wp_enqueue_script( 'jquery-form', get_template_directory_uri() . '/js/jquery.form.min.js', array());
+	wp_enqueue_script( 'jquery-form', get_template_directory_uri() . '/js/jquery.form.min.js', array(), _MTL_VERSION);
 
-	wp_enqueue_script( 'my-transit-lines-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20120206', true );
-	wp_enqueue_script( 'my-transit-lines-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20130115', true );
+	wp_enqueue_script( 'my-transit-lines-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _MTL_VERSION, true );
+	wp_enqueue_script( 'my-transit-lines-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), _MTL_VERSION, true );
 	
 	// enqueue script for the MTL all proposals tile list
-	wp_enqueue_script( 'my-transit-lines-tilelist', get_template_directory_uri() . '/modules/mtl-tile-list/mtl-tile-list.js', array());
+	wp_enqueue_script( 'my-transit-lines-tilelist', get_template_directory_uri() . '/modules/mtl-tile-list/mtl-tile-list.js', array(), _MTL_VERSION);
 
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -223,6 +228,7 @@ function mtl_load_wp_editor($content, $editor_id, $settings) {
  */
 function mtl_maildomain() {
 	$maildomain = str_replace('http://','',get_bloginfo('siteurl'));
+	$maildomain = str_replace('https://','',get_bloginfo('siteurl'));
 	$maildomain = str_replace('www.','',$maildomain);
 	$maildomain = explode('/',$maildomain);
 	$maildomain = $maildomain[0];
@@ -354,6 +360,40 @@ function gk_comment_form( $fields ) {
     return $fields;
 }
 add_filter( 'comment_form_defaults', 'gk_comment_form' );
+
+
+// new fix for comment reply visual editor bug
+// @source: https://wordpress.org/support/topic/reply-to-comments-no-longer-works-2/
+global $wp_version;
+if (version_compare($wp_version, '5.1.1', '>=')) {
+    add_filter('comment_reply_link', 'haremu_replace_comment_reply_link', 10, 4);
+    function haremu_replace_comment_reply_link($link, $args, $comment, $post)
+    {
+        if (get_option('comment_registration') && !is_user_logged_in()) {
+            $link = sprintf(
+                '<a rel="nofollow" class="comment-reply-login" href="%s">%s</a>',
+                esc_url(wp_login_url(get_permalink())),
+                $args['login_text']
+            );
+        } else {
+            $onclick = sprintf(
+                'return addComment.moveForm( "%1$s-%2$s", "%2$s", "%3$s", "%4$s" )',
+                $args['add_below'],
+                $comment->comment_ID,
+                $args['respond_id'],
+                $post->ID
+            );
+            $link = sprintf(
+                "<a rel='nofollow' class='comment-reply-link' href='%s' onclick='%s' aria-label='%s'>%s</a>",
+                esc_url(add_query_arg('replytocom', $comment->comment_ID, get_permalink($post->ID))) . "#" . $args['respond_id'],
+                $onclick,
+                esc_attr(sprintf($args['reply_to_text'], $comment->comment_author)),
+                $args['reply_text']
+            );
+        }
+        return $link;
+    }
+}
 
 // wp_editor doesn't work when clicking reply. Here is the fix.
 add_action( 'wp_enqueue_scripts', '__THEME_PREFIX__scripts' );

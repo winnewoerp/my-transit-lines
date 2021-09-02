@@ -383,15 +383,10 @@ body.single #content .entry-meta {
 
 /* form */
 
-input[type="text"],
-input[type="email"],
-input[type="url"],
-input[type="password"],
-input[type="search"],
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
 textarea {
 	border:1px solid #cccccc;
 	background:#f9fffa;
-	width:100%;
 	box-sizing:border-box;
 	padding:4px 6px;
 	font-size:120%;
@@ -459,6 +454,44 @@ button {
 
 #content .tml-action-links li {
 	list-style:none;
+}
+
+/* Porposal contact form */
+
+#content .proposal-author-contact-form {
+	border:1px solid #808080;
+	background:#f0f0f0;
+	padding:10px;
+	margin:30px 0;
+}
+
+#content .proposal-author-contact-form .pacf-toggle {
+	color:white;
+	font-family:'Open Sans',sans-serif;
+	font-size:120%;
+}
+
+#content .proposal-author-contact-form .pacf-toggle i {
+	transform:scale(1.2,1.2);
+	margin-top:3px;
+	display:inline-block;
+	padding-right:10px;
+}
+
+#content .proposal-author-contact-form form {
+	display:none;
+}
+
+.proposal-author-contact-form input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+.proposal-author-contact-form select,
+.proposal-author-contact-form textarea {
+	border:1px solid #cccccc;
+	background:#f9fffa;
+	width:100%;
+	box-sizing:border-box;
+	padding:4px 6px;
+	font-size:120%;
+	color:#666666;
 }
 	
 

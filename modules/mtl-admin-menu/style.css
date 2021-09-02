@@ -30,3 +30,14 @@
 .form-table {
 	width:100%;
 }
+
+.form-table input[type="text"] {
+	width:100%;
+	max-width:400px;
+}
+
+.form-table textarea {
+	width:100%;
+	max-width:400px;
+	height:100px;
+}

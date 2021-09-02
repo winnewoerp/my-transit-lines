@@ -136,7 +136,7 @@ function mtl_proposal_map($content) {
 								if(isset($_POST['pacf-phone-number']) && $_POST['pacf-phone-number']) $message .= esc_html__('Phone number:','my-transit-lines').' '.sanitize_text_field(wp_unslash($_POST['pacf-phone-number']))."\r\n\r\n";
 								$message .= esc_html__('Subject:','my-transit-lines').' '.sanitize_text_field(wp_unslash($_POST['pacf-subject']))."\r\n\r\n";
 								$message .= esc_html__('Message:','my-transit-lines')."\r\n";
-								$message .= sanitize_text_field(wp_unslash($_POST['pacf-text']))."\r\n";
+								$message .= wp_unslash(strip_tags($_POST['pacf-text']))."\r\n";
 								wp_mail($to,$subject,$message,$headers);
 								
 								if(!$_POST['pacf-privacy-admin-mail']) {

@@ -88,7 +88,25 @@ function mtl_tile_list_output($atts) {
 		else $posts_per_page = 24;
 		$paged = '';
 		$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
-		$query_string =  array('paged'=>$paged,'posts_per_page'=>$posts_per_page,'post_type'=>$type,'cat'=>$get_cats,'tag_id'=>$get_tag,'author'=>$get_userid,'orderby'=>$order_by,'meta_key'=>$meta_key,'order'=>$order);
+		
+		$status = array('publish');
+		if(isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id()) {
+			$status[] = 'draft';
+		}
+		
+		$query_string =  array(
+			'paged' => $paged,
+			'posts_per_page' => $posts_per_page,
+			'post_type' => $type,
+			'cat' => $get_cats,
+			'tag_id' => $get_tag,
+			'author' => $get_userid,
+			'orderby' => $order_by,
+			'meta_key' => $meta_key,
+			'order' => $order,
+			'post_status' => $status,
+		);
+		
 		if($order_by=='rand') $query_string =  array('posts_per_page'=>$posts_per_page,'post_type'=>$type,'cat'=>$get_cats,'tag_id'=>$get_tag,'author'=>$get_userid,'orderby'=>$order_by,'meta_key'=>$meta_key,'order'=>$order);
 		$second_query = new WP_Query($query_string);
 		$mtl_options = get_option('mtl-option-name');

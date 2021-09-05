@@ -21,6 +21,7 @@ function mtl_proposal_form_output( $atts ){
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 	$mtl_options2 = get_option('mtl-option-name2');
+	$mtl_options3 = get_option('mtl-option-name3');
 	
 	// get the posttype from url parameter or set to default
 	$postType = 'mtlproposal';
@@ -69,11 +70,13 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['check-content']['mtlproposal']['update'] = __('Please have a look at the updated proposal to see if everything\'s alright with it.','my-transit-lines');
 		$mtl_string['success-notice']['mtlproposal']['add'] = __( 'Thank you! Your proposal has been added successfully.', 'my-transit-lines' );
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
+		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink($mtl_options3['mtl-proposal-page-id']).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
 		$mtl_string['form-submit']['mtlproposal']['add'] = __( 'Add your proposal', 'my-transit-lines' );
 		$mtl_string['form-submit']['mtlproposal']['update'] = __( 'Update your proposal', 'my-transit-lines' );
+		$mtl_string['form-submit-save-only']['mtlproposal'] = __( 'Save proposal as draft', 'my-transit-lines' );
 		$mtl_string['add-new']['mtlproposal']  = __( 'Add new proposal', 'my-transit-lines' );
 
 		$output = '';
@@ -89,23 +92,28 @@ function mtl_proposal_form_output( $atts ){
 		$output .= '<div id="mtl-post-form">'."\r\n";
 			
 		$err = false;
-		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {		
-			if (!is_user_logged_in()) {
-				if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
-				if (!$_POST['authemail']) $err['authemail']=true;
-				if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
-			}
-			if ($postType == 'mtlproposal') {
-				if(!isset($_POST['cat'])) $err['cat']=true;
-			}
+		$status = 'draft';
+		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
-			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
-			if (!is_user_logged_in()) {
-				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
-				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
+			if(!isset($_POST['submit-save-only'])) {
+				if (!is_user_logged_in()) {
+					if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
+					if (!$_POST['authemail']) $err['authemail']=true;
+					if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
+				}
+				if ($postType == 'mtlproposal') {
+					if(!isset($_POST['cat'])) $err['cat']=true;
+				}
+				
+				if (strlen(trim($_POST['description']))<=2) $err['description']=true;
+				if (!is_user_logged_in()) {
+					if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
+					if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
+				}
+				if($err) $_POST['errorcheck'] = true;
+				$status = 'publish';
 			}
-			if($err) $_POST['errorcheck'] = true;
-
+			
 			if(!$err) {
 				
 				// Add the content of the form to $post as an array
@@ -116,7 +124,7 @@ function mtl_proposal_form_output( $atts ){
 					'post_title'	=> $_POST['title'],
 					'post_content'	=> $_POST['description'],
 					'post_category'	=> array($_POST['cat']),
-					'post_status'	=> 'publish',
+					'post_status'	=> $status,
 					'post_type'	=> $this_posttype
 				);
 				
@@ -192,8 +200,13 @@ function mtl_proposal_form_output( $atts ){
 				
 				wp_mail($to,$subject,$message,$headers);
 				$output .= '<div class="success-message-block">'."\r\n";
-				$output .= '<strong>'.$mtl_string['success-notice'][$postType][$editType].'</strong><br />'."\r\n";
-				$output .= '<a href="'.get_permalink($current_post_id).'" title="'.$mtl_string['view-text'][$postType].'">'.$mtl_string['view-here-text'][$postType].'</a>'."\r\n";
+				if(!isset($_POST['submit-save-only'])) {
+					$output .= '<strong>'.$mtl_string['success-notice'][$postType][$editType].'</strong><br />'."\r\n";
+					$output .= '<a href="'.get_permalink($current_post_id).'" title="'.$mtl_string['view-text'][$postType].'">'.$mtl_string['view-here-text'][$postType].'</a>'."\r\n";
+				}
+				else {
+					$output .= '<strong>'.$mtl_string['success-save-only-notice'][$postType].'</strong><br />'."\r\n";
+				}
 				$output .= '</div>'."\r\n";
 				if($editId) unset($editId);
 			}
@@ -390,7 +403,11 @@ function mtl_proposal_form_output( $atts ){
 				}
 			}
 			
-			$output .= '<p id="submit-box">&#160;<br /><input type="submit" value="'.$mtl_string['form-submit'][$postType][$editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
+			$submit_editType = $editType;
+			$edit_post = get_post($editId);
+			if($edit_post->post_status == 'draft') $submit_editType = 'add';
+			
+			$output .= '<p id="submit-box">&#160;<br /><input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> <input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
 			if($editType=='update') $output .= '<a href="'.get_permalink($editId).'">'.__('Cancel update','my-transit-lines').'</a>';
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";

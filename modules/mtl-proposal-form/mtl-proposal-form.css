@@ -72,6 +72,13 @@ div.success-message-block {
 	border:2px solid #00aeef;
 }
 
+#mtl-post-form  .delete-draft {
+	padding:2px 28px;
+	background:white;
+	color:red;
+	border:2px solid red;
+}
+
 #mtl-post-form  .proposals-select-box {
 	margin:0 -10px;
 }

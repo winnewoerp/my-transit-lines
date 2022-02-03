@@ -65,9 +65,6 @@ function mtl_proposal_map($content) {
 		$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:mtlFullscreenMap()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
 		$output .= '</div>'."\r\n";
 		
-		// show "under construction" text if proposal is set as unfinished
-		if(get_post_meta($post->ID,'mtl-under-construction',true)=='on' || get_post_meta($post->ID,'mtl-proposal-phase',true)=='elaboration-phase') $output .= '<p style="background:'.$mtl_options['mtl-color-cat'.$catid].';padding:5px;"><strong style="color:white">'.__('This proposal has not been finished yet, but the author will complete it soon.','my-transit-lines').'</strong></p>';
-		
 		// output the meta data
 		$output .= '<h2>'.__('Description of this proposal','my-transit-lines').'</h2>';
 		$output2 .= '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";

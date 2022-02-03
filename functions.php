@@ -16,7 +16,7 @@
  
 if ( ! defined( '_MTL_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
-	define( '_MTL_VERSION', '1.8' );
+	define( '_MTL_VERSION', '1.9' );
 }
 
  /**

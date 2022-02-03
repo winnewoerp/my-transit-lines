@@ -40,8 +40,32 @@ function mtl_proposal_form_output( $atts ){
 	if($mtl_options2['mtl-prevent-new-proposals']=='on') $form_allowed = false;
 	if(is_user_logged_in() && $get_id && get_post_status ($get_id)) $form_allowed = true;
 	
+	$count_query_string =  array(
+		'posts_per_page' => -1,
+		'post_type' => 'mtlproposal',
+		'author' => get_current_user_id(),
+		'post_status' => 'draft',
+	);
+	$count_query = new WP_Query($count_query_string);
+	$drafts_count = $count_query->post_count;
+	$count_query_string =  array(
+		'posts_per_page' => -1,
+		'post_type' => 'mtlproposal',
+		'author' => get_current_user_id(),
+		'meta_key' => 'mtl-proposal-phase',
+		'meta_value' => 'elaboration-phase',
+	);
+	$count_query2 = new WP_Query($count_query_string);
+	$drafts_count += $count_query2->post_count;
+	
+	$no_more_drafts_allowed = false;
+	if(!$get_id) {
+		if($drafts_count >= $mtl_options2['mtl-allowed-drafts']) $form_allowed = false;
+		$no_more_drafts_allowed = true;
+	}
+	
 	// only if form allowed
-	if($form_allowed) {
+	if($form_allowed && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
 	
 		// check if proposal is rateable
 		if($mtl_options2['mtl-current-project-phase']=='rate' && get_post_meta($post->ID,'mtl-proposal-rateable')) $rating_possible = true;
@@ -92,6 +116,12 @@ function mtl_proposal_form_output( $atts ){
 		$output .= '<div id="mtl-post-form">'."\r\n";
 			
 		$err = false;
+		
+		$edit_post = get_post($editId);
+		$old_status = $edit_post->post_status;
+		
+		
+		
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
@@ -128,6 +158,12 @@ function mtl_proposal_form_output( $atts ){
 					'post_type'	=> $this_posttype
 				);
 				
+				if($old_status == 'draft') {
+					$local_time  = current_datetime();
+					$current_date = wp_date('Y-m-d H:i',$local_time->getTimestamp());
+					$post['post_date'] = $current_date;
+				}
+								
 				// insert/update the current post
 				if($editId) $current_post_id = wp_update_post($post);
 				else $current_post_id = wp_insert_post($post);
@@ -163,8 +199,8 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-feature-labels-data', $_POST['mtl-feature-labels-data']);
 				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
 				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
-				update_post_meta($current_post_id, 'mtl-proposal-phase', $_POST['mtl-proposal-phase']);
-				
+				delete_post_meta($current_post_id, 'mtl-proposal-phase');
+
 				// delete this for future versions
 				if($_POST['mtl-proposal-phase'] != 'elaboration-phase') {
 					delete_post_meta($current_post_id,'mtl-under-construction','on');
@@ -204,7 +240,7 @@ function mtl_proposal_form_output( $atts ){
 					$output .= '<strong>'.$mtl_string['success-notice'][$postType][$editType].'</strong><br />'."\r\n";
 					$output .= '<a href="'.get_permalink($current_post_id).'" title="'.$mtl_string['view-text'][$postType].'">'.$mtl_string['view-here-text'][$postType].'</a>'."\r\n";
 				}
-				else {
+				elseif(isset($_POST['submit-save-only'])) {
 					$output .= '<strong>'.$mtl_string['success-save-only-notice'][$postType].'</strong><br />'."\r\n";
 				}
 				$output .= '</div>'."\r\n";
@@ -384,33 +420,16 @@ function mtl_proposal_form_output( $atts ){
 				<small>'.esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him. The button is not visible as long as your prposal is still in elaboration phase.','my-transit-lines').' <strong>'.esc_html__('Important: This global option is being set for all of your finished proposals, not only for this one.','my-transit-lines').'<strong></small></p>'."\r\n";
 			}
 			// send post
-			// select box for proposal phase
-			if($postType == 'mtlproposal') {
-				$output .= '<p>&nbsp;<br /><label class="mtl-proposal-phase" for="mtl-proposal-phase"><strong>'.__('Please select the current phase of your proposal','my-transit-lines').'</strong><br />';
-				$output .= '<select name="mtl-proposal-phase" id="mtl-proposal-phase">';
-				$output .= '<option value="elaboration-phase"'.($_POST['mtl-proposal-phase']=='elaboration-phase' || (!$_POST['mtl-proposal-phase'] && get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase') || (!$_POST['mtl-proposal-phase'] && get_post_meta($editId,'mtl-under-construction',true) == 'on') ? ' selected="selected"' : '').'>'.__('Elaboration phase','my-transit-lines').'</option>';
-				if(get_post_meta($editId,'mtl-proposal-status-nok',true)=='on') {
-					$output .= '</select><br />';
-					$output .= '<small>'.__('<strong>Please note:</strong> The editors didn\'t mark your proposal as generally ok yet. See the editor\'s hints to know what you have to change to enter the next phase with this proposal.','my-transit-lines').'</small></p>';
-				}
-				else {
-					$output .= '<option value="revision-phase"'.($_POST['mtl-proposal-phase']=='revision-phase' || (!$_POST['mtl-proposal-phase'] && get_post_meta($editId,'mtl-proposal-phase',true) == 'revision-phase') || (!$_POST['mtl-proposal-phase'] && !get_post_meta($editId,'mtl-proposal-phase',true)) ? ' selected="selected"' : '').'>'.__('Revision phase','my-transit-lines').'</option>';
-					if(get_post_meta($editId,'mtl-editors-hints',true) && $mtl_options2['mtl-current-project-phase']=='rate') $output .= '<option value="rating-ready-phase"'.($_POST['mtl-proposal-phase']=='rating-ready-phase' || (!$_POST['mtl-proposal-phase'] && get_post_meta($editId,'mtl-proposal-phase',true) == 'rating-ready-phase') ? ' selected="selected"' : '').'>'.__('Ready for rating','my-transit-lines').'</option>';
-					$output .= '</select><br />';
-					$output .= '<small>'.__('<strong>Please note:</strong> Select "Elaboration phase" if you want the flag for unfinished proposals to appear within the proposals list and in the single proposal view.','my-transit-lines');
-					if($mtl_options2['mtl-current-project-phase']=='rate' && get_post_type($editId)=='mtlproposal') $output .= ' '.__('Select "Ready for rating" if you want the editors to enable rating for your proposal. "Ready for rating" is only selectable, when the editors have revised your proposal. Keep in mind that you should only select this phase if you edited the proposal following the editor\'s hints - otherwise you take the risk of a bad rating or enabling rating might even be refused. When you change to this phase, you will no longer be able to edit your proposal as rating is only possible for completely finished proposals.','my-transit-lines');
-					$output .= '</small></p>';
-				}
-			}
-			
 			$submit_editType = $editType;
 			$edit_post = get_post($editId);
-			if($edit_post->post_status == 'draft') $submit_editType = 'add';
+			if($edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase') $submit_editType = 'add';
 			
-			$output .= '<p id="submit-box">&#160;<br /><input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> <input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
+			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
+			if($editId && ($edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase')) $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
 			if($editType=='update') $output .= '<a href="'.get_permalink($editId).'">'.__('Cancel update','my-transit-lines').'</a>';
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
+			$output .= '<input type="hidden" name="delete_id" value="'.$editId.'" />'."\r\n";
 			wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
@@ -423,6 +442,45 @@ function mtl_proposal_form_output( $atts ){
 			if(!intval($_GET['edit_proposal'])) return '<p><strong>'.sprintf(__('You must be logged in to add a new proposal. If you already have an account at "%1$s" or want to login using Facebook, Google, OpenID or Twitter, you can <a href="%2$s">login here</a>. Otherwise <a href="%3$s">create your "%1$s" account here</a>.','my-transit-lines'),get_bloginfo('name'),wp_login_url(curPageURL()), wp_registration_url()).'</strong></p>';
 			else return '<p><strong>'.sprintf(__('You must <a href="%2$s">login here</a> to edit your proposal.','my-transit-lines'),get_bloginfo('name'),wp_login_url(curPageURL()), wp_registration_url()).'</strong></p>';
 		}
+	}
+	else {
+		if($no_more_drafts_allowed) {
+			$list_posts = '<ul>';
+			for($i = 0;$i<=1;$i++) {
+				if($i==0) $query_name = $count_query;
+				else $query_name = $count_query2;
+				while($query_name->have_posts()) {
+					$query_name->the_post();
+					global $post;
+					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
+				}
+			}
+			$list_posts .= '<ul>';
+			wp_reset_postdata();
+			return '<div class="error-message-block"><p>'.esc_html__('You have reached your limit of drafts. Please publish or delete at least one of your drafts to start a new proposal. These are your current drafts:','my-transit-lines').'</p>'.$list_posts.'</div>';
+		}
+		elseif(isset($_POST['delete-draft'])) {
+			$delete_id = intval($_POST['delete_id']);
+			$output = '<div class="success-message-block">'."\r\n";
+			$output .= '<strong>'.sprintf(esc_html__('Are your sure you want to delete the draft of your proposal "%s"? There is no going back.','my-transit-lines'),get_the_title($delete_id)).'</strong><br />'."\r\n";
+			$output .= '<br /><form id="delete_post" name="delete_post" method="post" action="" enctype="multipart/form-data"><input type="hidden" name="deleteid" value="'.$delete_id.'" /><input type="submit" name="really-delete-draft" value="'.esc_html__('Yes, definetily delete this draft','my-transit-lines').'"></form><br />';
+			$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,get_permalink($mtl_options['mtl-addpost-page'])).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
+			$output .= '</div>'."\r\n";
+			return $output;
+		}
+		elseif(isset($_POST['really-delete-draft'])) {
+			$delete_id = intval($_POST['deleteid']);
+			$delete_post = get_post($delete_id);
+			if($delete_post->post_status == 'draft') {
+				wp_delete_post($delete_id);
+				$output = '<div class="success-message-block">'."\r\n";
+				$output .= '<strong>'.esc_html__('Draft successfully deleted!','my-transit-lines').'</strong><br />'."\r\n";
+				$output .= '</div>'."\r\n";
+				return $output;
+			}
+			else return;
+		}
+		
 	}
 }
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );

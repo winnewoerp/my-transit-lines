@@ -77,8 +77,8 @@ class MtlSettingsPage
 		);
 		add_submenu_page(
 			'mtl_settings_page',
-			__('Project phase settings','my-transit-lines'),
-			__('Project phase settings','my-transit-lines'),
+			__('Project phase and drafts settings','my-transit-lines'),
+			__('Project phase and drafts settings','my-transit-lines'),
 			'edit_posts',
 			'mtl-project-phase',
 			array( $this, 'mtl_submenu_page_project_phase')
@@ -124,7 +124,7 @@ class MtlSettingsPage
         <div class="wrap">
             <?php screen_icon(); ?>
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
-            <h2><?php _e('Project phase','my-transit-lines'); ?></h2>
+            <h2><?php _e('Project phase and drafts','my-transit-lines'); ?></h2>
 			<form method="post" action="options.php">
             <?php
                 // This prints out all hidden setting fields
@@ -176,7 +176,7 @@ class MtlSettingsPage
 				<li><a href="?page=mtl-instructions"><?php _e('Instructions','my-transit-lines'); ?></a></li>
 				<li><a href="?page=mtl-general-settings"><?php _e('General settings','my-transit-lines'); ?></a></li>
 				<li><a href="?page=mtl-settings"><?php _e('Settings for map and categories','my-transit-lines'); ?></a></li>
-				<li><a href="?page=mtl-project-phase"><?php _e('Settings for project phase','my-transit-lines'); ?></a></li>
+				<li><a href="?page=mtl-project-phase"><?php _e('Settings for project phase and drafts','my-transit-lines'); ?></a></li>
 			</ul>
         </div>
         <?php
@@ -259,9 +259,11 @@ class MtlSettingsPage
 		add_settings_field('mtl-postlist-page', __('Page ID for proposal list page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'text','option_name'=>'mtl-option-name'));  
 
 		// settings section project phase
-		add_settings_section('mtl-settings-group-project-phase', __('Project phase settings','my-transit-lines'), array( $this, 'print_project_phase_section_content' ), 'mtl-settings-project-phase');  
+		add_settings_section('mtl-settings-group-project-phase', __('Project phase settings and drafts settings','my-transit-lines'), array( $this, 'print_project_phase_section_content' ), 'mtl-settings-project-phase');  
 		add_settings_field('mtl-current-project-phase', __('Current phase of the project','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-current-project-phase','option_name'=>'mtl-option-name2','type' => 'select','options' => array(array('collect',__('Collecting phase','my-transit-lines')),array('rate',__('Rating phase','my-transit-lines')))));
 		add_settings_field('mtl-prevent-new-proposals', __('No new proposals allowed, only editing','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-prevent-new-proposals','option_name'=>'mtl-option-name2','type' => 'checkbox'));
+		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-allowed-drafts','option_name'=>'mtl-option-name2','type' => 'number'));
+
 		
 		// settings section general texts
         add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
@@ -312,6 +314,7 @@ class MtlSettingsPage
 		
 		$new_input['mtl-current-project-phase'] = $input['mtl-current-project-phase'];
 		$new_input['mtl-prevent-new-proposals'] = $input['mtl-prevent-new-proposals'];
+		$new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
         return $new_input;
     }
 
@@ -371,7 +374,7 @@ class MtlSettingsPage
 		if(isset($args['options'])) $options= $args['options'];
 		
 		// field output by type
-		if($type == 'text' || $type == 'hidden') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$option_name.'['.$field_name.']" value="%s" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
+		if($type == 'text' || $type == 'hidden' || $type == 'number') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$option_name.'['.$field_name.']" value="%s" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
 		
 		if($type == 'textarea') printf( '<textarea'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$option_name.'['.$field_name.']">%s</textarea>', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
 		

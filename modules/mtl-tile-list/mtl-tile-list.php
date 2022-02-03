@@ -94,6 +94,8 @@ function mtl_tile_list_output($atts) {
 			$status[] = 'draft';
 		}
 		
+		
+						
 		$query_string =  array(
 			'paged' => $paged,
 			'posts_per_page' => $posts_per_page,
@@ -105,7 +107,21 @@ function mtl_tile_list_output($atts) {
 			'meta_key' => $meta_key,
 			'order' => $order,
 			'post_status' => $status,
+			'meta_query' => $meta_query_args,
 		);
+		
+		if(isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id()) {
+		}
+		else {
+			$query_string['meta_query'] = array(
+				array(
+					'key'     => 'mtl-proposal-phase',
+					'value'   => 'elaboration-phase',
+					'compare' => '!='
+				),
+			);			
+		}
+		
 		
 		if($order_by=='rand') $query_string =  array('posts_per_page'=>$posts_per_page,'post_type'=>$type,'cat'=>$get_cats,'tag_id'=>$get_tag,'author'=>$get_userid,'orderby'=>$order_by,'meta_key'=>$meta_key,'order'=>$order);
 		$second_query = new WP_Query($query_string);
@@ -240,9 +256,7 @@ function mtl_tile_list_output($atts) {
 					$output .= mtl_thumblist_map();
 				}
 				$output .= mtl_load_template_part( 'content', get_post_format() );
-				if(get_post_meta($post->ID,'mtl-under-construction',true)=='on' || get_post_meta($post->ID,'mtl-proposal-phase',true)=='elaboration-phase') $output .= '<p class="flag-under-construction" style="background:'.$bgcolor.'">'.__('Proposal not yet completed','my-transit-lines').'</p>';
-				if(current_user_can('manage_options')) $output .= '<p class="flag-proposal-phase" style="position:absolute;font-size:80%;top:80px;background:'.$bgcolor.'">'.__('Current proposal phase (for admins)','my-transit-lines').': <strong>'.get_post_meta($post->ID,'mtl-proposal-phase',true);
-				if(current_user_can('manage_options') && strlen(get_post_meta($post->ID,'mtl-editors-hints',true))>10) $output .= ' and hints text ready';
+				if(current_user_can('manage_options') && strlen(get_post_meta($post->ID,'mtl-editors-hints',true))>10) $output .= 'hints text ready';
 				$output .= '</strong></p>';
 				$output .= '</div>';
 			}

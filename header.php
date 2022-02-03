@@ -16,6 +16,7 @@ if(is_single() && get_post_type()=='mtlproposal') {
 	$catid = $category[0]->cat_ID;
 	$mtl_options = get_option('mtl-option-name');
 	if(!$mtl_options['mtl-use-cat'.$catid] == true) header('Location: '.get_bloginfo('url').'');
+	if(get_current_user_id() != get_the_author_id() && get_post_meta($post->ID,'mtl-proposal-phase',true) == 'elaboration-phase')  header('Location: '.get_bloginfo('url').'');
 }
 
 ?><!DOCTYPE html>

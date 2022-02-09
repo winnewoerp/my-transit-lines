@@ -1,34 +1,7 @@
 /* My Transit Line posttiles list */
 
 var $ = jQuery;
-
-var mtlPosttilesWidth = 210;
-var mtlPosttilesSpace = 20;
-
 var countLoads = 0;
-
-$(document).ready(function(){
-	mtlChangePostTilePadding();
-});
-
-$( window ).resize(function(){
-	mtlChangePostTilePadding();
-});
-
-function mtlChangePostTilePadding() {
-	if($('.mtl-posttiles-list').length) {
-		var el = '.mtl-posttiles-list';
-		var elWidth = $(el).innerWidth();
-		var tileListWidth = mtlPosttilesWidth+mtlPosttilesSpace;
-		while(elWidth>=(tileListWidth+mtlPosttilesWidth+mtlPosttilesSpace)) {
-			tileListWidth = tileListWidth+mtlPosttilesWidth+mtlPosttilesSpace;
-		}
-		var leftPadding = (elWidth-tileListWidth)/2;
-		$(el).css('padding-left',leftPadding+'px');
-	}
-}
-
-
 
 // Ajax Pagination
 var currentHash = window.location.hash;
@@ -55,8 +28,6 @@ jQuery(document).ready(function($){
 	});
 	
 }); // end ready function
-
-
 
 function loadNewTiles(link) {
 	$('.mtl-posttiles-list').prepend("<div class=\"mtl-list-loader\">"+loadingNewProposalsText+"</div>");
@@ -129,20 +100,7 @@ function createThumbMap(mapNumber) {
 		thumbmap.push(new OpenLayers.Map('thumblist-map'+mapNumber,{controls:[]}));
 		var mapLayers = new Array();
 		// add OSM OePNV Layer
-		mapLayers[thumbmap.length-1] = new OpenLayers.Layer.OSM(
-			objectL10n.titleOPNV,
-			"https://tile.memomaps.de/tilegen/${z}/${x}/${y}.png",
-			{
-				numZoomLevels: 19,
-				displayInLayerSwitcher: true,
-				buffer: 0,
-				tileOptions: {
-					crossOriginKeyword: null
-				},
-				attribution: objectL10n.attributionOPNV,
-				keyname: 'oepnvde',
-			}
-		);
+		mapLayers[thumbmap.length-1] = new OpenLayers.Layer.OSM(objectL10n.titleOSM);
 		
 		thumbmap[thumbmap.length-1].addLayer( mapLayers[thumbmap.length-1] );
 

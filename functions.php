@@ -16,7 +16,7 @@
  
 if ( ! defined( '_MTL_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
-	define( '_MTL_VERSION', '1.9' );
+	define( '_MTL_VERSION', '1.9.1' );
 }
 
  /**
@@ -265,11 +265,15 @@ function mtl_main_domain_redirect() {
  */
 function mtl_localize_script($getVar = false) {
 	$translatedStrings = array(
-		'titleOPNV'=>__('Colored public transit map','my-transit-lines'),
-		'attributionOPNV'=>__('Map data <a href="http://www.openstreetmap.org">Openstreetmap</a> (© OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href="http://memomaps.de/">MeMoMaps</a>).','my-transit-lines'),
-		'titleTransport'=>__('Transport map','my-transit-lines'),
-		'attributionTransport'=>__('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="http://www.opencyclemap.org">Andy Allan</a>','my-transit-lines'),
-		'titleOSM'=>__('Openstreetmap (Mapnik)','my-transit-lines'),
+		'titleOPNV'=>__('Public transit map','my-transit-lines'),
+		'attributionOPNV'=>__('Map data <a href="http://www.openstreetmap.org">OpenStreetMap</a> (© OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href="http://memomaps.de/">MeMoMaps</a>)','my-transit-lines'),
+		'titleOpentopomap'=>__('OpenTopoMap','my-transit-lines'),
+		'attributionOpentopomap'=>__('Map data: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Style: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)','my-transit-lines'),
+		'titleOpenrailwaymap'=>__('OpenRailwayMap','my-transit-lines'),
+		'attributionOpenrailwaymap'=>__('OpenRailwayMap overlay: Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a> and OpenStreetMap','my-transit-lines'),
+		'titleESRISatellite'=>__('Satellite images (ESRI)','my-transit-lines'),
+		'attributionESRISatellite'=>__('Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community','my-transit-lines'),	
+		'titleOSM'=>__('OpenStreetMap standard (Mapnik)','my-transit-lines'),
 		'vectorLayerTitle'=>__('Line proposal (vector data)','my-transit-lines'),
 		'fitToMap'=>__('Fit proposition to map','my-transit-lines'),
 		'buildLine'=>__('Build line','my-transit-lines'),
@@ -480,3 +484,49 @@ function curPageURL() {
  }
  return $pageURL;
 }
+
+/**
+ * Add ID column to admin post lists
+ * @Source: https://www.isitwp.com/add-post-id-to-posts-pages-admin-columns/
+ */ 
+function mtl_posts_columns_proposal_phase($defaults){
+    $defaults['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
+    return $defaults;
+}
+function mtl_posts_custom_proposal_phase_columns($column_name, $id){
+    if($column_name === 'mtl-proposal-phase'){
+        echo get_post_meta($id,'mtl-proposal-phase',true);
+    }
+}
+add_filter('manage_mtlproposal_posts_columns', 'mtl_posts_columns_proposal_phase', 5);
+add_action('manage_mtlproposal_posts_custom_column', 'mtl_posts_custom_proposal_phase_columns', 5, 2);
+
+function mtl_sortable_proposal_phase_column( $columns ) {
+    $columns['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
+
+    return $columns;
+}
+add_filter( 'manage_edit-mtlproposal_sortable_columns', 'mtl_sortable_proposal_phase_column' );
+
+add_action( 'pre_get_posts', 'mtlproposal_orderby' );
+function mtlproposal_orderby( $query ) {
+	if( ! is_admin() )
+		return;
+
+	$orderby = $query->get( 'orderby');
+
+	if( esc_html__('Proposal phase','my-transit-lines') == $orderby ) {
+		$query->set('meta_key','mtl-proposal-phase');
+		$query->set('orderby','meta_value');
+	}
+}
+
+/* disable comments for posts */
+function mtl_filter_media_comment_status( $open, $post_id ) {
+    $post = get_post( $post_id );
+    if( $post->post_type == 'post' ) {
+        return false;
+    }
+    return $open;
+}
+add_filter( 'comments_open', 'mtl_filter_media_comment_status', 10 , 2 );

@@ -65,7 +65,7 @@ function mtl_proposal_form_output( $atts ){
 	}
 	
 	// only if form allowed
-	if($form_allowed && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
+	if(is_user_logged_in() && $form_allowed && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
 	
 		// check if proposal is rateable
 		if($mtl_options2['mtl-current-project-phase']=='rate' && get_post_meta($post->ID,'mtl-proposal-rateable')) $rating_possible = true;
@@ -342,7 +342,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<div id="mtl-map"></div>'."\r\n";
 				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" /></label><br /><span class="set-name">Neuen Namen setzen</span></div>'."\r\n";
 				$output .= '</div>';
-				$output .= '<p id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="setMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></p>'."\r\n";
+				$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="setMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="setMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
 				$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:mtlFullscreenMap()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
 				$output .= '<p class="alignleft"><strong>'.__('Tool usage hints','my-transit-lines').'</strong>: ';
 				$output .= '<span class="mtl-tool-hint none">'.__('Please use the tools at the top right corner of the map.<br /> Use the point symbol (left) to draw the stations and the line symbol (second from left) to draw the line.','my-transit-lines').'</span>';
@@ -438,49 +438,51 @@ function mtl_proposal_form_output( $atts ){
 		if($editId) $output .= '<script type="text/javascript"> manipulateTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		if(is_user_logged_in()) return $output;
-		else {
+		
+	}
+	else {
+		if(!is_user_logged_in()) {
 			if(!intval($_GET['edit_proposal'])) return '<p><strong>'.sprintf(__('You must be logged in to add a new proposal. If you already have an account at "%1$s" or want to login using Facebook, Google, OpenID or Twitter, you can <a href="%2$s">login here</a>. Otherwise <a href="%3$s">create your "%1$s" account here</a>.','my-transit-lines'),get_bloginfo('name'),wp_login_url(curPageURL()), wp_registration_url()).'</strong></p>';
 			else return '<p><strong>'.sprintf(__('You must <a href="%2$s">login here</a> to edit your proposal.','my-transit-lines'),get_bloginfo('name'),wp_login_url(curPageURL()), wp_registration_url()).'</strong></p>';
 		}
-	}
-	else {
-		if($no_more_drafts_allowed) {
-			$list_posts = '<ul>';
-			for($i = 0;$i<=1;$i++) {
-				if($i==0) $query_name = $count_query;
-				else $query_name = $count_query2;
-				while($query_name->have_posts()) {
-					$query_name->the_post();
-					global $post;
-					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
+		else {
+			if($no_more_drafts_allowed) {
+				$list_posts = '<ul>';
+				for($i = 0;$i<=1;$i++) {
+					if($i==0) $query_name = $count_query;
+					else $query_name = $count_query2;
+					while($query_name->have_posts()) {
+						$query_name->the_post();
+						global $post;
+						$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
+					}
 				}
+				$list_posts .= '<ul>';
+				wp_reset_postdata();
+				return '<div class="error-message-block"><p>'.esc_html__('You have reached your limit of drafts. Please publish or delete at least one of your drafts to start a new proposal. These are your current drafts:','my-transit-lines').'</p>'.$list_posts.'</div>';
 			}
-			$list_posts .= '<ul>';
-			wp_reset_postdata();
-			return '<div class="error-message-block"><p>'.esc_html__('You have reached your limit of drafts. Please publish or delete at least one of your drafts to start a new proposal. These are your current drafts:','my-transit-lines').'</p>'.$list_posts.'</div>';
-		}
-		elseif(isset($_POST['delete-draft'])) {
-			$delete_id = intval($_POST['delete_id']);
-			$output = '<div class="success-message-block">'."\r\n";
-			$output .= '<strong>'.sprintf(esc_html__('Are your sure you want to delete the draft of your proposal "%s"? There is no going back.','my-transit-lines'),get_the_title($delete_id)).'</strong><br />'."\r\n";
-			$output .= '<br /><form id="delete_post" name="delete_post" method="post" action="" enctype="multipart/form-data"><input type="hidden" name="deleteid" value="'.$delete_id.'" /><input type="submit" name="really-delete-draft" value="'.esc_html__('Yes, definetily delete this draft','my-transit-lines').'"></form><br />';
-			$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,get_permalink($mtl_options['mtl-addpost-page'])).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
-			$output .= '</div>'."\r\n";
-			return $output;
-		}
-		elseif(isset($_POST['really-delete-draft'])) {
-			$delete_id = intval($_POST['deleteid']);
-			$delete_post = get_post($delete_id);
-			if($delete_post->post_status == 'draft') {
-				wp_delete_post($delete_id);
+			elseif(isset($_POST['delete-draft'])) {
+				$delete_id = intval($_POST['delete_id']);
 				$output = '<div class="success-message-block">'."\r\n";
-				$output .= '<strong>'.esc_html__('Draft successfully deleted!','my-transit-lines').'</strong><br />'."\r\n";
+				$output .= '<strong>'.sprintf(esc_html__('Are your sure you want to delete the draft of your proposal "%s"? There is no going back.','my-transit-lines'),get_the_title($delete_id)).'</strong><br />'."\r\n";
+				$output .= '<br /><form id="delete_post" name="delete_post" method="post" action="" enctype="multipart/form-data"><input type="hidden" name="deleteid" value="'.$delete_id.'" /><input type="submit" name="really-delete-draft" value="'.esc_html__('Yes, definetily delete this draft','my-transit-lines').'"></form><br />';
+				$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,get_permalink($mtl_options['mtl-addpost-page'])).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
 				$output .= '</div>'."\r\n";
 				return $output;
 			}
-			else return;
-		}
-		
+			elseif(isset($_POST['really-delete-draft'])) {
+				$delete_id = intval($_POST['deleteid']);
+				$delete_post = get_post($delete_id);
+				if($delete_post->post_status == 'draft') {
+					wp_delete_post($delete_id);
+					$output = '<div class="success-message-block">'."\r\n";
+					$output .= '<strong>'.esc_html__('Draft successfully deleted!','my-transit-lines').'</strong><br />'."\r\n";
+					$output .= '</div>'."\r\n";
+					return $output;
+				}
+				else return;
+			}
+		}		
 	}
 }
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );

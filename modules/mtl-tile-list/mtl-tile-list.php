@@ -107,17 +107,21 @@ function mtl_tile_list_output($atts) {
 			'meta_key' => $meta_key,
 			'order' => $order,
 			'post_status' => $status,
-			'meta_query' => $meta_query_args,
 		);
 		
 		if(isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id()) {
 		}
 		else {
 			$query_string['meta_query'] = array(
+				'relation' => 'OR',
 				array(
 					'key'     => 'mtl-proposal-phase',
 					'value'   => 'elaboration-phase',
 					'compare' => '!='
+				),
+				array(
+					'key'     => 'mtl-proposal-phase',
+					'compare' => 'NOT EXISTS'
 				),
 			);			
 		}

@@ -32,7 +32,6 @@ if(typeof OpenLayers != 'undefined') var projmerc = new OpenLayers.Projection("E
 var newLabelCollection = [];
 var mtlCenterLon = 0;
 var mtlCenterLat = 0;
-var defaultOpacity = .4;
 var initMap = true;
 
 //Notify the user when about to leave page without saving changes
@@ -61,8 +60,12 @@ function initMyTransitLines() {
 	// define map div	
 	map = new OpenLayers.Map('mtl-map');
 	
-	// Create OePNV-Karte map layer
 	var mapLayers = new Array();
+	
+	// add OSM Mapnik Layer as first layer except for proposal map
+	if(!$('#mtl-post-form').length) mapLayers.push(new OpenLayers.Layer.OSM(objectL10n.titleOSM));
+	
+	// Create OePNV-Karte map layer
 	// add OSM OePNV Layer
 	mapLayers.push(new OpenLayers.Layer.OSM(
 		objectL10n.titleOPNV,
@@ -76,14 +79,16 @@ function initMyTransitLines() {
 			},
 			attribution: objectL10n.attributionOPNV,
 			keyname: 'oepnvde',
-			opacity: defaultOpacity
 		}
 	));
 	
-	/* // add OSM Transport
+	// add OSM Mapnik Layer for proposal map
+	if($('#mtl-post-form').length) mapLayers.push(new OpenLayers.Layer.OSM(objectL10n.titleOSM));
+	
+	// add Opentopomap
 	mapLayers.push(new OpenLayers.Layer.OSM(
-		objectL10n.titleTransport,
-		["http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png","http://b.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png","http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png"],
+		objectL10n.titleOpentopomap,
+		["https://a.tile.opentopomap.org/${z}/${x}/${y}.png","https://b.tile.opentopomap.org/${z}/${x}/${y}.png","https://c.tile.opentopomap.org/${z}/${x}/${y}.png"],
 		{
 			numZoomLevels: 19,
 			displayInLayerSwitcher: true,
@@ -91,22 +96,61 @@ function initMyTransitLines() {
 			tileOptions: {
 				crossOriginKeyword: null
 			},
-			attribution: objectL10n.attributionTransport,
-			keyname: 'transport',
-			opacity: defaultOpacity
+			attribution: objectL10n.attributionOpentopomap,
+			keyname: 'opentopomap',
 		}
-	));*/
+	));
+	
+	// add ESRI satellite images layer
+	mapLayers.push(new OpenLayers.Layer.OSM(
+		objectL10n.titleESRISatellite,
+		["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}.png"],
+		{
+			numZoomLevels: 19,
+			displayInLayerSwitcher: true,
+			buffer: 0,
+			tileOptions: {
+				crossOriginKeyword: null
+			},
+			attribution: objectL10n.attributionESRISatellite,
+			keyname: 'esrisatellite',
+		}
+	));
+	
+	// add Openrailwaymap
+	mapLayers.push(new OpenLayers.Layer.OSM(
+		objectL10n.titleOpenrailwaymap,
+		["https://a.tiles.openrailwaymap.org/standard/${z}/${x}/${y}.png","https://b.tiles.openrailwaymap.org/standard/${z}/${x}/${y}.png","https://c.tiles.openrailwaymap.org/standard/${z}/${x}/${y}.png"],
+		{
+			numZoomLevels: 19,
+			displayInLayerSwitcher: true,
+			buffer: 0,
+			tileOptions: {
+				crossOriginKeyword: null
+			},
+			attribution: objectL10n.attributionOpenrailwaymap,
+			keyname: 'openrailwaymap',
+			opacity: 1,
+			noOpaq: true,
+			isBaseLayer: false,
+			visibility: false,
+		}
+	));
+	
+	
+	
 	
 	// add OSM Mapnik Layer
-	mapLayers.push(new OpenLayers.Layer.OSM(objectL10n.titleOSM));
-	mapLayers[mapLayers.length-1].setOpacity(defaultOpacity);
-	map.setBaseLayer(mapLayers[1]);
+	if($('#mtl-post-form').length) {
+		if($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
+		
+	}
 	for(var i = 0;i<mapLayers.length;i++) map.addLayer( mapLayers[i] );
 	var layerOSM = mapLayers[0];
 	map.addControl(new OpenLayers.Control.LayerSwitcher());
 	$('.olControlLayerSwitcher .baseLbl').html(objectL10n.baselayersTitle);
 	$('.olControlLayerSwitcher .dataLbl').html(objectL10n.overlaysTitle);
-
+	
 	// create vectors layer
 	vectors = new OpenLayers.Layer.Vector(objectL10n.vectorLayerTitle, { styleMap: new OpenLayers.StyleMap(style), rendererOptions: { zIndexing: true } });
 	map.addLayer(vectors);
@@ -166,9 +210,9 @@ function initMyTransitLines() {
 	
 	// set preferences when map is loaded
 	layerOSM.events.register('loadend', layerOSM, setMapOpacity);
+	layerOSM.events.register('loadend', layerOSM, setMapColors);
 	layerOSM.events.register('loadend', layerOSM, setToolPreferences);
 	layerOSM.events.register('loadend', layerOSM, vectorsEvents);
-
 }
 
 function changeLinetype(vectorsLayer,iconSize,lineWidth) {
@@ -243,8 +287,14 @@ function vectorsEvents() {
 
 // map opacity switcher
 function setMapOpacity() {
-	if($('#mtl-opacity-low').is(':checked')) $('.olTileImage').css('opacity',defaultOpacity);
-	else $('.olTileImage').css('opacity',1);
+	if($('#mtl-opacity-low').is(':checked')) $('#mtl-map').removeClass('full-opacity');
+	else $('#mtl-map').addClass('full-opacity');
+}
+
+// map color mode switcher
+function setMapColors() {
+	if($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
+	else $('#mtl-map').removeClass('colored-map');
 }
 
 // set additional preferences the editing toolbar
@@ -498,7 +548,7 @@ function mtlFullscreenMap() {
 		$('#mtl-fullscreen-link').addClass('fullscreen');
 		$('#mtl-fullscreen-link').addClass('fullscreen');
 		$('#mtl-category-select').addClass('fullscreen');
-		$('#mtl-opacity-low-box').addClass('fullscreen');
+		$('#mtl-color-opacity').addClass('fullscreen');
 		$('#mtl-fullscreen-link .fullscreen-open').css('display','block');
 		$('#mtl-fullscreen-link .fullscreen-closed').css('display','none');
 		viewFullscreen = true;

@@ -97,19 +97,22 @@
 }
 
 #content .mtl-posttiles-list {
-	margin-left:-20px;
-	padding:0;
-	position:relative;
+	margin:0 -10px;
+	width:calc(100% + 20px;);
+	padding: 0;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
 }
 
 #content .mtl-tile,
 #content .mtl-post-tile {
-	background:#00AEEF;
-	float:left;
+	background: var(--primary-color);
 	width:240px;
 	height:240px;
-	margin:0 5px 0 5px;
 	text-align:left;
+	margin: 10px;
 }
 
 #content .mtl-post-tile  {
@@ -119,11 +122,10 @@
 	padding:10px;
 	width:190px;
 	height:250px;
-	margin:0 0 20px 20px;
 }
 
 #content .mtl-post-tile.add-post {
-	background:url(../../images/add-proposal.png) center center no-repeat #E6137E;
+	background:url(../../images/add-proposal.png) center center no-repeat var(--secondary-color);
 }
 
 #content .tile,
@@ -208,4 +210,8 @@
 	background:white;
 	height:170px;
 	width:190px;
+}
+
+#content .mtl-thumblist-map .olTileImage {
+	filter:grayscale();
 }

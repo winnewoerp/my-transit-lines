@@ -2,6 +2,13 @@
 
 /* created by Johannes Bouchain, 2015-04-11 */
 
+/* root */
+
+:root {
+	--primary-color:#00aeef;
+	--secondary-color:#e6137e;
+}
+
 /* # general # */
 
 * {
@@ -54,13 +61,13 @@ small, sub, sup {
 a {
 	outline:none;
 	text-decoration:none;
-	color:#E6137E;
+	color:var(--secondary-color);
 }
 
 a:hover,
 a:focus,
 a:active {
-	color:#00AEEF;
+	color:var(--primary-color);
 }
 
 big {
@@ -146,7 +153,7 @@ nav.main-navigation li a {
 	font-weight:bold;
 	color:white;
 	font-size:90%;
-	background:#00AEEF;
+	background:var(--primary-color);
 }
 
 nav.main-navigation  li a:hover,
@@ -154,7 +161,7 @@ nav.main-navigation  li a:active,
 nav.main-navigation  li a:focus,
 nav.main-navigation  li.current_page_item a,
 nav.main-navigation  li.current-page-ancestor a {
-	background:#E6137E;
+	background:var(--secondary-color);
 }
 
 nav.top-navigation  {
@@ -227,7 +234,7 @@ body.single #content .entry-content {
 }
 
 #content h1 {
-	color:#00AEEF;
+	color:var(--primary-color);
 	font-size:145%;
 	margin-bottom:30px;
 }
@@ -240,7 +247,7 @@ body.single #content .entry-content {
 }
 
 #content a {
-	color:#E6137E;
+	color:var(--secondary-color);
 }
 
 #content a:hover,
@@ -250,7 +257,7 @@ body.single #content .entry-content {
 }
 
 #content .thickbox {
-	background:#00AEEF;
+	background:var(--primary-color);
 	color:white;
 	font-weight:bold;
 	padding:10px;
@@ -266,7 +273,7 @@ body.single #content .entry-content {
 
 #content .colored {
 	font-weight:bold;
-	color:#E6137E;
+	color:var(--secondary-color);
 }
 
 #content h1 .colored {
@@ -281,7 +288,7 @@ body.single #content .entry-content {
 
 #content .important {
 	font-size:110%;
-	color:#00AEEF;
+	color:var(--primary-color);
 }
 
 #content h2,
@@ -360,25 +367,48 @@ body.single #content .entry-content {
 }
 
 #content a.largelink.strassenbahn {
-	background:#E6137E;
+	background:var(--secondary-color);
 }
 
 #content a.largelink.ubahn {
-	background:#00AEEF;
+	background:var(--primary-color);
 }
 
 #content a.largelink.right {
 	margin:0;
 }
 
-body.single #content .entry-thumbnail {
+body.single #content .entry-thumbnail ,
+body.blog #content .entry-thumbnail {
 	padding-bottom:20px;
 }
 
-body.single #content .entry-meta {
+body.single #content .entry-meta,
+body.blog #content .entry-meta {
 	padding-bottom:20px;
 	font-size:90%;
-	color:black;
+	color: #808080;
+}
+
+body.blog article {
+	background:var(--primary-color);
+	color:white;
+	padding:20px;
+	margin-bottom:20px;
+}
+
+body.blog #content article * {
+	color:white;
+}
+
+body.blog #content article a {
+	border-bottom:1px solid white;
+}
+
+body.blog #content article a:hover,
+body.blog #content article a:active,
+body.blog #content article a:focus {
+	border-bottom:1px dotted white;
 }
 
 /* form */
@@ -402,7 +432,7 @@ input[type="file"] {
 input[type="submit"],
 button {
 	color:white;
-	background:#00AEEF;
+	background:var(--primary-color);
 	padding:4px 30px;
 	font-weight:bold;
 	border:none;

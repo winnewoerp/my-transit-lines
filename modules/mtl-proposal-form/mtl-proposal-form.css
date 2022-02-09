@@ -14,6 +14,14 @@
 	text-align:left;
 }
 
+#mtl-post-form #map-color-opacity {
+	text-align:left;
+}
+
+#mtl-post-form #map-color-opacity label {
+	display:inline;
+}
+
 #mtl-post-form input[type="text"] {
 	width:100%;
 }
@@ -157,6 +165,19 @@ div.success-message-block {
 	background:white;
 }
 
+#mtl-map .olTileImage:not([src*="openrailwaymap.org"]) {
+	opacity:.4 !important;
+	filter:grayscale();
+}
+
+#mtl-map.full-opacity .olTileImage {
+	opacity:1 !important;
+}
+
+#mtl-map.colored-map .olTileImage {
+	filter:none;
+}
+
 #mtl-box #mtl-map-box.fullscreen #mtl-map {
 	width:100%;
 	height:100%;
@@ -174,11 +195,11 @@ div.success-message-block {
 	font-size:13px;
 }
 
-#mtl-opacity-low-box {
+#mtl-color-opacity {
 	float:left;
 }
 
-#mtl-opacity-low-box.fullscreen {
+#mtl-color-opacity.fullscreen {
 	float:none;
 	display:block;
 	position:fixed;

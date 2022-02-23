@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2022-02-09 22:38+0100\n"
-"PO-Revision-Date: 2022-02-09 22:55+0100\n"
+"POT-Creation-Date: 2022-02-16 22:34+0100\n"
+"PO-Revision-Date: 2022-02-16 22:35+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -225,26 +225,38 @@ msgstr ""
 "a> (<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\">CC-BY-SA</a>)"
 
 #: ../functions.php:272
-msgid "OpenRailwayMap"
-msgstr "OpenRailwayMap"
+msgid "OpenRailwayMap (standard)"
+msgstr "OpenRailwayMap (Standard)"
 
 #: ../functions.php:273
 msgid ""
-"OpenRailwayMap overlay: Map data © <a href=\"https://www.openstreetmap.org/"
-"copyright\">OpenStreetMap</a> contributors, Style: <a href=\"http://"
-"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
-"www.openrailwaymap.org/\">OpenRailwayMap</a> and OpenStreetMap"
+"OpenRailwayMap Standard overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
 msgstr ""
-"OpenRailwayMap-Überlagerung: Kartendaten © <a href=\"https://www."
-"openstreetmap.org/copyright\">OpenStreetMap</a> contributors, Style: <a href="
-"\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href="
-"\"http://www.openrailwaymap.org/\">OpenRailwayMap</a> and OpenStreetMap"
+"Kartenstil OpenRailwayMap-Überlagerung (Standard): <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
 #: ../functions.php:274
+msgid "OpenRailwayMap (maxspeed)"
+msgstr "OpenRailwayMap (Höchstgeschw.)"
+
+#: ../functions.php:275
+msgid ""
+"OpenRailwayMap maxspeed overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+"Kartenstil OpenRailwayMap-Überlagerung (Höchstgeschw.): <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+
+#: ../functions.php:276
 msgid "Satellite images (ESRI)"
 msgstr "Satellitenbilder (ESRI)"
 
-#: ../functions.php:275
+#: ../functions.php:277
 msgid ""
 "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
 "Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
@@ -253,57 +265,63 @@ msgstr ""
 "GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP und die GIS-Nutzer-"
 "Gemeinschaft"
 
-#: ../functions.php:276
+#: ../functions.php:278
 msgid "OpenStreetMap standard (Mapnik)"
 msgstr "OpenStreetMap-Standard (Mapnik)"
 
-#: ../functions.php:277
+#: ../functions.php:279
 msgid "Line proposal (vector data)"
 msgstr "Streckenvorschlag (Vektordaten)"
 
-#: ../functions.php:278
+#: ../functions.php:280
 msgid "Fit proposition to map"
 msgstr "Vorschlag in die Karte einpassen"
 
-#: ../functions.php:279
+#: ../functions.php:281
 msgid "Build line"
 msgstr "Strecke bauen"
 
-#: ../functions.php:280
+#: ../functions.php:282
 msgid "Build stations"
 msgstr "Haltestellen bauen"
 
-#: ../functions.php:281
+#: ../functions.php:283
 msgid "Edit line/stations"
 msgstr "Strecke/Haltestellen bearbeiten"
 
-#: ../functions.php:282
+#: ../functions.php:284
 msgid "Select line/stations"
 msgstr "Strecke/Haltestelle auswählen"
 
-#: ../functions.php:283
+#: ../functions.php:285
 msgid "Move selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle verschieben"
 
-#: ../functions.php:284
+#: ../functions.php:286
 msgid "Delete selected line/stations"
 msgstr "ausgewählte Strecke/Haltestelle löschen"
 
-#: ../functions.php:285
+#: ../functions.php:287
 msgid "Base layers"
 msgstr "Basis-Kartenebenen"
 
-#: ../functions.php:286
+#: ../functions.php:288
 msgid "Overlays"
 msgstr "Überlagerungen"
 
-#: ../functions.php:287
+#: ../functions.php:289
 msgid "Please select another tool on the map to submit your proposal."
 msgstr ""
 "Bitte wähle ein anderes Werkzeug oben rechts auf der Karte, um deinen "
 "Vorschlag absenden zu können."
 
-#: ../functions.php:324
+#: ../functions.php:290
+msgid "Import data is being processed. This may take several minutes..."
+msgstr ""
+"Zu importierende Daten werden verarbeitet. Dies kann mehrere Minuten "
+"dauern..."
+
+#: ../functions.php:327
 #, php-format
 msgid ""
 "<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> by %2$s</span>"
@@ -311,57 +329,55 @@ msgstr ""
 "<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> von %2$s</"
 "span>"
 
-#: ../functions.php:451
+#: ../functions.php:454
 msgctxt "taxonomy general name"
 msgid "Implementation Horizon"
 msgstr "Realisierungshorizont"
 
-#: ../functions.php:452
+#: ../functions.php:455
 msgctxt "taxonomy singular name"
 msgid "Implementation Horizon"
 msgstr "Realisierungshorizont"
 
-#: ../functions.php:453
+#: ../functions.php:456
 msgid "Search items"
 msgstr "Elemente durchsuchen"
 
-#: ../functions.php:454
+#: ../functions.php:457
 msgid "All items"
 msgstr "Alle Elemente"
 
-#: ../functions.php:455
+#: ../functions.php:458
 msgid "Parent item"
 msgstr "Übergeordnetes Element"
 
-#: ../functions.php:456
+#: ../functions.php:459
 msgid "Parent item:"
 msgstr "Übergeordnetes Element:"
 
-#: ../functions.php:457
+#: ../functions.php:460
 msgid "Edit Implementation Horizon"
 msgstr "Realisierungshorizont bearbeiten"
 
-#: ../functions.php:458
+#: ../functions.php:461
 msgid "Update Implementation Horizon"
 msgstr "Realisierungshorizont aktualisieren"
 
-#: ../functions.php:459
+#: ../functions.php:462
 msgid "Add New Implementation Horizon"
 msgstr "Realisierungshorizont hinzufügen"
 
-#: ../functions.php:460
+#: ../functions.php:463
 msgid "New Implementation Horizon Name"
 msgstr "Neuer Realisierungshorizont"
 
-#: ../functions.php:461
+#: ../functions.php:464
 msgid "Implementation Horizons"
 msgstr "Realisierungshorizonte"
 
-#: ../functions.php:493 ../functions.php:505 ../functions.php:518
-#, fuzzy
-#| msgid "Proposals"
+#: ../functions.php:496 ../functions.php:508 ../functions.php:521
 msgid "Proposal phase"
-msgstr "Vorschläge"
+msgstr "Vorschlagsphase"
 
 #: ../header.php:50
 msgid "Topmenu"
@@ -736,6 +752,10 @@ msgstr "%s nicht gefunden."
 msgid "No %s found in Trash."
 msgstr "%s nicht im Papierkorb vorhanden."
 
+#: ../modules/mtl-download-geojson/mtl-download-geojson.php:37
+msgid "Download proposal map data as GeoJSON"
+msgstr "Streckendaten als GeoJSON-Datei herunterladen"
+
 #: ../modules/mtl-login-register/mtl-login-register.php:25
 msgid "Login/Register"
 msgstr "Anmelden/Registrieren"
@@ -995,7 +1015,7 @@ msgstr "Titel deines Vorschlags"
 
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:100
 msgid "Description of your proposal"
-msgstr "Beschreibung deines Vorschlags"
+msgstr "Beschreibung und Begründung deines Vorschlags"
 
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:101
 msgid "Add your proposal"
@@ -1174,42 +1194,61 @@ msgstr ""
 "Benutze das gewählte Werkzeug, um die Karte zu verschieben.<br /> Mit diesem "
 "Werkzeug können keine Veränderungen an den Objekten durchgeführt werden."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:364
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:359
+msgid "Import GeoJSON file"
+msgstr "GeoJSON-Datei importieren"
+
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:363
+msgid ""
+"Please note: Only point and linestring features will be imported. Labels "
+"will be set if included as name property for the respective feature. The "
+"imported features will be appended to the existing features in your "
+"proposal. The coordinate system of the import file must be WGS84/EPSG:4326 "
+"(the standard projection of OpenStreetMap tools)."
+msgstr ""
+"Bitte beachte: Nur Punkt- und Linestring-Elemente werden importiert. "
+"Stationsnamen werden gesetzt wenn sie als Eigenschaft \"name\" des "
+"entsprechenden Elements in der GeoJSON-Quelle enthalten sind. Die "
+"importierten Elemente werden an bereits bestehende Elemente in der "
+"angehängt. Das Koordinatensystem der Importdatei muss WGS84/EPSG:4326 sein "
+"(Standard-Projektion von OpenStreetMap-Tools)."
+
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:372
 msgid "Editor's hints for this proposal"
 msgstr "Redaktionelle Hinweise für diesen Vorschlag"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:366
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:374
 msgid "No editor's hints yet"
 msgstr "Bislang keine redaktionellen Himweise"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:396
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:404
 msgid "Your personal data"
 msgstr "Deine persönlichen daten"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:397
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:405
 msgid "Your name or nickname"
 msgstr "Dein Name oder Spitzname"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:399
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:407
 msgid "Your e-mail address"
 msgstr "Deine E-Mail-Adresse"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:404
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:412
 msgid "Please enter the captcha code (case-sensitive)"
 msgstr "Bitte gib den Spamschutz-Code ein (Groß- und Kleinschreibung beachten)"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:406
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:414
 #, php-format
 msgid "I have read and accepted the <a href=\"%s\">data privacy statement</a>:"
 msgstr ""
 "Ich habe die <a href=\"%s\">Datenschutzbestimmungen</a> gelesen und "
 "akzeptiere sie:"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:419
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:427
 msgid "Enable contact button for my finished proposals"
 msgstr "Kontaktmöglichkeit für fertiggestellte Vorschläge aktivieren"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:420
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:428
 msgid ""
 "This enables a contact button within your proposals linked to a contact form "
 "where interested people can contact you. On submit, an email with the form "
@@ -1225,7 +1264,7 @@ msgstr ""
 "der betreffenden Person nicht offengelegt bis du auf die E-Mail antwortest. "
 "Während der Erarbeitungsphase eines Vorschlags ist der Button nicht sichtbar."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:420
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:428
 msgid ""
 "Important: This global option is being set for all of your finished "
 "proposals, not only for this one."
@@ -1233,15 +1272,15 @@ msgstr ""
 "Wichtig: Diese globale Option wird für alle deine fertiggestellten "
 "Vorschläge gesetzt, nicht nur für diesen."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:428
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:436
 msgid "Delete this draft"
 msgstr "Diesen Entwurf löschen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:429
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:437
 msgid "Cancel update"
 msgstr "Aktualisierung abbrechen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:445
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:453
 #, php-format
 msgid ""
 "You must be logged in to add a new proposal. If you already have an account "
@@ -1255,14 +1294,14 @@ msgstr ""
 "anmelden</a>. Ansonsten <a href=\"%3$s\">erstelle dir hier dein Konto für "
 "\"%1$s\"</a>."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:446
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:454
 #, php-format
 msgid "You must <a href=\"%2$s\">login here</a> to edit your proposal."
 msgstr ""
 "Du musst dich <a href=\"%2$s\">hier anmelden</a>, um deinen Vorschlag zu "
 "bearbeiten."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:462
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:470
 msgid ""
 "You have reached your limit of drafts. Please publish or delete at least one "
 "of your drafts to start a new proposal. These are your current drafts:"
@@ -1271,7 +1310,7 @@ msgstr ""
 "lösche mindestens einen Entwurf, um einen neuen Vorschlag zu erstellen. Dies "
 "sind deine derzeitigen Entwürfe:"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:467
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:475
 #, php-format
 msgid ""
 "Are your sure you want to delete the draft of your proposal \"%s\"? There is "
@@ -1280,15 +1319,15 @@ msgstr ""
 "Bist du sicher, dass du den Entwurf deines Vorschlags \"%s\" löschen "
 "möchtest? Dies kann nicht rückgängig gemacht werden."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:468
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:476
 msgid "Yes, definetily delete this draft"
 msgstr "Ja, ich möchte den Entwurf definitiv löschen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:469
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:477
 msgid "No, I do not want to delete the draft"
 msgstr "Nein, ich möchte den Entwurf nicht löschen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:479
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:487
 msgid "Draft successfully deleted!"
 msgstr "Entwurf erfolgreich gelöscht!"
 

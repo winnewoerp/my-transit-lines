@@ -270,10 +270,14 @@ class MtlSettingsPage
 		add_settings_field('mtl-proposal-contact-form-title', __('Title for intro of proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-title','option_name'=>'mtl-option-name3','type' => 'text'));
 		add_settings_field('mtl-proposal-contact-form-intro', __('Intro text for proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-intro','option_name'=>'mtl-option-name3','type' => 'textarea'));
 
-		// settings section general texts
+		// settings section reCAPTCHA texts
         add_settings_section('mtl-settings-group-general4', __('ReCAPTCHA settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
 		add_settings_field('mtl-recaptcha-website-key', __('ReCAPTCHA website key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-website-key','option_name'=>'mtl-option-name3','type' => 'text'));
 		add_settings_field('mtl-recaptcha-secret-key', __('ReCAPTCHA secret key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-secret-key','option_name'=>'mtl-option-name3','type' => 'text'));
+		
+		// settings section import texts
+        add_settings_section('mtl-settings-group-general5', __('GeoJSON import settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
+		add_settings_field('mtl-geojson-import-hints', __('GeoJSON import hints','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general5',array('field_name' => 'mtl-geojson-import-hints','option_name'=>'mtl-option-name3','type' => 'textarea'));
 	}
 
     /**
@@ -293,6 +297,8 @@ class MtlSettingsPage
 		
 		if( isset( $input['mtl-recaptcha-website-key'] ) ) $new_input['mtl-recaptcha-website-key'] = $input['mtl-recaptcha-website-key'];		
 		if( isset( $input['mtl-recaptcha-secret-key'] ) ) $new_input['mtl-recaptcha-secret-key'] = $input['mtl-recaptcha-secret-key'];
+		
+		if( isset( $input['mtl-geojson-import-hints'] ) ) $new_input['mtl-geojson-import-hints'] = $input['mtl-geojson-import-hints'];
 		
         if( isset( $input['mtl-center-lon'] ) ) $new_input['mtl-center-lon'] = floatval( $input['mtl-center-lon'] );
         if( isset( $input['mtl-center-lat'] ) ) $new_input['mtl-center-lat'] = floatval( $input['mtl-center-lat'] );

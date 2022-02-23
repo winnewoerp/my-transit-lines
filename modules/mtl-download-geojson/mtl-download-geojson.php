@@ -34,7 +34,7 @@ function download_GeoJSON($content) {
 			var license_link_for_geojson = "https://creativecommons.org/licenses/by-nc-sa/3.0/de/";
 		</script>
 		<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-download-geojson/mtl-download-geojson.js"></script>
-		<p><a href="" download="'.$post->ID.'-'.$post->post_name.'.geojson" id="mtl-geojson-download">Streckendaten als GeoJSON-Datei herunterladen (Beta)</a></p>';
+		<p><a href="" download="'.$post->ID.'-'.$post->post_name.'.geojson" id="mtl-geojson-download">'.__('Download proposal map data as GeoJSON','my-transit-lines').'</a></p>';
 			$content .= $output;
 		}
 	}

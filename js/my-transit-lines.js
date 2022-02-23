@@ -33,6 +33,7 @@ var newLabelCollection = [];
 var mtlCenterLon = 0;
 var mtlCenterLat = 0;
 var initMap = true;
+let importFilename = '';
 
 //Notify the user when about to leave page without saving changes
 $(window).bind('beforeunload', function() {
@@ -63,7 +64,9 @@ function initMyTransitLines() {
 	var mapLayers = new Array();
 	
 	// add OSM Mapnik Layer as first layer except for proposal map
-	if(!$('#mtl-post-form').length) mapLayers.push(new OpenLayers.Layer.OSM(objectL10n.titleOSM));
+	if(!$('#mtl-post-form').length) mapLayers.push(new OpenLayers.Layer.OSM(
+		objectL10n.titleOSM,
+		["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png","https://b.tile.openstreetmap.org/${z}/${x}/${y}.png","https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]));
 	
 	// Create OePNV-Karte map layer
 	// add OSM OePNV Layer
@@ -83,7 +86,9 @@ function initMyTransitLines() {
 	));
 	
 	// add OSM Mapnik Layer for proposal map
-	if($('#mtl-post-form').length) mapLayers.push(new OpenLayers.Layer.OSM(objectL10n.titleOSM));
+	if($('#mtl-post-form').length) mapLayers.push(new OpenLayers.Layer.OSM(
+		objectL10n.titleOSM,
+		["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png","https://b.tile.openstreetmap.org/${z}/${x}/${y}.png","https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]));
 	
 	// add Opentopomap
 	mapLayers.push(new OpenLayers.Layer.OSM(
@@ -117,7 +122,7 @@ function initMyTransitLines() {
 		}
 	));
 	
-	// add Openrailwaymap
+	// add Openrailwaymap standard
 	mapLayers.push(new OpenLayers.Layer.OSM(
 		objectL10n.titleOpenrailwaymap,
 		["https://a.tiles.openrailwaymap.org/standard/${z}/${x}/${y}.png","https://b.tiles.openrailwaymap.org/standard/${z}/${x}/${y}.png","https://c.tiles.openrailwaymap.org/standard/${z}/${x}/${y}.png"],
@@ -137,14 +142,34 @@ function initMyTransitLines() {
 		}
 	));
 	
+	// add Openrailwaymap maxspeed
+	mapLayers.push(new OpenLayers.Layer.OSM(
+		objectL10n.titleOpenrailwaymapMaxspeed,
+		["https://a.tiles.openrailwaymap.org/maxspeed/${z}/${x}/${y}.png","https://b.tiles.openrailwaymap.org/maxspeed/${z}/${x}/${y}.png","https://c.tiles.openrailwaymap.org/maxspeed/${z}/${x}/${y}.png"],
+		{
+			numZoomLevels: 19,
+			displayInLayerSwitcher: true,
+			buffer: 0,
+			tileOptions: {
+				crossOriginKeyword: null
+			},
+			attribution: objectL10n.attributionOpenrailwaymapMaxspeed,
+			keyname: 'openrailwaymap-maxspeed',
+			opacity: 1,
+			noOpaq: true,
+			isBaseLayer: false,
+			visibility: false,
+		}
+	));
+	
 	
 	
 	
 	// add OSM Mapnik Layer
-	if($('#mtl-post-form').length) {
+	//if($('#mtl-post-form').length) {
 		if($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
 		
-	}
+	//}
 	for(var i = 0;i<mapLayers.length;i++) map.addLayer( mapLayers[i] );
 	var layerOSM = mapLayers[0];
 	map.addControl(new OpenLayers.Control.LayerSwitcher());
@@ -193,6 +218,32 @@ function initMyTransitLines() {
 			if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
 		}
 		$('#features-label-data').val(vectorLabelsData);
+	}
+	
+	// GeoJSON imprt handling
+	if($('#mtl-import-geojson').length) {
+		document.querySelector('#mtl-import-geojson').addEventListener('change',function(){
+			$('#page').append('<div id="still-importing-overlay" style="position:fixed;z-index:2000;top:0;left:0;width:100%;height:100vh;background:rgba(255,255,255,.8);display:table;text-align:center;font-weight:bold;"><div style="display:table-cell;vertical-align:middle">'+objectL10n.importDataBeingProcessed+'</div></div>');
+			
+			// get file and file name from respective input field
+			let file = document.querySelector('input[type="file"]').files[0];
+			importFilename = file.name;
+			
+			// define FileReader variable
+			let reader = new FileReader();
+			
+			let result = '';
+
+			// run respective funciton when file loaded in reader
+			reader.onload = (e) => {
+				importToMap(e.target.result);
+			};
+			
+			// reader handling
+			reader.onerror = (e) => alert(e.target.error.name);
+			reader.readAsText(file);
+			
+		});
 	}
 	
 	// add editing toolbar from "ole" framework, if editMode == true
@@ -713,3 +764,133 @@ $(document).ready(function(){
 	}		
 });
 
+// check if string can be parsed as JSON
+let isJsonParsable = string => {
+	try {
+		JSON.parse(string);
+	} catch (e) {
+		return false;
+	}
+	return true;
+}
+
+// import GeoJSON data from file input field, remove parts that can't be used and output in WKT format including the station names string
+function importToMap(result) {
+	importFilenameParts = importFilename.split('.');
+	if(isJsonParsable(result) && importFilenameParts[importFilenameParts.length-1] == 'geojson') {
+		let geoJSONFeaturesJSON = JSON.parse(result);
+		let newGeoJSON = [];
+		let stationNames = '';
+		let first = true;
+		if(geoJSONFeaturesJSON) {
+			for(let i = 0;i<geoJSONFeaturesJSON.features.length;i++) {
+				// only use LineString and Point features (other feature types are not allowed in MTL) and write these features to new GeoJSON array
+				if(geoJSONFeaturesJSON.features[i].geometry.type=='MultiLineString' || geoJSONFeaturesJSON.features[i].geometry.type=='LineString' || geoJSONFeaturesJSON.features[i].geometry.type=='Point') {
+					newGeoJSON.push(geoJSONFeaturesJSON.features[i]);
+					
+					// add point feature names to respective string if existing
+					if(geoJSONFeaturesJSON.features[i].geometry.type=='Point' && geoJSONFeaturesJSON.features[i].properties.name) {
+						if(!first) stationNames += ',';
+						let labelText = geoJSONFeaturesJSON.features[i].properties.name.replace(/&#44;/g,',');
+						labelText = labelText.replace(/&quot;/g,'"');
+						labelText = labelText.replace(/&apos;/g,'\'');
+						stationNames += labelText;
+					}
+					else {
+						if(!first) stationNames += ',';
+					}
+					first = false;
+				}								
+			}
+			
+			// output WKT format
+			let WKTFormat = new OpenLayers.Format.WKT();
+			
+			// parse GeoJSON to WKT. Selfmade! TODO: Simplify & cleanup.
+			let WKTFeatures = 'GEOMETRYCOLLECTION(';
+			let firstFeature = true;
+			console.log(newGeoJSON.length);
+			for(let i = 0; i < newGeoJSON.length; i++) {
+				if(!firstFeature) WKTFeatures += ',';
+				if(newGeoJSON[i].geometry.type == 'Point') WKTFeatures += 'POINT(' + newGeoJSON[i].geometry.coordinates[0] + ' ' + newGeoJSON[i].geometry.coordinates[1] + ')';
+				if(newGeoJSON[i].geometry.type == 'LineString') {
+					WKTFeatures += 'LINESTRING(';
+					let firstLineStringPart = true;
+					for(let j = 0;j < newGeoJSON[i].geometry.coordinates.length;j++) {
+						if(!firstLineStringPart) WKTFeatures += ',';
+						WKTFeatures += newGeoJSON[i].geometry.coordinates[j][0] + ' ' + newGeoJSON[i].geometry.coordinates[j][1];
+						firstLineStringPart = false;
+					}
+					WKTFeatures += ')';
+				}
+				if(newGeoJSON[i].geometry.type == 'MultiLineString') {
+					WKTFeatures += 'MULTILINESTRING(';
+					let firstLineString = true;
+					for(let j = 0;j < newGeoJSON[i].geometry.coordinates.length;j++) {
+						if(!firstLineString) WKTFeatures += ',';
+						WKTFeatures += '(';
+						let firstLineStringPart = true;
+						for(let k = 0;k < newGeoJSON[i].geometry.coordinates[j].length;k++) {
+							if(!firstLineStringPart) WKTFeatures += ',';
+							WKTFeatures += newGeoJSON[i].geometry.coordinates[j][k][0] + ' ' + newGeoJSON[i].geometry.coordinates[j][k][1];
+							firstLineStringPart = false;
+						}
+						WKTFeatures += ')';
+						firstLineString = false;
+					}
+					WKTFeatures += ')';
+				}
+				firstFeature = false;
+			}
+			WKTFeatures += ')';
+
+			if(WKTFeatures) {
+				if(WKTFeatures.replace('POINT','') != WKTFeatures || WKTFeatures.replace('LINESTRING','') != WKTFeatures || WKTFeatures.replace('MULTILINESTRING','') != WKTFeatures) {
+					var oldFeatures = vectors.features;
+					vectors.removeAllFeatures();
+					features = wkt.read(WKTFeatures);
+					if(features.constructor != Array) {
+						features = [features];
+					}
+					countFeatures = features.length;
+					vectors.addFeatures(features);
+					for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
+					
+					if(stationNames) {
+					var vectorLabelsArray = stationNames.split(',');
+					for(var i=0; i<vectorLabelsArray.length; i++) {
+						var labelText = vectorLabelsArray[i];
+						labelText = labelText.replace(/&#44;/g,',');
+						labelText = labelText.replace(/&quot;/g,'"');
+						labelText = labelText.replace(/&apos;/g,'\'');
+						if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
+					}
+	}
+					var newFeatures = vectors.features;
+					vectors.removeAllFeatures();
+					
+					// add all features again in correct order
+					vectors.addFeatures(oldFeatures);
+					vectors.addFeatures(newFeatures);
+					
+					// zoom to features layer extent
+					zoomToFeatures();
+					//$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
+					//$('#features-data').val($('#features-data').val()+WKTFeatures);
+				}
+			}
+			$('#still-importing-overlay').remove();
+			
+			// add imported labels data to respective input field
+			//$('#mtl-feature-labels-data').val($('#mtl-feature-labels-data').val()+stationNames);
+		}
+		else {
+			$('#still-importing-overlay').remove();
+			alert('no valid features found');
+		}
+	}
+	else {
+		$('#still-importing-overlay').remove();
+		alert('no json file');
+	}
+}

@@ -16,7 +16,7 @@
  
 if ( ! defined( '_MTL_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
-	define( '_MTL_VERSION', '1.9.1' );
+	define( '_MTL_VERSION', '1.10' );
 }
 
  /**
@@ -269,8 +269,10 @@ function mtl_localize_script($getVar = false) {
 		'attributionOPNV'=>__('Map data <a href="http://www.openstreetmap.org">OpenStreetMap</a> (© OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href="http://memomaps.de/">MeMoMaps</a>)','my-transit-lines'),
 		'titleOpentopomap'=>__('OpenTopoMap','my-transit-lines'),
 		'attributionOpentopomap'=>__('Map data: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Style: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)','my-transit-lines'),
-		'titleOpenrailwaymap'=>__('OpenRailwayMap','my-transit-lines'),
-		'attributionOpenrailwaymap'=>__('OpenRailwayMap overlay: Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a> and OpenStreetMap','my-transit-lines'),
+		'titleOpenrailwaymap'=>__('OpenRailwayMap (standard)','my-transit-lines'),
+		'attributionOpenrailwaymap'=>__('OpenRailwayMap Standard overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
+		'titleOpenrailwaymapMaxspeed'=>__('OpenRailwayMap (maxspeed)','my-transit-lines'),
+		'attributionOpenrailwaymapMaxspeed'=>__('OpenRailwayMap maxspeed overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
 		'titleESRISatellite'=>__('Satellite images (ESRI)','my-transit-lines'),
 		'attributionESRISatellite'=>__('Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community','my-transit-lines'),	
 		'titleOSM'=>__('OpenStreetMap standard (Mapnik)','my-transit-lines'),
@@ -284,7 +286,8 @@ function mtl_localize_script($getVar = false) {
 		'deleteObjects'=>__('Delete selected line/stations','my-transit-lines'),
 		'baselayersTitle'=>__('Base layers','my-transit-lines'),
 		'overlaysTitle'=>__('Overlays','my-transit-lines'),
-		'changeToSubmit'=>__('Please select another tool on the map to submit your proposal.','my-transit-lines')
+		'changeToSubmit'=>__('Please select another tool on the map to submit your proposal.','my-transit-lines'),
+		'importDataBeingProcessed'=>__('Import data is being processed. This may take several minutes...','my-transit-lines')
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;
@@ -489,7 +492,7 @@ function curPageURL() {
  * Add ID column to admin post lists
  * @Source: https://www.isitwp.com/add-post-id-to-posts-pages-admin-columns/
  */ 
-function mtl_posts_columns_proposal_phase($defaults){
+/*function mtl_posts_columns_proposal_phase($defaults){
     $defaults['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
     return $defaults;
 }
@@ -519,7 +522,7 @@ function mtlproposal_orderby( $query ) {
 		$query->set('meta_key','mtl-proposal-phase');
 		$query->set('orderby','meta_value');
 	}
-}
+}*/
 
 /* disable comments for posts */
 function mtl_filter_media_comment_status( $open, $post_id ) {

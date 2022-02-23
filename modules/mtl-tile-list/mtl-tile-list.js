@@ -100,7 +100,9 @@ function createThumbMap(mapNumber) {
 		thumbmap.push(new OpenLayers.Map('thumblist-map'+mapNumber,{controls:[]}));
 		var mapLayers = new Array();
 		// add OSM OePNV Layer
-		mapLayers[thumbmap.length-1] = new OpenLayers.Layer.OSM(objectL10n.titleOSM);
+		mapLayers[thumbmap.length-1] = new OpenLayers.Layer.OSM(
+			objectL10n.titleOSM,
+			["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png","https://b.tile.openstreetmap.org/${z}/${x}/${y}.png","https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
 		
 		thumbmap[thumbmap.length-1].addLayer( mapLayers[thumbmap.length-1] );
 

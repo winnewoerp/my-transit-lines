@@ -355,6 +355,18 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '</p>'."\r\n";
 				$output .= '</div>'."\r\n";
 				
+				// GeoJSON import
+				$import_hints = __('Please note: Only point and linestring features will be imported. Labels will be set if included as name property for the respective feature. The imported features will be appended to the existing features in your proposal. The coordinate system of the import file must be WGS84/EPSG:4326 (the standard projection of OpenStreetMap tools).','my-transit-lines');
+				if(trim($mtl_options3['mtl-geojson-import-hints'])) $import_hints = $mtl_options3['mtl-geojson-import-hints'];
+				
+				
+				$output .= '<p><label for="mtl-import-geojson"><strong>'.__('Import GeoJSON file','my-transit-lines').'</strong><br>
+							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson">
+							</label>
+							</p>
+							<p style="text-align:left"><small>'.$import_hints.'</small></p>';
+
+				
 				// input field for district/municipality tags - TO BE FINISHED LATER
 				/* $output .= '<p><label for="mtl-tag-select">'.__('Select/enter all districts/municipalities of your proposal','my-transit-lines').'<br /><input type="text" id="mtl-tag-select" name="mtl-tags" value="" /></label></p>'; */
 				
@@ -498,6 +510,18 @@ function hide_if_editmode_output( $atts, $content ){
 	else return;
 }
 add_shortcode( 'hide-if-editmode', 'hide_if_editmode_output' );
+
+ /**
+ * shortcode [hide-if-not-editmode]
+ */
+function hide_if_not_editmode_output( $atts, $content ){
+	$edit_proposal = '';
+	if(isset($_POST['action'])) $action = $_POST['action'];
+	if(!isset($_GET['edit_proposal']) || !empty( $action )) $hideThis = true;
+	if(!$hideThis) return $content;
+	else return;
+}
+add_shortcode( 'hide-if-not-editmode', 'hide_if_not_editmode_output' );
 
  /**
  * shortcode [hide-if-not-logged-in]

@@ -220,7 +220,7 @@ function initMyTransitLines() {
 		$('#features-label-data').val(vectorLabelsData);
 	}
 	
-	// GeoJSON imprt handling
+	// GeoJSON import handling
 	if($('#mtl-import-geojson').length) {
 		document.querySelector('#mtl-import-geojson').addEventListener('change',function(){
 			$('#page').append('<div id="still-importing-overlay" style="position:fixed;z-index:2000;top:0;left:0;width:100%;height:100vh;background:rgba(255,255,255,.8);display:table;text-align:center;font-weight:bold;"><div style="display:table-cell;vertical-align:middle">'+objectL10n.importDataBeingProcessed+'</div></div>');

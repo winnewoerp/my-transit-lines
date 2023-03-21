@@ -431,7 +431,7 @@ function setToolPreferences() {
 function updateFeaturesData(changeType) {
 	var featuresData = [];
 	var featuresLabelData = [];
-	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';;
+	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';
 	if(vectors.features[vectors.features.length-1]) var featureString = vectors.features[vectors.features.length-1].geometry.toString();
 	
 	// set label for new point feature

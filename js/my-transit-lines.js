@@ -681,17 +681,19 @@ function initMyTransitLinesDashboard() {
     });
 	
 	// hide not used category image and color fields
-	$('.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
-	$('.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
-	$('.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
-	$('.category-checkbox').change(function(){
-		$('.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
-		$('.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
-		$('.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
-		$('.category-checkbox:checked').parent().parent().next().css('display','table-row');
-		$('.category-checkbox:checked').parent().parent().next().next().css('display','table-row');
-		$('.category-checkbox:checked').parent().parent().next().next().next().css('display','table-row');
-	});
+	$('input.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
+	$('input.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
+	$('input.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
+	$('input.category-checkbox').change(
+		function(){
+			$('input.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
+			$('input.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
+			$('input.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
+			$('input.category-checkbox:checked').parent().parent().next().css('display','table-row');
+			$('input.category-checkbox:checked').parent().parent().next().next().css('display','table-row');
+			$('input.category-checkbox:checked').parent().parent().next().next().next().css('display','table-row');
+		}
+	);
 }
 
 // define admin vars

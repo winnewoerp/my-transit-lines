@@ -142,7 +142,7 @@ class MtlSettingsPage
      */
     public function mtl_submenu_page_general_settings()
     {
-         $this->options = get_option( 'mtl-option-name3' ); ?>
+        $this->options = get_option( 'mtl-option-name3' ); ?>
         <div class="wrap">
             <?php screen_icon(); ?>
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -199,7 +199,7 @@ class MtlSettingsPage
                 // This prints out all hidden setting fields
                 settings_fields( 'mtl-settings-group-map1' ); 
 				settings_fields( 'mtl-settings-group-map2' );  
-                do_settings_sections( 'mtl-settings');
+                do_settings_sections( 'mtl-settings' );
                 submit_button(); 
             ?>
             </form>
@@ -247,10 +247,10 @@ class MtlSettingsPage
 		foreach($all_categories as $single_category) {
 			$catid = $single_category->term_id;
 			$catname = $single_category->name;
-			add_settings_field('mtl-use-cat'.$catid, sprintf(__('Use category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories',array('field_name' => 'mtl-use-cat'.$catid,'type' => 'checkbox','class' => 'category-checkbox','option_name'=>'mtl-option-name'));  
-			add_settings_field('mtl-color-cat'.$catid, sprintf(__('Color for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories',array('field_name' => 'mtl-color-cat'.$catid,'type' => 'colorpicker','option_name'=>'mtl-option-name'));  
-			add_settings_field('mtl-image-cat'.$catid, sprintf(__('Map Icon for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories',array('field_name' => 'mtl-image-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name'));      
-			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories',array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name','separator' => true));      
+			add_settings_field('mtl-use-cat'.$catid, sprintf(__('Use category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-use-cat'.$catid,'type' => 'checkbox','class' => 'category-checkbox','option_name'=>'mtl-option-name'));  
+			add_settings_field('mtl-color-cat'.$catid, sprintf(__('Color for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-color-cat'.$catid,'type' => 'colorpicker','option_name'=>'mtl-option-name'));  
+			add_settings_field('mtl-image-cat'.$catid, sprintf(__('Map Icon for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name'));      
+			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name','separator' => true));      
 		}
 		
 		// settings section page IDs

@@ -164,24 +164,22 @@ register_nav_menus( array(
  * @link http://codex.wordpress.org/Function_Reference/register_sidebar
  */
 function mtl_widgets_init() {
-	register_sidebar( array(
-		'name'          => __( 'Sidebar', 'my-transit-lines' ),
-		'id'            => 'sidebar-1',
-		'description'   => '',
-		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget'  => '</aside>',
-		'before_title'  => '<h1 class="widget-title">',
-		'after_title'   => '</h1>',
-	) );
-	
-	register_sidebar( array(
-		'name'          => __( 'Top Menu', 'my-transit-lines' ),
-		'id'            => 'sidebar-2',
-		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget'  => '</aside>',
-		'before_title'  => '<h1 class="widget-title">',
-		'after_title'   => '</h1>',
-	) );
+	$sidebars = array(
+		array(__( 'Sidebar', 'my-transit-lines' ), 'sidebar-1'),
+		array(__( 'Top Menu', 'my-transit-lines' ), 'sidebar-2'),
+		array(__( 'Footer', 'my-transit-lines' ), 'footer'),
+	);
+	foreach($sidebars as $sidebar) {
+		register_sidebar( array(
+			'name'          => $sidebar[0],
+			'id'            => $sidebar[1],
+			'description'   => '',
+			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</aside>',
+			'before_title'  => '<h1 class="widget-title">',
+			'after_title'   => '</h1>',
+		) );
+	}
 }
 add_action( 'widgets_init', 'mtl_widgets_init' );
 

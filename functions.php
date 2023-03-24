@@ -14,11 +14,6 @@
  * 4) please include all strings needed for l10n in the theme and theme module js files into the mtl_localize_script() funtion below
  */
  
-if ( ! defined( '_MTL_VERSION' ) ) {
-	// Replace the version number of the theme on each release.
-	define( '_MTL_VERSION', '1.10' );
-}
-
  /**
  * include module functions files
  */
@@ -128,10 +123,10 @@ require get_template_directory() . '/inc/jetpack.php';
  */
 function my_transit_lines_scripts() {
 
-	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri(), array(), _MTL_VERSION );
+	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri(), array(), wp_get_theme()->version );
 
 	// get the style for the Openlayers Editor
-	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css', array(), _MTL_VERSION );
+	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css', array(), wp_get_theme()->version );
 	
 	// enable jQuery
 	wp_enqueue_script( 'jquery');
@@ -140,13 +135,13 @@ function my_transit_lines_scripts() {
 	wp_enqueue_script( 'suggest' );
 	
 	// AJAX form plugin
-	wp_enqueue_script( 'jquery-form', get_template_directory_uri() . '/js/jquery.form.min.js', array(), _MTL_VERSION);
+	wp_enqueue_script( 'jquery-form', get_template_directory_uri() . '/js/jquery.form.min.js', array(), wp_get_theme()->version);
 
-	wp_enqueue_script( 'my-transit-lines-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _MTL_VERSION, true );
-	wp_enqueue_script( 'my-transit-lines-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), _MTL_VERSION, true );
+	wp_enqueue_script( 'my-transit-lines-navigation', get_template_directory_uri() . '/js/navigation.js', array(), wp_get_theme()->version, true );
+	wp_enqueue_script( 'my-transit-lines-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), wp_get_theme()->version, true );
 	
 	// enqueue script for the MTL all proposals tile list
-	wp_enqueue_script( 'my-transit-lines-tilelist', get_template_directory_uri() . '/modules/mtl-tile-list/mtl-tile-list.js', array(), _MTL_VERSION);
+	wp_enqueue_script( 'my-transit-lines-tilelist', get_template_directory_uri() . '/modules/mtl-tile-list/mtl-tile-list.js', array(), wp_get_theme()->version);
 
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

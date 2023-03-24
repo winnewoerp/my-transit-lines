@@ -220,7 +220,7 @@ function initMyTransitLines() {
 		$('#features-label-data').val(vectorLabelsData);
 	}
 	
-	// GeoJSON imprt handling
+	// GeoJSON import handling
 	if($('#mtl-import-geojson').length) {
 		document.querySelector('#mtl-import-geojson').addEventListener('change',function(){
 			$('#page').append('<div id="still-importing-overlay" style="position:fixed;z-index:2000;top:0;left:0;width:100%;height:100vh;background:rgba(255,255,255,.8);display:table;text-align:center;font-weight:bold;"><div style="display:table-cell;vertical-align:middle">'+objectL10n.importDataBeingProcessed+'</div></div>');
@@ -431,7 +431,7 @@ function setToolPreferences() {
 function updateFeaturesData(changeType) {
 	var featuresData = [];
 	var featuresLabelData = [];
-	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';;
+	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';
 	if(vectors.features[vectors.features.length-1]) var featureString = vectors.features[vectors.features.length-1].geometry.toString();
 	
 	// set label for new point feature
@@ -681,17 +681,19 @@ function initMyTransitLinesDashboard() {
     });
 	
 	// hide not used category image and color fields
-	$('.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
-	$('.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
-	$('.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
-	$('.category-checkbox').change(function(){
-		$('.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
-		$('.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
-		$('.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
-		$('.category-checkbox:checked').parent().parent().next().css('display','table-row');
-		$('.category-checkbox:checked').parent().parent().next().next().css('display','table-row');
-		$('.category-checkbox:checked').parent().parent().next().next().next().css('display','table-row');
-	});
+	$('input.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
+	$('input.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
+	$('input.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
+	$('input.category-checkbox').change(
+		function(){
+			$('input.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
+			$('input.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
+			$('input.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
+			$('input.category-checkbox:checked').parent().parent().next().css('display','table-row');
+			$('input.category-checkbox:checked').parent().parent().next().next().css('display','table-row');
+			$('input.category-checkbox:checked').parent().parent().next().next().next().css('display','table-row');
+		}
+	);
 }
 
 // define admin vars

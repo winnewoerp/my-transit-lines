@@ -16,7 +16,7 @@ Until spring 2017, My Transit Lines has been developed locally. Then, the decisi
 
 4. Adapt the theme settings to your needs by clicking the My Transit Lines light rail icon in the lower part of the left-hand dashboard menu (e.g. §General Settings§ for the logo of your project and more, "Map and category settings" for setting default map position and transport mode categories).
 
-5. Design your start page, e.g. with individuel text and a shortcode block [mtl-tile-list] that will show the tile list of the proposals.
+5. Design your start page, e.g. with individual text and a shortcode block [mtl-tile-list] that will show the tile list of the proposals.
 
 6. Go to "Settings" > "Reading" in the WordPress Dashboard and set your designed start page as the start page of your project.
 

@@ -217,7 +217,7 @@ function initMyTransitLines() {
 			labelText = labelText.replace(/&apos;/g,'\'');
 			if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
 		}
-		$('#features-label-data').val(vectorLabelsData);
+		$('#mtl-feature-labels-data').val(vectorLabelsData);
 	}
 	
 	// GeoJSON import handling

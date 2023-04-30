@@ -542,19 +542,17 @@ function updateFeaturesData(changeType) {
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
 		if(featureString.replace('LINESTRING','')!=featureString) lineLength = lineLength + transformedFeature.getGeodesicLength();
 		
-		// write all features data to array as WKT
-		if(i < countFeatures) featuresData.push(transformedFeature.toString());
-		
-		// write all features label data to array
-		// replace commas, quotes, and apostrophes 
 		if(i < countFeatures) {
-			var modFeaturesLabelData;
-			modFeaturesLabelData = '';
+			// write all features data to array as WKT
+			featuresData.push(transformedFeature.toString());
+
+			var modFeaturesLabelData = '';
 			if(vectors.features[i].attributes.name) {
 				modFeaturesLabelData = vectors.features[i].attributes.name.replace(/,/g,'&#44;');
 				modFeaturesLabelData = modFeaturesLabelData.replace(/"/g,'&quot;');
 				modFeaturesLabelData = modFeaturesLabelData.replace(/'/g,'&apos;');
 			}
+			// write all features label data to array
 			featuresLabelData.push(modFeaturesLabelData);
 		}
 		

@@ -191,9 +191,9 @@ function initMyTransitLines() {
 	
 	// load vector data from WKT string
 	wkt = new OpenLayers.Format.WKT();
-	
+
 	if(vectorData) {
-		if(vectorData.replace('POINT','') != vectorData || vectorData.replace('LINESTRING','') != vectorData) {
+		if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
 			features = wkt.read(vectorData);
 			if(features.constructor != Array) {
 				features = [features];
@@ -296,7 +296,7 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 			currentFeatureName = currentFeatureName.replace(/&quot;/g,'"');
 			currentFeatureName = currentFeatureName.replace(/&apos;/g,'\'');
 		}
-		if(featureString.replace('POINT','')!=featureString) vectorsLayer.features[i].style = {
+		if(featureString.includes('POINT')) vectorsLayer.features[i].style = {
 			externalGraphic: externalGraphicUrl,
 			graphicHeight: currentGraphicHeightUnselected,
 			graphicWidth: currentGraphicWidthUnselected,
@@ -435,7 +435,7 @@ function updateFeaturesData(changeType) {
 	if(vectors.features[vectors.features.length-1]) var featureString = vectors.features[vectors.features.length-1].geometry.toString();
 	
 	// set label for new point feature
-	if(changeType =='added' && featureString.replace('POINT','')!=featureString && $('#feature-textinput').val()!='') {
+	if(changeType =='added' && featureString.includes('POINT') && $('#feature-textinput').val()!='') {
 		var labelText = $('#feature-textinput').val();
 		vectors.features[vectors.features.length-1].attributes = { name: labelText };
 	}
@@ -453,7 +453,7 @@ function updateFeaturesData(changeType) {
 	if(changeType =='added') {
 		countFeatures++;
 		var featureString = vectors.features[vectors.features.length-1].geometry.toString();
-		if(featureString.replace('POINT','')!=featureString) $('#feature-textinput').val('');
+		if(featureString.includes('POINT')) $('#feature-textinput').val('');
 	}
 
 	countStations=0;
@@ -466,7 +466,7 @@ function updateFeaturesData(changeType) {
 		if(vectors.selectedFeatures.indexOf(vectors.features[i])==0) {
 			
 			// if a point feature has been selected: open text entry box
-			if(featureString.replace('POINT','')!=featureString && changeType == 'selected') {
+			if(featureString.includes('POINT') && changeType == 'selected') {
 				$('#feature-textinput').val(vectors.features[i].attributes.name);
 				$('.feature-textinput-box').slideDown();
 				$('.set-name').css('display','block');
@@ -478,7 +478,7 @@ function updateFeaturesData(changeType) {
 			
 			// if a feature is selected: set 'selected' styles
 			if(($('.olControlSelectFeatureItemActive').length || $('.olEditorControlDragFeatureItemActive').length) && changeType != 'unselected') {
-				if(featureString.replace('POINT','')!=featureString) {
+				if(featureString.includes('POINT')) {
 					vectors.features[i].style = {
 						externalGraphic: externalGraphicUrlSelected,
 						graphicHeight: graphicHeightSelected,
@@ -509,7 +509,7 @@ function updateFeaturesData(changeType) {
 		else {
 		
 			// set styles for unselected features
-			if(featureString.replace('POINT','')!=featureString) {
+			if(featureString.includes('POINT')) {
 				if(!$('.olControlModifyFeatureItemActive').length) {
 					vectors.features[i].style = {
 						externalGraphic: externalGraphicUrl,
@@ -540,7 +540,7 @@ function updateFeaturesData(changeType) {
 		}
 		
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
-		if(featureString.replace('LINESTRING','')!=featureString) lineLength = lineLength + transformedFeature.getGeodesicLength();
+		if(featureString.includes('LINESTRING')) lineLength = lineLength + transformedFeature.getGeodesicLength();
 		
 		// write all features data to array as WKT
 		if(i < countFeatures) featuresData.push(transformedFeature.toString());
@@ -847,7 +847,7 @@ function importToMap(result) {
 			WKTFeatures += ')';
 
 			if(WKTFeatures) {
-				if(WKTFeatures.replace('POINT','') != WKTFeatures || WKTFeatures.replace('LINESTRING','') != WKTFeatures || WKTFeatures.replace('MULTILINESTRING','') != WKTFeatures) {
+				if(WKTFeatures.includes('POINT') || WKTFeatures.includes('LINESTRING') || WKTFeatures.includes('MULTILINESTRING')) {
 					var oldFeatures = vectors.features;
 					vectors.removeAllFeatures();
 					features = wkt.read(WKTFeatures);

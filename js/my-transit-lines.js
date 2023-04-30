@@ -729,8 +729,6 @@ function addAdminMapCenter() {
 		$('#mtl-center-lat').val(pos.lat);
 		
 	});
- 
- 
 }
 
 function changeMapMarker() {

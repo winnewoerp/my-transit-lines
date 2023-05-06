@@ -376,7 +376,7 @@ function setToolPreferences() {
 			}
 		});
 	});*/
-	$('.olEditorControlDrawPointItemInactive, .olEditorControlDrawPathItemInactive, .olControlModifyFeatureItemInactive, .olControlNavigationItemInactive').click(function(){
+	$('.olEditorControlDrawPointItemInactive, .olEditorControlDrawPathItemInactive, .olControlModifyFeatureItemInactive, .olControlNavigationItemInactive, .olEditorControlDragFeatureItemInactive').click(function(){
 		unselectAllFeatures();
 	});
 	$('#feature-textinput').keypress(function(e){

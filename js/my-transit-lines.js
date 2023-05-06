@@ -333,6 +333,7 @@ function vectorsEvents() {
 		'featureselected': function() { updateFeaturesData('selected') },
 		'featureunselected': function() { updateFeaturesData('unselected') },
 		'beforefeatureremoved': function() { updateFeaturesData('beforeremoved') },
+		'afterfeaturemodified': function() { updateFeaturesData('aftermodified') }, // triggered after a feature was moved
 	});
 }
 

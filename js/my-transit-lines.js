@@ -327,13 +327,13 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 // create event handlers
 function vectorsEvents() {
 	vectors.events.on({
-		'featureadded': function() { updateFeaturesData('added') },
-		'featuremodified': function() { updateFeaturesData('modified') },
-		'featureremoved': function() { updateFeaturesData('removed') },
-		'featureselected': function() { updateFeaturesData('selected') },
-		'featureunselected': function() { updateFeaturesData('unselected') },
-		'beforefeatureremoved': function() { updateFeaturesData('beforeremoved') },
-		'afterfeaturemodified': function() { updateFeaturesData('aftermodified') }, // triggered after a feature was moved
+		'featureadded': function() { updateFeaturesData('added') }, // triggered after a feature was added
+		'featuremodified': function() { updateFeaturesData('modified') }, // triggered after part of a feature was modified by the modify-tool
+		'featureremoved': function() { updateFeaturesData('removed') }, // triggered after a feature was removed
+		'featureselected': function() { updateFeaturesData('selected') }, // triggered when selecting a feature with the select-tool
+		'featureunselected': function() { updateFeaturesData('unselected') }, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
+		'beforefeatureremoved': function() { updateFeaturesData('beforeremoved') }, // triggered right before a feature is removed
+		'afterfeaturemodified': function() { updateFeaturesData('aftermodified') }, // triggered after a feature was moved or after a feature is no longer "selected" by modify-tool
 	});
 }
 

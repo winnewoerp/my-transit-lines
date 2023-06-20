@@ -211,10 +211,7 @@ function initMyTransitLines() {
 	if(vectorLabelsData) {
 		var vectorLabelsArray = vectorLabelsData.split(',');
 		for(var i=0; i<vectorLabelsArray.length; i++) {
-			var labelText = vectorLabelsArray[i];
-			labelText = labelText.replace(/&#44;/g,',');
-			labelText = labelText.replace(/&quot;/g,'"');
-			labelText = labelText.replace(/&apos;/g,'\'');
+			var labelText = decodeSpecialChars(vectorLabelsArray[i]);
 			if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
 		}
 		$('#mtl-feature-labels-data').val(vectorLabelsData);
@@ -292,9 +289,7 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 		var featureString = vectorsLayer.features[i].geometry.toString();
 		var currentFeatureName = '';
 		if(vectorsLayer.features[i].attributes.name) {
-			currentFeatureName = vectorsLayer.features[i].attributes.name.replace(/&#44;/g,',');
-			currentFeatureName = currentFeatureName.replace(/&quot;/g,'"');
-			currentFeatureName = currentFeatureName.replace(/&apos;/g,'\'');
+			currentFeatureName = decodeSpecialChars(vectorsLayer.features[i].attributes.name);
 		}
 		if(featureString.includes('POINT')) vectorsLayer.features[i].style = {
 			externalGraphic: externalGraphicUrl,
@@ -551,9 +546,7 @@ function updateFeaturesData(changeType) {
 			var modFeaturesLabelData;
 			modFeaturesLabelData = '';
 			if(vectors.features[i].attributes.name) {
-				modFeaturesLabelData = vectors.features[i].attributes.name.replace(/,/g,'&#44;');
-				modFeaturesLabelData = modFeaturesLabelData.replace(/"/g,'&quot;');
-				modFeaturesLabelData = modFeaturesLabelData.replace(/'/g,'&apos;');
+				modFeaturesLabelData = encodeSpecialChars(vectors.features[i].attributes.name);
 			}
 			featuresLabelData.push(modFeaturesLabelData);
 		}
@@ -793,9 +786,7 @@ function importToMap(result) {
 					// add point feature names to respective string if existing
 					if(geoJSONFeaturesJSON.features[i].geometry.type=='Point' && geoJSONFeaturesJSON.features[i].properties.name) {
 						if(!first) stationNames += ',';
-						let labelText = geoJSONFeaturesJSON.features[i].properties.name.replace(/&#44;/g,',');
-						labelText = labelText.replace(/&quot;/g,'"');
-						labelText = labelText.replace(/&apos;/g,'\'');
+						var labelText = decodeSpecialChars(geoJSONFeaturesJSON.features[i].properties.name);
 						stationNames += labelText;
 					}
 					else {
@@ -859,15 +850,12 @@ function importToMap(result) {
 					for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
 					
 					if(stationNames) {
-					var vectorLabelsArray = stationNames.split(',');
-					for(var i=0; i<vectorLabelsArray.length; i++) {
-						var labelText = vectorLabelsArray[i];
-						labelText = labelText.replace(/&#44;/g,',');
-						labelText = labelText.replace(/&quot;/g,'"');
-						labelText = labelText.replace(/&apos;/g,'\'');
-						if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
+						var vectorLabelsArray = stationNames.split(',');
+						for(var i=0; i<vectorLabelsArray.length; i++) {
+							var labelText = decodeSpecialChars(vectorLabelsArray[i]);
+							if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
+						}
 					}
-	}
 					var newFeatures = vectors.features;
 					vectors.removeAllFeatures();
 					
@@ -895,4 +883,32 @@ function importToMap(result) {
 		$('#still-importing-overlay').remove();
 		alert('no json file');
 	}
+}
+
+/*
+* Decodes string to include , " '
+* 
+* "&#44;"  becomes ','
+* "&quot;" becomes '"'
+* "&apos;" becomes '''
+*/
+function decodeSpecialChars(p_string) {
+	p_string = p_string.replace(/&#44;/g,',');
+	p_string = p_string.replace(/&quot;/g,'"');
+	p_string = p_string.replace(/&apos;/g,'\'');
+	return p_string;
+}
+
+/*
+* Encodes string and removes , " '
+* 
+* ',' becomes "&#44;"
+* '"' becomes "&quot;"
+* ''' becomes "&apos;"
+*/
+function encodeSpecialChars(p_string) {
+	p_string = p_string.replace(/,/g,'&#44;');
+	p_string = p_string.replace(/"/g,'&quot;');
+	p_string = p_string.replace(/'/g,'&apos;');
+	return p_string;
 }

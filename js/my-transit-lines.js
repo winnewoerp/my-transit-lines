@@ -537,17 +537,15 @@ function updateFeaturesData(changeType) {
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
 		if(featureString.includes('LINESTRING')) lineLength = lineLength + transformedFeature.getGeodesicLength();
 		
-		// write all features data to array as WKT
-		if(i < countFeatures) featuresData.push(transformedFeature.toString());
-		
-		// write all features label data to array
-		// replace commas, quotes, and apostrophes 
 		if(i < countFeatures) {
-			var modFeaturesLabelData;
-			modFeaturesLabelData = '';
+			// write all features data to array as WKT
+			featuresData.push(transformedFeature.toString());
+
+			var modFeaturesLabelData = '';
 			if(vectors.features[i].attributes.name) {
 				modFeaturesLabelData = encodeSpecialChars(vectors.features[i].attributes.name);
 			}
+			// write all features label data to array
 			featuresLabelData.push(modFeaturesLabelData);
 		}
 		
@@ -724,8 +722,6 @@ function addAdminMapCenter() {
 		$('#mtl-center-lat').val(pos.lat);
 		
 	});
- 
- 
 }
 
 function changeMapMarker() {

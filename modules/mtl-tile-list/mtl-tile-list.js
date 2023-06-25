@@ -13,8 +13,8 @@ jQuery(document).ready(function($){
 	$('.mtl-paginate-links a').on('click', function(e)  {
 		e.preventDefault();
 		window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
-		
     });
+	
 	$(window).on('hashchange',function(){
 		if(window.location.href.replace(tilePageUrl,'')!=window.location.href) {
 			currentHash = window.location.hash;
@@ -54,6 +54,11 @@ function loadNewTiles(link) {
 		$('#mtl-filter-form').submit(function(e) {
 			e.preventDefault();
 			submitFilter();
+		});
+
+		$('.mtl-paginate-links a').on('click', function(e)  {
+			e.preventDefault();
+			window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
 		});
 		
 		// add rating

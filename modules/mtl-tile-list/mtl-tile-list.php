@@ -94,10 +94,7 @@ function mtl_tile_list_output($atts) {
 			$status[] = 'draft';
 		}
 		
-		
-						
-		$query_string =  array(
-			'paged' => $paged,
+		$query_string = array(
 			'posts_per_page' => $posts_per_page,
 			'post_type' => $type,
 			'cat' => $get_cats,
@@ -106,28 +103,28 @@ function mtl_tile_list_output($atts) {
 			'orderby' => $order_by,
 			'meta_key' => $meta_key,
 			'order' => $order,
-			'post_status' => $status,
 		);
-		
-		if(isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id()) {
+
+		if ($oder_by!='rand') {
+			$query_string['paged'] = $paged;
+			$query_string['post_status'] = $status;
+
+			if(!in_array('draft', $status)) {
+				$query_string['meta_query'] = array(
+					'relation' => 'OR',
+					array(
+						'key'     => 'mtl-proposal-phase',
+						'value'   => 'elaboration-phase',
+						'compare' => '!='
+					),
+					array(
+						'key'     => 'mtl-proposal-phase',
+						'compare' => 'NOT EXISTS'
+					),
+				);
+			}
 		}
-		else {
-			$query_string['meta_query'] = array(
-				'relation' => 'OR',
-				array(
-					'key'     => 'mtl-proposal-phase',
-					'value'   => 'elaboration-phase',
-					'compare' => '!='
-				),
-				array(
-					'key'     => 'mtl-proposal-phase',
-					'compare' => 'NOT EXISTS'
-				),
-			);			
-		}
 		
-		
-		if($order_by=='rand') $query_string =  array('posts_per_page'=>$posts_per_page,'post_type'=>$type,'cat'=>$get_cats,'tag_id'=>$get_tag,'author'=>$get_userid,'orderby'=>$order_by,'meta_key'=>$meta_key,'order'=>$order);
 		$second_query = new WP_Query($query_string);
 		$mtl_options = get_option('mtl-option-name');
 		$all_categories=get_categories('include='.$mtl_all_catids);
@@ -243,27 +240,29 @@ function mtl_tile_list_output($atts) {
 		
 		// loop through the tiles
 		while($second_query->have_posts()) : $second_query->the_post(); global $post;
-		$hide_proposal = false;
-		if(get_post_meta($post->ID,'author-name',true) && $get_userid) $hide_proposal = true;
+		
+		$hide_proposal = (bool)(get_post_meta($post->ID,'author-name',true) && $get_userid);
+		
+		if(!$hide_proposal && $mtl_options['mtl-use-cat'.$catid] == true) {
 			$category = get_the_category($post->ID);
 			$post_category = $category[0]->slug;
 			$catid = $category[0]->cat_ID;
-			if(!$hide_proposal && $mtl_options['mtl-use-cat'.$catid] == true) {
-				$category = get_the_category($post->ID);
-				$post_category = $category[0]->slug;
-				$catid = $category[0]->cat_ID;
-				$bgcolor = $mtl_options['mtl-color-cat'.$catid];
-				$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';
-				
-				if(!$hidethumbs) {
-					$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = "'.get_post_meta($post->ID,'mtl-feature-data',true).'"; var vectorLabelsData = "'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"; var editMode = false; </script>'."\r\n";
-					$output .= mtl_thumblist_map();
-				}
-				$output .= mtl_load_template_part( 'content', get_post_format() );
-				if(current_user_can('manage_options') && strlen(get_post_meta($post->ID,'mtl-editors-hints',true))>10) $output .= 'hints text ready';
-				$output .= '</strong></p>';
-				$output .= '</div>';
+			$bgcolor = $mtl_options['mtl-color-cat'.$catid];
+			
+			$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';
+			
+			if(!$hidethumbs) {
+				$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = "'.get_post_meta($post->ID,'mtl-feature-data',true).'"; var vectorLabelsData = "'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"; var editMode = false; </script>'."\r\n";
+				$output .= mtl_thumblist_map();
 			}
+			$output .= mtl_load_template_part( 'content', get_post_format() );
+
+			if(current_user_can('manage_options') && strlen(get_post_meta($post->ID,'mtl-editors-hints',true))>10)
+				$output .= 'hints text ready';
+			
+			$output .= '</strong></p>';
+			$output .= '</div>';
+		}
 		endwhile;
 
 		$output .= '<div class="clear"></div>';
@@ -286,4 +285,3 @@ function count_filtered_posts($type,$get_userid,$get_cats,$get_tag) {
 	else $count_posts =  $count1;
 	return $count_posts;*/
 }
-?>

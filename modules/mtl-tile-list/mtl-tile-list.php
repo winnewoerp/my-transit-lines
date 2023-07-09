@@ -192,7 +192,8 @@ function mtl_tile_list_output($atts) {
 		}
 		$output .= '<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>';
 		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select></p>';
-		$output .= '<p><strong>'.__('Search:','my-transit-lines').'</strong><input type="search" name="s">';
+		
+		$output .= '<p><strong>'.__('Search:','my-transit-lines').'</strong><input type="search" name="s" value="'.$search.'">';
 
 		$output .= '<button type="submit">'.__('Filter/sort','my-transit-lines').'</button></p></form></div>'."\r\n";
 		

@@ -93,6 +93,8 @@ function mtl_tile_list_output($atts) {
 		if(isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id()) {
 			$status[] = 'draft';
 		}
+
+		$search = $_GET['s'];
 		
 		$query_string = array(
 			'posts_per_page' => $posts_per_page,
@@ -103,6 +105,7 @@ function mtl_tile_list_output($atts) {
 			'orderby' => $order_by,
 			'meta_key' => $meta_key,
 			'order' => $order,
+			's' => $search,
 		);
 
 		if ($oder_by!='rand') {

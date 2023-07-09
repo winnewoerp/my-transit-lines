@@ -191,8 +191,9 @@ function mtl_tile_list_output($atts) {
 			$output .= '<option'.($_GET['orderby']=='rating_count' ? ' selected="selected"' : '').' value="rating_count">'.__('Number of ratings','my-transit-lines').'</option>';
 		}
 		$output .= '<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>';
-		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select>';
-		
+		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select></p>';
+		$output .= '<p><strong>'.__('Search:','my-transit-lines').'</strong><input type="search" name="s">';
+
 		$output .= '<button type="submit">'.__('Filter/sort','my-transit-lines').'</button></p></form></div>'."\r\n";
 		
 		// paginate links

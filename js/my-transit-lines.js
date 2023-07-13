@@ -33,7 +33,7 @@ var newLabelCollection = [];
 var mtlCenterLon = 0;
 var mtlCenterLat = 0;
 var initMap = true;
-let importFilename = '';
+var importFilename = '';
 
 //Notify the user when about to leave page without saving changes
 $(window).bind('beforeunload', function() {
@@ -756,7 +756,7 @@ $(document).ready(function(){
 });
 
 // check if string can be parsed as JSON
-let isJsonParsable = string => {
+function isJsonParsable(string) {
 	try {
 		JSON.parse(string);
 	} catch (e) {

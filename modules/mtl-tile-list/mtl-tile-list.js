@@ -8,7 +8,7 @@ var currentHash = window.location.hash;
 var paginationClicked = false;
 
 jQuery(document).ready(function($){
-	if(currentHash.replace('#!','')!=currentHash ) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
+	if(currentHash.includes('#!')) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
 
 	$('.mtl-paginate-links a').on('click', function(e)  {
 		e.preventDefault();
@@ -16,9 +16,9 @@ jQuery(document).ready(function($){
     });
 	
 	$(window).on('hashchange',function(){
-		if(window.location.href.replace(tilePageUrl,'')!=window.location.href) {
+		if(window.location.href.includes(tilePageUrl)) {
 			currentHash = window.location.hash;
-			if(currentHash.replace('#!','')!=currentHash && !paginationClicked) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
+			if(currentHash.includes('#!') && !paginationClicked) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
 		}
 	});
 	
@@ -73,7 +73,7 @@ function loadNewTiles(link) {
 function submitFilter() {
 	var form = $('#mtl-filter-form');
 	var actionUrl = form.attr('action');
-	if(actionUrl.replace('?','')==actionUrl) var paramSeparator = '?';
+	if(!actionUrl.includes('?')) var paramSeparator = '?';
 	else var paramSeparator = '&';
 	
 	var formInputs = $(form).find(':input');
@@ -95,7 +95,7 @@ var mapLayers = new Array();
 var getMapLayers = new Array();
 function createThumbMap(mapNumber) {
 	var loadThumbmaps = true;
-	if(!countLoads && currentHash.replace('#!','')!=currentHash) {
+	if(!countLoads && currentHash.includes('#!')) {
 		loadThumbmaps = false;
 		$('.mtl-post-tile').css('display','none');
 	}
@@ -122,7 +122,7 @@ function createThumbMap(mapNumber) {
 		
 		wkt = new OpenLayers.Format.WKT();
 		if(vectorData) {
-			if(vectorData.replace('POINT','') != vectorData || vectorData.replace('LINESTRING','') != vectorData) {
+			if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
 				features = wkt.read(vectorData);
 				if(features.constructor != Array) {
 					features = [features];

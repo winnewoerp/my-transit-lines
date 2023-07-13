@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2023-07-13 16:52+0200\n"
-"PO-Revision-Date: 2023-07-13 16:53+0200\n"
+"POT-Creation-Date: 2023-07-13 17:43+0200\n"
+"PO-Revision-Date: 2023-07-13 17:47+0200\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
@@ -598,14 +598,12 @@ msgid "ReCAPTCHA secret key"
 msgstr "ReCAPTCHA-Geheimschlüssel"
 
 #: ../modules/mtl-admin-menu/mtl-admin-menu.class.php:279
-#, fuzzy
-#| msgid "General settings"
 msgid "GeoJSON import settings"
-msgstr "Generelle Einstellungen"
+msgstr "GeoJSON-Importeinstellungen"
 
 #: ../modules/mtl-admin-menu/mtl-admin-menu.class.php:280
 msgid "GeoJSON import hints"
-msgstr ""
+msgstr "GeoJSON-Importhinweise"
 
 #: ../modules/mtl-admin-menu/mtl-admin-menu.class.php:333
 msgid ""
@@ -1337,6 +1335,14 @@ msgstr "Nein, ich möchte den Entwurf nicht löschen"
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:491
 msgid "Draft successfully deleted!"
 msgstr "Entwurf erfolgreich gelöscht!"
+
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:495
+msgid ""
+"Couldn't delete the proposal. Is it a draft and are you logged in and the "
+"author?"
+msgstr ""
+"Der Vorschlag konnte nicht gelöscht werden. Ist es ein Entwurf und bist du "
+"angemeldet und der Autor?"
 
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:69
 msgid "Description of this proposal"

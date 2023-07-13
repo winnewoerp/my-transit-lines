@@ -485,14 +485,16 @@ function mtl_proposal_form_output( $atts ){
 			elseif(isset($_POST['really-delete-draft'])) {
 				$delete_id = intval($_POST['deleteid']);
 				$delete_post = get_post($delete_id);
-				if($delete_post->post_status == 'draft') {
+				if($delete_post->post_status == 'draft' && wp_get_current_user()->ID == $delete_post->post_author) {
 					wp_delete_post($delete_id);
 					$output = '<div class="success-message-block">'."\r\n";
 					$output .= '<strong>'.esc_html__('Draft successfully deleted!','my-transit-lines').'</strong><br />'."\r\n";
 					$output .= '</div>'."\r\n";
 					return $output;
-				}
-				else return;
+				} else {
+					$output = '<div class="error-message-block"><p>'.esc_html__('Couldn\'t delete the proposal. Is it a draft and are you logged in and the author?','my-transit-lines').'</p></div>';
+					return $output;
+				};
 			}
 		}		
 	}

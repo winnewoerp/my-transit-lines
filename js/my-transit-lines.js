@@ -32,6 +32,7 @@ if(typeof OpenLayers != 'undefined') var projmerc = new OpenLayers.Projection("E
 var newLabelCollection = [];
 var mtlCenterLon = 0;
 var mtlCenterLat = 0;
+var mtlStandardZoom = 0;
 var initMap = true;
 var importFilename = '';
 
@@ -185,8 +186,8 @@ function initMyTransitLines() {
 	var lonlat = new OpenLayers.LonLat(mtlCenterLon,mtlCenterLat);
 	lonlat.transform(proj4326, projmerc);
 	
-	// center map to Hamburg
-	map.setCenter(lonlat, 13);
+	// center map to the default from the settings
+	map.setCenter(lonlat, mtlStandardZoom);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
 	
 	// load vector data from WKT string

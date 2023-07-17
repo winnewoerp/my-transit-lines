@@ -627,6 +627,9 @@ function initMyTransitLinesDashboard() {
 		if($('input#mtl-center-lat').length) $('input#mtl-center-lat').on('change propertychange paste',function(){
 			changeMapMarker();
 		});
+		if($('input#mtl-standard-zoom').length) $('input#mtl-standard-zoom').on('change propertychange paste',function(){
+			changeMapMarker();
+		});
 	}
 	
 	// handle image upload fields
@@ -699,17 +702,16 @@ function addAdminMapCenter() {
 	var layerOSM = new OpenLayers.Layer.OSM();
 	admin_map.addLayer( layerOSM );
 	admin_map.setCenter(new OpenLayers.LonLat(0,0).transform(proj4326,projmerc), 1);
-	
-	// get current center position as marker if exists
-	if(mapCenterLon != '' && mapCenterLat != '') {
-		var lonLat = new OpenLayers.LonLat(mapCenterLon,mapCenterLat).transform(proj4326,projmerc);
-		admin_map.setCenter (lonLat, 12);
-	}
 	  
 	markers = new OpenLayers.Layer.Markers( "Markers" );
     admin_map.addLayer(markers);
-	  
-	if(mapCenterLon != '' && mapCenterLat != '') markers.addMarker(new OpenLayers.Marker(lonLat));
+	
+	// get current center position as marker if exists
+	if(mapCenterLon != '' && mapCenterLat != '' && mapStandardZoom != '') {
+		var lonLat = new OpenLayers.LonLat(mapCenterLon,mapCenterLat).transform(proj4326,projmerc);
+		markers.addMarker(new OpenLayers.Marker(lonLat));
+		admin_map.setCenter(lonLat, mapStandardZoom);
+	}
 	
 	admin_map.events.register("click", admin_map, function(evt) {
 		markers.clearMarkers();
@@ -722,6 +724,11 @@ function addAdminMapCenter() {
 		$('#mtl-center-lat').val(pos.lat);
 		
 	});
+
+	admin_map.events.register("moveend", admin_map, function(evt) {
+		var currentZoom = admin_map.getZoom();
+		$('#mtl-standard-zoom').val(currentZoom);
+	});
 }
 
 function changeMapMarker() {
@@ -730,14 +737,17 @@ function changeMapMarker() {
 	markers.clearMarkers();
 	var currentLon = parseFloat($('input#mtl-center-lon').val());
 	var currentLat = parseFloat($('input#mtl-center-lat').val());
+	var currentZoom = parseInt($('input#mtl-standard-zoom').val());
 	var pos = new OpenLayers.LonLat(currentLon,currentLat);
 	pos.transform(proj4326,projmerc);
 	marker = new OpenLayers.Marker(pos);
 	markers.addMarker(marker);
 	admin_map.setCenter(pos);
+	admin_map.zoomTo(currentZoom);
 	pos.transform(projmerc,proj4326);
 	$('#mtl-center-lon').val(pos.lon);
 	$('#mtl-center-lat').val(pos.lat);
+	$('#mtl-standard-zoom').val(currentZoom);
 }
 
 function manipulateTitle(newTitle) {

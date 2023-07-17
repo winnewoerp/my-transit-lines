@@ -28,58 +28,14 @@ function mtl_proposal_form_output( $atts ){
 	if(isset($_GET['posttype'])) $postType = $_GET['posttype'];
 	$posttype_object = get_post_type_object($postType);
 	$posttype_singular_name = $posttype_object->labels->singular_name;
-	
-	// prepare existing post data extraction for post editing
-	$get_id = '';
-	
-	// get edit id from url param
-	$editId = '';
-	if(isset($_GET['edit_proposal'])) $get_id = intval($_GET['edit_proposal']);
-	
-	$form_allowed = true;
-	if($mtl_options2['mtl-prevent-new-proposals']=='on') $form_allowed = false;
-	if(is_user_logged_in() && $get_id && get_post_status ($get_id)) $form_allowed = true;
-	
-	$count_query_string =  array(
-		'posts_per_page' => -1,
-		'post_type' => 'mtlproposal',
-		'author' => get_current_user_id(),
-		'post_status' => 'draft',
-	);
-	$count_query = new WP_Query($count_query_string);
-	$drafts_count = $count_query->post_count;
-	$count_query_string =  array(
-		'posts_per_page' => -1,
-		'post_type' => 'mtlproposal',
-		'author' => get_current_user_id(),
-		'meta_key' => 'mtl-proposal-phase',
-		'meta_value' => 'elaboration-phase',
-	);
-	$count_query2 = new WP_Query($count_query_string);
-	$drafts_count += $count_query2->post_count;
-	
-	$no_more_drafts_allowed = false;
-	if(!$get_id) {
-		if($drafts_count >= $mtl_options2['mtl-allowed-drafts']) $form_allowed = false;
-		$no_more_drafts_allowed = true;
-	}
+
+	$editId = get_editId();
+	$editType = 'add';
+	if ($editId) $editType = 'update';
 	
 	// only if form allowed
-	if(is_user_logged_in() && $form_allowed && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
-	
-		// check if proposal is rateable
-		if($mtl_options2['mtl-current-project-phase']=='rate' && get_post_meta($post->ID,'mtl-proposal-rateable')) $rating_possible = true;
+	if(is_user_logged_in() && is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
 
-		// check if add or update mode
-		if(is_user_logged_in() && $get_id && get_post_status ($get_id)) {
-			$current_post = get_post($get_id);
-			$current_user = wp_get_current_user();
-			$author_id=$current_post->post_author;
-			if(($author_id > 0 && $author_id == $current_user->ID && !$rating_possible)) $editId = $get_id;
-		}
-		$editType = 'add';
-		if($editId) $editType = 'update';
-		
 		// create all necessary strings for this page containing either post type or edit type 
 		$mtl_string['logged-out-notice']['mtlproposal'] = sprintf(__('<strong>Important notice:</strong> You are about to write a proposal without being logged in. You won\'t be able to edit your proposal after publishing. Please <a href="%s">login here</a> to have full access to your proposal after publishing it.','my-transit-lines'),wp_login_url().'?redirect_to='.urlencode(add_query_arg(array('posttype'=>$postType),get_permalink())));
 		$mtl_string['posttype-selector']['mtlproposal'] = __('Add a single proposal','my-transit-lines');
@@ -371,7 +327,7 @@ function mtl_proposal_form_output( $atts ){
 				/* $output .= '<p><label for="mtl-tag-select">'.__('Select/enter all districts/municipalities of your proposal','my-transit-lines').'<br /><input type="text" id="mtl-tag-select" name="mtl-tags" value="" /></label></p>'; */
 				
 				// editor's hints
-				if($author_id > 0 && $author_id == $current_user->ID && $mtl_options2['mtl-current-project-phase']=='rate' && get_post_type($editId)=='mtlproposal') {
+				if(is_user_author() && $mtl_options2['mtl-current-project-phase']=='rate' && get_post_type($editId)=='mtlproposal') {
 					$output .= '<div class="editors-hints-box">';
 					$output .= '<h4>'.__('Editor\'s hints for this proposal','my-transit-lines').'</h4>';
 					if(get_post_meta($editId,'mtl-editors-hints',true)) $output .= '<p>'.get_post_meta($editId,'mtl-editors-hints',true).'</p>';
@@ -400,7 +356,7 @@ function mtl_proposal_form_output( $atts ){
 			$current_description = '';
 			$output .= '<p class="alignleft"><label for="description"><strong>'.$mtl_string['form-description'][$postType].'</strong></label>'."\r\n";
 			if($err && $_POST['description']) $current_description = $_POST['description'];
-			elseif($editId && !$err) $current_description = $current_post->post_content;
+			elseif($editId && !$err) $current_description = get_post($editId)->post_content;
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
 			$output .= mtl_load_wp_editor($current_description,'description',$settings);
 			
@@ -446,9 +402,12 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '</form>'."\r\n";
 		}
 		else if(!$hideform) $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
+		
 		$output .= '</div>'."\r\n";
 		if($editId) $output .= '<script type="text/javascript"> manipulateTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
+		
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
+		
 		if(is_user_logged_in()) return $output;
 		
 	}
@@ -458,11 +417,11 @@ function mtl_proposal_form_output( $atts ){
 			else return '<p><strong>'.sprintf(__('You must <a href="%2$s">login here</a> to edit your proposal.','my-transit-lines'),get_bloginfo('name'),wp_login_url(curPageURL()), wp_registration_url()).'</strong></p>';
 		}
 		else {
-			if($no_more_drafts_allowed) {
+			if(!get_more_drafts_allowed()) {
 				$list_posts = '<ul>';
 				for($i = 0;$i<=1;$i++) {
-					if($i==0) $query_name = $count_query;
-					else $query_name = $count_query2;
+					if($i==0) $query_name = get_drafts_query();
+					else $query_name = get_elaboration_phase_query();
 					while($query_name->have_posts()) {
 						$query_name->the_post();
 						global $post;
@@ -500,6 +459,123 @@ function mtl_proposal_form_output( $atts ){
 	}
 }
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );
+
+/**
+ * Returns the amount of drafts the current user has already created
+ *
+ * @return int
+ */
+function get_drafts_count() {
+	return get_drafts_query()->post_count + get_elaboration_phase_query()->post_count;
+}
+
+/**
+ * Returns a WP_Query of all the drafts the current user has created
+ *
+ * @return WP_Query
+ */
+function get_drafts_query() {
+	$drafts_query_string =  array(
+	'posts_per_page' => -1,
+	'post_type' => 'mtlproposal',
+	'author' => get_current_user_id(),
+	'post_status' => 'draft',
+	);
+	return new WP_Query($drafts_query_string);
+}
+
+/**
+ * Returns a WP_Query of all the elabortion phase proposals the current user has created
+ * 
+ * @return WP_Query
+ */
+function get_elaboration_phase_query() {
+	$elaboration_phase_query_string =  array(
+		'posts_per_page' => -1,
+		'post_type' => 'mtlproposal',
+		'author' => get_current_user_id(),
+		'meta_key' => 'mtl-proposal-phase',
+		'meta_value' => 'elaboration-phase',
+	);
+	return new WP_Query($elaboration_phase_query_string);
+}
+
+/**
+ * Returns the editId for the proposal to edit. Might be the id of a proposal or an empty string for a new proposal
+ *
+ * @return int|string
+ */
+function get_editId() {
+	// editId to find out, defaults to an empty string
+	$editId = '';
+
+	// only if form allowed
+	if(is_user_logged_in() && is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft']) && is_user_author() && !is_rating_possible()) {
+		$editId = get_id();
+	}
+	return $editId;
+}
+
+function is_rating_possible() {
+	return is_edit() && get_option('mtl-option-name2')['mtl-current-project-phase'] == 'rate' && get_post_meta(get_id(), 'mtl-proposal-rateable');
+}
+
+/**
+ * Returns true iff the current user is the author of the post to edit
+ *
+ * @return boolean
+ */
+function is_user_author() {
+	if(is_edit()) {
+		$get_id = get_id();
+		$current_post = get_post($get_id);
+		$current_user = wp_get_current_user();
+		$author_id	  = $current_post->post_author;
+		return ($author_id > 0 && $author_id == $current_user->ID);
+	}
+	return false;
+}
+
+/**
+ * Returns true iff the user is allowed to have more drafts or is editing an existing proposal
+ *
+ * @return bool
+ */
+function get_more_drafts_allowed() {
+	return (is_edit() || get_drafts_count() < get_option('mtl-option-name2')['mtl-allowed-drafts']);
+}
+
+/**
+ * Returns true iff trying to edit an existing proposal
+ * Does not check whether it's the right user or even any user
+ *
+ * @return bool
+ */
+function is_edit() {
+	// prepare existing post data extraction for post editing
+	$get_id = get_id();
+
+	return (bool)$get_id && (bool)get_post_status($get_id);
+}
+
+/**
+ * Returns the id of the proposal the user wants to edit (passed by get request URL parameter) or if none, an empty string
+ *
+ * @return int|string
+ */
+function get_id() {
+	if(isset($_GET['edit_proposal'])) return intval($_GET['edit_proposal']);
+	else return '';
+}
+
+/**
+ * Returns true if the user is either logged in and editing an existing proposal or if new proposals and more drafts are allowed
+ *
+ * @return boolean
+ */
+function is_form_allowed() {
+	return (is_user_logged_in() && is_edit()) || (get_option('mtl-option-name2')['mtl-prevent-new-proposals']!='on' && get_more_drafts_allowed());
+}
 
  /**
  * shortcode [hide-if-editmode]

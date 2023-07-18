@@ -28,10 +28,8 @@ add_filter('the_content','download_GeoJSON');
 function get_download_button($postId) {
 	$output = '';
 
-	$featureData = get_post_meta($postId,'mtl-feature-data',true);
-	if($featureData) {
-		$featureLabelsData = get_post_meta($postId,'mtl-feature-labels-data',true);
-		$category = get_the_category($postId);
+	$category = get_the_category($postId);
+	if($category) {
 		$output .= '
 	<script type="text/javascript">
 		var title_for_geojson = "'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_title($postId)))).'";

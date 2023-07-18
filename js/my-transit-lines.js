@@ -537,6 +537,38 @@ function updateFeaturesData(changeType) {
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
 		if(featureString.includes('LINESTRING')) lineLength = lineLength + transformedFeature.getGeodesicLength();
 		
+		vectors.features[i].geometry.transform(proj4326,projmerc);
+	}
+
+	var wkt_strings = featuresToWKT(vectors.features);
+	
+	// write WKT features data to html element (will be saved to database on form submit)
+	var collection = wkt_strings[0];
+	var labelCollection = wkt_strings[1];
+	$('#mtl-feature-data').val(collection);
+	$('#mtl-feature-labels-data').val(labelCollection);
+	$('#mtl-count-stations').val(countStations);
+	$('#mtl-line-length').val(lineLength);
+	
+	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
+	
+	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
+	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
+}
+
+/**
+ * Returns an array of two strings: the first one is the geometry data, the second one the label data
+ * 
+ * @param {*} features 
+ * @returns string[]
+ */
+function featuresToWKT(features) {
+	featuresData = [];
+	featuresLabelData = [];
+
+	for (var i = 0; i < features.length; i++) {
+		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
+		
 		if(i < countFeatures) {
 			// write all features data to array as WKT
 			featuresData.push(transformedFeature.toString());
@@ -551,19 +583,8 @@ function updateFeaturesData(changeType) {
 		
 		vectors.features[i].geometry.transform(proj4326,projmerc);
 	}
-	
-	// write WKT features data to html element (will be saved to database on form submit)
-	var collection = 'GEOMETRYCOLLECTION('+featuresData+')';
-	var labelCollection = featuresLabelData.join();
-	$('#mtl-feature-data').val(collection);
-	$('#mtl-feature-labels-data').val(labelCollection);
-	$('#mtl-count-stations').val(countStations);
-	$('#mtl-line-length').val(lineLength);
-	
-	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
-	
-	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
-	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
+
+	return ['GEOMETRYCOLLECTION('+featuresData+')',featuresLabelData.join()];
 }
 
 // unselect vector features and write new label, when point feature was selected

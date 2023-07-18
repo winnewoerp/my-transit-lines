@@ -34,8 +34,6 @@ function get_download_button($postId) {
 		$category = get_the_category($postId);
 		$output .= '
 	<script type="text/javascript">
-		var feature_data_for_geojson = "'.$featureData.'";
-		var feature_labels_data_for_geojson = "'.$featureLabelsData.'";
 		var title_for_geojson = "'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_title($postId)))).'";
 		var content_for_geojson = "'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_content(null, false, $postId)))).'";
 		var author_for_geojson = "'.get_the_author($postId).'";

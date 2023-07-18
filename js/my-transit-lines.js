@@ -194,10 +194,7 @@ function initMyTransitLines() {
 
 	if(vectorData) {
 		if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
-			features = wkt.read(vectorData);
-			if(features.constructor != Array) {
-				features = [features];
-			}
+			features = WKTtoFeatures(vectorData);
 			countFeatures = features.length;
 			vectors.addFeatures(features);
 			for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
@@ -585,6 +582,20 @@ function featuresToWKT(features) {
 	}
 
 	return ['GEOMETRYCOLLECTION('+featuresData+')',featuresLabelData.join()];
+}
+
+/**
+ * Returns the array of features, does nothing else
+ * 
+ * @param {*} vectorData 
+ * @returns features[]
+ */
+function WKTtoFeatures(vectorData) {
+	features = wkt.read(vectorData);
+	if(features.constructor != Array) {
+		features = [features];
+	}
+	return features;
 }
 
 // unselect vector features and write new label, when point feature was selected

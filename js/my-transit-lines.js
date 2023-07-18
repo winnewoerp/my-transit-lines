@@ -18,7 +18,7 @@ var graphicZIndexSelected = 5;
 if(typeof themeUrl != 'undefined') var externalGraphicUrl = '';
 if(typeof themeUrl != 'undefined') var externalGraphicUrlSelected = '';
 var label = '';
-var wkt;
+const WKT_FORMAT = new OpenLayers.Format.WKT();
 var warningMessage = '';
 var bahnTyp;
 var stationSelected = -1;
@@ -188,9 +188,6 @@ function initMyTransitLines() {
 	// center map to Hamburg
 	map.setCenter(lonlat, 13);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
-	
-	// load vector data from WKT string
-	wkt = new OpenLayers.Format.WKT();
 
 	if(vectorData) {
 		if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
@@ -591,7 +588,7 @@ function featuresToWKT(features) {
  * @returns features[]
  */
 function WKTtoFeatures(vectorData) {
-	features = wkt.read(vectorData);
+	features = WKT_FORMAT.read(vectorData);
 	if(features.constructor != Array) {
 		features = [features];
 	}
@@ -824,9 +821,6 @@ function importToMap(result) {
 				}								
 			}
 			
-			// output WKT format
-			let WKTFormat = new OpenLayers.Format.WKT();
-			
 			// parse GeoJSON to WKT. Selfmade! TODO: Simplify & cleanup.
 			let WKTFeatures = 'GEOMETRYCOLLECTION(';
 			let firstFeature = true;
@@ -869,7 +863,7 @@ function importToMap(result) {
 				if(WKTFeatures.includes('POINT') || WKTFeatures.includes('LINESTRING') || WKTFeatures.includes('MULTILINESTRING')) {
 					var oldFeatures = vectors.features;
 					vectors.removeAllFeatures();
-					features = wkt.read(WKTFeatures);
+					features = WKT_FORMAT.read(WKTFeatures);
 					if(features.constructor != Array) {
 						features = [features];
 					}

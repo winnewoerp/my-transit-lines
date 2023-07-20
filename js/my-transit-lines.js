@@ -439,7 +439,7 @@ function updateFeaturesData(changeType) {
 	}
 	
 	// set label for updated point feature
-	if(changeType == 'unselected' && stationSelected>=0) {
+	if(changeType == 'unselected') {
 		var labelText = $('#feature-textinput').val();
 		if(vectors.features[stationSelected])  vectors.features[stationSelected].attributes = { name: labelText };
 		stationSelected = -1;

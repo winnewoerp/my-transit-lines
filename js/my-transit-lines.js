@@ -424,6 +424,9 @@ function setToolPreferences() {
 
 // update features added/modified/selected/unselected
 function updateFeaturesData(changeType) {
+	if (changeType == 'unselected' && stationSelected < 0)
+		return;
+
 	var featuresData = [];
 	var featuresLabelData = [];
 	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';

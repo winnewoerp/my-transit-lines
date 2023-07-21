@@ -426,16 +426,11 @@ function updateFeaturesData(changeType) {
 	var featuresData = [];
 	var featuresLabelData = [];
 	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';
-	if(vectors.features[vectors.features.length-1]) var featureString = vectors.features[vectors.features.length-1].geometry.toString();
-	
-	// set label for new point feature
-	if(changeType =='added' && featureString.includes('POINT') && $('#feature-textinput').val()!='') {
-		var labelText = $('#feature-textinput').val();
-		vectors.features[vectors.features.length-1].attributes = { name: labelText };
-	}
-	
+	if(vectors.features[vectors.features.length-1])
+		var isLastFeaturePoint = vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point;
+
 	// set label for updated point feature
-	if(changeType == 'unselected') {
+	if(changeType == 'unselected' && stationSelected >= 0) {
 		var labelText = $('#feature-textinput').val();
 		if(vectors.features[stationSelected])  vectors.features[stationSelected].attributes = { name: labelText };
 		stationSelected = -1;
@@ -447,8 +442,12 @@ function updateFeaturesData(changeType) {
 	
 	if(changeType =='added') {
 		countFeatures++;
-		var featureString = vectors.features[vectors.features.length-1].geometry.toString();
-		if(featureString.includes('POINT')) $('#feature-textinput').val('');
+		if(isLastFeaturePoint) {
+			var labelText = $('#feature-textinput').val();
+			vectors.features[vectors.features.length-1].attributes = { name: labelText };
+
+			$('#feature-textinput').val('');
+		}
 	}
 
 	if (changeType == 'removed') {

@@ -451,12 +451,18 @@ function updateFeaturesData(changeType) {
 		if(featureString.includes('POINT')) $('#feature-textinput').val('');
 	}
 
+	if (changeType == 'removed') {
+		stationSelected = -1;
+		$('.feature-textinput-box').slideUp();
+		$('#feature-textinput').val('');
+		$('.set-name').css('display','none');
+	}
+
 	countStations=0;
 	lineLength=0;
 	
 	// redefine styles of all features
 	for(var i = 0; i < vectors.features.length; i++) {
-		
 		var is_point_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.Point;
 		var is_line_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.LineString;
 

@@ -162,10 +162,6 @@ function initMyTransitLines() {
 		}
 	));
 	
-	
-	
-	
-	// add OSM Mapnik Layer
 	//if($('#mtl-post-form').length) {
 		if($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
 		

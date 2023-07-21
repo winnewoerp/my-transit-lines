@@ -604,6 +604,55 @@ function WKTtoFeatures(vectorData) {
 	return features;
 }
 
+/**
+ * @returns the selected category determined by the selected category checkbox, or if none is selected by the 
+ */
+function getSelectedCategory() {
+	var selectedTransportMode = $('.cat-select:checked').val();
+	if(!selectedTransportMode && parseInt(currentCat)) {
+		selectedTransportMode = currentCat;
+	}
+	if(!selectedTransportMode)
+		selectedTransportMode = defaultCategory;
+	return selectedTransportMode;
+}
+
+/**
+ * Sets the feature style of the specified feature
+ * 
+ * @param {number} featureIndex which feature to set the style of
+ * @param {boolean} selected if the feature is selected
+ * @param {number} categoryId which category the feature has
+ */
+function setFeatureStyle(featureIndex, selected, categoryId) {
+	categoryColor = transportModeStyleData[categoryId][0];
+
+	if (vectors.features[featureIndex].geometry instanceof OpenLayers.Geometry.Point) {
+		vectors.features[featureIndex].style = {
+			externalGraphic: selected ? transportModeStyleData[categoryId][2] : transportModeStyleData[categoryId][1],
+			graphicHeight: selected ? graphicHeightSelected : graphicHeightUnselected,
+			graphicWidth: selected ? graphicWidthSelected : graphicWidthUnselected,
+			graphicZIndex: selected ? graphicZIndexSelected : graphicZIndexUnselectedPoint,
+			label: vectors.features[featureIndex].attributes.name,
+			fontColor: 'white',
+			fontSize: "11px",
+			fontWeight: "bold",
+			labelAlign: "lc",
+			labelXOffset: 20,
+			labelYOffset: 0,
+			labelOutlineColor: selected ? '#07f' : categoryColor,
+			labelOutlineWidth: 5
+		}
+	} else {
+		vectors.features[featureIndex].style = {
+			fillColor: selected ? '#07f' : categoryColor,
+			strokeColor: selected ? '#037' : transportModeStyleData[categoryId][0],
+			strokeWidth: selected ? 3 : strokeWidth,
+			graphicZIndex: selected ? graphicZIndexSelected : graphicZIndexUnselectedLine
+		}
+	}
+}
+
 // unselect vector features and write new label, when point feature was selected
 function unselectAllFeatures() {
 	var newCtrl = new OpenLayers.Control.SelectFeature(vectors);

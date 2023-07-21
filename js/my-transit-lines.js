@@ -610,15 +610,6 @@ function unselectAllFeatures() {
 	newCtrl.activate();
 	newCtrl.unselectAll();
 	newCtrl.destroy();
-	if(stationSelected>=0) {
-		var labelText = $('#feature-textinput').val();
-		vectors.features[stationSelected].attributes = { name: labelText };
-		stationSelected = -1;
-		$('.feature-textinput-box').slideUp();
-		$('#feature-textinput').val('');
-	}
-	lineSelected = -1;
-	updateFeaturesData('unselected');
 }
 
 // fullscreen map

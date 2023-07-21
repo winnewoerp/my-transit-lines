@@ -455,7 +455,7 @@ function updateFeaturesData(changeType) {
 	lineLength=0;
 	
 	// redefine styles of all features
-	for(var i =0; i < vectors.features.length; i++) {
+	for(var i = 0; i < vectors.features.length; i++) {
 		
 		var featureString = vectors.features[i].geometry.toString();
 		if(vectors.selectedFeatures.indexOf(vectors.features[i])==0) {

@@ -17,7 +17,6 @@ var graphicZIndexUnselectedPoint = 1;
 var graphicZIndexSelected = 5;
 if(typeof themeUrl != 'undefined') var externalGraphicUrl = '';
 if(typeof themeUrl != 'undefined') var externalGraphicUrlSelected = '';
-var label = '';
 const WKT_FORMAT = new OpenLayers.Format.WKT();
 var warningMessage = '';
 var defaultCategory;
@@ -30,7 +29,6 @@ var countStations;
 var lineLength;
 if(typeof OpenLayers != 'undefined') var proj4326 = new OpenLayers.Projection("EPSG:4326");
 if(typeof OpenLayers != 'undefined') var projmerc = new OpenLayers.Projection("EPSG:900913");
-var newLabelCollection = [];
 var mtlCenterLon = 0;
 var mtlCenterLat = 0;
 var mtlStandardZoom = 0;
@@ -488,7 +486,7 @@ function updateFeaturesData(changeType) {
 			setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
 		
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
-		if(is_line_feature) lineLength = lineLength + transformedFeature.getGeodesicLength();
+		if(is_line_feature) lineLength += transformedFeature.getGeodesicLength();
 		
 		vectors.features[i].geometry.transform(proj4326,projmerc);
 	}

@@ -20,7 +20,7 @@ if(typeof themeUrl != 'undefined') var externalGraphicUrlSelected = '';
 var label = '';
 const WKT_FORMAT = new OpenLayers.Format.WKT();
 var warningMessage = '';
-var bahnTyp;
+var defaultCategory;
 var stationSelected = -1;
 var lineSelected = -1;
 var viewFullscreen = false;

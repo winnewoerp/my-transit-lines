@@ -457,11 +457,14 @@ function updateFeaturesData(changeType) {
 	// redefine styles of all features
 	for(var i = 0; i < vectors.features.length; i++) {
 		
-		var featureString = vectors.features[i].geometry.toString();
-		if(vectors.selectedFeatures.indexOf(vectors.features[i])==0) {
-			
+		var is_point_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.Point;
+		var is_line_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.LineString;
+
+		if (is_point_feature) {
+			countStations++;
+
 			// if a point feature has been selected: open text entry box
-			if(featureString.includes('POINT') && changeType == 'selected') {
+			if (vectors.selectedFeatures.includes(vectors.features[i]) && changeType == 'selected') {
 				$('#feature-textinput').val(vectors.features[i].attributes.name);
 				$('.feature-textinput-box').slideDown();
 				$('.set-name').css('display','block');
@@ -470,75 +473,17 @@ function updateFeaturesData(changeType) {
 				});
 				stationSelected = i;
 			}
-			if(featureString.includes('LINESTRING') && changeType == 'selected') {
-				lineSelected = i;
-			}
-			
-			// if a feature is selected: set 'selected' styles
-			if(($('.olControlSelectFeatureItemActive').length || $('.olEditorControlDragFeatureItemActive').length) && changeType != 'unselected') {
-				if(featureString.includes('POINT')) {
-					vectors.features[i].style = {
-						externalGraphic: externalGraphicUrlSelected,
-						graphicHeight: graphicHeightSelected,
-						graphicWidth: graphicWidthSelected,
-						graphicZIndex: graphicZIndexSelected,
-						label: vectors.features[i].attributes.name,
-						fontColor: 'white',
-						fontSize: "11px",
-						fontWeight: "bold",
-						labelAlign: "lc",
-						labelXOffset: 20,
-						labelYOffset: 0,
-						labelOutlineColor: '#07f',
-						labelOutlineWidth: 5
-					}
-					countStations++;
-				}
-				else {
-					vectors.features[i].style = {
-						fillColor: '#07f',
-						strokeColor: '#037',
-						strokeWidth: 3,
-						graphicZIndex: graphicZIndexSelected
-					}
-				}
-			}
 		}
-		else {
-		
-			// set styles for unselected features
-			if(featureString.includes('POINT')) {
-				if(!$('.olControlModifyFeatureItemActive').length) {
-					vectors.features[i].style = {
-						externalGraphic: externalGraphicUrl,
-						graphicHeight: graphicHeightUnselected,
-						graphicWidth: graphicWidthUnselected,
-						graphicZIndex: graphicZIndexUnselectedPoint,
-						label: vectors.features[i].attributes.name,
-						fontColor: "white",
-						fontSize: "11px",
-						fontWeight: "bold",
-						labelAlign: "lc",
-						labelXOffset: 20,
-						labelYOffset: 0,
-						labelOutlineColor: fillColor,
-						labelOutlineWidth: 5
-					}
-				}
-				countStations++;
-			}
-			else {
-				vectors.features[i].style = {
-					fillColor: fillColor,
-					strokeColor: strokeColor,
-					strokeWidth: strokeWidth,
-					graphicZIndex: graphicZIndexUnselectedLine
-				}
-			}
+
+		if(is_line_feature && changeType == 'selected' && vectors.selectedFeatures.includes(vectors.features[i])) {
+			lineSelected = i;
 		}
+
+		if (changeType != 'modified')
+			setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
 		
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
-		if(featureString.includes('LINESTRING')) lineLength = lineLength + transformedFeature.getGeodesicLength();
+		if(is_line_feature) lineLength = lineLength + transformedFeature.getGeodesicLength();
 		
 		vectors.features[i].geometry.transform(proj4326,projmerc);
 	}

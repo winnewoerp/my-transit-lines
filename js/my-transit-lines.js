@@ -22,6 +22,7 @@ var wkt;
 var warningMessage = '';
 var bahnTyp;
 var stationSelected = -1;
+var lineSelected = -1;
 var viewFullscreen = false;
 var countFeatures = 0;
 var currentCat;
@@ -424,7 +425,7 @@ function setToolPreferences() {
 
 // update features added/modified/selected/unselected
 function updateFeaturesData(changeType) {
-	if (changeType == 'unselected' && stationSelected < 0)
+	if (changeType == 'unselected' && stationSelected < 0 && lineSelected < 0)
 		return;
 
 	var featuresData = [];
@@ -443,6 +444,7 @@ function updateFeaturesData(changeType) {
 		var labelText = $('#feature-textinput').val();
 		if(vectors.features[stationSelected])  vectors.features[stationSelected].attributes = { name: labelText };
 		stationSelected = -1;
+		lineSelected = -1;
 		$('.feature-textinput-box').slideUp();
 		$('#feature-textinput').val('');
 		$('.set-name').css('display','none');
@@ -472,6 +474,9 @@ function updateFeaturesData(changeType) {
 					unselectAllFeatures();
 				});
 				stationSelected = i;
+			}
+			if(featureString.includes('LINESTRING') && changeType == 'selected') {
+				lineSelected = i;
 			}
 			
 			// if a feature is selected: set 'selected' styles
@@ -583,6 +588,7 @@ function unselectAllFeatures() {
 		$('.feature-textinput-box').slideUp();
 		$('#feature-textinput').val('');
 	}
+	lineSelected = -1;
 	updateFeaturesData('unselected');
 }
 

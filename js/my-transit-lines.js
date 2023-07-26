@@ -334,7 +334,6 @@ function setMapColors() {
 
 // set additional preferences the editing toolbar
 function setToolPreferences() {
-	$('#feature-textinput').val('');
 	$('.olEditorControlDrawPathItemActive, .olEditorControlDrawPathItemInactive').attr('title',objectL10n.buildLine);
 	$('.olEditorControlDrawPointItemActive, .olEditorControlDrawPointItemInactive').attr('title',objectL10n.buildStations);
 	$('.olControlModifyFeatureItemActive, .olControlModifyFeatureItemInactive').attr('title',objectL10n.editObjects);
@@ -644,11 +643,13 @@ function setFeatureStyle(featureIndex, selected, categoryId) {
 
 // unselect vector features and write new label, when point feature was selected
 function unselectAllFeatures() {
-	var newCtrl = new OpenLayers.Control.SelectFeature(vectors);
-	map.addControl(newCtrl);
-	newCtrl.activate();
-	newCtrl.unselectAll();
-	newCtrl.destroy();
+	if (editMode) {
+		var newCtrl = new OpenLayers.Control.SelectFeature(vectors);
+		map.addControl(newCtrl);
+		newCtrl.activate();
+		newCtrl.unselectAll();
+		newCtrl.destroy();
+	}
 }
 
 // fullscreen map

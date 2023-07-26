@@ -317,7 +317,7 @@ function vectorsEvents() {
 		'featureremoved': function() { updateFeaturesData('removed') }, // triggered after a feature was removed
 		'featureselected': function() { updateFeaturesData('selected') }, // triggered when selecting a feature with the select-tool
 		'featureunselected': function() { updateFeaturesData('unselected') }, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
-		'afterfeaturemodified': function() { updateFeaturesData('aftermodified') }, // triggered after a feature was moved or after a feature is no longer "selected" by modify-tool
+		'afterfeaturemodified': function() { saveToHTML(vectors.features); }, // triggered after a feature was moved or after a feature is no longer "selected" by modify-tool
 	});
 }
 
@@ -495,28 +495,45 @@ function updateFeaturesData(changeType) {
 function saveToHTML(features) {
 	var wkt_strings = featuresToWKT(features);
 
-	// TODO: make these into global variables that don't need to be calculated again on each change
-	var count_stations = 0;
-	var line_length = 0.0;
-	for (i = 0; i < features.length; i++) {
-		var is_point_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.Point;
-		var is_line_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.LineString;
-		
-		if (is_point_feature)
-			count_stations++;
-		else if (is_line_feature) {
-			var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
-			if(is_line_feature) line_length += transformedFeature.getGeodesicLength();
-		
-			vectors.features[i].geometry.transform(proj4326,projmerc);
-		}
-	}
-	
 	// write WKT features data to html element (will be saved to database on form submit)
 	$('#mtl-feature-data').val(wkt_strings[0]);
 	$('#mtl-feature-labels-data').val(wkt_strings[1]);
-	$('#mtl-count-stations').val(count_stations);
-	$('#mtl-line-length').val(line_length);
+	$('#mtl-count-stations').val(getCountStations(features));
+	$('#mtl-line-length').val(getLineLength(features));
+}
+
+/**
+ * Returns the amount of stations in the features array
+ * 
+ * @param {*} features the array of features to "search" for stations
+ * @returns the amount of stations placed on the map
+ */
+function getCountStations(features) {
+	var count = 0;
+	for (i = 0; i < features.length; i++) {
+		if (features[i].geometry instanceof OpenLayers.Geometry.Point)
+			count++;
+	}
+	return count;
+}
+
+/**
+ * Returns the combined length of the lines in the features array
+ * 
+ * @param {*} features the array of features to "search" for lines
+ * @returns the combined length of the lines placed on the map
+ */
+function getLineLength(features) {
+	var length = 0.0;
+	for (i = 0; i < features.length; i++) {
+		if (features[i].geometry instanceof OpenLayers.Geometry.LineString) {
+			var transformedFeature = features[i].geometry.transform(projmerc,proj4326);
+			length += transformedFeature.getGeodesicLength();
+
+			features[i].geometry.transform(proj4326,projmerc);
+		}
+	}
+	return length;
 }
 
 /**

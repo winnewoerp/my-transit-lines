@@ -319,7 +319,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/loader.js"></script>'."\r\n";
 			$output .= mtl_localize_script(true);
 			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
-			$output .= '<script type="text/javascript"> '.$output_later.' var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
+			$output .= '<script type="text/javascript"> '.$output_later.' var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; var mtlStandardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {

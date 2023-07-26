@@ -478,25 +478,45 @@ function updateFeaturesData(changeType) {
 
 		if (changeType != 'modified')
 			setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
-		
-		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
-		if(is_line_feature) lineLength += transformedFeature.getGeodesicLength();
-		
-		vectors.features[i].geometry.transform(proj4326,projmerc);
 	}
-
-	var wkt_strings = featuresToWKT(vectors.features);
 	
-	// write WKT features data to html element (will be saved to database on form submit)
-	var collection = wkt_strings[0];
-	var labelCollection = wkt_strings[1];
-	$('#mtl-feature-data').val(collection);
-	$('#mtl-feature-labels-data').val(labelCollection);
-	$('#mtl-count-stations').val(countStations);
-	$('#mtl-line-length').val(lineLength);
+	saveToHTML(vectors.features);
 	
 	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
 	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
+}
+
+/**
+ * Saves the WKT data of the features array passed into the function to the HTML <input> elements.
+ * The data is saved to the DB when the user saves the proposal
+ * 
+ * @param {*} features the array of features to save
+ */
+function saveToHTML(features) {
+	var wkt_strings = featuresToWKT(features);
+
+	// TODO: make these into global variables that don't need to be calculated again on each change
+	var count_stations = 0;
+	var line_length = 0.0;
+	for (i = 0; i < features.length; i++) {
+		var is_point_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.Point;
+		var is_line_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.LineString;
+		
+		if (is_point_feature)
+			count_stations++;
+		else if (is_line_feature) {
+			var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
+			if(is_line_feature) line_length += transformedFeature.getGeodesicLength();
+		
+			vectors.features[i].geometry.transform(proj4326,projmerc);
+		}
+	}
+	
+	// write WKT features data to html element (will be saved to database on form submit)
+	$('#mtl-feature-data').val(wkt_strings[0]);
+	$('#mtl-feature-labels-data').val(wkt_strings[1]);
+	$('#mtl-count-stations').val(count_stations);
+	$('#mtl-line-length').val(line_length);
 }
 
 /**

@@ -16,6 +16,21 @@
 	padding:0;
 }
 
+blockquote {
+	font-size: inherit;
+	padding: 8px 10px 0;
+	margin: 10px 0;
+	background: rgba(0, 0, 0, 0.05);
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-left: 4px solid rgba(0, 0, 0, 0.1);
+	border-radius: 5px;
+	outline: none;
+	color: inherit;
+	float: none;
+	width: auto;
+	left: 0;
+  }
+
 /* basic font settings */
 html {
 	font-size:16px;

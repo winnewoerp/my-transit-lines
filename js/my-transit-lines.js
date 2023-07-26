@@ -416,9 +416,7 @@ function setToolPreferences() {
 function updateFeaturesData(changeType) {
 	if (changeType == 'unselected' && stationSelected < 0 && lineSelected < 0)
 		return;
-
-	var featuresData = [];
-	var featuresLabelData = [];
+	
 	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';
 	if(vectors.features[vectors.features.length-1])
 		var isLastFeaturePoint = vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point;

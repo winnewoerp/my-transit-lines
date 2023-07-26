@@ -312,14 +312,11 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 // create event handlers
 function vectorsEvents() {
 	vectors.events.on({
-		'featureadded': function() { updateFeaturesData('added') }, // triggered after a feature was added
-		'featuremodified': function() {
-			warningMessage = 'Seite wirklich verlassen?';
-			saveToHTML(vectors.features);
-		}, // triggered after part of a feature was modified by the modify-tool
-		'featureremoved': function() { updateFeaturesData('removed') }, // triggered after a feature was removed
-		'featureselected': function() { updateFeaturesData('selected') }, // triggered when selecting a feature with the select-tool
-		'featureunselected': function() { updateFeaturesData('unselected') }, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
+		'featureadded': onFeatureAdded, // triggered after a feature was added
+		'featuremodified': onFeatureModified, // triggered after part of a feature was modified by the modify-tool
+		'featureremoved': onFeatureRemoved, // triggered after a feature was removed
+		'featureselected': onFeatureSelected, // triggered when selecting a feature with the select-tool
+		'featureunselected': onFeatureUnselected, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
 		'afterfeaturemodified': function() { saveToHTML(vectors.features); }, // triggered after a feature was moved or after a feature is no longer "selected" by modify-tool
 	});
 }
@@ -415,84 +412,89 @@ function setToolPreferences() {
 	});
 }
 
-// update features added/modified/selected/unselected
-function updateFeaturesData(changeType) {
-	switch (changeType) {
-		case 'added':
-			warningMessage = 'Seite wirklich verlassen?';
+function onFeatureAdded() {
+	warningMessage = 'Seite wirklich verlassen?';
 
-			countFeatures++;
+	countFeatures++;
 
-			if(vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point) {
-				var labelText = $('#feature-textinput').val();
-				vectors.features[vectors.features.length-1].attributes = { name: labelText };
+	if(vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point) {
+		var labelText = $('#feature-textinput').val();
+		vectors.features[vectors.features.length-1].attributes = { name: labelText };
 
-				$('#feature-textinput').val('');
-			}
-
-			setFeatureStyle(vectors.features.length - 1, false, getSelectedCategory());
-	
-			vectors.redraw();
-
-			break;
-		case 'unselected':
-			if (stationSelected < 0 && !anythingSelected)
-				return;
-			
-			if(stationSelected >= 0) {
-				var labelText = $('#feature-textinput').val();
-				if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes = { name: labelText };
-				stationSelected = -1;
-				$('.feature-textinput-box').slideUp();
-				$('#feature-textinput').val('');
-				$('.set-name').css('display','none');
-			}
-
-			if (vectors.selectedFeatures.length == 0) {
-				anythingSelected = false;
-			}
-
-			for (i = 0; i < vectors.features.length; i++) {
-				setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
-			}
-	
-			vectors.redraw();
-
-			break;
-		case 'removed':
-			warningMessage = 'Seite wirklich verlassen?';
-
-			stationSelected = -1;
-			$('.feature-textinput-box').slideUp();
-			$('#feature-textinput').val('');
-			$('.set-name').css('display','none');
-
-			break;
-		case 'selected':
-			anythingSelected = true;
-
-			for(var i = 0; i < vectors.selectedFeatures.length; i++) {
-				var is_point_feature = vectors.selectedFeatures[i].geometry instanceof OpenLayers.Geometry.Point;
-				var realIndex = vectors.features.indexOf(vectors.selectedFeatures[i]);
-		
-				if (is_point_feature) {
-					// if a point feature has been selected: open text entry box
-					$('#feature-textinput').val(vectors.selectedFeatures[i].attributes.name);
-					$('.feature-textinput-box').slideDown();
-					$('.set-name').css('display','block');
-					$('.set-name').click(function(){
-						unselectAllFeatures();
-					});
-					stationSelected = realIndex;
-				}
-				
-				setFeatureStyle(realIndex, true, getSelectedCategory());
-			}
-	
-			vectors.redraw();
-
-			break;
+		$('#feature-textinput').val('');
 	}
+
+	setFeatureStyle(vectors.features.length - 1, false, getSelectedCategory());
+
+	vectors.redraw();
+
+	saveToHTML(vectors.features);
+}
+
+function onFeatureRemoved() {
+	warningMessage = 'Seite wirklich verlassen?';
+
+	stationSelected = -1;
+	$('.feature-textinput-box').slideUp();
+	$('#feature-textinput').val('');
+	$('.set-name').css('display','none');
+
+	saveToHTML(vectors.features);
+}
+
+function onFeatureModified() {
+	warningMessage = 'Seite wirklich verlassen?';
+	saveToHTML(vectors.features);
+}
+
+function onFeatureSelected() {
+	anythingSelected = true;
+
+	for(var i = 0; i < vectors.selectedFeatures.length; i++) {
+		var is_point_feature = vectors.selectedFeatures[i].geometry instanceof OpenLayers.Geometry.Point;
+		var realIndex = vectors.features.indexOf(vectors.selectedFeatures[i]);
+
+		if (is_point_feature) {
+			// if a point feature has been selected: open text entry box
+			$('#feature-textinput').val(vectors.selectedFeatures[i].attributes.name);
+			$('.feature-textinput-box').slideDown();
+			$('.set-name').css('display','block');
+			$('.set-name').click(function(){
+				unselectAllFeatures();
+			});
+			stationSelected = realIndex;
+		}
+		
+		setFeatureStyle(realIndex, true, getSelectedCategory());
+	}
+
+	vectors.redraw();
+
+	saveToHTML(vectors.features);
+}
+
+function onFeatureUnselected() {
+	if (stationSelected < 0 && !anythingSelected)
+		return;
+	
+	if(stationSelected >= 0) {
+		var labelText = $('#feature-textinput').val();
+		if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes = { name: labelText };
+		stationSelected = -1;
+		$('.feature-textinput-box').slideUp();
+		$('#feature-textinput').val('');
+		$('.set-name').css('display','none');
+	}
+
+	if (vectors.selectedFeatures.length == 0) {
+		anythingSelected = false;
+	}
+
+	for (i = 0; i < vectors.features.length; i++) {
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
+	}
+
+	vectors.redraw();
 	
 	saveToHTML(vectors.features);
 }

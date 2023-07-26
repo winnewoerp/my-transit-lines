@@ -528,21 +528,21 @@ function mtl_filter_media_comment_status( $open, $post_id ) {
 add_filter( 'comments_open', 'mtl_filter_media_comment_status', 10 , 2 );
 
 function allowed_html_tags() {
-    return array(
-        'a' => array(
-            'href' => true,
-            'title' => true,
-        ),
+	return array(
+		'a' => array(
+			'href' => true,
+			'title' => true,
+		),
 		'blockquote' => array(),
-        'br' => array(),
-        'code' => array(),
+		'br' => array(),
+		'code' => array(),
 		'del' => array(),
-        'em' => array(),
+		'em' => array(),
 		'li' => array(),
 		'ol' => array(),
-        'p' => array(),
-        'strong' => array(),
+		'p' => array(),
+		'strong' => array(),
 		'ul' => array(),
-    );
+	);
 }
 add_filter( 'wp_kses_allowed_html', 'allowed_html_tags', 1 );

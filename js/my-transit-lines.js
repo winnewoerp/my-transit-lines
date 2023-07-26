@@ -306,6 +306,7 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 	setToolPreferences();
 	
 	// unselecting all features needed to avoid problems when feature styles are changed
+	unselectAllFeatures();
 	vectorsLayer.redraw();
 }
 

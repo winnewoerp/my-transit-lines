@@ -22,9 +22,6 @@ blockquote {
 	margin: 10px 0;
 	background: rgba(0, 0, 0, 0.05);
 	border: 1px solid rgba(0, 0, 0, 0.1);
-	  border-left-color: rgba(0, 0, 0, 0.1);
-	  border-left-style: solid;
-	  border-left-width: 1px;
 	border-left: 4px solid rgba(0, 0, 0, 0.1);
 	border-radius: 5px;
 	outline: none;

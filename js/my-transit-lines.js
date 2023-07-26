@@ -21,7 +21,7 @@ const WKT_FORMAT = new OpenLayers.Format.WKT();
 var warningMessage = '';
 var defaultCategory;
 var stationSelected = -1;
-var lineSelected = -1;
+var anythingSelected = false;
 var viewFullscreen = false;
 var countFeatures = 0;
 var currentCat;
@@ -313,7 +313,10 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 function vectorsEvents() {
 	vectors.events.on({
 		'featureadded': function() { updateFeaturesData('added') }, // triggered after a feature was added
-		'featuremodified': function() { updateFeaturesData('modified') }, // triggered after part of a feature was modified by the modify-tool
+		'featuremodified': function() {
+			warningMessage = 'Seite wirklich verlassen?';
+			saveToHTML(vectors.features);
+		}, // triggered after part of a feature was modified by the modify-tool
 		'featureremoved': function() { updateFeaturesData('removed') }, // triggered after a feature was removed
 		'featureselected': function() { updateFeaturesData('selected') }, // triggered when selecting a feature with the select-tool
 		'featureunselected': function() { updateFeaturesData('unselected') }, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
@@ -414,76 +417,84 @@ function setToolPreferences() {
 
 // update features added/modified/selected/unselected
 function updateFeaturesData(changeType) {
-	if (changeType == 'unselected' && stationSelected < 0 && lineSelected < 0)
-		return;
-	
-	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';
-	if(vectors.features[vectors.features.length-1])
-		var isLastFeaturePoint = vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point;
+	switch (changeType) {
+		case 'added':
+			warningMessage = 'Seite wirklich verlassen?';
 
-	// set label for updated point feature
-	if(changeType == 'unselected' && stationSelected >= 0) {
-		var labelText = $('#feature-textinput').val();
-		if(vectors.features[stationSelected])  vectors.features[stationSelected].attributes = { name: labelText };
-		stationSelected = -1;
-		lineSelected = -1;
-		$('.feature-textinput-box').slideUp();
-		$('#feature-textinput').val('');
-		$('.set-name').css('display','none');
-	}
-	
-	if(changeType =='added') {
-		countFeatures++;
-		if(isLastFeaturePoint) {
-			var labelText = $('#feature-textinput').val();
-			vectors.features[vectors.features.length-1].attributes = { name: labelText };
+			countFeatures++;
 
-			$('#feature-textinput').val('');
-		}
-	}
+			if(vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point) {
+				var labelText = $('#feature-textinput').val();
+				vectors.features[vectors.features.length-1].attributes = { name: labelText };
 
-	if (changeType == 'removed') {
-		stationSelected = -1;
-		$('.feature-textinput-box').slideUp();
-		$('#feature-textinput').val('');
-		$('.set-name').css('display','none');
-	}
-
-	countStations=0;
-	lineLength=0;
-	
-	// redefine styles of all features
-	for(var i = 0; i < vectors.features.length; i++) {
-		var is_point_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.Point;
-		var is_line_feature = vectors.features[i].geometry instanceof OpenLayers.Geometry.LineString;
-
-		if (is_point_feature) {
-			countStations++;
-
-			// if a point feature has been selected: open text entry box
-			if (vectors.selectedFeatures.includes(vectors.features[i]) && changeType == 'selected') {
-				$('#feature-textinput').val(vectors.features[i].attributes.name);
-				$('.feature-textinput-box').slideDown();
-				$('.set-name').css('display','block');
-				$('.set-name').click(function(){
-					unselectAllFeatures();
-				});
-				stationSelected = i;
+				$('#feature-textinput').val('');
 			}
-		}
 
-		if(is_line_feature && changeType == 'selected' && vectors.selectedFeatures.includes(vectors.features[i])) {
-			lineSelected = i;
-		}
+			setFeatureStyle(vectors.features.length - 1, false, getSelectedCategory());
+	
+			vectors.redraw();
 
-		if (changeType != 'modified')
-			setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
+			break;
+		case 'unselected':
+			if (stationSelected < 0 && !anythingSelected)
+				return;
+			
+			if(stationSelected >= 0) {
+				var labelText = $('#feature-textinput').val();
+				if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes = { name: labelText };
+				stationSelected = -1;
+				$('.feature-textinput-box').slideUp();
+				$('#feature-textinput').val('');
+				$('.set-name').css('display','none');
+			}
+
+			if (vectors.selectedFeatures.length == 0) {
+				anythingSelected = false;
+			}
+
+			for (i = 0; i < vectors.features.length; i++) {
+				setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
+			}
+	
+			vectors.redraw();
+
+			break;
+		case 'removed':
+			warningMessage = 'Seite wirklich verlassen?';
+
+			stationSelected = -1;
+			$('.feature-textinput-box').slideUp();
+			$('#feature-textinput').val('');
+			$('.set-name').css('display','none');
+
+			break;
+		case 'selected':
+			anythingSelected = true;
+
+			for(var i = 0; i < vectors.selectedFeatures.length; i++) {
+				var is_point_feature = vectors.selectedFeatures[i].geometry instanceof OpenLayers.Geometry.Point;
+				var realIndex = vectors.features.indexOf(vectors.selectedFeatures[i]);
+		
+				if (is_point_feature) {
+					// if a point feature has been selected: open text entry box
+					$('#feature-textinput').val(vectors.selectedFeatures[i].attributes.name);
+					$('.feature-textinput-box').slideDown();
+					$('.set-name').css('display','block');
+					$('.set-name').click(function(){
+						unselectAllFeatures();
+					});
+					stationSelected = realIndex;
+				}
+				
+				setFeatureStyle(realIndex, true, getSelectedCategory());
+			}
+	
+			vectors.redraw();
+
+			break;
 	}
 	
 	saveToHTML(vectors.features);
-	
-	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
-	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
 }
 
 /**

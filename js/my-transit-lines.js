@@ -495,8 +495,6 @@ function updateFeaturesData(changeType) {
 	$('#mtl-count-stations').val(countStations);
 	$('#mtl-line-length').val(lineLength);
 	
-	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
-	
 	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
 	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
 }

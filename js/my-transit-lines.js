@@ -18,7 +18,7 @@ var graphicZIndexSelected = 5;
 if(typeof themeUrl != 'undefined') var externalGraphicUrl = '';
 if(typeof themeUrl != 'undefined') var externalGraphicUrlSelected = '';
 var label = '';
-var wkt;
+const WKT_FORMAT = new OpenLayers.Format.WKT();
 var warningMessage = '';
 var bahnTyp;
 var stationSelected = -1;
@@ -189,16 +189,10 @@ function initMyTransitLines() {
 	// center map to the default from the settings
 	map.setCenter(lonlat, mtlStandardZoom);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
-	
-	// load vector data from WKT string
-	wkt = new OpenLayers.Format.WKT();
 
 	if(vectorData) {
 		if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
-			features = wkt.read(vectorData);
-			if(features.constructor != Array) {
-				features = [features];
-			}
+			features = WKTtoFeatures(vectorData);
 			countFeatures = features.length;
 			vectors.addFeatures(features);
 			for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
@@ -538,6 +532,38 @@ function updateFeaturesData(changeType) {
 		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
 		if(featureString.includes('LINESTRING')) lineLength = lineLength + transformedFeature.getGeodesicLength();
 		
+		vectors.features[i].geometry.transform(proj4326,projmerc);
+	}
+
+	var wkt_strings = featuresToWKT(vectors.features);
+	
+	// write WKT features data to html element (will be saved to database on form submit)
+	var collection = wkt_strings[0];
+	var labelCollection = wkt_strings[1];
+	$('#mtl-feature-data').val(collection);
+	$('#mtl-feature-labels-data').val(labelCollection);
+	$('#mtl-count-stations').val(countStations);
+	$('#mtl-line-length').val(lineLength);
+	
+	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
+	
+	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
+	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
+}
+
+/**
+ * Returns an array of two strings: the first one is the geometry data, the second one the label data
+ * 
+ * @param {*} features 
+ * @returns string[]
+ */
+function featuresToWKT(features) {
+	featuresData = [];
+	featuresLabelData = [];
+
+	for (var i = 0; i < features.length; i++) {
+		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
+		
 		if(i < countFeatures) {
 			// write all features data to array as WKT
 			featuresData.push(transformedFeature.toString());
@@ -552,19 +578,22 @@ function updateFeaturesData(changeType) {
 		
 		vectors.features[i].geometry.transform(proj4326,projmerc);
 	}
-	
-	// write WKT features data to html element (will be saved to database on form submit)
-	var collection = 'GEOMETRYCOLLECTION('+featuresData+')';
-	var labelCollection = featuresLabelData.join();
-	$('#mtl-feature-data').val(collection);
-	$('#mtl-feature-labels-data').val(labelCollection);
-	$('#mtl-count-stations').val(countStations);
-	$('#mtl-line-length').val(lineLength);
-	
-	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
-	
-	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
-	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
+
+	return ['GEOMETRYCOLLECTION('+featuresData+')',featuresLabelData.join()];
+}
+
+/**
+ * Returns the array of features, does nothing else
+ * 
+ * @param {*} vectorData 
+ * @returns features[]
+ */
+function WKTtoFeatures(vectorData) {
+	features = WKT_FORMAT.read(vectorData);
+	if(features.constructor != Array) {
+		features = [features];
+	}
+	return features;
 }
 
 // unselect vector features and write new label, when point feature was selected
@@ -803,9 +832,6 @@ function importToMap(result) {
 				}								
 			}
 			
-			// output WKT format
-			let WKTFormat = new OpenLayers.Format.WKT();
-			
 			// parse GeoJSON to WKT. Selfmade! TODO: Simplify & cleanup.
 			let WKTFeatures = 'GEOMETRYCOLLECTION(';
 			let firstFeature = true;
@@ -848,7 +874,7 @@ function importToMap(result) {
 				if(WKTFeatures.includes('POINT') || WKTFeatures.includes('LINESTRING') || WKTFeatures.includes('MULTILINESTRING')) {
 					var oldFeatures = vectors.features;
 					vectors.removeAllFeatures();
-					features = wkt.read(WKTFeatures);
+					features = WKT_FORMAT.read(WKTFeatures);
 					if(features.constructor != Array) {
 						features = [features];
 					}

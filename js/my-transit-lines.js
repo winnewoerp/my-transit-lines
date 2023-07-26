@@ -25,8 +25,6 @@ var anythingSelected = false;
 var viewFullscreen = false;
 var countFeatures = 0;
 var currentCat;
-var countStations;
-var lineLength;
 if(typeof OpenLayers != 'undefined') var proj4326 = new OpenLayers.Projection("EPSG:4326");
 if(typeof OpenLayers != 'undefined') var projmerc = new OpenLayers.Projection("EPSG:900913");
 var mtlCenterLon = 0;

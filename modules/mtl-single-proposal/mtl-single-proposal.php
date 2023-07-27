@@ -48,7 +48,7 @@ function mtl_proposal_map($content) {
 		$output .= "\r";
 		$output .= '<div id="mtl-box">'."\r\n";
 		$output .= '<script type="text/javascript"> var transportModeStyleData = {'.$catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"]}; </script>';
-		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.get_post_meta($post->ID,'mtl-feature-data',true).'"]; var vectorLabelsData = "'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"; var editMode = false; </script>'."\r\n";
+		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.get_post_meta($post->ID,'mtl-feature-data',true).'"]; var vectorLabelsData = ["'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"]; var editMode = false; </script>'."\r\n";
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/Editor/Lang/de.js"></script>'."\r\n";
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/loader.js"></script>'."\r\n";

@@ -183,6 +183,8 @@ function initMyTransitLines() {
 	map.setCenter(lonlat, mtlStandardZoom);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
 
+	// TODO: create and load vectorCategoriesData
+
 	if(vectorData && vectorData.length > 0) {
 		if(vectorData[0].includes('POINT') || vectorData[0].includes('LINESTRING')) {
 			features = WKTtoFeatures(vectorData[0]);
@@ -196,13 +198,13 @@ function initMyTransitLines() {
 	}
 	
 	// load labels data from separate field
-	if(vectorLabelsData) {
-		var vectorLabelsArray = vectorLabelsData.split(',');
+	if(vectorLabelsData && vectorLabelsData.length > 0) {
+		var vectorLabelsArray = vectorLabelsData[0].split(',');
 		for(var i=0; i<vectorLabelsArray.length; i++) {
 			var labelText = decodeSpecialChars(vectorLabelsArray[i]);
 			if(vectors.features[i]) vectors.features[i].attributes.name = labelText;
 		}
-		$('#mtl-feature-labels-data').val(vectorLabelsData);
+		$('#mtl-feature-labels-data').val(vectorLabelsData[0]);
 	}
 	
 	// GeoJSON import handling

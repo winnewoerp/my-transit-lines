@@ -249,7 +249,7 @@ function mtl_proposal_form_output( $atts ){
 				$mtl_feature_labels_data = $_POST['mtl-feature-labels-data'];
 			}
 			
-			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = "'.$mtl_feature_labels_data.'"; var editMode = true; </script>'."\r\n";
+			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var editMode = true; </script>'."\r\n";
 			$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 			
 			// get the current category

@@ -183,15 +183,15 @@ function initMyTransitLines() {
 	map.setCenter(lonlat, mtlStandardZoom);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
 
-	if(vectorData) {
-		if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
-			features = WKTtoFeatures(vectorData);
+	if(vectorData && vectorData.length > 0) {
+		if(vectorData[0].includes('POINT') || vectorData[0].includes('LINESTRING')) {
+			features = WKTtoFeatures(vectorData[0]);
 			countFeatures = features.length;
 			vectors.addFeatures(features);
 			for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
 			zoomToFeatures();
 			$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
-			$('#features-data').val(vectorData);
+			$('#features-data').val(vectorData[0]);
 		}
 	}
 	

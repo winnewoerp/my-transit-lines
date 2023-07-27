@@ -66,7 +66,7 @@ function mtl_post_class_meta_box($post) {
 	$current_category = get_the_category($post->ID);
 	
 	// load JS stuff (copied from mtl-proposal module)
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = "'.$mtl_feature_data.'"; var vectorLabelsData = "'.$mtl_feature_labels_data.'"; var editMode = true; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = "'.$mtl_feature_labels_data.'"; var editMode = true; </script>'."\r\n";
 	$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 	
 	// save category style data to JS array

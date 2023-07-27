@@ -121,9 +121,9 @@ function createThumbMap(mapNumber) {
 		thumbmap[thumbmap.length-1].setCenter(lonlat, 13);
 		
 		wkt = new OpenLayers.Format.WKT();
-		if(vectorData) {
-			if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
-				features = wkt.read(vectorData);
+		if(vectorData && vectorData.length > 0) {
+			if(vectorData[0].includes('POINT') || vectorData[0].includes('LINESTRING')) {
+				features = wkt.read(vectorData[0]);
 				if(features.constructor != Array) {
 					features = [features];
 				}

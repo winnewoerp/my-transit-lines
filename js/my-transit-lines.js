@@ -181,30 +181,32 @@ function initMyTransitLines() {
 	
 	// center map to the default from the settings
 	map.setCenter(lonlat, mtlStandardZoom);
-	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
+	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '', maxWidth: 200, geodesic: true}));
 
-	// TODO: create and load vectorCategoriesData
+	if (vectorData && vectorLabelsData) {
+		for (i = 0; i < vectorData.length && i < vectorLabelsData.length; i++) {
+			if(vectorData[i].includes('POINT') || vectorData[i].includes('LINESTRING')) {
+				var features = WKTtoFeatures(vectorData[i]);
+				countFeatures = features.length;
+				for(var j = 0; j < features.length; j++) features[j].geometry.transform(proj4326,projmerc);
 
-	if(vectorData && vectorData.length > 0) {
-		if(vectorData[0].includes('POINT') || vectorData[0].includes('LINESTRING')) {
-			features = WKTtoFeatures(vectorData[0]);
-			countFeatures = features.length;
-			vectors.addFeatures(features);
-			for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
-			zoomToFeatures();
-			$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
-			$('#features-data').val(vectorData[0]);
+				if (i < vectorLabelsData.length) {
+					var vectorLabelsArray = vectorLabelsData[i].split(',');
+					for(var j = 0; j < vectorLabelsArray.length; j++) {
+						var labelText = decodeSpecialChars(vectorLabelsArray[j]);
+						if(features[j]) features[j].attributes.name = labelText;
+					}
+					$('#mtl-feature-labels-data').val(vectorLabelsData[i]);
+				}
+
+				// TODO: create and load vectorCategoriesData
+
+				vectors.addFeatures(features);
+			}
 		}
-	}
-	
-	// load labels data from separate field
-	if(vectorLabelsData && vectorLabelsData.length > 0) {
-		var vectorLabelsArray = vectorLabelsData[0].split(',');
-		for(var i=0; i<vectorLabelsArray.length; i++) {
-			var labelText = decodeSpecialChars(vectorLabelsArray[i]);
-			if(vectors.features[i]) vectors.features[i].attributes.name = labelText;
-		}
-		$('#mtl-feature-labels-data').val(vectorLabelsData[0]);
+		zoomToFeatures();
+		$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
+		$('#features-data').val(vectorData[0]);
 	}
 	
 	// GeoJSON import handling

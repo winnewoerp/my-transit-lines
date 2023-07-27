@@ -425,7 +425,7 @@ function onFeatureAdded() {
 		$('#feature-textinput').val('');
 	}
 
-	setFeatureStyle(vectors.features.length - 1, false, getSelectedCategory());
+	setFeatureStyle(vectors.features.length - 1, false, getCategoryOf(vectors.features[vectors.features.length - 1]));
 
 	vectors.redraw();
 
@@ -476,7 +476,7 @@ function onFeatureSelected() {
 			stationSelected = realIndex;
 		}
 		
-		setFeatureStyle(realIndex, true, getSelectedCategory());
+		setFeatureStyle(realIndex, true, getCategoryOf(vectors.selectedFeatures[i]));
 	}
 
 	vectors.redraw();
@@ -505,7 +505,7 @@ function onFeatureUnselected() {
 	}
 
 	for (i = 0; i < vectors.features.length; i++) {
-		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]));
 	}
 
 	vectors.redraw();
@@ -606,6 +606,17 @@ function WKTtoFeatures(vectorData) {
 		features = [features];
 	}
 	return features;
+}
+
+/**
+ * Get the category of the feature passed to the function.
+ * This is the category saved in feature.attributes.category if present of getSelectedCategory() otherwise
+ * 
+ * @param {*} feature the feature to get the category of
+ * @returns the category of the feature passed to the function
+ */
+function getCategoryOf(feature) {
+	return feature.attributes.category ? feature.attributes.category : getSelectedCategory();
 }
 
 /**

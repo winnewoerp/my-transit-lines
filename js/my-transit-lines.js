@@ -200,7 +200,7 @@ function initMyTransitLines() {
 		var vectorLabelsArray = vectorLabelsData.split(',');
 		for(var i=0; i<vectorLabelsArray.length; i++) {
 			var labelText = decodeSpecialChars(vectorLabelsArray[i]);
-			if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
+			if(vectors.features[i]) vectors.features[i].attributes.name = labelText;
 		}
 		$('#mtl-feature-labels-data').val(vectorLabelsData);
 	}
@@ -420,7 +420,7 @@ function onFeatureAdded() {
 
 	if(vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point) {
 		var labelText = $('#feature-textinput').val();
-		vectors.features[vectors.features.length-1].attributes = { name: labelText };
+		vectors.features[vectors.features.length-1].attributes.name = labelText;
 
 		$('#feature-textinput').val('');
 	}
@@ -493,7 +493,7 @@ function onFeatureUnselected() {
 	
 	if(stationSelected >= 0) {
 		var labelText = $('#feature-textinput').val();
-		if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes = { name: labelText };
+		if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes.name = labelText;
 		stationSelected = -1;
 		$('.feature-textinput-box').slideUp();
 		$('#feature-textinput').val('');
@@ -952,7 +952,7 @@ function importToMap(result) {
 						var vectorLabelsArray = stationNames.split(',');
 						for(var i=0; i<vectorLabelsArray.length; i++) {
 							var labelText = decodeSpecialChars(vectorLabelsArray[i]);
-							if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
+							if(vectors.features[i]) vectors.features[i].attributes.name = labelText;
 						}
 					}
 					var newFeatures = vectors.features;

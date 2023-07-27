@@ -183,23 +183,23 @@ function initMyTransitLines() {
 	map.setCenter(lonlat, mtlStandardZoom);
 	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '', maxWidth: 200, geodesic: true}));
 
-	if (vectorData && vectorLabelsData) {
-		for (i = 0; i < vectorData.length && i < vectorLabelsData.length; i++) {
+	if (vectorData && vectorLabelsData && vectorCategoriesData) {
+		for (var i = 0; i < vectorData.length && i < vectorLabelsData.length && i < vectorCategoriesData.length; i++) {
 			if(vectorData[i].includes('POINT') || vectorData[i].includes('LINESTRING')) {
 				var features = WKTtoFeatures(vectorData[i]);
-				countFeatures = features.length;
+				countFeatures += features.length;
 				for(var j = 0; j < features.length; j++) features[j].geometry.transform(proj4326,projmerc);
 
-				if (i < vectorLabelsData.length) {
-					var vectorLabelsArray = vectorLabelsData[i].split(',');
-					for(var j = 0; j < vectorLabelsArray.length; j++) {
-						var labelText = decodeSpecialChars(vectorLabelsArray[j]);
-						if(features[j]) features[j].attributes.name = labelText;
-					}
-					$('#mtl-feature-labels-data').val(vectorLabelsData[i]);
+				var vectorLabelsArray = vectorLabelsData[i].split(',');
+				for(var j = 0; j < vectorLabelsArray.length; j++) {
+					var labelText = decodeSpecialChars(vectorLabelsArray[j]);
+					if(features[j]) features[j].attributes.name = labelText;
 				}
+				$('#mtl-feature-labels-data').val(vectorLabelsData[i]);
 
-				// TODO: create and load vectorCategoriesData
+				for (var j = 0; j < features.length; j++) {
+					features[j].attributes.category = vectorCategoriesData[i];
+				}
 
 				vectors.addFeatures(features);
 			}

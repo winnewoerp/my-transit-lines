@@ -579,6 +579,18 @@ function allowed_html_tags() {
 			'style' => true,
 			'class' => true,
 		),
+		'table' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'td' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'th' => array(
+			'style' => true,
+			'class' => true,
+		),
 		'ul' => array(
 			'style' => true,
 			'class' => true,

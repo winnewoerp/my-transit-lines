@@ -410,6 +410,9 @@ function setToolPreferences() {
 	});
 }
 
+/**
+ * Event handler for features being added
+ */
 function onFeatureAdded() {
 	warningMessage = 'Seite wirklich verlassen?';
 
@@ -429,6 +432,9 @@ function onFeatureAdded() {
 	saveToHTML(vectors.features);
 }
 
+/**
+ * Event handler for features being removed
+ */
 function onFeatureRemoved() {
 	warningMessage = 'Seite wirklich verlassen?';
 
@@ -440,11 +446,17 @@ function onFeatureRemoved() {
 	saveToHTML(vectors.features);
 }
 
+/**
+ * Event handler for features being modified
+ */
 function onFeatureModified() {
 	warningMessage = 'Seite wirklich verlassen?';
 	saveToHTML(vectors.features);
 }
 
+/**
+ * Event handler for features being selected
+ */
 function onFeatureSelected() {
 	anythingSelected = true;
 
@@ -471,6 +483,9 @@ function onFeatureSelected() {
 	saveToHTML(vectors.features);
 }
 
+/**
+ * Event handler for features being unselected
+ */
 function onFeatureUnselected() {
 	if (stationSelected < 0 && !anythingSelected)
 		return;

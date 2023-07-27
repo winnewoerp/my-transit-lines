@@ -439,6 +439,7 @@ function onFeatureRemoved() {
 	warningMessage = 'Seite wirklich verlassen?';
 
 	stationSelected = -1;
+	anythingSelected = false;
 	$('.feature-textinput-box').slideUp();
 	$('#feature-textinput').val('');
 	$('.set-name').css('display','none');

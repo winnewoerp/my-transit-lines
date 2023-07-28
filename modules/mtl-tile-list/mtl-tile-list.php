@@ -108,7 +108,7 @@ function mtl_tile_list_output($atts) {
 			's' => $search,
 		);
 
-		if ($oder_by!='rand') {
+		if ($order_by!='rand') {
 			$query_string['paged'] = $paged;
 			$query_string['post_status'] = $status;
 

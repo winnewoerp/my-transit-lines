@@ -21,6 +21,7 @@ include( get_template_directory() . '/modules/mtl-login-register/mtl-login-regis
 include( get_template_directory() . '/modules/mtl-admin-menu/mtl-admin-menu.php'); // dashboard admin section module
 include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // new proposal form
 include( get_template_directory() . '/modules/mtl-single-proposal/mtl-single-proposal.php'); // single proposal custom display
+include( get_template_directory() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.php'); // multiple proposal custom display
 include( get_template_directory() . '/modules/mtl-tile-list/mtl-tile-list.php'); // proposal tile list with small maps
 include( get_template_directory() . '/modules/mtl-custom-posttypes/mtl-custom-posttypes.php'); // create the custom posttypes necessary for the theme
 include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comment-notification.php'); // custom comment notification, to be extended

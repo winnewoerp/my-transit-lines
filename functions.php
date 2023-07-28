@@ -532,17 +532,69 @@ function allowed_html_tags() {
 		'a' => array(
 			'href' => true,
 			'title' => true,
+			'style' => true,
+			'class' => true,
 		),
-		'blockquote' => array(),
-		'br' => array(),
-		'code' => array(),
-		'del' => array(),
-		'em' => array(),
-		'li' => array(),
-		'ol' => array(),
-		'p' => array(),
-		'strong' => array(),
-		'ul' => array(),
+		'blockquote' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'br' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'code' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'del' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'div' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'em' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'li' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'ol' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'p' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'span' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'strong' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'table' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'td' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'th' => array(
+			'style' => true,
+			'class' => true,
+		),
+		'ul' => array(
+			'style' => true,
+			'class' => true,
+		),
 	);
 }
 add_filter( 'wp_kses_allowed_html', 'allowed_html_tags', 1 );

@@ -76,7 +76,7 @@ function mtl_post_class_meta_box($post) {
 	$output_later = '';
 	foreach($all_categories as $single_category) {
 		$catid = $single_category->cat_ID;
-		if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later .= 'strokeColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; fillColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; externalGraphicUrl = "'.$mtl_options['mtl-image-cat'.$catid].'"; externalGraphicUrlSelected = "'.$mtl_options['mtl-image-selected-cat'.$catid].'"; bahnTyp = "'.$single_category->name.'";';
+		if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later .= 'strokeColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; fillColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; externalGraphicUrl = "'.$mtl_options['mtl-image-cat'.$catid].'"; externalGraphicUrlSelected = "'.$mtl_options['mtl-image-selected-cat'.$catid].'"; defaultCategory = "'.$catid.'";';
 		if($mtl_options['mtl-use-cat'.$catid] == true) {
 			if($count_cats) $output .= ',';
 			$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"]';

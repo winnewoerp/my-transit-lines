@@ -17,20 +17,16 @@ var graphicZIndexUnselectedPoint = 1;
 var graphicZIndexSelected = 5;
 if(typeof themeUrl != 'undefined') var externalGraphicUrl = '';
 if(typeof themeUrl != 'undefined') var externalGraphicUrlSelected = '';
-var label = '';
 const WKT_FORMAT = new OpenLayers.Format.WKT();
 var warningMessage = '';
-var bahnTyp;
+var defaultCategory;
 var stationSelected = -1;
-var lineSelected = -1;
+var anythingSelected = false;
 var viewFullscreen = false;
 var countFeatures = 0;
 var currentCat;
-var countStations;
-var lineLength;
 if(typeof OpenLayers != 'undefined') var proj4326 = new OpenLayers.Projection("EPSG:4326");
 if(typeof OpenLayers != 'undefined') var projmerc = new OpenLayers.Projection("EPSG:900913");
-var newLabelCollection = [];
 var mtlCenterLon = 0;
 var mtlCenterLat = 0;
 var mtlStandardZoom = 0;
@@ -164,10 +160,6 @@ function initMyTransitLines() {
 		}
 	));
 	
-	
-	
-	
-	// add OSM Mapnik Layer
 	//if($('#mtl-post-form').length) {
 		if($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
 		
@@ -312,18 +304,19 @@ function changeLinetype(vectorsLayer,iconSize,lineWidth) {
 	setToolPreferences();
 	
 	// unselecting all features needed to avoid problems when feature styles are changed
+	unselectAllFeatures();
 	vectorsLayer.redraw();
 }
 
 // create event handlers
 function vectorsEvents() {
 	vectors.events.on({
-		'featureadded': function() { updateFeaturesData('added') }, // triggered after a feature was added
-		'featuremodified': function() { updateFeaturesData('modified') }, // triggered after part of a feature was modified by the modify-tool
-		'featureremoved': function() { updateFeaturesData('removed') }, // triggered after a feature was removed
-		'featureselected': function() { updateFeaturesData('selected') }, // triggered when selecting a feature with the select-tool
-		'featureunselected': function() { updateFeaturesData('unselected') }, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
-		'afterfeaturemodified': function() { updateFeaturesData('aftermodified') }, // triggered after a feature was moved or after a feature is no longer "selected" by modify-tool
+		'featureadded': onFeatureAdded, // triggered after a feature was added
+		'featuremodified': onFeatureModified, // triggered after part of a feature was modified by the modify-tool
+		'featureremoved': onFeatureRemoved, // triggered after a feature was removed
+		'featureselected': onFeatureSelected, // triggered when selecting a feature with the select-tool
+		'featureunselected': onFeatureUnselected, // triggered when unselecting a feature with the select-tool or when automatically being unselected when selecting a different tool or setting a label
+		'afterfeaturemodified': function() { saveToHTML(vectors.features); }, // triggered after a feature was moved or after a feature is no longer "selected" by modify-tool
 	});
 }
 
@@ -341,7 +334,6 @@ function setMapColors() {
 
 // set additional preferences the editing toolbar
 function setToolPreferences() {
-	$('#feature-textinput').val('');
 	$('.olEditorControlDrawPathItemActive, .olEditorControlDrawPathItemInactive').attr('title',objectL10n.buildLine);
 	$('.olEditorControlDrawPointItemActive, .olEditorControlDrawPointItemInactive').attr('title',objectL10n.buildStations);
 	$('.olControlModifyFeatureItemActive, .olControlModifyFeatureItemInactive').attr('title',objectL10n.editObjects);
@@ -418,145 +410,157 @@ function setToolPreferences() {
 	});
 }
 
-// update features added/modified/selected/unselected
-function updateFeaturesData(changeType) {
-	if (changeType == 'unselected' && stationSelected < 0 && lineSelected < 0)
-		return;
+/**
+ * Event handler for features being added
+ */
+function onFeatureAdded() {
+	warningMessage = 'Seite wirklich verlassen?';
 
-	var featuresData = [];
-	var featuresLabelData = [];
-	if(changeType =='added' || changeType =='modified' || changeType =='removed') warningMessage = 'Seite wirklich verlassen?';
-	if(vectors.features[vectors.features.length-1]) var featureString = vectors.features[vectors.features.length-1].geometry.toString();
-	
-	// set label for new point feature
-	if(changeType =='added' && featureString.includes('POINT') && $('#feature-textinput').val()!='') {
+	countFeatures++;
+
+	if(vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point) {
 		var labelText = $('#feature-textinput').val();
 		vectors.features[vectors.features.length-1].attributes = { name: labelText };
+
+		$('#feature-textinput').val('');
 	}
+
+	setFeatureStyle(vectors.features.length - 1, false, getSelectedCategory());
+
+	vectors.redraw();
+
+	saveToHTML(vectors.features);
+}
+
+/**
+ * Event handler for features being removed
+ */
+function onFeatureRemoved() {
+	warningMessage = 'Seite wirklich verlassen?';
+
+	stationSelected = -1;
+	anythingSelected = false;
+	$('.feature-textinput-box').slideUp();
+	$('#feature-textinput').val('');
+	$('.set-name').css('display','none');
+
+	saveToHTML(vectors.features);
+}
+
+/**
+ * Event handler for features being modified
+ */
+function onFeatureModified() {
+	warningMessage = 'Seite wirklich verlassen?';
+	saveToHTML(vectors.features);
+}
+
+/**
+ * Event handler for features being selected
+ */
+function onFeatureSelected() {
+	anythingSelected = true;
+
+	for(var i = 0; i < vectors.selectedFeatures.length; i++) {
+		var is_point_feature = vectors.selectedFeatures[i].geometry instanceof OpenLayers.Geometry.Point;
+		var realIndex = vectors.features.indexOf(vectors.selectedFeatures[i]);
+
+		if (is_point_feature) {
+			// if a point feature has been selected: open text entry box
+			$('#feature-textinput').val(vectors.selectedFeatures[i].attributes.name);
+			$('.feature-textinput-box').slideDown();
+			$('.set-name').css('display','block');
+			$('.set-name').click(function(){
+				unselectAllFeatures();
+			});
+			stationSelected = realIndex;
+		}
+		
+		setFeatureStyle(realIndex, true, getSelectedCategory());
+	}
+
+	vectors.redraw();
+
+	saveToHTML(vectors.features);
+}
+
+/**
+ * Event handler for features being unselected
+ */
+function onFeatureUnselected() {
+	if (stationSelected < 0 && !anythingSelected)
+		return;
 	
-	// set label for updated point feature
-	if(changeType == 'unselected') {
+	if(stationSelected >= 0) {
 		var labelText = $('#feature-textinput').val();
-		if(vectors.features[stationSelected])  vectors.features[stationSelected].attributes = { name: labelText };
+		if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes = { name: labelText };
 		stationSelected = -1;
-		lineSelected = -1;
 		$('.feature-textinput-box').slideUp();
 		$('#feature-textinput').val('');
 		$('.set-name').css('display','none');
 	}
-	
-	if(changeType =='added') {
-		countFeatures++;
-		var featureString = vectors.features[vectors.features.length-1].geometry.toString();
-		if(featureString.includes('POINT')) $('#feature-textinput').val('');
+
+	if (vectors.selectedFeatures.length == 0) {
+		anythingSelected = false;
 	}
 
-	countStations=0;
-	lineLength=0;
-	
-	// redefine styles of all features
-	for(var i =0; i < vectors.features.length; i++) {
-		
-		var featureString = vectors.features[i].geometry.toString();
-		if(vectors.selectedFeatures.indexOf(vectors.features[i])==0) {
-			
-			// if a point feature has been selected: open text entry box
-			if(featureString.includes('POINT') && changeType == 'selected') {
-				$('#feature-textinput').val(vectors.features[i].attributes.name);
-				$('.feature-textinput-box').slideDown();
-				$('.set-name').css('display','block');
-				$('.set-name').click(function(){
-					unselectAllFeatures();
-				});
-				stationSelected = i;
-			}
-			if(featureString.includes('LINESTRING') && changeType == 'selected') {
-				lineSelected = i;
-			}
-			
-			// if a feature is selected: set 'selected' styles
-			if(($('.olControlSelectFeatureItemActive').length || $('.olEditorControlDragFeatureItemActive').length) && changeType != 'unselected') {
-				if(featureString.includes('POINT')) {
-					vectors.features[i].style = {
-						externalGraphic: externalGraphicUrlSelected,
-						graphicHeight: graphicHeightSelected,
-						graphicWidth: graphicWidthSelected,
-						graphicZIndex: graphicZIndexSelected,
-						label: vectors.features[i].attributes.name,
-						fontColor: 'white',
-						fontSize: "11px",
-						fontWeight: "bold",
-						labelAlign: "lc",
-						labelXOffset: 20,
-						labelYOffset: 0,
-						labelOutlineColor: '#07f',
-						labelOutlineWidth: 5
-					}
-					countStations++;
-				}
-				else {
-					vectors.features[i].style = {
-						fillColor: '#07f',
-						strokeColor: '#037',
-						strokeWidth: 3,
-						graphicZIndex: graphicZIndexSelected
-					}
-				}
-			}
-		}
-		else {
-		
-			// set styles for unselected features
-			if(featureString.includes('POINT')) {
-				if(!$('.olControlModifyFeatureItemActive').length) {
-					vectors.features[i].style = {
-						externalGraphic: externalGraphicUrl,
-						graphicHeight: graphicHeightUnselected,
-						graphicWidth: graphicWidthUnselected,
-						graphicZIndex: graphicZIndexUnselectedPoint,
-						label: vectors.features[i].attributes.name,
-						fontColor: "white",
-						fontSize: "11px",
-						fontWeight: "bold",
-						labelAlign: "lc",
-						labelXOffset: 20,
-						labelYOffset: 0,
-						labelOutlineColor: fillColor,
-						labelOutlineWidth: 5
-					}
-				}
-				countStations++;
-			}
-			else {
-				vectors.features[i].style = {
-					fillColor: fillColor,
-					strokeColor: strokeColor,
-					strokeWidth: strokeWidth,
-					graphicZIndex: graphicZIndexUnselectedLine
-				}
-			}
-		}
-		
-		var transformedFeature = vectors.features[i].geometry.transform(projmerc,proj4326);
-		if(featureString.includes('LINESTRING')) lineLength = lineLength + transformedFeature.getGeodesicLength();
-		
-		vectors.features[i].geometry.transform(proj4326,projmerc);
+	for (i = 0; i < vectors.features.length; i++) {
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
 	}
 
-	var wkt_strings = featuresToWKT(vectors.features);
+	vectors.redraw();
 	
+	saveToHTML(vectors.features);
+}
+
+/**
+ * Saves the WKT data of the features array passed into the function to the HTML <input> elements.
+ * The data is saved to the DB when the user saves the proposal
+ * 
+ * @param {*} features the array of features to save
+ */
+function saveToHTML(features) {
+	var wkt_strings = featuresToWKT(features);
+
 	// write WKT features data to html element (will be saved to database on form submit)
-	var collection = wkt_strings[0];
-	var labelCollection = wkt_strings[1];
-	$('#mtl-feature-data').val(collection);
-	$('#mtl-feature-labels-data').val(labelCollection);
-	$('#mtl-count-stations').val(countStations);
-	$('#mtl-line-length').val(lineLength);
-	
-	if(changeType == 'added' || changeType == 'modified') lastFeatureLabels = labelCollection
-	
-	// only redraw vectors when 'modify' tool not selected (prevent overwriting of styles for feature modification)
-	if(!$('.olControlModifyFeatureItemActive').length) vectors.redraw();
+	$('#mtl-feature-data').val(wkt_strings[0]);
+	$('#mtl-feature-labels-data').val(wkt_strings[1]);
+	$('#mtl-count-stations').val(getCountStations(features));
+	$('#mtl-line-length').val(getLineLength(features));
+}
+
+/**
+ * Returns the amount of stations in the features array
+ * 
+ * @param {*} features the array of features to "search" for stations
+ * @returns the amount of stations placed on the map
+ */
+function getCountStations(features) {
+	var count = 0;
+	for (i = 0; i < features.length; i++) {
+		if (features[i].geometry instanceof OpenLayers.Geometry.Point)
+			count++;
+	}
+	return count;
+}
+
+/**
+ * Returns the combined length of the lines in the features array
+ * 
+ * @param {*} features the array of features to "search" for lines
+ * @returns the combined length of the lines placed on the map
+ */
+function getLineLength(features) {
+	var length = 0.0;
+	for (i = 0; i < features.length; i++) {
+		if (features[i].geometry instanceof OpenLayers.Geometry.LineString) {
+			var transformedFeature = features[i].geometry.transform(projmerc,proj4326);
+			length += transformedFeature.getGeodesicLength();
+
+			features[i].geometry.transform(proj4326,projmerc);
+		}
+	}
+	return length;
 }
 
 /**
@@ -604,22 +608,64 @@ function WKTtoFeatures(vectorData) {
 	return features;
 }
 
+/**
+ * @returns the selected category determined by the selected category checkbox, or if none is selected by the 
+ */
+function getSelectedCategory() {
+	var selectedTransportMode = $('.cat-select:checked').val();
+	if(!selectedTransportMode && parseInt(currentCat)) {
+		selectedTransportMode = currentCat;
+	}
+	if(!selectedTransportMode)
+		selectedTransportMode = defaultCategory;
+	return selectedTransportMode;
+}
+
+/**
+ * Sets the feature style of the specified feature
+ * 
+ * @param {number} featureIndex which feature to set the style of
+ * @param {boolean} selected if the feature is selected
+ * @param {number} categoryId which category the feature has
+ */
+function setFeatureStyle(featureIndex, selected, categoryId) {
+	categoryColor = transportModeStyleData[categoryId][0];
+
+	if (vectors.features[featureIndex].geometry instanceof OpenLayers.Geometry.Point) {
+		vectors.features[featureIndex].style = {
+			externalGraphic: selected ? transportModeStyleData[categoryId][2] : transportModeStyleData[categoryId][1],
+			graphicHeight: selected ? graphicHeightSelected : graphicHeightUnselected,
+			graphicWidth: selected ? graphicWidthSelected : graphicWidthUnselected,
+			graphicZIndex: selected ? graphicZIndexSelected : graphicZIndexUnselectedPoint,
+			label: vectors.features[featureIndex].attributes.name,
+			fontColor: 'white',
+			fontSize: "11px",
+			fontWeight: "bold",
+			labelAlign: "lc",
+			labelXOffset: 20,
+			labelYOffset: 0,
+			labelOutlineColor: selected ? '#07f' : categoryColor,
+			labelOutlineWidth: 5
+		}
+	} else {
+		vectors.features[featureIndex].style = {
+			fillColor: selected ? '#07f' : categoryColor,
+			strokeColor: selected ? '#037' : transportModeStyleData[categoryId][0],
+			strokeWidth: selected ? 3 : strokeWidth,
+			graphicZIndex: selected ? graphicZIndexSelected : graphicZIndexUnselectedLine
+		}
+	}
+}
+
 // unselect vector features and write new label, when point feature was selected
 function unselectAllFeatures() {
-	var newCtrl = new OpenLayers.Control.SelectFeature(vectors);
-	map.addControl(newCtrl);
-	newCtrl.activate();
-	newCtrl.unselectAll();
-	newCtrl.destroy();
-	if(stationSelected>=0) {
-		var labelText = $('#feature-textinput').val();
-		vectors.features[stationSelected].attributes = { name: labelText };
-		stationSelected = -1;
-		$('.feature-textinput-box').slideUp();
-		$('#feature-textinput').val('');
+	if (editMode) {
+		var newCtrl = new OpenLayers.Control.SelectFeature(vectors);
+		map.addControl(newCtrl);
+		newCtrl.activate();
+		newCtrl.unselectAll();
+		newCtrl.destroy();
 	}
-	lineSelected = -1;
-	updateFeaturesData('unselected');
 }
 
 // fullscreen map

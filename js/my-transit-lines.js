@@ -245,7 +245,7 @@ function initMyTransitLines() {
 		editor.startEditMode();
 	}
 		
-	// set styles of lines to selected transport mode	
+	// set styles of lines to selected transport mode
 	changeLinetype();
 	
 	// set preferences when map is loaded
@@ -255,29 +255,28 @@ function initMyTransitLines() {
 	layerOSM.events.register('loadend', layerOSM, vectorsEvents);
 }
 
-function changeLinetype(vectorsLayer,iconSize,lineWidth) {
-	if(!lineWidth) lineWidth = strokeWidth;
-	if(!iconSize) {
-		var currentGraphicHeightUnselected = graphicHeightUnselected;
-		var currentGraphicWidthUnselected = graphicWidthUnselected;
+function changeLinetype() {
+	for (i = 0; i < vectors.features.length; i++) {
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]));
 	}
-	else {
-		var currentGraphicHeightUnselected = iconSize;
-		var currentGraphicWidthUnselected = iconSize;
-	}
-	if(!vectorsLayer) vectorsLayer = vectors;
-	// set style for selected transport mode
-	var selectedTransportMode = $('.cat-select:checked').val();
-	if(selectedTransportMode || parseInt(currentCat)) {
-		if(currentCat) selectedTransportMode = currentCat;
-		fillColor = transportModeStyleData[selectedTransportMode][0];
-		strokeColor = transportModeStyleData[selectedTransportMode][0];
-		externalGraphicUrl = transportModeStyleData[selectedTransportMode][1];
-		externalGraphicUrlSelected = transportModeStyleData[selectedTransportMode][2];
+	setToolPreferences();
+	unselectAllFeatures();
+	vectors.redraw();
+}
+
+function changeLinetypeTileList(vectorsLayer,iconSize,lineWidth) {
+	var currentGraphicHeightUnselected = iconSize;
+	var currentGraphicWidthUnselected = iconSize;
+	
+	if(parseInt(currentCat)) {
+		fillColor = transportModeStyleData[currentCat][0];
+		strokeColor = transportModeStyleData[currentCat][0];
+		externalGraphicUrl = transportModeStyleData[currentCat][1];
+		externalGraphicUrlSelected = transportModeStyleData[currentCat][2];
 	}
 	
 	// redraw all features on vector layer using the selected style
-	for(var i =0; i < vectorsLayer.features.length; i++) {
+	for(var i = 0; i < vectorsLayer.features.length; i++) {
 		var featureString = vectorsLayer.features[i].geometry.toString();
 		var currentFeatureName = '';
 		if(vectorsLayer.features[i].attributes.name) {

@@ -139,7 +139,7 @@ function createThumbMap(mapNumber) {
 		externalGraphicUrlSelected = transportModeStyleData[currentCat][2];
 		if(countFeatures>2) var symbolSize = 13;
 		else var symbolSize = 20;
-		changeLinetype(thumbvectors[thumbmap.length-1],symbolSize,3);
+		changeLinetypeTileList(thumbvectors[thumbmap.length-1],symbolSize,3);
 		
 		$('.olLayerGrid').css('opacity','.2');
 	}	

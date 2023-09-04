@@ -682,6 +682,40 @@ function unselectAllFeatures() {
 	}
 }
 
+// Deletes all old features (including possible changes made to them) and loads the new features from vectorData, vectorLabelsData and vectorCategoriesData
+function loadNewFeatures() {
+	map.removeLayer(vectors);
+	vectors.destroy();
+
+	vectors = new OpenLayers.Layer.Vector(objectL10n.vectorLayerTitle, { styleMap: new OpenLayers.StyleMap(style), rendererOptions: { zIndexing: true } });
+	map.addLayer(vectors);
+
+	if (vectorData && vectorLabelsData && vectorCategoriesData) {
+		for (var i = 0; i < vectorData.length && i < vectorLabelsData.length && i < vectorCategoriesData.length; i++) {
+			if(vectorData[i].includes('POINT') || vectorData[i].includes('LINESTRING')) {
+				var features = WKTtoFeatures(vectorData[i]);
+				countFeatures += features.length;
+				for(var j = 0; j < features.length; j++) features[j].geometry.transform(proj4326,projmerc);
+
+				var vectorLabelsArray = vectorLabelsData[i].split(',');
+				for(var j = 0; j < vectorLabelsArray.length; j++) {
+					var labelText = decodeSpecialChars(vectorLabelsArray[j]);
+					if(features[j]) features[j].attributes.name = labelText;
+				}
+				$('#mtl-feature-labels-data').val(vectorLabelsData[i]);
+
+				for (var j = 0; j < features.length; j++) {
+					features[j].attributes.category = vectorCategoriesData[i];
+				}
+
+				vectors.addFeatures(features);
+			}
+		}
+		zoomToFeatures();
+	}
+	changeLinetype();
+}
+
 // fullscreen map
 function mtlFullscreenMap() {
 	if(!viewFullscreen) {

@@ -9,11 +9,6 @@ var paginationClicked = false;
 
 jQuery(document).ready(function($){
 	if(currentHash.includes('#!')) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
-
-	$('.mtl-paginate-links a').on('click', function(e)  {
-		e.preventDefault();
-		window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
-    });
 	
 	$(window).on('hashchange',function(){
 		if(window.location.href.includes(tilePageUrl)) {
@@ -21,11 +16,8 @@ jQuery(document).ready(function($){
 			if(currentHash.includes('#!') && !paginationClicked) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
 		}
 	});
-	
-	$('#mtl-filter-form').submit(function(e) {
-		e.preventDefault();
-		submitFilter();
-	});
+
+	set_button_behaviour();
 	
 }); // end ready function
 
@@ -47,16 +39,8 @@ function loadNewTiles(link) {
 		$($content_filter).html($new_content_filter);
 		$($content_pagination).html($new_content_pagination);
 		$($content_tiles).html($new_content_tiles);
-		
-		$('#mtl-filter-form').submit(function(e) {
-			e.preventDefault();
-			submitFilter();
-		});
 
-		$('.mtl-paginate-links a').on('click', function(e)  {
-			e.preventDefault();
-			window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
-		});
+		set_button_behaviour();
 		
 		// add rating
 		if($('.mtl-rating-section').length) mtl_rating_section_handler();
@@ -64,6 +48,20 @@ function loadNewTiles(link) {
 	});
 	countLoads++;
 	paginationClicked = false;
+}
+
+function set_button_behaviour() {
+	$('#mtl-filter-form').submit(function(e) {
+		e.preventDefault();
+		submitFilter();
+	});
+
+	$('.mtl-paginate-links a').on('click', function(e)  {
+		e.preventDefault();
+		window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
+	});
+
+	$('#mtl-post-map-link').attr('href', post_map_url + currentHash);
 }
 
 // submit filter

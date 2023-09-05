@@ -275,8 +275,10 @@ function mtl_tile_list_output($atts) {
 
 		$output .= '</div>';
 		
-		$output .=  $mtl_paginate_links;
+		$output .= $mtl_paginate_links;
 		wp_reset_postdata();
+
+		$output .= '<script type="text/javascript"> var post_map_url = "'.get_permalink(get_option('mtl-option-name')['mtl-postmap-page']).'"; </script><p class="alignleft"> <a id="mtl-post-map-link">'.__('Proposal map page','my-transit-lines').'</a> </p>';
 	}
 	
 	return $output;

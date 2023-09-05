@@ -212,6 +212,7 @@ function mtl_tile_list_output($atts) {
 		$output .=  $mtl_paginate_links;
 		
 		// start the tile list
+		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js"></script>';
 		$output .= '<div class="mtl-posttiles-list">';
 		
 		// load the text translations
@@ -222,7 +223,6 @@ function mtl_tile_list_output($atts) {
 		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>';
 		if(!$hidethumbs) $output .= '<script type="text/javascript"> var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
-		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js"></script>';
 		$output .= '<script type="text/javascript"> ';
 		$output .= ' var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";';
 		$output .= ' var tilePageUrl = "'.get_permalink().'"; var initMap =false;';

@@ -43,12 +43,9 @@ function loadNewTiles(link) {
 		var $new_content_tiles = $($content_tiles, data).wrapInner('').html(); // Grab just the tile content
 		$('.mtl-paginate-links .loader').remove();
 		
-		// remove old content
-		$($content_filter,$content_pagination,$content_tiles).html('');
-			
 		// add new content
-		$($content_filter).html($new_content_filter); 
-		$($content_pagination).html($new_content_pagination); 
+		$($content_filter).html($new_content_filter);
+		$($content_pagination).html($new_content_pagination);
 		$($content_tiles).html($new_content_tiles);
 		
 		$('#mtl-filter-form').submit(function(e) {

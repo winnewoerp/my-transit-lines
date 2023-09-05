@@ -257,6 +257,7 @@ class MtlSettingsPage
 		add_settings_section('mtl-settings-group-pageids', __('Page IDs Settings','my-transit-lines'), array( $this, 'print_pageids_section_content' ), 'mtl-settings');  
 		add_settings_field('mtl-addpost-page', __('Page ID for page to add proposal','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-addpost-page','type' => 'text','option_name'=>'mtl-option-name'));      
 		add_settings_field('mtl-postlist-page', __('Page ID for proposal list page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'text','option_name'=>'mtl-option-name'));  
+		add_settings_field('mtl-postmap-page', __('Page ID for proposal map page','my-transit-lines'), array($this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postmap-page','type' => 'text','option_name'=>'mtl-option-name'));
 
 		// settings section project phase
 		add_settings_section('mtl-settings-group-project-phase', __('Project phase settings and drafts settings','my-transit-lines'), array( $this, 'print_project_phase_section_content' ), 'mtl-settings-project-phase');  
@@ -317,6 +318,7 @@ class MtlSettingsPage
 		}
 		$new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
 		$new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
+		$new_input['mtl-postmap-page'] = $input['mtl-postmap-page'];
 		
 		$new_input['mtl-current-project-phase'] = $input['mtl-current-project-phase'];
 		$new_input['mtl-prevent-new-proposals'] = $input['mtl-prevent-new-proposals'];

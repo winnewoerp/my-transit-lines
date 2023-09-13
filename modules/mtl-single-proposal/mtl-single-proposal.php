@@ -60,9 +60,10 @@ function mtl_proposal_map($content) {
 		$output .= '<div id="mtl-map"></div>'."\r\n";
 		$output .= '</div>';
 		
-		// output opacity change button and map fullscreen link
+		// output opacity change button, map fullscreen link and toggle label checkbox
 		$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="setMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="setMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
 		$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:mtlFullscreenMap()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
+		$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 		$output .= '</div>'."\r\n";
 		
 		// output the meta data

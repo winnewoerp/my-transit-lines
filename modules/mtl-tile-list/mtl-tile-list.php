@@ -108,7 +108,7 @@ function mtl_tile_list_output($atts) {
 			's' => $search,
 		);
 
-		if ($oder_by!='rand') {
+		if ($order_by!='rand') {
 			$query_string['paged'] = $paged;
 			$query_string['post_status'] = $status;
 
@@ -212,6 +212,7 @@ function mtl_tile_list_output($atts) {
 		$output .=  $mtl_paginate_links;
 		
 		// start the tile list
+		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js"></script>';
 		$output .= '<div class="mtl-posttiles-list">';
 		
 		// load the text translations
@@ -219,7 +220,7 @@ function mtl_tile_list_output($atts) {
 		
 		// load the necessary scripts and set some JS variables
 		if(!$hidethumbs) $output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
-		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ""; var vectorLabelsData = ""; var editMode = false; </script>'."\r\n";
+		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>';
 		if(!$hidethumbs) $output .= '<script type="text/javascript"> var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
 		$output .= '<script type="text/javascript"> ';
@@ -257,7 +258,7 @@ function mtl_tile_list_output($atts) {
 			$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';
 			
 			if(!$hidethumbs) {
-				$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = "'.get_post_meta($post->ID,'mtl-feature-data',true).'"; var vectorLabelsData = "'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"; var editMode = false; </script>'."\r\n";
+				$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = ["'.get_post_meta($post->ID,'mtl-feature-data',true).'"]; var vectorLabelsData = ["'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
 				$output .= mtl_thumblist_map();
 			}
 			$output .= mtl_load_template_part( 'content', get_post_format() );
@@ -274,8 +275,10 @@ function mtl_tile_list_output($atts) {
 
 		$output .= '</div>';
 		
-		$output .=  $mtl_paginate_links;
+		$output .= $mtl_paginate_links;
 		wp_reset_postdata();
+
+		$output .= '<script type="text/javascript"> var post_map_url = "'.get_permalink(get_option('mtl-option-name')['mtl-postmap-page']).'"; </script><p class="alignleft"> <a id="mtl-post-map-link">'.__('Proposal map page','my-transit-lines').'</a> </p>';
 	}
 	
 	return $output;

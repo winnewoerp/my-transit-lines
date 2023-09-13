@@ -21,6 +21,7 @@ include( get_template_directory() . '/modules/mtl-login-register/mtl-login-regis
 include( get_template_directory() . '/modules/mtl-admin-menu/mtl-admin-menu.php'); // dashboard admin section module
 include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // new proposal form
 include( get_template_directory() . '/modules/mtl-single-proposal/mtl-single-proposal.php'); // single proposal custom display
+include( get_template_directory() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.php'); // multiple proposal custom display
 include( get_template_directory() . '/modules/mtl-tile-list/mtl-tile-list.php'); // proposal tile list with small maps
 include( get_template_directory() . '/modules/mtl-custom-posttypes/mtl-custom-posttypes.php'); // create the custom posttypes necessary for the theme
 include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comment-notification.php'); // custom comment notification, to be extended
@@ -139,10 +140,6 @@ function my_transit_lines_scripts() {
 
 	wp_enqueue_script( 'my-transit-lines-navigation', get_template_directory_uri() . '/js/navigation.js', array(), wp_get_theme()->version, true );
 	wp_enqueue_script( 'my-transit-lines-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), wp_get_theme()->version, true );
-	
-	// enqueue script for the MTL all proposals tile list
-	wp_enqueue_script( 'my-transit-lines-tilelist', get_template_directory_uri() . '/modules/mtl-tile-list/mtl-tile-list.js', array(), wp_get_theme()->version);
-
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );

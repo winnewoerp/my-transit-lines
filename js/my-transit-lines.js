@@ -181,28 +181,32 @@ function initMyTransitLines() {
 	
 	// center map to the default from the settings
 	map.setCenter(lonlat, mtlStandardZoom);
-	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '',maxWidth: 200, geodesic: true}));
+	map.addControl(new OpenLayers.Control.ScaleLine({bottomOutUnits: '', maxWidth: 200, geodesic: true}));
 
-	if(vectorData) {
-		if(vectorData.includes('POINT') || vectorData.includes('LINESTRING')) {
-			features = WKTtoFeatures(vectorData);
-			countFeatures = features.length;
-			vectors.addFeatures(features);
-			for(var i =0; i < vectors.features.length; i++) vectors.features[i].geometry.transform(proj4326,projmerc);
-			zoomToFeatures();
-			$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
-			$('#features-data').val(vectorData);
+	if (vectorData && vectorLabelsData && vectorCategoriesData) {
+		for (var i = 0; i < vectorData.length && i < vectorLabelsData.length && i < vectorCategoriesData.length; i++) {
+			if(vectorData[i].includes('POINT') || vectorData[i].includes('LINESTRING')) {
+				var features = WKTtoFeatures(vectorData[i]);
+				countFeatures += features.length;
+				for(var j = 0; j < features.length; j++) features[j].geometry.transform(proj4326,projmerc);
+
+				var vectorLabelsArray = vectorLabelsData[i].split(',');
+				for(var j = 0; j < vectorLabelsArray.length; j++) {
+					var labelText = decodeSpecialChars(vectorLabelsArray[j]);
+					if(features[j]) features[j].attributes.name = labelText;
+				}
+				$('#mtl-feature-labels-data').val(vectorLabelsData[i]);
+
+				for (var j = 0; j < features.length; j++) {
+					features[j].attributes.category = vectorCategoriesData[i];
+				}
+
+				vectors.addFeatures(features);
+			}
 		}
-	}
-	
-	// load labels data from separate field
-	if(vectorLabelsData) {
-		var vectorLabelsArray = vectorLabelsData.split(',');
-		for(var i=0; i<vectorLabelsArray.length; i++) {
-			var labelText = decodeSpecialChars(vectorLabelsArray[i]);
-			if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
-		}
-		$('#mtl-feature-labels-data').val(vectorLabelsData);
+		zoomToFeatures();
+		$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
+		$('#features-data').val(vectorData[0]);
 	}
 	
 	// GeoJSON import handling
@@ -241,7 +245,7 @@ function initMyTransitLines() {
 		editor.startEditMode();
 	}
 		
-	// set styles of lines to selected transport mode	
+	// set styles of lines to selected transport mode
 	changeLinetype();
 	
 	// set preferences when map is loaded
@@ -251,29 +255,28 @@ function initMyTransitLines() {
 	layerOSM.events.register('loadend', layerOSM, vectorsEvents);
 }
 
-function changeLinetype(vectorsLayer,iconSize,lineWidth) {
-	if(!lineWidth) lineWidth = strokeWidth;
-	if(!iconSize) {
-		var currentGraphicHeightUnselected = graphicHeightUnselected;
-		var currentGraphicWidthUnselected = graphicWidthUnselected;
+function changeLinetype() {
+	for (i = 0; i < vectors.features.length; i++) {
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]));
 	}
-	else {
-		var currentGraphicHeightUnselected = iconSize;
-		var currentGraphicWidthUnselected = iconSize;
-	}
-	if(!vectorsLayer) vectorsLayer = vectors;
-	// set style for selected transport mode
-	var selectedTransportMode = $('.cat-select:checked').val();
-	if(selectedTransportMode || parseInt(currentCat)) {
-		if(currentCat) selectedTransportMode = currentCat;
-		fillColor = transportModeStyleData[selectedTransportMode][0];
-		strokeColor = transportModeStyleData[selectedTransportMode][0];
-		externalGraphicUrl = transportModeStyleData[selectedTransportMode][1];
-		externalGraphicUrlSelected = transportModeStyleData[selectedTransportMode][2];
+	setToolPreferences();
+	unselectAllFeatures();
+	vectors.redraw();
+}
+
+function changeLinetypeTileList(vectorsLayer,iconSize,lineWidth) {
+	var currentGraphicHeightUnselected = iconSize;
+	var currentGraphicWidthUnselected = iconSize;
+	
+	if(parseInt(currentCat)) {
+		fillColor = transportModeStyleData[currentCat][0];
+		strokeColor = transportModeStyleData[currentCat][0];
+		externalGraphicUrl = transportModeStyleData[currentCat][1];
+		externalGraphicUrlSelected = transportModeStyleData[currentCat][2];
 	}
 	
 	// redraw all features on vector layer using the selected style
-	for(var i =0; i < vectorsLayer.features.length; i++) {
+	for(var i = 0; i < vectorsLayer.features.length; i++) {
 		var featureString = vectorsLayer.features[i].geometry.toString();
 		var currentFeatureName = '';
 		if(vectorsLayer.features[i].attributes.name) {
@@ -420,12 +423,12 @@ function onFeatureAdded() {
 
 	if(vectors.features[vectors.features.length-1].geometry instanceof OpenLayers.Geometry.Point) {
 		var labelText = $('#feature-textinput').val();
-		vectors.features[vectors.features.length-1].attributes = { name: labelText };
+		vectors.features[vectors.features.length-1].attributes.name = labelText;
 
 		$('#feature-textinput').val('');
 	}
 
-	setFeatureStyle(vectors.features.length - 1, false, getSelectedCategory());
+	setFeatureStyle(vectors.features.length - 1, false, getCategoryOf(vectors.features[vectors.features.length - 1]));
 
 	vectors.redraw();
 
@@ -476,7 +479,7 @@ function onFeatureSelected() {
 			stationSelected = realIndex;
 		}
 		
-		setFeatureStyle(realIndex, true, getSelectedCategory());
+		setFeatureStyle(realIndex, true, getCategoryOf(vectors.selectedFeatures[i]));
 	}
 
 	vectors.redraw();
@@ -493,7 +496,7 @@ function onFeatureUnselected() {
 	
 	if(stationSelected >= 0) {
 		var labelText = $('#feature-textinput').val();
-		if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes = { name: labelText };
+		if(vectors.features[stationSelected]) vectors.features[stationSelected].attributes.name = labelText;
 		stationSelected = -1;
 		$('.feature-textinput-box').slideUp();
 		$('#feature-textinput').val('');
@@ -505,7 +508,7 @@ function onFeatureUnselected() {
 	}
 
 	for (i = 0; i < vectors.features.length; i++) {
-		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getSelectedCategory());
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]));
 	}
 
 	vectors.redraw();
@@ -609,6 +612,17 @@ function WKTtoFeatures(vectorData) {
 }
 
 /**
+ * Get the category of the feature passed to the function.
+ * This is the category saved in feature.attributes.category if present of getSelectedCategory() otherwise
+ * 
+ * @param {*} feature the feature to get the category of
+ * @returns the category of the feature passed to the function
+ */
+function getCategoryOf(feature) {
+	return feature.attributes.category ? feature.attributes.category : getSelectedCategory();
+}
+
+/**
  * @returns the selected category determined by the selected category checkbox, or if none is selected by the 
  */
 function getSelectedCategory() {
@@ -666,6 +680,40 @@ function unselectAllFeatures() {
 		newCtrl.unselectAll();
 		newCtrl.destroy();
 	}
+}
+
+// Deletes all old features (including possible changes made to them) and loads the new features from vectorData, vectorLabelsData and vectorCategoriesData
+function loadNewFeatures() {
+	map.removeLayer(vectors);
+	vectors.destroy();
+
+	vectors = new OpenLayers.Layer.Vector(objectL10n.vectorLayerTitle, { styleMap: new OpenLayers.StyleMap(style), rendererOptions: { zIndexing: true } });
+	map.addLayer(vectors);
+
+	if (vectorData && vectorLabelsData && vectorCategoriesData) {
+		for (var i = 0; i < vectorData.length && i < vectorLabelsData.length && i < vectorCategoriesData.length; i++) {
+			if(vectorData[i].includes('POINT') || vectorData[i].includes('LINESTRING')) {
+				var features = WKTtoFeatures(vectorData[i]);
+				countFeatures += features.length;
+				for(var j = 0; j < features.length; j++) features[j].geometry.transform(proj4326,projmerc);
+
+				var vectorLabelsArray = vectorLabelsData[i].split(',');
+				for(var j = 0; j < vectorLabelsArray.length; j++) {
+					var labelText = decodeSpecialChars(vectorLabelsArray[j]);
+					if(features[j]) features[j].attributes.name = labelText;
+				}
+				$('#mtl-feature-labels-data').val(vectorLabelsData[i]);
+
+				for (var j = 0; j < features.length; j++) {
+					features[j].attributes.category = vectorCategoriesData[i];
+				}
+
+				vectors.addFeatures(features);
+			}
+		}
+		zoomToFeatures();
+	}
+	changeLinetype();
 }
 
 // fullscreen map
@@ -941,7 +989,7 @@ function importToMap(result) {
 						var vectorLabelsArray = stationNames.split(',');
 						for(var i=0; i<vectorLabelsArray.length; i++) {
 							var labelText = decodeSpecialChars(vectorLabelsArray[i]);
-							if(vectors.features[i]) vectors.features[i].attributes = { name: labelText };
+							if(vectors.features[i]) vectors.features[i].attributes.name = labelText;
 						}
 					}
 					var newFeatures = vectors.features;

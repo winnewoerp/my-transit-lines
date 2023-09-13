@@ -202,9 +202,9 @@ function initMyTransitLines() {
 				}
 
 				vectors.addFeatures(features);
+				zoomToFeatures();
 			}
 		}
-		zoomToFeatures();
 		$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
 		$('#features-data').val(vectorData[0]);
 	}

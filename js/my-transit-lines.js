@@ -202,9 +202,9 @@ function initMyTransitLines() {
 				}
 
 				vectors.addFeatures(features);
+				zoomToFeatures();
 			}
 		}
-		zoomToFeatures();
 		$('#mtl-box').append('<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'+objectL10n.fitToMap+'</a></p>');
 		$('#features-data').val(vectorData[0]);
 	}
@@ -439,15 +439,16 @@ function onFeatureAdded() {
  * Event handler for features being removed
  */
 function onFeatureRemoved() {
-	warningMessage = 'Seite wirklich verlassen?';
-
 	stationSelected = -1;
 	anythingSelected = false;
 	$('.feature-textinput-box').slideUp();
 	$('#feature-textinput').val('');
 	$('.set-name').css('display','none');
 
-	saveToHTML(vectors.features);
+	if (editMode) {
+		warningMessage = 'Seite wirklich verlassen?';
+		saveToHTML(vectors.features);
+	}
 }
 
 /**

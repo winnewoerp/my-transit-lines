@@ -439,15 +439,16 @@ function onFeatureAdded() {
  * Event handler for features being removed
  */
 function onFeatureRemoved() {
-	warningMessage = 'Seite wirklich verlassen?';
-
 	stationSelected = -1;
 	anythingSelected = false;
 	$('.feature-textinput-box').slideUp();
 	$('#feature-textinput').val('');
 	$('.set-name').css('display','none');
 
-	saveToHTML(vectors.features);
+	if (editMode) {
+		warningMessage = 'Seite wirklich verlassen?';
+		saveToHTML(vectors.features);
+	}
 }
 
 /**

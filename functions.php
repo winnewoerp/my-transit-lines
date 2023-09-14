@@ -469,8 +469,8 @@ function create_implementation_horizon_taxonomy() {
 add_action( 'init', 'create_sorting_phase_status_taxonomy', 0);
 function create_sorting_phase_status_taxonomy() {
 	$labels = array(
-		'name' => _x( 'Sorting Phase Status', 'taxonomy general name','my-transit-lines' ),
-		'singular_name' => _x( 'Sorting Phase Status', 'taxonomy singular name','my-transit-lines' ),
+		'name' => __( 'Sorting Phase Status', 'my-transit-lines' ),
+		'singular_name' => __( 'Sorting Phase Status','my-transit-lines' ),
 		'search_items' =>  __( 'Search items','my-transit-lines' ),
 		'all_items' => __( 'All items','my-transit-lines' ),
 		'parent_item' => __( 'Parent item','my-transit-lines' ),

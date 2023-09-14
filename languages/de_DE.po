@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2023-09-14 18:53+0200\n"
-"PO-Revision-Date: 2023-09-14 18:53+0200\n"
+"POT-Creation-Date: 2023-09-14 20:44+0200\n"
+"PO-Revision-Date: 2023-09-14 20:45+0200\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -921,14 +921,14 @@ msgid "Station name (optional)"
 msgstr "Name der Haltestelle (optional)"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:149
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:200
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:212
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:301
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:64
 msgid "colored map"
 msgstr "farbige Karte"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:149
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:200
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:212
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:301
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:64
 msgid "brightened map"
@@ -979,39 +979,44 @@ msgstr "Absteigend"
 msgid "Ascendent"
 msgstr "Aufsteigend"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:145
-#: ../modules/mtl-tile-list/mtl-tile-list.php:196
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:147
+#: ../modules/mtl-tile-list/mtl-tile-list.php:198
+msgid "Amount:"
+msgstr "Anzahl:"
+
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:157
+#: ../modules/mtl-tile-list/mtl-tile-list.php:208
 msgid "Search:"
 msgstr "Suchen:"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:147
-#: ../modules/mtl-tile-list/mtl-tile-list.php:198
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:159
+#: ../modules/mtl-tile-list/mtl-tile-list.php:210
 msgid "Filter/sort"
 msgstr "Filtern/sortieren"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:191
-#: ../modules/mtl-tile-list/mtl-tile-list.php:227
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:203
+#: ../modules/mtl-tile-list/mtl-tile-list.php:239
 msgid "Loading new set of proposals..."
 msgstr "Neue Vorschlagsauswahl wird geladen..."
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:201
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:213
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:302
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:65
 msgid "Fullscreen view"
 msgstr "Vollbildansicht"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:201
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:213
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:302
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:65
 msgid "Close fullscreen view"
 msgstr "Vollbildansicht schließen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:202
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:214
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:66
 msgid "Show labels"
 msgstr "Haltestellennamen anzeigen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:207
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:219
 msgid "Proposal list page"
 msgstr "Vorschlagsliste"
 
@@ -1991,15 +1996,15 @@ msgstr ""
 msgid "All regions"
 msgstr "Alle Gebiete"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:245
+#: ../modules/mtl-tile-list/mtl-tile-list.php:257
 msgid "Add a new proposal with map and description"
 msgstr "Ergänze deinen eigenen Streckenvorschlag"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:245
+#: ../modules/mtl-tile-list/mtl-tile-list.php:257
 msgid "Contribute to the collection!"
 msgstr "Erweitere die Sammlung!"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:281
+#: ../modules/mtl-tile-list/mtl-tile-list.php:293
 msgid "Proposal map page"
 msgstr "Vorschlagskarte"
 

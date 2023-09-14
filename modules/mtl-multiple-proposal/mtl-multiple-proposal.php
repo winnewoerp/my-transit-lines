@@ -51,7 +51,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$order = 'desc';
 		if($_GET['order']=='asc' || $_GET['order']=='desc') $order=$_GET['order'];
 		
-		$posts_per_page = 23;
+		$posts_per_page = 25;
 		if(isset($_GET['num'])) $posts_per_page = intval($_GET['num']);
 		$paged = '';
 		$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
@@ -64,7 +64,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$search = $_GET['search'];
 		
 		$query_string = array(
-			'posts_per_page' => $posts_per_page,
+			'posts_per_page' => max(($posts_per_page - ($posts_per_page % 4) - 1), -1),
 			'post_type' => $type,
 			'cat' => $query_cats,
 			'author' => $get_userid,
@@ -140,7 +140,19 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= '<option'.($order_by=='date' ? ' selected="selected"' : '').' value="date">'.__('Date','my-transit-lines').'</option>';
 		$output .= '<option'.($order_by=='comment_count' ? ' selected="selected"' : '').' value="comment_count">'.__('Number of comments','my-transit-lines').'</option>';
 		$output .= '<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>';
-		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select></p>';
+		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select>';
+
+		// Selector for amount of proposals shown
+		$amounts = [25,50,100,250,500];
+		$output .= '<strong>'.__('Amount:','my-transit-lines').'</strong>';
+		$output .= '<select name="num">';
+		if (!in_array($posts_per_page, $amounts)) {
+			$output .= '<option selected="selected" value="'.$posts_per_page.'">'.$posts_per_page.'</option>';
+		}
+		foreach ($amounts as $amount) {
+			$output .= '<option '.($posts_per_page == $amount ? ' selected="selected"' : '').' value="'.$amount.'">'.$amount.'</option>';
+		}
+		$output .= ' </select></p>';
 
 		$output .= '<p><strong>'.__('Search:','my-transit-lines').'</strong><input type="search" name="search" value="'.$search.'">';
 

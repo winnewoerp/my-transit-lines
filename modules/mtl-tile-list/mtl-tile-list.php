@@ -97,7 +97,7 @@ function mtl_tile_list_output($atts) {
 		$search = $_GET['search'];
 		
 		$query_string = array(
-			'posts_per_page' => max(($posts_per_page - ($posts_per_page % 4) - 1), -1),
+			'posts_per_page' => max(($posts_per_page - (($posts_per_page + 1) % 4) - 1), -1),
 			'post_type' => $type,
 			'cat' => $get_cats,
 			'tag_id' => $get_tag,

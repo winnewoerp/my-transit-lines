@@ -64,7 +64,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$search = $_GET['search'];
 		
 		$query_string = array(
-			'posts_per_page' => max(($posts_per_page - ($posts_per_page % 4) - 1), -1),
+			'posts_per_page' => max($posts_per_page, -1),
 			'post_type' => $type,
 			'cat' => $query_cats,
 			'author' => $get_userid,

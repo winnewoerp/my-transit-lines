@@ -51,8 +51,8 @@ function mtl_multiple_proposal_output( $atts ) {
 		$order = 'desc';
 		if($_GET['order']=='asc' || $_GET['order']=='desc') $order=$_GET['order'];
 		
-		// TODO: make this dynamic
 		$posts_per_page = 23;
+		if(isset($_GET['num'])) $posts_per_page = intval($_GET['num']);
 		$paged = '';
 		$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 		

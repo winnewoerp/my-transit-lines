@@ -84,8 +84,8 @@ function mtl_tile_list_output($atts) {
 		if($_GET['order']=='asc' || $_GET['order']=='desc') $order=$_GET['order'];
 		
 		// proposals per page, one less for standard list, as there's the "add post box" as first tile
-		if($type=='mtlproposal') $posts_per_page = 23;
-		else $posts_per_page = 24;
+		$posts_per_page = 23;
+		if(isset($_GET['num'])) $posts_per_page = intval($_GET['num']);
 		$paged = '';
 		$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 		

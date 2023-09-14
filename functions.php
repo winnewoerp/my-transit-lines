@@ -489,6 +489,7 @@ function create_sorting_phase_status_taxonomy() {
 		'show_ui' => true,
 		'show_admin_column' => true,
 		'rewrite' => array('slug'),
+		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
 		));
 }
 

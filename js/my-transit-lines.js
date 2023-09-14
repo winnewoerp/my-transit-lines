@@ -32,6 +32,7 @@ var mtlCenterLat = 0;
 var mtlStandardZoom = 0;
 var initMap = true;
 var importFilename = '';
+var labelsHidden = false;
 
 //Notify the user when about to leave page without saving changes
 $(window).bind('beforeunload', function() {
@@ -257,7 +258,7 @@ function initMyTransitLines() {
 
 function changeLinetype() {
 	for (i = 0; i < vectors.features.length; i++) {
-		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]));
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]), !labelsHidden);
 	}
 	setToolPreferences();
 	unselectAllFeatures();
@@ -428,7 +429,7 @@ function onFeatureAdded() {
 		$('#feature-textinput').val('');
 	}
 
-	setFeatureStyle(vectors.features.length - 1, false, getCategoryOf(vectors.features[vectors.features.length - 1]));
+	setFeatureStyle(vectors.features.length - 1, false, getCategoryOf(vectors.features[vectors.features.length - 1]), !labelsHidden);
 
 	vectors.redraw();
 
@@ -480,7 +481,7 @@ function onFeatureSelected() {
 			stationSelected = realIndex;
 		}
 		
-		setFeatureStyle(realIndex, true, getCategoryOf(vectors.selectedFeatures[i]));
+		setFeatureStyle(realIndex, true, getCategoryOf(vectors.selectedFeatures[i]), !labelsHidden);
 	}
 
 	vectors.redraw();
@@ -509,7 +510,7 @@ function onFeatureUnselected() {
 	}
 
 	for (i = 0; i < vectors.features.length; i++) {
-		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]));
+		setFeatureStyle(i, vectors.selectedFeatures.includes(vectors.features[i]), getCategoryOf(vectors.features[i]), !labelsHidden);
 	}
 
 	vectors.redraw();
@@ -642,8 +643,9 @@ function getSelectedCategory() {
  * @param {number} featureIndex which feature to set the style of
  * @param {boolean} selected if the feature is selected
  * @param {number} categoryId which category the feature has
+ * @param {boolean} showLabel whether the label should be shown
  */
-function setFeatureStyle(featureIndex, selected, categoryId) {
+function setFeatureStyle(featureIndex, selected, categoryId, showLabel) {
 	categoryColor = transportModeStyleData[categoryId][0];
 
 	if (vectors.features[featureIndex].geometry instanceof OpenLayers.Geometry.Point) {
@@ -652,7 +654,7 @@ function setFeatureStyle(featureIndex, selected, categoryId) {
 			graphicHeight: selected ? graphicHeightSelected : graphicHeightUnselected,
 			graphicWidth: selected ? graphicWidthSelected : graphicWidthUnselected,
 			graphicZIndex: selected ? graphicZIndexSelected : graphicZIndexUnselectedPoint,
-			label: vectors.features[featureIndex].attributes.name,
+			label: showLabel ? vectors.features[featureIndex].attributes.name : "",
 			fontColor: 'white',
 			fontSize: "11px",
 			fontWeight: "bold",
@@ -714,6 +716,13 @@ function loadNewFeatures() {
 		}
 		zoomToFeatures();
 	}
+	changeLinetype();
+}
+
+// toggles whether the labels get shown on the map or not
+function toggleLabels() {
+	labelsHidden = !labelsHidden;
+
 	changeLinetype();
 }
 

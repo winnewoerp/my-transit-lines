@@ -147,7 +147,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= '<strong>'.__('Amount:','my-transit-lines').'</strong>';
 		$output .= '<select name="num">';
 		if (!in_array($posts_per_page, $amounts)) {
-			$output .= '<option selected="selected" value="'.$posts_per_page.'">'.$posts_per_page.'</option>';
+			$output .= '<option selected="selected" value="'.$posts_per_page.'">'.($posts_per_page > -1 ? $posts_per_page : 'all').'</option>';
 		}
 		foreach ($amounts as $amount) {
 			$output .= '<option '.($posts_per_page == $amount ? ' selected="selected"' : '').' value="'.$amount.'">'.$amount.'</option>';

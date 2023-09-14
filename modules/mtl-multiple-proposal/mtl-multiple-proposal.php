@@ -38,6 +38,25 @@ function mtl_multiple_proposal_output( $atts ) {
 		$query_cats = $single_catid;
 	}
 	else $query_cats = $mtl_all_catids;
+
+	$status_tax_query = array();
+	if(isset($_GET['mtl-statusid']) && $_GET['mtl-statusid'] != 'all') {
+		$single_statusid = intval($_GET['mtl-statusid']);
+
+		$status_tax_query = array( array (
+			'taxonomy' => 'sorting-phase-status',
+			'terms' => $single_statusid,
+		),);
+
+		// if default status is searched for also find proposals without status
+		if (get_term_by('id', $single_statusid, 'sorting-phase-status')->slug == get_taxonomy('sorting-phase-status')->default_term['slug']) {
+			$status_tax_query = array( array (
+				'taxonomy' => 'sorting-phase-status',
+				'terms' => other_term_ids('sorting-phase-status', $single_statusid),
+				'operator' => 'NOT IN',
+			));
+		}
+	}
 	
 	if($query_cats) {
 		// get userid from parameter
@@ -73,6 +92,7 @@ function mtl_multiple_proposal_output( $atts ) {
 			'orderby' => $order_by,
 			'order' => $order,
 			'paged' => $paged,
+			'tax_query' => $status_tax_query,
 		);
 
         if(!in_array('draft', $status)) {
@@ -113,6 +133,10 @@ function mtl_multiple_proposal_output( $atts ) {
 		wp_reset_postdata();
 
 		$all_selectable_categories = get_categories('include='.$mtl_all_catids);
+		$all_statuses = get_terms( array(
+			'taxonomy' => 'sorting-phase-status',
+			'hide_empty' => false,
+		));
 			
 		// remove query arg "page" for form action link
 		$form_post_link = get_permalink($post->ID);
@@ -125,6 +149,15 @@ function mtl_multiple_proposal_output( $atts ) {
 		foreach($all_selectable_categories as $single_category) {
 			$catid = $single_category->cat_ID;
             $output .= '<option value="'.$catid.'"'.($catid==$single_catid ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
+		}
+		$output .= '</select>';
+
+		// Sorting phase status selector
+		$output .= '<select name="mtl-statusid">'."\r\n";
+		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
+		foreach($all_statuses as $single_status) {
+			$statusid = $single_status->term_id;
+			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
 		}
 		$output .= '</select>';
 		

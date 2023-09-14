@@ -56,7 +56,26 @@ function mtl_tile_list_output($atts) {
 		$single_catid = intval($_GET['mtl-catid']);
 		$get_cats = $single_catid;
 	}
-	else $get_cats  =  $mtl_all_catids;
+	else $get_cats = $mtl_all_catids;
+
+	$status_tax_query = array();
+	if(isset($_GET['mtl-statusid']) && $_GET['mtl-statusid'] != 'all') {
+		$single_statusid = intval($_GET['mtl-statusid']);
+
+		$status_tax_query = array( array (
+			'taxonomy' => 'sorting-phase-status',
+			'terms' => $single_statusid,
+		),);
+
+		// if default status is searched for also find proposals without status
+		if (get_term_by('id', $single_statusid, 'sorting-phase-status')->slug == get_taxonomy('sorting-phase-status')->default_term['slug']) {
+			$status_tax_query = array( array (
+				'taxonomy' => 'sorting-phase-status',
+				'terms' => other_term_ids('sorting-phase-status', $single_statusid),
+				'operator' => 'NOT IN',
+			));
+		}
+	}
 	
 	if($single_catid || $mtl_all_catids) {
 		
@@ -106,6 +125,7 @@ function mtl_tile_list_output($atts) {
 			'meta_key' => $meta_key,
 			'order' => $order,
 			's' => $search,
+			'tax_query' => $status_tax_query,
 		);
 
 		if ($order_by!='rand') {
@@ -130,8 +150,12 @@ function mtl_tile_list_output($atts) {
 		
 		$second_query = new WP_Query($query_string);
 		$mtl_options = get_option('mtl-option-name');
-		$all_categories=get_categories('include='.$mtl_all_catids);
-			
+		$all_categories = get_categories('include='.$mtl_all_catids);
+		$all_statuses = get_terms( array(
+			'taxonomy' => 'sorting-phase-status',
+			'hide_empty' => false,
+		));
+
 		// remove query arg "page" for form action link
 		$form_post_link = get_permalink($post->ID);
 		
@@ -140,15 +164,21 @@ function mtl_tile_list_output($atts) {
 		
 		// transit mode selector
 		$output .= '<select name="mtl-catid">'."\r\n";
-		$count_posts = count_filtered_posts($type,$get_userid,$mtl_all_catids,$get_tag);
 		$output .= '<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
 		foreach($all_categories as $single_category) {
 			$catid = $single_category->cat_ID;
 			if($mtl_options['mtl-use-cat'.$catid] == true) {
-				//$category_count = count_filtered_posts($type,$get_userid,$catid,$get_tag);
-				//if($category_count)
 				$output .= '<option value="'.$catid.'"'.($catid==$single_catid ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
 			}
+		}
+		$output .= '</select>';
+
+		// Sorting phase status selector
+		$output .= '<select name="mtl-statusid">'."\r\n";
+		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
+		foreach($all_statuses as $single_status) {
+			$statusid = $single_status->term_id;
+			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
 		}
 		$output .= '</select>';
 		
@@ -304,4 +334,26 @@ function count_filtered_posts($type,$get_userid,$get_cats,$get_tag) {
 	if($get_userid) $count_posts = $count1-$count2;
 	else $count_posts =  $count1;
 	return $count_posts;*/
+}
+
+/**
+ * Returns all term ids of the given taxonomy except for the excluded one
+ *
+ * @param string $taxonomy
+ * @param int $exclude_id
+ * @return int[]
+ */
+function other_term_ids($taxonomy, $exclude_id) {
+	$all_terms = get_terms( array(
+		'taxonomy' => $taxonomy,
+		'hide_empty' => false,
+	));
+
+	$term_ids = array();
+	foreach ($all_terms as $current_term) {
+		if ($current_term->term_id != $exclude_id)
+			$term_ids[] = $current_term->term_id;
+	}
+
+	return $term_ids;
 }

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2023-09-15 00:34+0200\n"
-"PO-Revision-Date: 2023-09-15 00:37+0200\n"
+"POT-Creation-Date: 2023-09-15 12:51+0200\n"
+"PO-Revision-Date: 2023-09-15 12:51+0200\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -949,14 +949,14 @@ msgid "Station name (optional)"
 msgstr "Name der Haltestelle (optional)"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:149
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:245
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:246
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:301
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:64
 msgid "colored map"
 msgstr "farbige Karte"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:149
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:245
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:246
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:301
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:64
 msgid "brightened map"
@@ -972,84 +972,89 @@ msgstr "Filtern:"
 msgid "All transit modes"
 msgstr "Alle Verkehrsmittel"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:157
-#: ../modules/mtl-tile-list/mtl-tile-list.php:178
-msgid "All statuses"
-msgstr "Alle Status"
-
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:165
-#: ../modules/mtl-tile-list/mtl-tile-list.php:189
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:156
+#: ../modules/mtl-tile-list/mtl-tile-list.php:180
 msgid "All users (incl. unregistered)"
 msgstr "Alle Benutzer (inkl. unregistrierte)"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:172
-#: ../modules/mtl-tile-list/mtl-tile-list.php:216
-msgid "Sort:"
-msgstr "Sortieren:"
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:164
+#: ../modules/mtl-tile-list/mtl-tile-list.php:208
+msgid "Sorting Phase Status:"
+msgstr "Sortierphasenstatus:"
+
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:166
+#: ../modules/mtl-tile-list/mtl-tile-list.php:210
+msgid "All statuses"
+msgstr "Alle Status"
 
 #: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:173
 #: ../modules/mtl-tile-list/mtl-tile-list.php:217
-msgid "Date"
-msgstr "Datum"
+msgid "Sort:"
+msgstr "Sortieren:"
 
 #: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:174
 #: ../modules/mtl-tile-list/mtl-tile-list.php:218
+msgid "Date"
+msgstr "Datum"
+
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:175
+#: ../modules/mtl-tile-list/mtl-tile-list.php:219
 msgid "Number of comments"
 msgstr "Anzahl Kommentare"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:175
-#: ../modules/mtl-tile-list/mtl-tile-list.php:223
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:176
+#: ../modules/mtl-tile-list/mtl-tile-list.php:224
 msgid "Random"
 msgstr "Zufall"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:176
-#: ../modules/mtl-tile-list/mtl-tile-list.php:224
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:177
+#: ../modules/mtl-tile-list/mtl-tile-list.php:225
 msgid "Descendent"
 msgstr "Absteigend"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:176
-#: ../modules/mtl-tile-list/mtl-tile-list.php:224
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:177
+#: ../modules/mtl-tile-list/mtl-tile-list.php:225
 msgid "Ascendent"
 msgstr "Aufsteigend"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:180
-#: ../modules/mtl-tile-list/mtl-tile-list.php:228
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:181
+#: ../modules/mtl-tile-list/mtl-tile-list.php:229
 msgid "Amount:"
 msgstr "Anzahl:"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:190
-#: ../modules/mtl-tile-list/mtl-tile-list.php:238
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:191
+#: ../modules/mtl-tile-list/mtl-tile-list.php:239
 msgid "Search:"
 msgstr "Suchen:"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:192
-#: ../modules/mtl-tile-list/mtl-tile-list.php:240
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:193
+#: ../modules/mtl-tile-list/mtl-tile-list.php:241
 msgid "Filter/sort"
 msgstr "Filtern/sortieren"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:236
-#: ../modules/mtl-tile-list/mtl-tile-list.php:269
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:237
+#: ../modules/mtl-tile-list/mtl-tile-list.php:270
 msgid "Loading new set of proposals..."
 msgstr "Neue Vorschlagsauswahl wird geladen..."
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:246
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:247
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:302
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:65
 msgid "Fullscreen view"
 msgstr "Vollbildansicht"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:246
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:247
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:302
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:65
 msgid "Close fullscreen view"
 msgstr "Vollbildansicht schließen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:247
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:248
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:66
 msgid "Show labels"
 msgstr "Haltestellennamen anzeigen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:252
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:253
 msgid "Proposal list page"
 msgstr "Vorschlagsliste"
 
@@ -1901,12 +1906,12 @@ msgid "You already rated this proposal"
 msgstr "Du hast diesen Vorschlag bereits bewertet"
 
 #: ../modules/mtl-star-rating/mtl-star-rating.php:302
-#: ../modules/mtl-tile-list/mtl-tile-list.php:220
+#: ../modules/mtl-tile-list/mtl-tile-list.php:221
 msgid "Rating"
 msgstr "Bewertung"
 
 #: ../modules/mtl-star-rating/mtl-star-rating.php:302
-#: ../modules/mtl-tile-list/mtl-tile-list.php:221
+#: ../modules/mtl-tile-list/mtl-tile-list.php:222
 msgid "Number of ratings"
 msgstr "Anzahl der Bewertungen"
 
@@ -2025,19 +2030,19 @@ msgstr ""
 "Hinweise an und entscheide, ob du mit deinem Vorschlag bereits in die "
 "Bewertungsphase wechseln möchtest."
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:204
+#: ../modules/mtl-tile-list/mtl-tile-list.php:195
 msgid "All regions"
 msgstr "Alle Gebiete"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:287
+#: ../modules/mtl-tile-list/mtl-tile-list.php:288
 msgid "Add a new proposal with map and description"
 msgstr "Ergänze deinen eigenen Streckenvorschlag"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:287
+#: ../modules/mtl-tile-list/mtl-tile-list.php:288
 msgid "Contribute to the collection!"
 msgstr "Erweitere die Sammlung!"
 
-#: ../modules/mtl-tile-list/mtl-tile-list.php:323
+#: ../modules/mtl-tile-list/mtl-tile-list.php:324
 msgid "Proposal map page"
 msgstr "Vorschlagskarte"
 

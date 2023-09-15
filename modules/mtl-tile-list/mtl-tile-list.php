@@ -172,15 +172,6 @@ function mtl_tile_list_output($atts) {
 			}
 		}
 		$output .= '</select>';
-
-		// Sorting phase status selector
-		$output .= '<select name="mtl-statusid">'."\r\n";
-		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
-		foreach($all_statuses as $single_status) {
-			$statusid = $single_status->term_id;
-			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
-		}
-		$output .= '</select>';
 		
 		// user selector
 		$output .= '<select name="mtl-userid">'."\r\n";
@@ -209,9 +200,19 @@ function mtl_tile_list_output($atts) {
 					if($get_tag == $current_tag->term_id) $selected = ' selected="selected"';
 					if($count_posts>0) $output .= "<option".$selected." value='{$current_tag->term_id}'>{$current_tag->name} </option>";
 				}
-				$output .= '</select></p>';
+				$output .= '</select>';
 			}
 		}
+
+		// Sorting phase status selector
+		$output .= '<strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
+		$output .= '<select name="mtl-statusid">'."\r\n";
+		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
+		foreach($all_statuses as $single_status) {
+			$statusid = $single_status->term_id;
+			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
+		}
+		$output .= '</select></p>';
 		
 		$output .= '<p><strong>'.__('Sort:','my-transit-lines').'</strong><select name="orderby">';
 		$output .= '<option'.($order_by=='date' ? ' selected="selected"' : '').' value="date">'.__('Date','my-transit-lines').'</option>';

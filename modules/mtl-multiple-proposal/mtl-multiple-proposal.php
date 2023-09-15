@@ -151,15 +151,6 @@ function mtl_multiple_proposal_output( $atts ) {
             $output .= '<option value="'.$catid.'"'.($catid==$single_catid ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
 		}
 		$output .= '</select>';
-
-		// Sorting phase status selector
-		$output .= '<select name="mtl-statusid">'."\r\n";
-		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
-		foreach($all_statuses as $single_status) {
-			$statusid = $single_status->term_id;
-			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
-		}
-		$output .= '</select>';
 		
 		// user selector
 		$output .= '<select name="mtl-userid">'."\r\n".'<option value="all">'.__('All users (incl. unregistered)','my-transit-lines').' </option>';
@@ -168,6 +159,16 @@ function mtl_multiple_proposal_output( $atts ) {
 			$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID==$get_userid ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 		}
 		$output .= '</select>';
+
+		// Sorting phase status selector
+		$output .= '<strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
+		$output .= '<select name="mtl-statusid">'."\r\n";
+		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
+		foreach($all_statuses as $single_status) {
+			$statusid = $single_status->term_id;
+			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
+		}
+		$output .= '</select></p>';
 
 		$output .= '<p><strong>'.__('Sort:','my-transit-lines').'</strong><select name="orderby">';
 		$output .= '<option'.($order_by=='date' ? ' selected="selected"' : '').' value="date">'.__('Date','my-transit-lines').'</option>';

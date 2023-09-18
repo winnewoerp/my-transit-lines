@@ -21,11 +21,6 @@ function getGeoJSON() {
 	for(var i = 0;i<prepare2.features.length;i++) {
 		if(prepare2.features[i].geometry.type=='Point') {
 			prepare2.features[i].properties.name = feature_labels_data_for_geojson_array[i];
-			prepare2.features[i].properties.description = category_for_geojson+"\n"+author_for_geojson+"\n"+date_for_geojson+"\n"+website_for_geojson+"\n"+license_link_for_geojson;
-		}
-		if(prepare2.features[i].geometry.type=='LineString') {
-			prepare2.features[i].properties.name = title_for_geojson;
-			prepare2.features[i].properties.description = content_for_geojson+"\n\n"+category_for_geojson+"\n"+author_for_geojson+"\n"+date_for_geojson+"\n"+website_for_geojson+"\n"+license_link_for_geojson;
 		}
 	}
 	return JSON.stringify(prepare2);

@@ -176,7 +176,6 @@ function initMyTransitLines() {
 	map.addLayer(vectors);
 	
 	// projection transformation
-
 	var lonlat = new OpenLayers.LonLat(mtlCenterLon,mtlCenterLat);
 	lonlat.transform(proj4326, projmerc);
 	
@@ -752,10 +751,18 @@ function mtlFullscreenMap() {
 function zoomToFeatures(mapId,vectorsLayer) {
 	if(!mapId) mapId = map;
 	if(!vectorsLayer) vectorsLayer = vectors;
-	var bounds = vectorsLayer.getDataExtent();
-	mapId.zoomToExtent(bounds);
-	if(mapId.getZoom()>14) mapId.setCenter(bounds.getCenterLonLat(),14);
-	else mapId.setCenter(bounds.getCenterLonLat());
+	try {
+		var bounds = vectorsLayer.getDataExtent();
+		mapId.zoomToExtent(bounds);
+		if(mapId.getZoom()>14) mapId.setCenter(bounds.getCenterLonLat(),14);
+		else mapId.setCenter(bounds.getCenterLonLat());
+	} catch (error) {
+		var lonlat = new OpenLayers.LonLat(mtlCenterLon,mtlCenterLat);
+		lonlat.transform(proj4326, projmerc);
+		
+		// center map to the default from the settings
+		mapId.setCenter(lonlat, mtlStandardZoom);
+	}
 	if($('#zoomtofeatures').length) $('#zoomtofeatures a').blur();
 }
 

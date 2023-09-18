@@ -84,8 +84,8 @@ function mtl_tile_list_output($atts) {
 		if($_GET['order']=='asc' || $_GET['order']=='desc') $order=$_GET['order'];
 		
 		// proposals per page, one less for standard list, as there's the "add post box" as first tile
-		if($type=='mtlproposal') $posts_per_page = 23;
-		else $posts_per_page = 24;
+		$posts_per_page = 25;
+		if(isset($_GET['num'])) $posts_per_page = intval($_GET['num']);
 		$paged = '';
 		$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 		
@@ -97,7 +97,7 @@ function mtl_tile_list_output($atts) {
 		$search = $_GET['search'];
 		
 		$query_string = array(
-			'posts_per_page' => $posts_per_page,
+			'posts_per_page' => max(($posts_per_page - (($posts_per_page + 1) % 4)), -1),
 			'post_type' => $type,
 			'cat' => $get_cats,
 			'tag_id' => $get_tag,
@@ -191,8 +191,20 @@ function mtl_tile_list_output($atts) {
 			$output .= '<option'.($_GET['orderby']=='rating_count' ? ' selected="selected"' : '').' value="rating_count">'.__('Number of ratings','my-transit-lines').'</option>';
 		}
 		$output .= '<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>';
-		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select></p>';
+		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select>';
 		
+		// Selector for amount of proposals shown
+		$amounts = [25,50,100,250,500];
+		$output .= '<strong>'.__('Amount:','my-transit-lines').'</strong>';
+		$output .= '<select name="num">';
+		if (!in_array($posts_per_page, $amounts)) {
+			$output .= '<option selected="selected" value="'.$posts_per_page.'">'.($posts_per_page > 2 ? $posts_per_page : 'all').'</option>';
+		}
+		foreach ($amounts as $amount) {
+			$output .= '<option '.($posts_per_page == $amount ? ' selected="selected"' : '').' value="'.$amount.'">'.$amount.'</option>';
+		}
+		$output .= ' </select></p>';
+
 		$output .= '<p><strong>'.__('Search:','my-transit-lines').'</strong><input type="search" name="search" value="'.$search.'">';
 
 		$output .= '<button type="submit">'.__('Filter/sort','my-transit-lines').'</button></p></form></div>'."\r\n";

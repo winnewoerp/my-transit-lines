@@ -270,7 +270,8 @@ function mtl_tile_list_output($atts) {
 			$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';
 			
 			if(!$hidethumbs) {
-				$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = ["'.get_post_meta($post->ID,'mtl-feature-data',true).'"]; var vectorLabelsData = ["'.get_post_meta($post->ID,'mtl-feature-labels-data',true).'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
+				// Removing line breaks that can be caused by WordPress import/export
+				$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = ["'.str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
 				$output .= mtl_thumblist_map();
 			}
 			$output .= mtl_load_template_part( 'content', get_post_format() );

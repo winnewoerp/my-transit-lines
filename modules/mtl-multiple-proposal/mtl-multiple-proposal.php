@@ -125,8 +125,9 @@ function mtl_multiple_proposal_output( $atts ) {
 			$catid = $category[0]->cat_ID;
 
 			array_push($vector_categories_data, $catid);
-			array_push($vector_data, get_post_meta($post->ID,'mtl-feature-data',true));
-			array_push($vector_labels_data, get_post_meta($post->ID,'mtl-feature-labels-data',true));
+			// Removing line breaks that can be caused by WordPress import/export
+			array_push($vector_data, str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-data',true)));
+			array_push($vector_labels_data, str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-labels-data',true)));
 		}
 
 		endwhile;

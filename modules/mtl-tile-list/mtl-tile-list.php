@@ -203,9 +203,10 @@ function mtl_tile_list_output($atts) {
 				$output .= '</select>';
 			}
 		}
+		$output .= '</p>';
 
 		// Sorting phase status selector
-		$output .= '<strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
+		$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
 		$output .= '<select name="mtl-statusid">'."\r\n";
 		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
 		foreach($all_statuses as $single_status) {

@@ -159,10 +159,10 @@ function mtl_multiple_proposal_output( $atts ) {
 		foreach($blogusers as $bloguser) {
 			$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID==$get_userid ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 		}
-		$output .= '</select>';
+		$output .= '</select></p>';
 
 		// Sorting phase status selector
-		$output .= '<strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
+		$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
 		$output .= '<select name="mtl-statusid">'."\r\n";
 		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
 		foreach($all_statuses as $single_status) {

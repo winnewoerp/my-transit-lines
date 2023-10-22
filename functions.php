@@ -23,6 +23,7 @@ include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-for
 include( get_template_directory() . '/modules/mtl-single-proposal/mtl-single-proposal.php'); // single proposal custom display
 include( get_template_directory() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.php'); // multiple proposal custom display
 include( get_template_directory() . '/modules/mtl-tile-list/mtl-tile-list.php'); // proposal tile list with small maps
+include( get_template_directory() . '/modules/mtl-search-bar/mtl-search-bar.php'); // search bar
 include( get_template_directory() . '/modules/mtl-custom-posttypes/mtl-custom-posttypes.php'); // create the custom posttypes necessary for the theme
 include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comment-notification.php'); // custom comment notification, to be extended
 //include( get_template_directory() . '/modules/mtl-comment-editing/mtl-comment-editing.php'); // add comment editing functionality

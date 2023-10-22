@@ -15,7 +15,7 @@
 function download_GeoJSON($content) {
 	global $post;
 
-	if(is_single()) {
+	if(is_single() && get_post_type() == "mtlproposal") {
 		$content .= get_download_button($post->ID);
 	} else if (is_page(get_option('mtl-option-name')['mtl-addpost-page'])) {
 		$content .= get_download_button(get_editId());

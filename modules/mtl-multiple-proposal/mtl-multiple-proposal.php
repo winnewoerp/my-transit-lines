@@ -66,9 +66,9 @@ function mtl_multiple_proposal_output( $atts ) {
 
         // get sort criteria from parameter
 		$order_by = 'date';
-		if($_GET['orderby']=='date' || $_GET['orderby']=='comment_count' || $_GET['orderby']=='rand') $order_by=$_GET['orderby'];
+		if($_GET['orderby']=='date' || $_GET['orderby']=='comment_count' || $_GET['orderby']=='rand') $order_by = $_GET['orderby'];
 		$order = 'desc';
-		if($_GET['order']=='asc' || $_GET['order']=='desc') $order=$_GET['order'];
+		if($_GET['order']=='asc' || $_GET['order']=='desc') $order = $_GET['order'];
 		
 		$posts_per_page = 25;
 		if(isset($_GET['num'])) $posts_per_page = intval($_GET['num']);
@@ -118,7 +118,7 @@ function mtl_multiple_proposal_output( $atts ) {
 
 		while ($the_query->have_posts()) : $the_query->the_post(); global $post;
 
-		$hide_proposal = (bool)(get_post_meta($post->ID,'author-name',true) && $get_userid);
+		$hide_proposal = (bool)(get_post_meta($post->ID, 'author-name', true) && $get_userid);
 		
 		if(!$hide_proposal) {
 			$category = get_the_category($post->ID);
@@ -126,8 +126,8 @@ function mtl_multiple_proposal_output( $atts ) {
 
 			array_push($vector_categories_data, $catid);
 			// Removing line breaks that can be caused by WordPress import/export
-			array_push($vector_data, str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-data',true)));
-			array_push($vector_labels_data, str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-labels-data',true)));
+			array_push($vector_data, str_replace("\n", "", get_post_meta($post->ID, 'mtl-feature-data', true)));
+			array_push($vector_labels_data, str_replace("\n", "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)));
 		}
 
 		endwhile;
@@ -149,7 +149,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= '<select name="mtl-catid">'."\r\n".'<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
 		foreach($all_selectable_categories as $single_category) {
 			$catid = $single_category->cat_ID;
-            $output .= '<option value="'.$catid.'"'.($catid==$single_catid ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
+            $output .= '<option value="'.$catid.'"'.($catid == $single_catid ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
 		}
 		$output .= '</select>';
 		
@@ -157,7 +157,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= '<select name="mtl-userid">'."\r\n".'<option value="all">'.__('All users (incl. unregistered)','my-transit-lines').' </option>';
 		$blogusers = get_users('orderby=display_name');
 		foreach($blogusers as $bloguser) {
-			$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID==$get_userid ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
+			$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID == $get_userid ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 		}
 		$output .= '</select></p>';
 
@@ -167,7 +167,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
 		foreach($all_statuses as $single_status) {
 			$statusid = $single_status->term_id;
-			$output .= '<option value="'.$statusid.'"'.($statusid==$single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
+			$output .= '<option value="'.$statusid.'"'.($statusid == $single_statusid ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
 		}
 		$output .= '</select></p>';
 
@@ -175,10 +175,10 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= '<option'.($order_by=='date' ? ' selected="selected"' : '').' value="date">'.__('Date','my-transit-lines').'</option>';
 		$output .= '<option'.($order_by=='comment_count' ? ' selected="selected"' : '').' value="comment_count">'.__('Number of comments','my-transit-lines').'</option>';
 		$output .= '<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>';
-		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order=='asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select>';
+		$output .= '</select><select name="order"><option'.($order=='desc' ? ' selected="selected"' : '').' value="desc">'.__('Descendent','my-transit-lines').'</option><option'.($order == 'asc' ? ' selected="selected"' : '').' value="asc">'.__('Ascendent','my-transit-lines').'</option></select>';
 
 		// Selector for amount of proposals shown
-		$amounts = [25,50,100,250,500];
+		$amounts = [25, 50, 100, 250, 500];
 		$output .= '<strong>'.__('Amount:','my-transit-lines').'</strong>';
 		$output .= '<select name="num">';
 		if (!in_array($posts_per_page, $amounts)) {
@@ -196,7 +196,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		// paginate links
 		$big = 999999999; // need an unlikely integer
 		$mtl_paginate_links = '<div class="mtl-paginate-links">';
-		if($order_by!='rand') $mtl_paginate_links .= paginate_links( array(
+		if($order_by != 'rand') $mtl_paginate_links .= paginate_links( array(
 			'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
 			'format' => '?paged=%#%',
 			'current' => max( 1, get_query_var('paged') ),

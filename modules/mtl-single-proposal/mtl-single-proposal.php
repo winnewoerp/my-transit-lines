@@ -29,7 +29,7 @@ function mtl_proposal_map($content) {
 		
 		// do the meta data calculations
 		$countStations = get_post_meta($post->ID,'mtl-count-stations',true);
-		$lineLength = get_post_meta($post->ID,'mtl-line-length',true);
+		$lineLength = max(get_post_meta($post->ID,'mtl-line-length',true), 0);
 		if($lineLength>=1000) $lineLengthOutput = str_replace('.',',',round($lineLength/1000,3)).' km';
 		else $lineLengthOutput = str_replace('.',',',round($lineLength,1)).' m';
 		if($countStations > 1 && $lineLength) {
@@ -41,7 +41,6 @@ function mtl_proposal_map($content) {
 		// get data of current category
 		$category = get_the_category($post->ID);
 		$catid = $category[0]->cat_ID;
-		$category_slug = $category[0]->slug;
 		$category_name = $category[0]->name;
 		
 		// load relevant scripts and set some JS variables

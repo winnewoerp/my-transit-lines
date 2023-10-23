@@ -16,14 +16,30 @@
  * map and meta data for multiple proposals
  */
 function mtl_multiple_proposal_output( $atts ) {
+	extract( shortcode_atts( array(
+		'type' => 'mtlproposal',
+		'statusid_query' => 0,
+	), $atts ) );
+
 	$output = '';
 
     // get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 
-	$the_query = get_query();
+	if (!$statusid_query) {
+		$the_query = get_query($type, 1);
 
-	$output .= mtl_search_bar_output($the_query);
+		$output .= mtl_search_bar_output($the_query);
+	} else {
+		$the_query = new WP_Query(array(
+			'posts_per_page' => -1,
+			'post_type' => $type,
+			'tax_query' => array(array(
+				'taxonomy' => 'sorting-phase-status',
+				'terms' => $statusid_query,
+			)),
+		));
+	}
 	
 	// load the text translations
 	$output .= mtl_localize_script(true);
@@ -89,9 +105,10 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '</div>'."\r\n";
 
-	$output .= '<script type="text/javascript"> $(document).ready(function(){ document.getElementById("mtl-toggle-labels-link").checked = false; toggleLabels();}); </script>'."\r\n";
+	$output .= '<script type="text/javascript"> $(document).ready(function(){ document.getElementById("mtl-toggle-labels-link").checked = false; toggleLabels();}); var post_list_url = "'.get_permalink(get_option('mtl-option-name')['mtl-postlist-page']).'"; </script>'."\r\n";
 
-	$output .= '<script type="text/javascript"> var post_list_url = "'.get_permalink(get_option('mtl-option-name')['mtl-postlist-page']).'"; </script><p class="alignleft"> <a id="mtl-post-list-link">'.__('Proposal list page','my-transit-lines').'</a> </p>';
+	if (!$statusid_query)
+		$output .= '<p class="alignleft"> <a id="mtl-post-list-link">'.__('Proposal list page','my-transit-lines').'</a> </p>';
 
     return $output;
 }

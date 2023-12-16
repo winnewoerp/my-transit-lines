@@ -126,9 +126,6 @@ require get_template_directory() . '/inc/jetpack.php';
 function my_transit_lines_scripts() {
 
 	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri(), array(), wp_get_theme()->version );
-
-	// get the style for the Openlayers Editor
-	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css', array(), wp_get_theme()->version );
 	
 	// enable jQuery
 	wp_enqueue_script( 'jquery');
@@ -274,7 +271,6 @@ function mtl_localize_script($getVar = false) {
 		'attributionESRISatellite'=>__('Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community','my-transit-lines'),	
 		'titleOSM'=>__('OpenStreetMap standard (Mapnik)','my-transit-lines'),
 		'vectorLayerTitle'=>__('Line proposal (vector data)','my-transit-lines'),
-		'fitToMap'=>__('Fit proposition to map','my-transit-lines'),
 		'buildLine'=>__('Build line','my-transit-lines'),
 		'buildStations'=>__('Build stations','my-transit-lines'),
 		'editObjects'=>__('Edit line/stations','my-transit-lines'),

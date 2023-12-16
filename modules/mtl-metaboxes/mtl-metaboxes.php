@@ -66,8 +66,8 @@ function mtl_post_class_meta_box($post) {
 	$current_category = get_the_category($post->ID);
 	
 	// load JS stuff (copied from mtl-proposal module)
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
-	$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
+	$all_categories = get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 	
 	// save category style data to JS array
 	$output .= '<script type="text/javascript"> var transportModeStyleData = {';
@@ -84,10 +84,8 @@ function mtl_post_class_meta_box($post) {
 		}
 	}
 	$output .= '}; </script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/Editor/Lang/de.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/loader.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript"> '.$output_later.' var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
+	$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
 	$output .= mtl_localize_script(true);
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
 
@@ -99,7 +97,7 @@ function mtl_post_class_meta_box($post) {
 		$post_cat = '';
 		if(isset($_POST['cat'])) $post_cat = $_POST['cat'];
 		if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
-		if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) $output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="changeLinetype()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+		if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) $output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
 	}
 	$output .= '</span></span></p>';
 	
@@ -166,8 +164,6 @@ function mtl_post_class_meta_box($post) {
 
 function mtl_admin_scripts_metaboxes( ) {
 	global $post;
-	// get the style for the Openlayers Editor
-	if($post->ID) wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css',array());
 	
 	// enqueue theme style file to admin pages
 	wp_enqueue_style( 'mtl-admin-style-metaboxes', get_template_directory_uri().'/modules/mtl-metaboxes/style.css',array() );

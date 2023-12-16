@@ -32,8 +32,8 @@ function mtl_admin_scripts( ) {
 	// load main js file for the theme including l10n script
 	if(!$post->ID) {
 		mtl_localize_script();
-		wp_enqueue_script( 'OpenLayers', get_template_directory_uri().'/openlayers/OpenLayers.js', array());
-		wp_enqueue_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array());
+		wp_enqueue_script( 'OpenLayers', get_template_directory_uri().'/openlayers/dist/ol.js', array());
+		wp_enqueue_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array()); // TODO don't use main js file
 	}
 	
 	// enqueue theme style file to admin pages

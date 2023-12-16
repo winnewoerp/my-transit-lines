@@ -26,16 +26,14 @@ var standardZoom;
 var showLabels = true;
 var fullscreen = false;
 var selectedFeatureIndex = -1;
+var snapping = true;
 
-class DrawTypeSelectorControl extends ol.control.Control {
-	/**
-	 * @param {Object} [opt_options] Control options.
-	 */
+class InteractionControl extends ol.control.Control {
 	constructor(opt_options) {
 		const options = opt_options || {};
 
 		const element = document.createElement('div');
-		element.className = 'draw-type-selector ol-control';
+		element.className = 'interaction-control ol-control';
 
 		super({
 			element: element,
@@ -85,7 +83,7 @@ class DrawTypeSelectorControl extends ol.control.Control {
 
 			target.style.backgroundColor = 'gray';
 		} else {
-			handleDelete();
+			deleteSelected();
 			return;
 		}
 
@@ -93,46 +91,195 @@ class DrawTypeSelectorControl extends ol.control.Control {
 	}
 }
 
-const OSM_SOURCE = new ol.source.OSM();
-const OEPNVKARTE_SOURCE = new ol.source.OSM({
+class OptionsControl extends ol.control.Control {
+	constructor(opt_options) {
+		const options = opt_options || {};
+
+		const element = document.createElement('div');
+		element.className = 'layer-control ol-control alignright';
+		element.style.backgroundColor = '#AAAAAADD';
+
+		super({
+			element: element,
+			target: options.target,
+		});
+
+		this.backgroundSelector = this.createBackgroundSelector();
+		this.overlaySelector = this.createOverlaySelector();
+
+		this.snappingToggle = this.createSnappingToggle();
+
+		this.innerDiv = document.createElement('div');
+		this.innerDiv.style.display = 'none';
+		this.innerDiv.appendChild(this.snappingToggle);
+		this.innerDiv.appendChild(this.backgroundSelector);
+		this.innerDiv.appendChild(this.overlaySelector);
+
+		this.menuOpen = false;
+		this.menuToggle = this.createMenuToggle();
+
+		element.appendChild(this.menuToggle);
+		element.appendChild(this.innerDiv);
+	}
+
+	createMenuToggle() {
+		let menuToggle = document.createElement('button');
+		menuToggle.id = 'toggle-layer-switcher';
+		menuToggle.type = 'button';
+		menuToggle.textContent = '...';
+		menuToggle.style.marginRight = '0';
+		menuToggle.style.marginLeft = 'auto';
+		menuToggle.addEventListener('click', this.handleMenuToggle.bind(this), false);
+
+		return menuToggle;
+	}
+
+	createSnappingToggle() {
+		let snappingToggle = document.createElement('input');
+		snappingToggle.id = 'toggle-snapping';
+		snappingToggle.type = 'checkbox';
+		snappingToggle.autocomplete = 'off';
+		snappingToggle.checked = true;
+		snappingToggle.addEventListener('change', toggleSnapping, false);
+
+		let snappingToggleLabel = document.createElement('label');
+		snappingToggleLabel.id = 'toggle-snapping-label';
+		snappingToggleLabel.for = 'toggle-snapping';
+		snappingToggleLabel.textContent = 'Snapping ';
+		snappingToggleLabel.style.margin = '5px';
+		snappingToggleLabel.style.textAlign = 'right';
+		snappingToggleLabel.appendChild(snappingToggle);
+
+		return snappingToggleLabel;
+	}
+
+	createBackgroundSelector() {
+		let backgroundSelector = document.createElement('div');
+		backgroundSelector.id = 'background-layer-selector';
+		backgroundSelector.style.color = '#000000';
+		backgroundSelector.style.textAlign = 'left';
+		backgroundSelector.style.margin = '5px';
+		backgroundSelector.textContent = 'Background Selector';
+
+		for (var source of BACKGROUND_SOURCES) {
+			backgroundSelector.appendChild(this.createLayerOption(source, 'background', source == OSM_SOURCE));
+		}
+
+		return backgroundSelector;
+	}
+
+	createOverlaySelector() {
+		let none = this.createLayerOption({title: 'None', id: 'none'}, 'overlay', true);
+
+		let overlaySelector = document.createElement('div');
+		overlaySelector.id = 'background-layer-selector';
+		overlaySelector.style.color = '#000000';
+		overlaySelector.style.textAlign = 'left';
+		overlaySelector.style.margin = '5px';
+		overlaySelector.textContent = 'Overlay Selector';
+		overlaySelector.appendChild(none);
+
+		for (var source of OVERLAY_SOURCES) {
+			overlaySelector.appendChild(this.createLayerOption(source, 'overlay'));
+		}
+
+		return overlaySelector;
+	}
+
+	createLayerOption(source, type, checked = false) {
+		let selector = document.createElement('input');
+		selector.type = 'radio';
+		selector.checked = checked;
+		selector.id = (source.id || source.get('id')) + '-' + type + '-selector';
+		selector.name = type + '-selector';
+		selector.addEventListener('change', this.handleBackgroundSelector.bind(this));
+
+		let label = document.createElement('label');
+		label.id = (source.id || source.get('id')) + '-' + type;
+		label.textContent = (source.title || source.get('title')) + ' ';
+		label.style.textAlign = 'right';
+		label.appendChild(selector);
+
+		return label;
+	}
+
+	handleMenuToggle() {
+		this.menuOpen = !this.menuOpen;
+
+		if (this.menuOpen) {
+			this.innerDiv.style.display = '';
+		} else {
+			this.innerDiv.style.display = 'none';
+		}
+	}
+
+	handleBackgroundSelector(event) {
+		let target = event.target;
+
+		if (target.id.includes('background')) {
+			for (var source of BACKGROUND_SOURCES) {
+				if (target.id.includes(source.get('id'))) {
+					backgroundTileLayer.setSource(source);
+					return;
+				}
+			}
+		} else if (target.id.includes('overlay')) {
+			for (var source of OVERLAY_SOURCES) {
+				if (target.id.includes(source.get('id'))) {
+					overlayTileLayer.setSource(source);
+					return;
+				}
+			}
+			overlayTileLayer.setSource(null);
+		}
+	}
+}
+
+const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({title: objectL10n.titleOSM, id: 'osm'});
+/*const OEPNVKARTE_SOURCE = new ol.source.OSM({
 	url: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOPNV,
 	maxZoom: MAX_ZOOM_OEPNV_MAP,
-});
+}); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});*/
 const OPENTOPOMAP_SOURCE = new ol.source.OSM({
 	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpentopomap,
 	maxZoom: MAX_ZOOM_OPENTOPO_MAP,
-});
+}); OPENTOPOMAP_SOURCE.setProperties({title: objectL10n.titleOpentopomap, id: 'opentopo'});
 const ESRI_SOURCE = new ol.source.OSM({
 	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
 	attributions: objectL10n.attributionESRISatellite,
-})
+}); ESRI_SOURCE.setProperties({title: objectL10n.titleESRISatellite, id: 'esri'});
+
+const BACKGROUND_SOURCES = [OSM_SOURCE, /*OEPNVKARTE_SOURCE,*/ OPENTOPOMAP_SOURCE, ESRI_SOURCE];
+
 const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymap,
 	opaque: false,
-});
+}); OPENRAILWAYMAP_STANDARD_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymap, id: 'openrailway-standard'});
 const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
 	opaque: false,
-});
-const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
+}); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed'});
+/*const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/electrified/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapElectrified,
 	opaque: false,
-});
+}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});*/
 const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapSignals,
 	opaque: false,
-});
+}); OPENRAILWAYMAP_SIGNALS_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapSignals, id: 'openrailway-signals'});
 const OPENRAILWAYMAP_GAUGE_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/gauge/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapGauge,
 	opaque: false,
-});
+}); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge'});
+
+const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, /*OPENRAILWAYMAP_ELECTRIFICATION_SOURCE,*/ OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
 
 const backgroundTileLayer = new ol.layer.Tile({
 	className: 'background-tilelayer',
@@ -186,7 +333,7 @@ function styleFunction(feature) {
 
 /**
  * Get the category of the feature passed to the function.
- * This is the category saved in feature.attributes.category if present of getSelectedCategory() otherwise
+ * This is the category saved in feature.get('category') if present of getSelectedCategory() otherwise
  * 
  * @param {*} feature the feature to get the category of
  * @returns the category of the feature passed to the function
@@ -215,7 +362,7 @@ function unselectAllFeatures() {
 }
 
 // removes all selected features
-function handleDelete() {
+function deleteSelected() {
 	var featureArray = Array();
 	for (var i = selectedFeatures.getArray().length; i > 0; i--) {
 		featureArray.push(selectedFeatures.getArray()[i - 1]);
@@ -250,7 +397,8 @@ function handleFeatureSelected(event) {
 	}
 }
 
-function handleBoxDragEnd() {
+// Selects all features inside the box dragged for selection
+function selectInBox() {
 	const boxExtent = dragBoxInteraction.getGeometry().getExtent();
 
 	// if the extent crosses the antimeridian process each world separately
@@ -278,6 +426,13 @@ function handleBoxDragEnd() {
 	}
 }
 
+// Toggles snapping on/off
+function toggleSnapping() {
+	snapping = !snapping;
+
+	snapInteraction.setActive(snapping);
+}
+
 /**
  * Sets only the specified interaction removing all others
  * 
@@ -293,7 +448,8 @@ function setInteraction(interactionType) {
 		case 'Polygon':
 			drawInteraction = new ol.interaction.Draw({ source: vectorSource, type: interactionType });
 			map.addInteraction(drawInteraction);
-			map.addInteraction(snapInteraction); // TODO controlled seperately later
+			if (snapping)
+				map.addInteraction(snapInteraction);
 			break;
 		case 'Select':
 			map.addInteraction(dragBoxInteraction);
@@ -301,7 +457,8 @@ function setInteraction(interactionType) {
 			break;
 		case 'Modify':
 			map.addInteraction(modifyInteraction);
-			map.addInteraction(snapInteraction); // TODO controlled seperately later
+			if (snapping)
+				map.addInteraction(snapInteraction);
 			break;
 		case 'Navigate':
 			break;
@@ -329,10 +486,15 @@ const view = new ol.View({
 	maxZoom: MAX_ZOOM,
 });
 
-const interactionControl = new DrawTypeSelectorControl();
+const interactionControl = new InteractionControl();
+const optionsControl = new OptionsControl();
+const attributionControl = new ol.control.Attribution({
+	collapsible: true,
+	collapsed: false,
+});
 
 const map = new ol.Map({
-	controls: [new ol.control.Zoom(), new ol.control.Attribution()].concat(editMode ? [interactionControl] : []),
+	controls: [new ol.control.Zoom(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
 	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
 	target: MAP_ID,
 	view: view,
@@ -342,7 +504,6 @@ vectorLayer.on('sourceready', setMapColors);
 vectorLayer.on('sourceready', setMapOpacity);
 
 // global so we can remove them later
-// TODO only include this when editMode
 let drawInteraction;
 const modifyInteraction = new ol.interaction.Modify({ source: vectorSource });
 const dragBoxInteraction = new ol.interaction.DragBox();
@@ -351,7 +512,7 @@ const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
 
 const selectedFeatures = selectInteraction.getFeatures();
 
-dragBoxInteraction.on('boxend', handleBoxDragEnd);
+dragBoxInteraction.on('boxend', selectInBox);
 
 // clear selection when drawing a new box without holding shift
 dragBoxInteraction.on('boxstart', function (event) {

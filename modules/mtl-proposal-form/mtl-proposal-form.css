@@ -218,7 +218,7 @@ div.success-message-block {
 	background:white;
 }
 
-#mtl-map .background-tilelayer:not([src*="openrailwaymap.org"]) { /* TODO: change not condition */
+#mtl-map .background-tilelayer {
 	opacity:.4 !important;
 	filter:grayscale();
 }

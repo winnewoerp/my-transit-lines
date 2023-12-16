@@ -568,3 +568,8 @@ button {
 .rightalign {
 	text-align:right;
 }
+
+.alignleft,
+.leftalign {
+	text-align:left;
+}

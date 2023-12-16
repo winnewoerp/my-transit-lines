@@ -108,12 +108,12 @@ const ESRI_SOURCE = new ol.source.OSM({
 	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
 	attributions: objectL10n.attributionESRISatellite,
 })
-const OPENRAILYWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
+const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymap,
 	opaque: false,
 });
-const OPENRAILYWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
+const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
 	opaque: false,
@@ -140,7 +140,7 @@ const backgroundTileLayer = new ol.layer.Tile({
 });
 const overlayTileLayer = new ol.layer.Tile({
 	className: 'overlay-tilelayer',
-	source: OPENRAILYWAYMAP_MAX_SPEED_SOURCE,
+	source: null,
 });
 
 const vectorSource = new ol.source.Vector();

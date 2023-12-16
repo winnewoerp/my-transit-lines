@@ -26,6 +26,8 @@ button.layer-control {
 
 label.layer-control {
 	margin: 5px;
+	color:#666666;
+	display:block;
 }
 
 div.interaction-control {

@@ -19,9 +19,10 @@ const ZOOM_ANIMATION_DURATION = 100;
 const ZOOM_PADDING = [50, 50, 50, 50]; // TODO should depend on screen size?
 const MAP_ID = 'mtl-map';
 
-var centerLon;
-var centerLat;
-var standardZoom;
+var centerLon = centerLon || 0;
+var centerLat = centerLat || 0;
+var standardZoom = standardZoom || 2;
+
 var showLabels = true;
 var fullscreen = false;
 var selectedFeatureIndex = -1;
@@ -157,7 +158,7 @@ class OptionsControl extends ol.control.Control {
 	}
 
 	createOverlaySelector() {
-		let none = this.createLayerOption({title: objectL10n.none, id: 'none'}, 'overlay', true);
+		let none = this.createLayerOption({ title: objectL10n.none, id: 'none' }, 'overlay', true);
 
 		let overlaySelector = document.createElement('div');
 		overlaySelector.className = 'layer-selector alignleft';
@@ -183,7 +184,7 @@ class OptionsControl extends ol.control.Control {
 		let label = document.createElement('label');
 		label.id = (source.id || source.get('id')) + '-' + type;
 		label.textContent = (source.title || source.get('title')) + ' ';
-		label.className = 'alignright';
+		label.className = 'alignright layer-control';
 		label.appendChild(selector);
 
 		return label;
@@ -221,7 +222,7 @@ class OptionsControl extends ol.control.Control {
 	}
 }
 
-const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({title: objectL10n.titleOSM, id: 'osm'});
+const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
 /*const OEPNVKARTE_SOURCE = new ol.source.OSM({
 	url: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOPNV,
@@ -231,11 +232,11 @@ const OPENTOPOMAP_SOURCE = new ol.source.OSM({
 	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpentopomap,
 	maxZoom: MAX_ZOOM_OPENTOPO_MAP,
-}); OPENTOPOMAP_SOURCE.setProperties({title: objectL10n.titleOpentopomap, id: 'opentopo'});
+}); OPENTOPOMAP_SOURCE.setProperties({ title: objectL10n.titleOpentopomap, id: 'opentopo' });
 const ESRI_SOURCE = new ol.source.OSM({
 	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
 	attributions: objectL10n.attributionESRISatellite,
-}); ESRI_SOURCE.setProperties({title: objectL10n.titleESRISatellite, id: 'esri'});
+}); ESRI_SOURCE.setProperties({ title: objectL10n.titleESRISatellite, id: 'esri' });
 
 const BACKGROUND_SOURCES = [OSM_SOURCE, /*OEPNVKARTE_SOURCE,*/ OPENTOPOMAP_SOURCE, ESRI_SOURCE];
 
@@ -243,12 +244,12 @@ const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymap,
 	opaque: false,
-}); OPENRAILWAYMAP_STANDARD_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymap, id: 'openrailway-standard'});
+}); OPENRAILWAYMAP_STANDARD_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymap, id: 'openrailway-standard' });
 const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
 	opaque: false,
-}); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed'});
+}); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed' });
 /*const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/electrified/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapElectrified,
@@ -258,12 +259,12 @@ const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapSignals,
 	opaque: false,
-}); OPENRAILWAYMAP_SIGNALS_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapSignals, id: 'openrailway-signals'});
+}); OPENRAILWAYMAP_SIGNALS_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapSignals, id: 'openrailway-signals' });
 const OPENRAILWAYMAP_GAUGE_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/gauge/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapGauge,
 	opaque: false,
-}); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge'});
+}); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge' });
 
 const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, /*OPENRAILWAYMAP_ELECTRIFICATION_SOURCE,*/ OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
 
@@ -277,7 +278,10 @@ const overlayTileLayer = new ol.layer.Tile({
 });
 
 const vectorSource = new ol.source.Vector();
-const vectorLayer = new ol.layer.Vector({ // TODO use VectorImage for multiple proposal view
+const vectorLayer = editMode ? new ol.layer.Vector({
+	source: vectorSource,
+	style: styleFunction,
+}) : new ol.layer.VectorImage({
 	source: vectorSource,
 	style: styleFunction,
 });

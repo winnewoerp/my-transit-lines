@@ -44,25 +44,24 @@ function mtl_proposal_map($content) {
 		$category_name = $category[0]->name;
 		
 		// load relevant scripts and set some JS variables
-		$output .= "\r";
+		$output .= "\r".'<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 		$output .= '<div id="mtl-box">'."\r\n";
 		$output .= '<script type="text/javascript"> var transportModeStyleData = {'.$catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"]}; </script>';
 		// Removing line breaks that can be caused by WordPress import/export
-		$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
-		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
-		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/Editor/Lang/de.js"></script>'."\r\n";
-		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/loader.js"></script>'."\r\n";
-		$output .= mtl_localize_script(true);
-		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
+		$output .= '<script type="text/javascript"> var editMode = false; var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace("\n", "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
 		
 		// output the map box
 		$output .= '<div id="mtl-map-box">'."\r\n";
 		$output .= '<div id="mtl-map"></div>'."\r\n";
 		$output .= '</div>';
+		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
+		$output .= mtl_localize_script(true);
+		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
 		
 		// output opacity change button, map fullscreen link and toggle label checkbox
 		$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="setMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="setMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
-		$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:mtlFullscreenMap()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
+		$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
+		$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
 		$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 		$output .= '</div>'."\r\n";
 		

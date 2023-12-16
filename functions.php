@@ -280,7 +280,9 @@ function mtl_localize_script($getVar = false) {
 		'baselayersTitle'=>__('Base layers','my-transit-lines'),
 		'overlaysTitle'=>__('Overlays','my-transit-lines'),
 		'changeToSubmit'=>__('Please select another tool on the map to submit your proposal.','my-transit-lines'),
-		'importDataBeingProcessed'=>__('Import data is being processed. This may take several minutes...','my-transit-lines')
+		'importDataBeingProcessed'=>__('Import data is being processed. This may take several minutes...','my-transit-lines'),
+		'none'=>__('None','my-transit-lines'),
+		'snapping'=>__('Snapping','my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

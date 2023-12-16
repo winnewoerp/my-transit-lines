@@ -137,7 +137,7 @@ class OptionsControl extends ol.control.Control {
 		snappingToggleLabel.className = 'layer-control alignright';
 		snappingToggleLabel.id = 'toggle-snapping-label';
 		snappingToggleLabel.for = 'toggle-snapping';
-		snappingToggleLabel.textContent = 'Snapping ';
+		snappingToggleLabel.textContent = objectL10n.snapping + ' ';
 		snappingToggleLabel.appendChild(snappingToggle);
 
 		return snappingToggleLabel;
@@ -147,7 +147,7 @@ class OptionsControl extends ol.control.Control {
 		let backgroundSelector = document.createElement('div');
 		backgroundSelector.className = 'layer-selector alignleft';
 		backgroundSelector.id = 'background-layer-selector';
-		backgroundSelector.textContent = 'Background Selector';
+		backgroundSelector.textContent = objectL10n.baselayersTitle;
 
 		for (var source of BACKGROUND_SOURCES) {
 			backgroundSelector.appendChild(this.createLayerOption(source, 'background', source == OSM_SOURCE));
@@ -157,12 +157,12 @@ class OptionsControl extends ol.control.Control {
 	}
 
 	createOverlaySelector() {
-		let none = this.createLayerOption({title: 'None', id: 'none'}, 'overlay', true);
+		let none = this.createLayerOption({title: objectL10n.none, id: 'none'}, 'overlay', true);
 
 		let overlaySelector = document.createElement('div');
 		overlaySelector.className = 'layer-selector alignleft';
 		overlaySelector.id = 'background-layer-selector';
-		overlaySelector.textContent = 'Overlay Selector';
+		overlaySelector.textContent = objectL10n.overlaysTitle;
 		overlaySelector.appendChild(none);
 
 		for (var source of OVERLAY_SOURCES) {

@@ -332,6 +332,10 @@ body.single #content .entry-content {
 	margin-left:20px;
 }
 
+#content .ol-attribution > ul {
+	margin-left: 5px;
+}
+
 #content div.nav-links {
 	width:100%;
 }

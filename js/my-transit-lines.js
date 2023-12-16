@@ -17,7 +17,6 @@ const STROKE_WIDTH_UNSELECTED = 4;
 const TEXT_X_OFFSET = 15;
 const ZOOM_ANIMATION_DURATION = 100;
 const ZOOM_PADDING = [50, 50, 50, 50]; // TODO should depend on screen size?
-const DELETE_INTERACTION_UNSUPPORTED_OPACITY = 0.5;
 const MAP_ID = 'mtl-map';
 
 var centerLon;
@@ -47,7 +46,7 @@ class InteractionControl extends ol.control.Control {
 		this.modifyButton = this.createButton('Modify', themeUrl + '/images/modifyFeature.png');
 		this.selectButton = this.createButton('Select', themeUrl + '/images/selectFeatureAddName.png');
 		this.deleteButton = this.createButton('Delete', themeUrl + '/images/deleteFeatures.png');
-		this.deleteButton.style.opacity = 0.4;
+		this.deleteButton.classList.add('unselectable');
 		this.navigateButton = this.createButton('Navigate', themeUrl + '/images/navigation.png');
 
 		element.appendChild(this.pointButton);
@@ -63,9 +62,8 @@ class InteractionControl extends ol.control.Control {
 	createButton(value, path) {
 		const button = document.createElement('button');
 		button.type = 'button';
+		button.className = 'interaction-control';
 		button.style.backgroundImage = 'url(' + path + ')';
-		button.style.backgroundPosition = 'center';
-		button.style.backgroundRepeat = 'no-repeat';
 		button.value = value;
 
 		button.addEventListener('click', this.handleClick.bind(this), false);
@@ -78,10 +76,10 @@ class InteractionControl extends ol.control.Control {
 
 		if (target != this.deleteButton) {
 			for (const node of target.parentElement.childNodes) {
-				node.style.backgroundColor = 'white';
+				node.classList.remove('selected');
 			}
 
-			target.style.backgroundColor = 'gray';
+			target.classList.add('selected');
 		} else {
 			deleteSelected();
 			return;
@@ -97,23 +95,17 @@ class OptionsControl extends ol.control.Control {
 
 		const element = document.createElement('div');
 		element.className = 'layer-control ol-control alignright';
-		element.style.backgroundColor = '#AAAAAADD';
 
 		super({
 			element: element,
 			target: options.target,
 		});
 
-		this.backgroundSelector = this.createBackgroundSelector();
-		this.overlaySelector = this.createOverlaySelector();
-
-		this.snappingToggle = this.createSnappingToggle();
-
 		this.innerDiv = document.createElement('div');
-		this.innerDiv.style.display = 'none';
-		this.innerDiv.appendChild(this.snappingToggle);
-		this.innerDiv.appendChild(this.backgroundSelector);
-		this.innerDiv.appendChild(this.overlaySelector);
+		this.innerDiv.className = 'layer-control hidden';
+		this.innerDiv.appendChild(this.createSnappingToggle());
+		this.innerDiv.appendChild(this.createBackgroundSelector());
+		this.innerDiv.appendChild(this.createOverlaySelector());
 
 		this.menuOpen = false;
 		this.menuToggle = this.createMenuToggle();
@@ -124,11 +116,10 @@ class OptionsControl extends ol.control.Control {
 
 	createMenuToggle() {
 		let menuToggle = document.createElement('button');
+		menuToggle.className = 'layer-control';
 		menuToggle.id = 'toggle-layer-switcher';
 		menuToggle.type = 'button';
 		menuToggle.textContent = '...';
-		menuToggle.style.marginRight = '0';
-		menuToggle.style.marginLeft = 'auto';
 		menuToggle.addEventListener('click', this.handleMenuToggle.bind(this), false);
 
 		return menuToggle;
@@ -143,11 +134,10 @@ class OptionsControl extends ol.control.Control {
 		snappingToggle.addEventListener('change', toggleSnapping, false);
 
 		let snappingToggleLabel = document.createElement('label');
+		snappingToggleLabel.className = 'layer-control alignright';
 		snappingToggleLabel.id = 'toggle-snapping-label';
 		snappingToggleLabel.for = 'toggle-snapping';
 		snappingToggleLabel.textContent = 'Snapping ';
-		snappingToggleLabel.style.margin = '5px';
-		snappingToggleLabel.style.textAlign = 'right';
 		snappingToggleLabel.appendChild(snappingToggle);
 
 		return snappingToggleLabel;
@@ -155,10 +145,8 @@ class OptionsControl extends ol.control.Control {
 
 	createBackgroundSelector() {
 		let backgroundSelector = document.createElement('div');
+		backgroundSelector.className = 'layer-selector alignleft';
 		backgroundSelector.id = 'background-layer-selector';
-		backgroundSelector.style.color = '#000000';
-		backgroundSelector.style.textAlign = 'left';
-		backgroundSelector.style.margin = '5px';
 		backgroundSelector.textContent = 'Background Selector';
 
 		for (var source of BACKGROUND_SOURCES) {
@@ -172,10 +160,8 @@ class OptionsControl extends ol.control.Control {
 		let none = this.createLayerOption({title: 'None', id: 'none'}, 'overlay', true);
 
 		let overlaySelector = document.createElement('div');
+		overlaySelector.className = 'layer-selector alignleft';
 		overlaySelector.id = 'background-layer-selector';
-		overlaySelector.style.color = '#000000';
-		overlaySelector.style.textAlign = 'left';
-		overlaySelector.style.margin = '5px';
 		overlaySelector.textContent = 'Overlay Selector';
 		overlaySelector.appendChild(none);
 
@@ -197,7 +183,7 @@ class OptionsControl extends ol.control.Control {
 		let label = document.createElement('label');
 		label.id = (source.id || source.get('id')) + '-' + type;
 		label.textContent = (source.title || source.get('title')) + ' ';
-		label.style.textAlign = 'right';
+		label.className = 'alignright';
 		label.appendChild(selector);
 
 		return label;
@@ -207,9 +193,9 @@ class OptionsControl extends ol.control.Control {
 		this.menuOpen = !this.menuOpen;
 
 		if (this.menuOpen) {
-			this.innerDiv.style.display = '';
+			this.innerDiv.classList.remove('hidden');
 		} else {
-			this.innerDiv.style.display = 'none';
+			this.innerDiv.classList.add('hidden');
 		}
 	}
 
@@ -375,7 +361,7 @@ function deleteSelected() {
 
 function handleFeatureSelected(event) {
 	if (event.type == 'add') {
-		interactionControl.deleteButton.style.opacity = 1.0;
+		interactionControl.deleteButton.classList.remove('unselectable');
 
 		$('#feature-textinput').val(event.element.get('name'));
 		$('.feature-textinput-box').slideDown();
@@ -386,7 +372,7 @@ function handleFeatureSelected(event) {
 		selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
 	} else if (event.type = 'remove') {
 		if (vectorSource.getFeatures().indexOf(event.element) == selectedFeatureIndex) {
-			interactionControl.deleteButton.style.opacity = DELETE_INTERACTION_UNSUPPORTED_OPACITY;
+			interactionControl.deleteButton.classList.add('unselectable');
 
 			vectorSource.getFeatures()[selectedFeatureIndex].set('name', $('#feature-textinput').val());
 			selectedFeatureIndex = -1;

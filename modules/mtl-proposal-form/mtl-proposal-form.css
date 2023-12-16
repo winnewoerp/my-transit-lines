@@ -4,12 +4,50 @@
 
 /* map controls */
 
-.draw-type-selector {
+div.layer-control.ol-control {
+	top: .5em;
+	right: .5em;
+	background-color: #AAAAAADD;
+}
+
+div.layer-control.hidden  {
+	display: none;
+}
+
+div.layer-selector {
+	color: black;
+	margin: 5px;
+}
+
+button.layer-control {
+	margin-right: 0 !important;
+	margin-left: auto !important;
+}
+
+label.layer-control {
+	margin: 5px;
+}
+
+div.interaction-control {
 	top: 65px;
 	left: .5em;
 }
-.ol-touch .draw-type-selector {
+.ol-touch .interaction-control {
 	top: 80px;
+}
+
+button.interaction-control {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: white;
+}
+
+button.interaction-control.selected {
+	background-color: gray;
+}
+
+button.interaction-control.unselectable {
+	opacity: 0.5;
 }
 
 /* post form */
@@ -21,6 +59,9 @@
 #mtl-post-form label {
 	color:#666666;
 	display:block;
+}
+
+#mtl-post-form label:not(.alignright) {
 	text-align:left;
 }
 

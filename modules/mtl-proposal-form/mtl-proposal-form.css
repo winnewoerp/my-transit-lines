@@ -2,6 +2,16 @@
 
 /* created by Johannes Bouchain, 2015-04-11 */
 
+/* map controls */
+
+.draw-type-selector {
+	top: 65px;
+	left: .5em;
+}
+.ol-touch .draw-type-selector {
+	top: 80px;
+}
+
 /* post form */
 
 #mtl-post-form {
@@ -165,16 +175,16 @@ div.success-message-block {
 	background:white;
 }
 
-#mtl-map .olTileImage:not([src*="openrailwaymap.org"]) {
+#mtl-map .background-tilelayer:not([src*="openrailwaymap.org"]) { /* TODO: change not condition */
 	opacity:.4 !important;
 	filter:grayscale();
 }
 
-#mtl-map.full-opacity .olTileImage {
+#mtl-map.full-opacity .background-tilelayer {
 	opacity:1 !important;
 }
 
-#mtl-map.colored-map .olTileImage {
+#mtl-map.colored-map .background-tilelayer {
 	filter:none;
 }
 

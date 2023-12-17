@@ -16,8 +16,14 @@ const STROKE_WIDTH_SELECTED = 3;
 const STROKE_WIDTH_UNSELECTED = 4;
 const TEXT_X_OFFSET = 15;
 const ZOOM_ANIMATION_DURATION = 100;
-const ZOOM_PADDING = [50, 50, 50, 50]; // TODO should depend on screen size?
+const ZOOM_PADDING = [50, 50, 50, 50];
 const MAP_ID = 'mtl-map';
+const GEO_JSON_FORMAT = new ol.format.GeoJSON({
+	featureClass: editMode ? ol.Feature : ol.render.RenderFeature,
+});
+const WKT_FORMAT = new ol.format.WKT({
+	splitCollection: true,
+});
 
 var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;
@@ -557,4 +563,34 @@ function setMapOpacity() {
 function setMapColors() {
 	if ($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
 	else $('#mtl-map').removeClass('colored-map');
+}
+
+/**
+ * Imports source strings to the map using the WKT format
+ * Only handles one WKT string at a time
+ * @param {string} source vector data
+ * @param {string[]} labelsSource labels data
+ * @param {string} categorySource category to use
+ */
+function importToMapWKT(source, labelsSource, categorySource) {
+	if (source == '')
+		return;
+
+	let features = WKT_FORMAT.readFeatures(source, {
+		dataProjection: 'EPSG:4326',
+		featureProjection: 'EPSG:3857',
+	});
+
+	var labelIndex = 0;
+
+	for (var feature of features) {
+		feature.set('category', categorySource);
+
+		// if (feature.getGeometry() instanceof ol.geom.Point) {
+			feature.set('name', labelsSource[labelIndex]);
+			labelIndex++;
+		// }
+	}
+
+	vectorSource.addFeatures(features);
 }

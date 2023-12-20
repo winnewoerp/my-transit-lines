@@ -25,6 +25,51 @@ const WKT_FORMAT = new ol.format.WKT({
 	splitCollection: true,
 });
 
+const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
+/*const OEPNVKARTE_SOURCE = new ol.source.OSM({
+	url: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOPNV,
+	maxZoom: MAX_ZOOM_OEPNV_MAP,
+}); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});*/
+const OPENTOPOMAP_SOURCE = new ol.source.OSM({
+	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOpentopomap,
+	maxZoom: MAX_ZOOM_OPENTOPO_MAP,
+}); OPENTOPOMAP_SOURCE.setProperties({ title: objectL10n.titleOpentopomap, id: 'opentopo' });
+const ESRI_SOURCE = new ol.source.OSM({
+	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
+	attributions: objectL10n.attributionESRISatellite,
+}); ESRI_SOURCE.setProperties({ title: objectL10n.titleESRISatellite, id: 'esri' });
+
+const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
+	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOpenrailwaymap,
+	opaque: false,
+}); OPENRAILWAYMAP_STANDARD_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymap, id: 'openrailway-standard' });
+const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
+	url: 'https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
+	opaque: false,
+}); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed' });
+/*const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
+	url: 'https://tiles.openrailwaymap.org/electrified/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOpenrailwaymapElectrified,
+	opaque: false,
+}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});*/
+const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
+	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOpenrailwaymapSignals,
+	opaque: false,
+}); OPENRAILWAYMAP_SIGNALS_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapSignals, id: 'openrailway-signals' });
+const OPENRAILWAYMAP_GAUGE_SOURCE = new ol.source.OSM({
+	url: 'https://tiles.openrailwaymap.org/gauge/{z}/{x}/{y}.png',
+	attributions: objectL10n.attributionOpenrailwaymapGauge,
+	opaque: false,
+}); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge' });
+
+const BACKGROUND_SOURCES = [OSM_SOURCE, /*OEPNVKARTE_SOURCE,*/ OPENTOPOMAP_SOURCE, ESRI_SOURCE];
+const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, /*OPENRAILWAYMAP_ELECTRIFICATION_SOURCE,*/ OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
+
 var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;
 var standardZoom = standardZoom || 2;
@@ -228,52 +273,6 @@ class OptionsControl extends ol.control.Control {
 	}
 }
 
-const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
-/*const OEPNVKARTE_SOURCE = new ol.source.OSM({
-	url: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOPNV,
-	maxZoom: MAX_ZOOM_OEPNV_MAP,
-}); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});*/
-const OPENTOPOMAP_SOURCE = new ol.source.OSM({
-	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOpentopomap,
-	maxZoom: MAX_ZOOM_OPENTOPO_MAP,
-}); OPENTOPOMAP_SOURCE.setProperties({ title: objectL10n.titleOpentopomap, id: 'opentopo' });
-const ESRI_SOURCE = new ol.source.OSM({
-	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
-	attributions: objectL10n.attributionESRISatellite,
-}); ESRI_SOURCE.setProperties({ title: objectL10n.titleESRISatellite, id: 'esri' });
-
-const BACKGROUND_SOURCES = [OSM_SOURCE, /*OEPNVKARTE_SOURCE,*/ OPENTOPOMAP_SOURCE, ESRI_SOURCE];
-
-const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
-	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOpenrailwaymap,
-	opaque: false,
-}); OPENRAILWAYMAP_STANDARD_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymap, id: 'openrailway-standard' });
-const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
-	url: 'https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
-	opaque: false,
-}); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed' });
-/*const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
-	url: 'https://tiles.openrailwaymap.org/electrified/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOpenrailwaymapElectrified,
-	opaque: false,
-}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});*/
-const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
-	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOpenrailwaymapSignals,
-	opaque: false,
-}); OPENRAILWAYMAP_SIGNALS_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapSignals, id: 'openrailway-signals' });
-const OPENRAILWAYMAP_GAUGE_SOURCE = new ol.source.OSM({
-	url: 'https://tiles.openrailwaymap.org/gauge/{z}/{x}/{y}.png',
-	attributions: objectL10n.attributionOpenrailwaymapGauge,
-	opaque: false,
-}); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge' });
-
-const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, /*OPENRAILWAYMAP_ELECTRIFICATION_SOURCE,*/ OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
-
 const backgroundTileLayer = new ol.layer.Tile({
 	className: 'background-tilelayer',
 	source: OSM_SOURCE,
@@ -284,46 +283,94 @@ const overlayTileLayer = new ol.layer.Tile({
 });
 
 const vectorSource = new ol.source.Vector();
-const vectorLayer = editMode ? new ol.layer.Vector({
+const vectorLayerConfig = {
 	source: vectorSource,
 	style: styleFunction,
-}) : new ol.layer.VectorImage({
-	source: vectorSource,
-	style: styleFunction,
+};
+const vectorLayer = editMode ? new ol.layer.Vector(vectorLayerConfig) : new ol.layer.VectorImage(vectorLayerConfig);
+
+const view = new ol.View({
+	center: ol.proj.fromLonLat([centerLon, centerLat]),
+	zoom: standardZoom,
+	minZoom: MIN_ZOOM,
+	maxZoom: MAX_ZOOM,
 });
+
+const interactionControl = new InteractionControl();
+const optionsControl = new OptionsControl();
+const attributionControl = new ol.control.Attribution({
+	collapsible: true,
+	collapsed: false,
+});
+
+// global so we can remove them later
+let drawInteraction;
+const modifyInteraction = new ol.interaction.Modify({ source: vectorSource });
+const dragBoxInteraction = new ol.interaction.DragBox();
+const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], multi: true, style: styleFunction });
+const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
+
+const selectedFeatures = selectInteraction.getFeatures();
+
+const map = new ol.Map({
+	controls: [new ol.control.Zoom(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
+	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
+	target: MAP_ID,
+	view: view,
+});
+
+vectorLayer.on('sourceready', handleSourceReady);
+
+dragBoxInteraction.on('boxend', handleBoxSelect);
+dragBoxInteraction.on('boxstart', function (event) {
+	if (!ol.events.condition.shiftKeyOnly(event.mapBrowserEvent))
+		selectedFeatures.clear();
+});
+
+selectedFeatures.on('add', handleFeatureSelected);
+selectedFeatures.on('remove', handleFeatureSelected);
 
 // returns the style for the given feature
 function styleFunction(feature) {
 	const colorUnselected = transportModeStyleData[getCategoryOf(feature)][0];
-	const notSelected = selectedFeatures.getArray().indexOf(feature) < 0;
+	const unselected = selectedFeatures.getArray().indexOf(feature) < 0;
+
+	const fillStyle = new ol.style.Fill({
+		color: unselected ? (colorUnselected + '40') : (COLOR_SELECTED + '4'),
+	});
+
+	const iconSize = unselected ? ICON_SIZE_UNSELECTED : ICON_SIZE_SELECTED;
+
+	const imageStyle = new ol.style.Icon({
+		src: transportModeStyleData[getCategoryOf(feature)][unselected ? 1 : 2],
+		width: iconSize,
+		height: iconSize,
+	});
+
+	const strokeStyle = new ol.style.Stroke({
+		color: unselected ? colorUnselected : COLOR_SELECTED,
+		width: unselected ? STROKE_WIDTH_UNSELECTED : STROKE_WIDTH_SELECTED,
+	});
+
+	const textStyle = new ol.style.Text({
+		font: 'bold 11px sans-serif',
+		text: showLabels ? feature.get('name') : '',
+		textAlign: 'left',
+		fill: new ol.style.Fill({
+			color: 'white',
+		}),
+		stroke: strokeStyle,
+		offsetX: TEXT_X_OFFSET,
+	});
+
+	const zIndex = unselected ? (feature.getGeometry() instanceof ol.geom.Point ? POINT_UNSELECTED_Z_INDEX : LINE_UNSELECTED_Z_INDEX) : SELECTED_Z_INDEX;
 
 	return new ol.style.Style({
-		fill: new ol.style.Fill({
-			color: notSelected ? (colorUnselected + '40') : (COLOR_SELECTED + '4'),
-		}),
-		image: new ol.style.Icon({
-			src: transportModeStyleData[getCategoryOf(feature)][notSelected ? 1 : 2],
-			width: notSelected ? ICON_SIZE_UNSELECTED : ICON_SIZE_SELECTED,
-			height: notSelected ? ICON_SIZE_UNSELECTED : ICON_SIZE_UNSELECTED,
-		}),
-		stroke: new ol.style.Stroke({
-			color: notSelected ? colorUnselected : COLOR_SELECTED,
-			width: notSelected ? STROKE_WIDTH_UNSELECTED : STROKE_WIDTH_SELECTED,
-		}),
-		text: new ol.style.Text({
-			font: 'bold 11px sans-serif',
-			text: showLabels ? feature.get('name') : '',
-			textAlign: 'left',
-			fill: new ol.style.Fill({
-				color: 'white',
-			}),
-			stroke: new ol.style.Stroke({
-				color: notSelected ? colorUnselected : COLOR_SELECTED,
-				width: notSelected ? STROKE_WIDTH_UNSELECTED : STROKE_WIDTH_SELECTED,
-			}),
-			offsetX: TEXT_X_OFFSET,
-		}),
-		zIndex: notSelected ? (feature.getGeometry() instanceof ol.geom.Point ? POINT_UNSELECTED_Z_INDEX : LINE_UNSELECTED_Z_INDEX) : SELECTED_Z_INDEX,
+		fill: fillStyle,
+		image: imageStyle,
+		stroke: strokeStyle,
+		text: textStyle,
+		zIndex: zIndex,
 	});
 }
 
@@ -343,6 +390,9 @@ function getCategoryOf(feature) {
  */
 function getSelectedCategory() {
 	var selectedTransportMode = $('.cat-select:checked').val();
+	if(!selectedTransportMode && parseInt(currentCat)) {
+		selectedTransportMode = currentCat;
+	}
 	if (!selectedTransportMode)
 		selectedTransportMode = defaultCategory;
 	return selectedTransportMode;
@@ -394,7 +444,7 @@ function handleFeatureSelected(event) {
 }
 
 // Selects all features inside the box dragged for selection
-function selectInBox() {
+function handleBoxSelect() {
 	const boxExtent = dragBoxInteraction.getGeometry().getExtent();
 
 	// if the extent crosses the antimeridian process each world separately
@@ -420,6 +470,17 @@ function selectInBox() {
 		// collection of selected features
 		selectedFeatures.extend(boxFeatures);
 	}
+}
+
+function handleSourceReady() {
+	setMapColors();
+	setMapOpacity();
+
+	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length; i++) {
+		importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i]);
+	}
+
+	zoomToFeatures(true);
 }
 
 // Toggles snapping on/off
@@ -475,49 +536,49 @@ function removeInteractions() {
 	map.removeInteraction(dragBoxInteraction);
 }
 
-const view = new ol.View({
-	center: ol.proj.fromLonLat([centerLon, centerLat]),
-	zoom: standardZoom,
-	minZoom: MIN_ZOOM,
-	maxZoom: MAX_ZOOM,
-});
+function removeAllFeatures() {
+	vectorSource.clear();
+}
 
-const interactionControl = new InteractionControl();
-const optionsControl = new OptionsControl();
-const attributionControl = new ol.control.Attribution({
-	collapsible: true,
-	collapsed: false,
-});
+function loadNewFeatures() {
+	removeAllFeatures();
 
-const map = new ol.Map({
-	controls: [new ol.control.Zoom(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
-	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
-	target: MAP_ID,
-	view: view,
-});
+	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length; i++) {
+		importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i]);
+	}
 
-vectorLayer.on('sourceready', setMapColors);
-vectorLayer.on('sourceready', setMapOpacity);
+	zoomToFeatures(true);
+}
 
-// global so we can remove them later
-let drawInteraction;
-const modifyInteraction = new ol.interaction.Modify({ source: vectorSource });
-const dragBoxInteraction = new ol.interaction.DragBox();
-const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], multi: true, style: styleFunction });
-const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
+/**
+ * Imports source strings to the map using the WKT format
+ * Only handles one WKT string at a time
+ * @param {string} source vector data
+ * @param {string[]} labelsSource labels data
+ * @param {string} categorySource category to use
+ */
+function importToMapWKT(source, labelsSource, categorySource) {
+	if (source == '')
+		return;
 
-const selectedFeatures = selectInteraction.getFeatures();
+	let features = WKT_FORMAT.readFeatures(source, {
+		dataProjection: 'EPSG:4326',
+		featureProjection: 'EPSG:3857',
+	});
 
-dragBoxInteraction.on('boxend', selectInBox);
+	var labelIndex = 0;
 
-// clear selection when drawing a new box without holding shift
-dragBoxInteraction.on('boxstart', function (event) {
-	if (!ol.events.condition.shiftKeyOnly(event.mapBrowserEvent))
-		selectedFeatures.clear();
-});
+	for (var feature of features) {
+		feature.set('category', categorySource);
 
-selectedFeatures.on('add', handleFeatureSelected);
-selectedFeatures.on('remove', handleFeatureSelected);
+		// if (feature.getGeometry() instanceof ol.geom.Point) {
+			feature.set('name', labelsSource[labelIndex]);
+			labelIndex++;
+		// }
+	}
+
+	vectorSource.addFeatures(features);
+}
 
 // toggles whether the labels get shown on the map or not
 function toggleLabels() {
@@ -563,34 +624,4 @@ function setMapOpacity() {
 function setMapColors() {
 	if ($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
 	else $('#mtl-map').removeClass('colored-map');
-}
-
-/**
- * Imports source strings to the map using the WKT format
- * Only handles one WKT string at a time
- * @param {string} source vector data
- * @param {string[]} labelsSource labels data
- * @param {string} categorySource category to use
- */
-function importToMapWKT(source, labelsSource, categorySource) {
-	if (source == '')
-		return;
-
-	let features = WKT_FORMAT.readFeatures(source, {
-		dataProjection: 'EPSG:4326',
-		featureProjection: 'EPSG:3857',
-	});
-
-	var labelIndex = 0;
-
-	for (var feature of features) {
-		feature.set('category', categorySource);
-
-		// if (feature.getGeometry() instanceof ol.geom.Point) {
-			feature.set('name', labelsSource[labelIndex]);
-			labelIndex++;
-		// }
-	}
-
-	vectorSource.addFeatures(features);
 }

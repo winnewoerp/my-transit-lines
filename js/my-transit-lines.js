@@ -328,7 +328,7 @@ dragBoxInteraction.on('boxstart', function (event) {
 });
 
 selectedFeatures.on('add', handleFeatureSelected);
-selectedFeatures.on('remove', handleFeatureSelected);
+selectedFeatures.on('remove', handleFeatureUnselected);
 
 // returns the style for the given feature
 function styleFunction(feature) {
@@ -390,7 +390,7 @@ function getCategoryOf(feature) {
  */
 function getSelectedCategory() {
 	var selectedTransportMode = $('.cat-select:checked').val();
-	if(!selectedTransportMode && parseInt(currentCat)) {
+	if (!selectedTransportMode && parseInt(currentCat)) {
 		selectedTransportMode = currentCat;
 	}
 	if (!selectedTransportMode)
@@ -420,27 +420,28 @@ function deleteSelected() {
 }
 
 function handleFeatureSelected(event) {
-	if (event.type == 'add') {
-		interactionControl.deleteButton.classList.remove('unselectable');
+	interactionControl.deleteButton.classList.remove('unselectable');
 
-		$('#feature-textinput').val(event.element.get('name'));
-		$('.feature-textinput-box').slideDown();
-		$('.set-name').css('display', 'block');
-		$('.set-name').click(function () {
-			unselectAllFeatures();
-		});
-		selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
-	} else if (event.type = 'remove') {
-		if (selectedFeatures.getArray().length == 0)
-			interactionControl.deleteButton.classList.add('unselectable');
+	$('#feature-textinput').val(event.element.get('name'));
+	$('.feature-textinput-box').slideDown();
+	$('.set-name').css('display', 'block');
+	$('.set-name').click(function () {
+		unselectAllFeatures();
+	});
+	selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
 
-		if (vectorSource.getFeatures().indexOf(event.element) == selectedFeatureIndex) {
-			vectorSource.getFeatures()[selectedFeatureIndex].set('name', $('#feature-textinput').val());
-			selectedFeatureIndex = -1;
-			$('#feature-textinput').val('');
-			$('.feature-textinput-box').slideUp();
-			$('.set-name').css('display', 'none');
-		}
+}
+
+function handleFeatureUnselected(event) {
+	if (selectedFeatures.getArray().length == 0)
+		interactionControl.deleteButton.classList.add('unselectable');
+
+	if (vectorSource.getFeatures().indexOf(event.element) == selectedFeatureIndex) {
+		vectorSource.getFeatures()[selectedFeatureIndex].set('name', $('#feature-textinput').val());
+		selectedFeatureIndex = -1;
+		$('#feature-textinput').val('');
+		$('.feature-textinput-box').slideUp();
+		$('.set-name').css('display', 'none');
 	}
 }
 

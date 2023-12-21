@@ -278,12 +278,15 @@ function mtl_proposal_form_output( $atts ){
 		
 				// getting all categories for selected as transit mode categories, set the given category option to checked
 				foreach($all_categories as $single_category) {
-					$checked='';
-					$post_cat = '';
-					if(isset($_POST['cat'])) $post_cat = $_POST['cat'];
-					if ($err && $post_cat != '' && $single_category->cat_ID == $post_cat ) $checked=' checked="checked"';
-					elseif($editId && $single_category->cat_ID == $current_category[0]->term_id && !$err) $checked=' checked="checked"';
-					if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) $output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+					if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
+						$checked='';
+
+						if ($err && isset($_POST['cat']) && $single_category->cat_ID == $_POST['cat'] ) $checked=' checked="checked"';
+						elseif(!$err && $editId && $single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
+						elseif(str_contains($single_category->slug, 'other')) $checked=' checked="checked"';
+						
+						$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+					}
 				}
 				
 				$output .= '</span><span class="transport-mode-select-inactive">'.__('Please select another tool<br /> to change the transport mode','my-transit-lines').'</span></span></p>'."\r\n";

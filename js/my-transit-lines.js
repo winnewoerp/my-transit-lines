@@ -477,11 +477,7 @@ function handleSourceReady() {
 	setMapColors();
 	setMapOpacity();
 
-	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length; i++) {
-		importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i]);
-	}
-
-	zoomToFeatures(true);
+	importAllWKT();
 }
 
 // Toggles snapping on/off
@@ -544,8 +540,16 @@ function removeAllFeatures() {
 function loadNewFeatures() {
 	removeAllFeatures();
 
+	importAllWKT();
+}
+
+function importAllWKT() {
 	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length; i++) {
-		importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i]);
+		try {
+			importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i]);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 
 	zoomToFeatures(true);

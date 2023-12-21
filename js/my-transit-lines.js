@@ -76,6 +76,8 @@ var standardZoom = standardZoom || 2;
 var editMode = editMode || false;
 
 var showLabels = true;
+var lowOpacity = true;
+var mapColor = true;
 var fullscreen = false;
 var selectedFeatureIndex = -1;
 var snapping = true;
@@ -321,9 +323,6 @@ const map = new ol.Map({
 });
 
 vectorLayer.on('sourceready', handleSourceReady);
-
-map.on('loadend', setMapColors); // Is fired every time new tiles from the background are loaded as well
-map.on('loadend', setMapOpacity);
 
 dragBoxInteraction.on('boxend', handleBoxSelect);
 dragBoxInteraction.on('boxstart', function (event) {
@@ -648,16 +647,20 @@ function toggleFullscreen() {
 	}
 }
 
-// map opacity switcher
-function setMapOpacity() {
-	if ($('#mtl-opacity-low').is(':checked')) $('#mtl-map').removeClass('full-opacity');
+// Toggle if the map is brigthened (low opacity) or not (full opacity)
+function toggleMapOpacity() {
+	lowOpacity = !lowOpacity;
+
+	if (lowOpacity) $('#mtl-map').removeClass('full-opacity');
 	else $('#mtl-map').addClass('full-opacity');
 }
 
-// map color mode switcher
-function setMapColors() {
-	if ($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
-	else $('#mtl-map').removeClass('colored-map');
+// Toggle if the map has colors or not
+function toggleMapColors() {
+	mapColor = !mapColor;
+
+	if (mapColor) $('#mtl-map').removeClass('grayscale-map');
+	else $('#mtl-map').addClass('grayscale-map');
 }
 
 function setTitle(newTitle) {

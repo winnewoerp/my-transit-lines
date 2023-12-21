@@ -220,15 +220,15 @@ div.success-message-block {
 
 #mtl-map .background-tilelayer {
 	opacity:.4 !important;
-	filter:grayscale();
+	filter:none;
 }
 
 #mtl-map.full-opacity .background-tilelayer {
 	opacity:1 !important;
 }
 
-#mtl-map.colored-map .background-tilelayer {
-	filter:none;
+#mtl-map.grayscale-map .background-tilelayer {
+	filter:grayscale();
 }
 
 #mtl-box #mtl-map-box.fullscreen #mtl-map {

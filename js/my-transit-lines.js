@@ -670,11 +670,11 @@ function toggleLabels() {
 	redraw();
 }
 
-// zoom to show all features with some padding
-function zoomToFeatures(immediately = false) {
+// zoom to show all features
+function zoomToFeatures(immediately = false, padding = true) {
 	if (vectorSource.getFeatures().length > 0) {
 		view.fit(vectorSource.getExtent(), {
-			padding: ZOOM_PADDING,
+			padding: padding ? ZOOM_PADDING : [0, 0, 0, 0],
 			duration: immediately ? 0 : ZOOM_ANIMATION_DURATION,
 		});
 	}

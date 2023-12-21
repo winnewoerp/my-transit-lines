@@ -74,8 +74,8 @@ function mtl_multiple_proposal_output( $atts ) {
 
 		$vector_categories_data .= "\r\n".'"'.$catid.'",';
 		// Removing line breaks that can be caused by WordPress import/export
-		$vector_data .= "\r\n".'"'.str_replace("\n", "", get_post_meta($post->ID, 'mtl-feature-data', true)).'",';
-		$vector_labels_data .= "\r\n".'"'.str_replace("\n", "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)).'",';
+		$vector_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-data', true)).'",';
+		$vector_labels_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)).'",';
 	}
 
 	endwhile;

@@ -19,7 +19,7 @@ const ZOOM_ANIMATION_DURATION = 100;
 const ZOOM_PADDING = [50, 50, 50, 50];
 const MAP_ID = 'mtl-map';
 const GEO_JSON_FORMAT = new ol.format.GeoJSON({
-	featureClass: editMode ? ol.Feature : ol.render.RenderFeature,
+	featureClass: (editMode || false) ? ol.Feature : ol.render.RenderFeature,
 });
 const WKT_FORMAT = new ol.format.WKT({
 	splitCollection: true,
@@ -73,6 +73,7 @@ const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEE
 var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;
 var standardZoom = standardZoom || 2;
+var editMode = editMode || false;
 
 var showLabels = true;
 var fullscreen = false;
@@ -583,8 +584,31 @@ function importToMapWKT(source, labelsSource, categorySource) {
 	for (var feature of features) {
 		feature.set('category', categorySource);
 
-		feature.set('name', labelsSource[labelIndex]);
+		feature.set('name', decodeSpecialChars(labelsSource[labelIndex]));
 		labelIndex++;
+	}
+
+	vectorSource.addFeatures(features);
+}
+
+/**
+ * Imports source string to the map using the GeoJSON format
+ * @param {string|JSON} source the JSON string or object to import
+ * @param {string} categorySource the category to use for the features
+ */
+function importToMapJSON(source, categorySource) {
+	if (source == '' || source == '{}')
+		return;
+
+	let features = GEO_JSON_FORMAT.readFeatures(source.replaceAll("\r", "").replaceAll("\n", ""), {
+		dataProjection: 'EPSG:4326',
+		featureProjection: 'EPSG:3857',
+	});
+
+	for (var feature of features) {
+		feature.set('category', categorySource);
+
+		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
 	}
 
 	vectorSource.addFeatures(features);
@@ -639,4 +663,32 @@ function setMapColors() {
 function setTitle(newTitle) {
 	$('title').html(newTitle);
 	$('h1.entry-title').html(newTitle);
+}
+
+/*
+* Decodes string to include , " '
+* 
+* "&#44;"  becomes ','
+* "&quot;" becomes '"'
+* "&apos;" becomes '''
+*/
+function decodeSpecialChars(p_string) {
+	p_string = p_string.replace(/&#44;/g,',');
+	p_string = p_string.replace(/&quot;/g,'"');
+	p_string = p_string.replace(/&apos;/g,'\'');
+	return p_string;
+}
+
+/*
+* Encodes string and removes , " '
+* 
+* ',' becomes "&#44;"
+* '"' becomes "&quot;"
+* ''' becomes "&apos;"
+*/
+function encodeSpecialChars(p_string) {
+	p_string = p_string.replace(/,/g,'&#44;');
+	p_string = p_string.replace(/"/g,'&quot;');
+	p_string = p_string.replace(/'/g,'&apos;');
+	return p_string;
 }

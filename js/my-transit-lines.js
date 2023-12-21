@@ -321,6 +321,9 @@ const map = new ol.Map({
 
 vectorLayer.on('sourceready', handleSourceReady);
 
+map.on('loadend', setMapColors); // Is fired every time new tiles from the background are loaded as well
+map.on('loadend', setMapOpacity);
+
 dragBoxInteraction.on('boxend', handleBoxSelect);
 dragBoxInteraction.on('boxstart', function (event) {
 	if (!ol.events.condition.shiftKeyOnly(event.mapBrowserEvent))
@@ -474,11 +477,11 @@ function handleBoxSelect() {
 	}
 }
 
+// Runs after the sourceready event was fired
 function handleSourceReady() {
-	setMapColors();
-	setMapOpacity();
-
 	importAllWKT();
+
+	// TODO save to form
 }
 
 // Toggles snapping on/off
@@ -534,16 +537,19 @@ function removeInteractions() {
 	map.removeInteraction(dragBoxInteraction);
 }
 
+// Removes all features from the layer
 function removeAllFeatures() {
 	vectorSource.clear();
 }
 
+// Reloads features from source vars
 function loadNewFeatures() {
 	removeAllFeatures();
 
 	importAllWKT();
 }
 
+// Imports all features from vectorData, vectorLabelsData and vectorCategoriesData and handles errors
 function importAllWKT() {
 	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length; i++) {
 		try {

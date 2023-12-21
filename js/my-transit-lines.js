@@ -566,6 +566,25 @@ function importAllWKT() {
 	zoomToFeatures(true);
 }
 
+// Imports all feature data from the files of the filePicker input
+function importJSONFiles(filePicker) {
+	for (var i = 0; i < filePicker.files.length; i++) {
+		let file = filePicker.files[i];
+
+		file.text().then((value) => {
+			if (isJsonParsable(value)) {
+				try {
+					importToMapJSON(value);
+	
+					zoomToFeatures();
+				} catch (error) {
+					console.log(error);
+				}
+			}
+		}, (value) => alert(value));
+	}
+}
+
 /**
  * Imports source strings to the map using the WKT format
  * Only handles one WKT string at a time
@@ -725,4 +744,14 @@ function encodeSpecialChars(p_string) {
 	p_string = p_string.replace(/"/g,'&quot;');
 	p_string = p_string.replace(/'/g,'&apos;');
 	return p_string;
+}
+
+// check if string can be parsed as JSON
+function isJsonParsable(string) {
+	try {
+		JSON.parse(string);
+	} catch (e) {
+		return false;
+	}
+	return true;
 }

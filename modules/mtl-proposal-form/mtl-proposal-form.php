@@ -318,7 +318,8 @@ function mtl_proposal_form_output( $atts ){
 				
 				
 				$output .= '<p><label for="mtl-import-geojson"><strong>'.__('Import GeoJSON file','my-transit-lines').'</strong><br>
-							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson">
+							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson" accept=".geojson,.json" multiple="true">
+							<script type="text/javascript"> document.querySelector("#mtl-import-geojson").addEventListener("change", function(){ importJSONFiles(document.querySelector("#mtl-import-geojson")); }); </script>
 							</label>
 							</p>
 							<p style="text-align:left"><small>'.$import_hints.'</small></p>';

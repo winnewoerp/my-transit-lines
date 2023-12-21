@@ -283,6 +283,7 @@ function mtl_localize_script($getVar = false) {
 		'importDataBeingProcessed'=>__('Import data is being processed. This may take several minutes...','my-transit-lines'),
 		'none'=>__('None','my-transit-lines'),
 		'snapping'=>__('Snapping','my-transit-lines'),
+		'circleNotSupported'=>__('Circles aren\'t saved yet due to technical limitations and can only be used while editing to measure curve radii','my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

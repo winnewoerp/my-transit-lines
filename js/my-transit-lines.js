@@ -504,9 +504,10 @@ function setInteraction(interactionType) {
 	removeInteractions();
 
 	switch (interactionType) {
+		case 'Circle':
+			alert(objectL10n.circleNotSupported);
 		case 'LineString':
 		case 'Point':
-		case 'Circle':
 		case 'Polygon':
 			drawInteraction = new ol.interaction.Draw({ source: vectorSource, type: interactionType });
 			map.addInteraction(drawInteraction);
@@ -615,11 +616,13 @@ function importToMapWKT(source, labelsSource, categorySource) {
  * @returns {string[]}
  */
 function exportToWKT() {
-	let wkt_string = WKT_FORMAT.writeFeatures(vectorSource.getFeatures(), PROJECTION_OPTIONS);
+	var features = removeCircles(vectorSource.getFeatures());
+
+	let wkt_string = WKT_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
 
 	let labelString = '';
-	for (var feature of vectorSource.getFeatures()) {
-		labelString += encodeSpecialChars(feature.get('name')) + ",";
+	for (var feature of features) {
+		labelString += encodeSpecialChars(feature.get('name') || "") + ",";
 	}
 
 	return [wkt_string, labelString];
@@ -754,4 +757,18 @@ function isJsonParsable(string) {
 		return false;
 	}
 	return true;
+}
+
+/**
+ * Removes all circles from the given array and returns a modified array
+ * @param {FeatureLike[]} features 
+ * @returns {FeatureLike[]}
+ */
+function removeCircles(features) {
+	for (var feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.Circle)
+			features.splice(features.indexOf(feature), 1);
+	}
+
+	return features;
 }

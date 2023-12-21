@@ -313,7 +313,7 @@ const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
 const selectedFeatures = selectInteraction.getFeatures();
 
 const map = new ol.Map({
-	controls: [new ol.control.Zoom(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
+	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
 	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
 	target: MAP_ID,
 	view: view,

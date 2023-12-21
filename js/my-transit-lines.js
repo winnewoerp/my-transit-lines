@@ -431,9 +431,10 @@ function handleFeatureSelected(event) {
 		});
 		selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
 	} else if (event.type = 'remove') {
-		if (vectorSource.getFeatures().indexOf(event.element) == selectedFeatureIndex) {
+		if (selectedFeatures.getArray().length == 0)
 			interactionControl.deleteButton.classList.add('unselectable');
 
+		if (vectorSource.getFeatures().indexOf(event.element) == selectedFeatureIndex) {
 			vectorSource.getFeatures()[selectedFeatureIndex].set('name', $('#feature-textinput').val());
 			selectedFeatureIndex = -1;
 			$('#feature-textinput').val('');
@@ -558,7 +559,7 @@ function loadNewFeatures() {
  * @param {string} categorySource category to use
  */
 function importToMapWKT(source, labelsSource, categorySource) {
-	if (source == '')
+	if (source == '' || source == 'GEOMETRYCOLLECTION()')
 		return;
 
 	let features = WKT_FORMAT.readFeatures(source, {
@@ -571,10 +572,8 @@ function importToMapWKT(source, labelsSource, categorySource) {
 	for (var feature of features) {
 		feature.set('category', categorySource);
 
-		// if (feature.getGeometry() instanceof ol.geom.Point) {
-			feature.set('name', labelsSource[labelIndex]);
-			labelIndex++;
-		// }
+		feature.set('name', labelsSource[labelIndex]);
+		labelIndex++;
 	}
 
 	vectorSource.addFeatures(features);
@@ -624,4 +623,9 @@ function setMapOpacity() {
 function setMapColors() {
 	if ($('#mtl-colored-map').is(':checked')) $('#mtl-map').addClass('colored-map');
 	else $('#mtl-map').removeClass('colored-map');
+}
+
+function setTitle(newTitle) {
+	$('title').html(newTitle);
+	$('h1.entry-title').html(newTitle);
 }

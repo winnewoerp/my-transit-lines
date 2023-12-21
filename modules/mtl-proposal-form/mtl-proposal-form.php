@@ -406,7 +406,7 @@ function mtl_proposal_form_output( $atts ){
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
-		if($editId) $output .= '<script type="text/javascript"> manipulateTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
+		if($editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
 		
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		

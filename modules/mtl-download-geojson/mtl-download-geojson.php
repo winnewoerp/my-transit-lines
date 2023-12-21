@@ -40,7 +40,7 @@ function get_download_button($postId) {
 		var category_for_geojson = "'.$category[0]->name.'";
 		var license_link_for_geojson = "https://creativecommons.org/licenses/by-nc-sa/3.0/de/";
 		</script>'.
-		//'<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-download-geojson/mtl-download-geojson.js"></script>'. TODO
+		'<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-download-geojson/mtl-download-geojson.js"></script>'.
 		'<p><a href="" download="'.$postId.'-'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_title($postId)))).'.geojson" id="mtl-geojson-download">'.__('Download proposal map data as GeoJSON','my-transit-lines').'</a></p>';
 	}
 

@@ -24,6 +24,10 @@ const GEO_JSON_FORMAT = new ol.format.GeoJSON({
 const WKT_FORMAT = new ol.format.WKT({
 	splitCollection: true,
 });
+const PROJECTION_OPTIONS = {
+	dataProjection: 'EPSG:4326',
+	featureProjection: 'EPSG:3857',
+};
 
 const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
 /*const OEPNVKARTE_SOURCE = new ol.source.OSM({
@@ -573,10 +577,7 @@ function importToMapWKT(source, labelsSource, categorySource) {
 	if (source == '' || source == 'GEOMETRYCOLLECTION()')
 		return;
 
-	let features = WKT_FORMAT.readFeatures(source, {
-		dataProjection: 'EPSG:4326',
-		featureProjection: 'EPSG:3857',
-	});
+	let features = WKT_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
 	var labelIndex = 0;
 
@@ -591,6 +592,21 @@ function importToMapWKT(source, labelsSource, categorySource) {
 }
 
 /**
+ * Exports features from vectorSource to an array of a wkt string and a labels string (separated by commas)
+ * @returns {string[]}
+ */
+function exportToWKT() {
+	let wkt_string = WKT_FORMAT.writeFeatures(vectorSource.getFeatures(), PROJECTION_OPTIONS);
+
+	let labelString = '';
+	for (var feature of vectorSource.getFeatures()) {
+		labelString += encodeSpecialChars(feature.get('name')) + ",";
+	}
+
+	return [wkt_string, labelString];
+}
+
+/**
  * Imports source string to the map using the GeoJSON format
  * @param {string|JSON} source the JSON string or object to import
  * @param {string} categorySource the category to use for the features
@@ -599,10 +615,7 @@ function importToMapJSON(source, categorySource) {
 	if (source == '' || source == '{}')
 		return;
 
-	let features = GEO_JSON_FORMAT.readFeatures(source.replaceAll("\r", "").replaceAll("\n", ""), {
-		dataProjection: 'EPSG:4326',
-		featureProjection: 'EPSG:3857',
-	});
+	let features = GEO_JSON_FORMAT.readFeatures(source.replaceAll("\r", "").replaceAll("\n", ""), PROJECTION_OPTIONS);
 
 	for (var feature of features) {
 		feature.set('category', categorySource);
@@ -611,6 +624,24 @@ function importToMapJSON(source, categorySource) {
 	}
 
 	vectorSource.addFeatures(features);
+}
+
+/**
+ * Exports features from vectorSource to a GeoJSON string
+ * @returns {string}
+ */
+function exportToJSON() {
+	for (var feature of vectorSource.getFeatures()) {
+		feature.set('name', encodeSpecialChars(feature.get('name') || ""));
+	}
+
+	let json_string = GEO_JSON_FORMAT.writeFeatures(vectorSource.getFeatures(), PROJECTION_OPTIONS);
+
+	for (var feature of vectorSource.getFeatures()) {
+		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
+	}
+
+	return json_string;
 }
 
 // toggles whether the labels get shown on the map or not

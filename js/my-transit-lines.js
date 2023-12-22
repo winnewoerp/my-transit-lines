@@ -85,6 +85,7 @@ var mapColor = true;
 var fullscreen = false;
 var selectedFeatureIndex = -1;
 var snapping = true;
+var warningMessage = '';
 
 class InteractionControl extends ol.control.Control {
 	constructor(opt_options) {
@@ -337,8 +338,10 @@ dragBoxInteraction.on('boxstart', function (event) {
 selectedFeatures.on('add', handleFeatureSelected);
 selectedFeatures.on('remove', handleFeatureUnselected);
 
-drawInteraction.on('drawend', saveToHTML);
-modifyInteraction.on('modifyend', saveToHTML);
+//Notify the user when about to leave page without saving changes
+$(window).bind('beforeunload', function() {
+	if (warningMessage != '') return warningMessage;
+});
 
 // returns the style for the given feature
 function styleFunction(feature) {
@@ -427,8 +430,6 @@ function deleteSelected() {
 	featureArray.forEach(function (feature) {
 		vectorSource.removeFeature(feature);
 	});
-
-	saveToHTML();
 }
 
 function handleFeatureSelected(event) {
@@ -441,8 +442,6 @@ function handleFeatureSelected(event) {
 		unselectAllFeatures();
 	});
 	selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
-
-	saveToHTML();
 }
 
 function handleFeatureUnselected(event) {
@@ -456,8 +455,6 @@ function handleFeatureUnselected(event) {
 		$('.feature-textinput-box').slideUp();
 		$('.set-name').css('display', 'none');
 	}
-
-	saveToHTML();
 }
 
 // Selects all features inside the box dragged for selection
@@ -493,7 +490,7 @@ function handleBoxSelect() {
 function handleSourceReady() {
 	importAllWKT();
 
-	saveToHTML(vectorSource.getFeatures());
+	addSaveEventListeners();
 }
 
 // Toggles snapping on/off
@@ -860,6 +857,8 @@ function getLineLength(features = vectorSource.getFeatures()) {
  * @param {FeatureLike[]} features the array of features to save
  */
 function saveToHTML(features = vectorSource.getFeatures()) {
+	warningMessage = objectL10n.confirmLeaveWebsite;
+
 	var wkt_strings = exportToWKT(features);
 
 	// write WKT features data to html element (will be saved to database on form submit)
@@ -867,4 +866,15 @@ function saveToHTML(features = vectorSource.getFeatures()) {
 	$('#mtl-feature-labels-data').val(wkt_strings[1]);
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
+}
+
+/**
+ * Adds event listeners to save to HTML automatically
+ */
+function addSaveEventListeners() {
+	if (editMode) {
+		vectorSource.on('addfeature', () => {saveToHTML()});
+		vectorSource.on('changefeature', () => {saveToHTML()});
+		vectorSource.on('removefeature', () => {saveToHTML()});
+	}
 }

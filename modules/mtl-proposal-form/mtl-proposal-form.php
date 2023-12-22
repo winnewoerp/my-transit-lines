@@ -226,7 +226,7 @@ function mtl_proposal_form_output( $atts ){
 		}
 		
 		if((!$action || $err) && !$hideform) {
-			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data">'."\r\n";
+			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data" onsubmit=" warningMessage = \'\' ">'."\r\n";
 			$output .= '<p><label for="title"><strong>'.$mtl_string['form-title'][$postType].'</strong><br />'."\r\n";
 			
 			// input field title with value set to title from post variables, if existing

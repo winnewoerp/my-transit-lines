@@ -30,11 +30,11 @@ const PROJECTION_OPTIONS = {
 };
 
 const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
-/*const OEPNVKARTE_SOURCE = new ol.source.OSM({
+const OEPNVKARTE_SOURCE = new ol.source.OSM({
 	url: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOPNV,
 	maxZoom: MAX_ZOOM_OEPNV_MAP,
-}); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});*/
+}); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});
 const OPENTOPOMAP_SOURCE = new ol.source.OSM({
 	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpentopomap,
@@ -55,11 +55,11 @@ const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
 	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
 	opaque: false,
 }); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed' });
-/*const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
+const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/electrified/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapElectrified,
 	opaque: false,
-}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});*/
+}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});
 const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapSignals,
@@ -616,7 +616,7 @@ function importToMapWKT(source, labelsSource, categorySource) {
  * @returns {string[]}
  */
 function exportToWKT() {
-	var features = removeCircles(vectorSource.getFeatures());
+	var features = removeCircles(vectorSource.getFeatures(), false);
 
 	let wkt_string = WKT_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
 
@@ -644,6 +644,8 @@ function importToMapJSON(source, categorySource) {
 
 		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
 	}
+
+	features = addCircles(features);
 
 	vectorSource.addFeatures(features);
 }
@@ -762,15 +764,52 @@ function isJsonParsable(string) {
 }
 
 /**
- * Removes all circles from the given array and returns a modified array
+ * Removes all circles from the features array
+ * @param {FeatureLike[]} features 
+ * @param {boolean} replace determines if the circle is replaced by a point with a radius attribute
+ * @returns {FeatureLike[]}
+ */
+function removeCircles(features, replace = true) {
+	let result = [];
+
+	for (var feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.Circle) {
+			if (replace) {
+				let center = feature.getGeometry().getCenter();
+				let radius = feature.getGeometry().getRadius();
+
+				let newFeature = new ol.Feature(new ol.geom.Point(center));
+				newFeature.set('radius', radius);
+
+				result.push(newFeature);
+			}
+		} else {
+			result.push(feature);
+		}
+	}
+	return result;
+}
+
+/**
+ * Replaces points that have the "radius" attribute with circles with that radius
  * @param {FeatureLike[]} features 
  * @returns {FeatureLike[]}
  */
-function removeCircles(features) {
+function addCircles(features) {
+	let result = [];
+
 	for (var feature of features) {
-		if (feature.getGeometry() instanceof ol.geom.Circle)
-			features.splice(features.indexOf(feature), 1);
+		if (feature.getGeometry() instanceof ol.geom.Point && feature.get('radius')) {
+			let center = feature.getGeometry().getCoordinates();
+			let radius = feature.get('radius');
+
+			let newFeature = new ol.Feature(new ol.geom.Circle(center, radius));
+
+			result.push(newFeature);
+		} else {
+			result.push(feature);
+		}
 	}
 
-	return features;
+	return result;
 }

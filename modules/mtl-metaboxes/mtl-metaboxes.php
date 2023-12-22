@@ -58,15 +58,14 @@ function mtl_post_class_meta_box($post) {
 	$mtl_feature_data =  get_post_meta($post->ID,'mtl-feature-data',true);
 	$mtl_feature_labels_data =  get_post_meta($post->ID,'mtl-feature-labels-data',true);
 	
-	$output .= '<div id="mtl-box">';
+	$output = '<div id="mtl-box">';
 	$output .= '<p style="clear:both"><label for="mtl-manual-proposal-data"><strong><input type="checkbox" name="mtl-manual-proposal-data" id="mtl-manual-proposal-data" /> '.__('Check this box if you want standard fields like category box or custom field section to overwrite changes within this meta box','my-transit-lines').'</strong></label></p>';
 
-	
 	// get the current category
 	$current_category = get_the_category($post->ID);
 	
 	// load JS stuff (copied from mtl-proposal module)
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
 	$all_categories = get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 	
 	// save category style data to JS array
@@ -84,20 +83,18 @@ function mtl_post_class_meta_box($post) {
 		}
 	}
 	$output .= '}; </script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
-	$output .= mtl_localize_script(true);
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
 
 	$output .= '<p><strong>'.__('If necessary, change transportation mode for this proposal.<br /><span style="font-weight:normal">Please change transport mode here and do not use the default WP category selector.</span>','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 	
 	// getting all categories for selected as transit mode categories, set the given category option to checked
 	foreach($all_categories as $single_category) {
-		$checked='';
-		$post_cat = '';
-		if(isset($_POST['cat'])) $post_cat = $_POST['cat'];
-		if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
-		if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) $output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+		if ($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
+			$checked='';
+
+			if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
+			
+			$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+		}
 	}
 	$output .= '</span></span></p>';
 	
@@ -114,7 +111,6 @@ function mtl_post_class_meta_box($post) {
 		$output .= '</div>';
 		$output .= '<p><label for="minor-changes"><input type="checkbox" name="minor-changes" id="minor-changes" /> '.__('Only minor changes within editor\'s hints text. Do not send update notification e-mail to user.','my-transit-lines').'</label></p>';
 		$output .= '<p><strong><label for="mtl-proposal-status-nok"><input type="checkbox" name="mtl-proposal-status-nok" id="mtl-proposal-status-nok"'.(get_post_meta($post->ID,'mtl-proposal-status-nok',true)=='on' ? ' checked="checked"' : '' ).' /> '.__('Check this box if proposal is not ok yet (the "under construction" flag will appear for the proposal).','my-transit-lines').'</label></strong></p>';
-
 	}
 	
 	if(get_post_meta($post->ID,'author-name',true)) $output .= '<p><strong>'.__('This proposal was created by an unregistered user and thus it can\'t enter the rating phase.','my-transit-lines').'</strong></p>';
@@ -142,10 +138,20 @@ function mtl_post_class_meta_box($post) {
 	$output .= '<p><strong>'.__('Map data of this proposal','my-transit-lines').'</strong></p>';
 	$output .= '<div id="mtl-map-box">'."\r\n";
 	$output .= '<div id="mtl-map" style="height:400px;"></div>'."\r\n";
-	$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" /></label><br /><span class="set-name">Neuen Namen setzen</span></div>'."\r\n";
+	$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-line').'</span></div>'."\r\n";
 	$output .= '</div>'."\r\n";
-	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
+	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span>'."\r\n";
+	$output .= '<span id="zoomtofeatures" class="alignright"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></span>';
+	$output .= '<span class="alignright" id="mtl-toggle-labels" style="padding-right:5px;"><label style="text-align: right;"><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></span></p>'."\r\n";
 	$output .= '</div>';
+	
+	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
+	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.css">'."\r\n";
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
+	$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
+	$output .= mtl_localize_script(true);
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
+	$output .= '<script type="text/javascript"> $(\'#post\').submit(function() { warningMessage = \'\'; }); </script>';
 	
 	// hidden input fields to save feature data
 	$output .= '<input type="hidden" id="mtl-feature-data" value="'.$mtl_feature_data.'" name="mtl-feature-data" />'."\r\n";
@@ -166,7 +172,7 @@ function mtl_admin_scripts_metaboxes( ) {
 	global $post;
 	
 	// enqueue theme style file to admin pages
-	wp_enqueue_style( 'mtl-admin-style-metaboxes', get_template_directory_uri().'/modules/mtl-metaboxes/style.css',array() );
+	wp_enqueue_style( 'mtl-admin-style-metaboxes', get_template_directory_uri().'/modules/mtl-metaboxes/style.css', array() );
 }
 add_action( 'admin_enqueue_scripts', 'mtl_admin_scripts_metaboxes' );
 

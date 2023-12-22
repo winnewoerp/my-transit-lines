@@ -653,13 +653,15 @@ function importToMapJSON(source, categorySource) {
  * @returns {string}
  */
 function exportToJSON() {
-	for (var feature of vectorSource.getFeatures()) {
+	let features = removeCircles(vectorSource.getFeatures());
+
+	for (var feature of features) {
 		feature.set('name', encodeSpecialChars(feature.get('name') || ""));
 	}
 
-	let json_string = GEO_JSON_FORMAT.writeFeatures(vectorSource.getFeatures(), PROJECTION_OPTIONS);
+	let json_string = GEO_JSON_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
 
-	for (var feature of vectorSource.getFeatures()) {
+	for (var feature of features) {
 		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
 	}
 

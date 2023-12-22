@@ -295,7 +295,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 				$output .= '<div id="mtl-map-box">'."\r\n";
 				$output .= '<div id="mtl-map"></div>'."\r\n";
-				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" /></label><br /><span class="set-name">Neuen Namen setzen</span></div>'."\r\n";
+				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-line').'</span></div>'."\r\n";
 				$output .= '</div>';
 				$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
 				$output .= mtl_localize_script(true);

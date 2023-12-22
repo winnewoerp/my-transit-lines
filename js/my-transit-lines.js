@@ -343,6 +343,13 @@ $(window).bind('beforeunload', function() {
 	if (warningMessage != '') return warningMessage;
 });
 
+$('#title, #description').on('input propertychange paste', function() {
+	warningMessage = objectL10n.confirmLeaveWebsite;
+});
+$('input.cat-select').change(function() {
+	warningMessage = objectL10n.confirmLeaveWebsite;
+});
+
 // returns the style for the given feature
 function styleFunction(feature) {
 	const colorUnselected = transportModeStyleData[getCategoryOf(feature)][0];

@@ -337,6 +337,9 @@ dragBoxInteraction.on('boxstart', function (event) {
 selectedFeatures.on('add', handleFeatureSelected);
 selectedFeatures.on('remove', handleFeatureUnselected);
 
+drawInteraction.on('drawend', saveToHTML);
+modifyInteraction.on('modifyend', saveToHTML);
+
 // returns the style for the given feature
 function styleFunction(feature) {
 	const colorUnselected = transportModeStyleData[getCategoryOf(feature)][0];
@@ -424,6 +427,8 @@ function deleteSelected() {
 	featureArray.forEach(function (feature) {
 		vectorSource.removeFeature(feature);
 	});
+
+	saveToHTML();
 }
 
 function handleFeatureSelected(event) {
@@ -437,6 +442,7 @@ function handleFeatureSelected(event) {
 	});
 	selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
 
+	saveToHTML();
 }
 
 function handleFeatureUnselected(event) {
@@ -450,6 +456,8 @@ function handleFeatureUnselected(event) {
 		$('.feature-textinput-box').slideUp();
 		$('.set-name').css('display', 'none');
 	}
+
+	saveToHTML();
 }
 
 // Selects all features inside the box dragged for selection
@@ -485,7 +493,7 @@ function handleBoxSelect() {
 function handleSourceReady() {
 	importAllWKT();
 
-	// TODO save to form
+	saveToHTML(vectorSource.getFeatures());
 }
 
 // Toggles snapping on/off
@@ -812,4 +820,51 @@ function addCircles(features) {
 	}
 
 	return result;
+}
+
+/**
+ * Returns the amount of stations in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for stations
+ * @returns the amount of stations placed on the map
+ */
+function getCountStations(features = vectorSource.getFeatures()) {
+	var count = 0;
+	for (var feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.Point)
+			count++;
+	}
+	return count;
+}
+
+/**
+ * Returns the combined length of the lines in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for lines
+ * @returns the combined length of the lines placed on the map
+ */
+function getLineLength(features = vectorSource.getFeatures()) {
+	var length = 0.0;
+	for (var feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.LineString) {
+			length += ol.sphere.getLength(feature.getGeometry());
+		}
+	}
+	return length;
+}
+
+/**
+ * Saves the WKT data of the features array passed into the function to the HTML <input> elements.
+ * The data is saved to the DB when the user saves the proposal
+ * 
+ * @param {FeatureLike[]} features the array of features to save
+ */
+function saveToHTML(features = vectorSource.getFeatures()) {
+	var wkt_strings = exportToWKT(features);
+
+	// write WKT features data to html element (will be saved to database on form submit)
+	$('#mtl-feature-data').val(wkt_strings[0]);
+	$('#mtl-feature-labels-data').val(wkt_strings[1]);
+	$('#mtl-count-stations').val(getCountStations(features));
+	$('#mtl-line-length').val(getLineLength(features));
 }

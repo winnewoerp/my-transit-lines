@@ -330,7 +330,7 @@ class MtlSettingsPage
 		
 		echo '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
 		echo '<div id="mtl-admin-map-center" style=" max-width:500px; height:300px; "></div>'."\r\n";
-		echo '<script type="text/javascript"> var mapCenterLon = '.($mtl_options['mtl-center-lon'] ? $mtl_options['mtl-center-lon'] : '0').'; var mapCenterLat = '.($mtl_options['mtl-center-lat'] ? $mtl_options['mtl-center-lat'] : '0').'; var mapStandardZoom = '.($mtl_options['mtl-standard-zoom'] ? $mtl_options['mtl-standard-zoom'] : '6').'; </script>'."\r\n";
+		echo '<script type="text/javascript"> var themeUrl = "'.get_template_directory_uri().'"; var mapCenterLon = '.($mtl_options['mtl-center-lon'] ? $mtl_options['mtl-center-lon'] : '0').'; var mapCenterLat = '.($mtl_options['mtl-center-lat'] ? $mtl_options['mtl-center-lat'] : '0').'; var mapStandardZoom = '.($mtl_options['mtl-standard-zoom'] ? $mtl_options['mtl-standard-zoom'] : '6').'; </script>'."\r\n";
     }
 	
     public function print_map_section_content2() {

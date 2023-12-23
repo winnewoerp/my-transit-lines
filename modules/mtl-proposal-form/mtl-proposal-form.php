@@ -310,13 +310,14 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
 				$output .= '<p class="alignright" id="mtl-toggle-labels"><label style="text-align: right;"><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 				$output .= '<p class="alignleft"><strong>'.__('Tool usage hints','my-transit-lines').'</strong>: ';
-				$output .= '<span class="mtl-tool-hint none">'.__('Please use the tools at the top right corner of the map.<br /> Use the point symbol (left) to draw the stations and the line symbol (second from left) to draw the line.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint point">'.__('Click on the map to locate your stations.<br /> You can then add names to the station by using the select tool (fourth from left).','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint line">'.__('Click on the map to add the line.<br /> Every click adds a new point to the line. Doubleclick to finish drawing the line.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint edit">'.__('Click on the stations/line to edit them.<br /> You can move the stations or modify the line (move points, add points) with this tool.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint select">'.__('Use the selected tool to select stations or line.<br /> Select at station to add its name. With the delete tool (second from right) you can delete a selected object','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint move">'.__('Use the selected tool to move stations or line.<br /> Click and hold to move. When you don\'t click on a symbol, you can pan the map.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint none">'.__('Please use the tools at the top left corner of the map.<br /> Use the point symbol (top) to draw the stations and the line symbol (second from top) to draw the line.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Point">'.__('Click on the map to add stations.<br /> You can then add names to the station by using the select tool (third from bottom).','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint LineString">'.__('Click on the map to add a line.<br /> Every click adds a new point to the line. Doubleclick to finish drawing the line.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Polygon">'.__('Click on the map to add a polygon.<br /> Every click adds a new point to the polygon. Click the first point to finish drawing the polygon.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Circle">'.__('Click on the map to add a circle.<br /> <strong> Circles will not be saved! </strong> The first click sets the center, the second one sets the radius.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Modify">'.__('Click on features to edit them.<br /> You can move or modify the feature (move points, add points) with this tool.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
 				$output .= '</p>'."\r\n";
 				$output .= '</div>'."\r\n";
 				
@@ -327,7 +328,7 @@ function mtl_proposal_form_output( $atts ){
 				
 				$output .= '<p><label for="mtl-import-geojson"><strong>'.__('Import GeoJSON file','my-transit-lines').'</strong><br>
 							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson" accept=".geojson,.json" multiple="true">
-							<script type="text/javascript"> document.querySelector("#mtl-import-geojson").addEventListener("change", function(){ importJSONFiles(document.querySelector("#mtl-import-geojson")); }); </script>
+							<script type="text/javascript"> document.querySelector("#mtl-import-geojson").addEventListener("change", function() { importJSONFiles(document.querySelector("#mtl-import-geojson")); }); </script>
 							</label>
 							</p>
 							<p style="text-align:left"><small>'.$import_hints.'</small></p>';

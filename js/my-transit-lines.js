@@ -139,6 +139,9 @@ class InteractionControl extends ol.control.Control {
 				node.classList.remove('selected');
 			}
 
+			$('.mtl-tool-hint').css('display','none');
+			$('.mtl-tool-hint.' + target.value).css('display','inline');
+
 			target.classList.add('selected');
 		} else {
 			deleteSelected();

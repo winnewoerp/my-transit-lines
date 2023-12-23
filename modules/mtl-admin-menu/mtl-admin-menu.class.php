@@ -8,9 +8,6 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/**
- * here we go with the class
- */
 class MtlSettingsPage
 {
     /**
@@ -18,9 +15,6 @@ class MtlSettingsPage
      */
     private $options;
 
-    /**
-     * Start up
-     */
     public function __construct()
     {
 		/* add menu page */

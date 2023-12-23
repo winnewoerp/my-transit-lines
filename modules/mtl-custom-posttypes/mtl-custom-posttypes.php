@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2014-09-07 */
 
-/* ### STILL TO DO ###
- * maybe make a nice function for creating new custom posttypes?
- */
-
 /**
  * create mtl-proposal post type for main entries
  */

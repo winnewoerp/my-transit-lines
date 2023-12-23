@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/* ### STILL TO DO ###
- * 1) We want to have customized login/register pages later, not the WP default pages which currently are used. Much nicer! Maybe use a plugin and adapt it to our needs?
- */
-
 /**
  * create Login/Register widget showing login/register when not logged in, greeting+username/logout/change password when logged in
  */

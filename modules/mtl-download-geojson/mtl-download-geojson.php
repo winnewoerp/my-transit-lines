@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2017-09-16 */
 
-/* ### STILL TO DO ###
- * any suggestions?
- */
- 
 function download_GeoJSON($content) {
 	global $post;
 

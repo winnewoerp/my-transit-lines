@@ -8,11 +8,7 @@
  
 /* created by Jan Garloff, 2023-07-23 */
 
-/* ### STILL TO DO ###
- * I don't know, is there anything? Other custom stuff needed to be added to the multiple view?
- */
-
- /**
+/**
  * map and meta data for multiple proposals
  */
 function mtl_multiple_proposal_output( $atts ) {

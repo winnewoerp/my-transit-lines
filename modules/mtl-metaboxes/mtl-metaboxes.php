@@ -215,6 +215,4 @@ function mtl_post_save($post_id) {
 }
 add_action('save_post','mtl_post_save');
 
-
-
 ?>

@@ -8,11 +8,7 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/* ### STILL TO DO ###
- * I don't know, is there anything? Other custom stuff needed to be added to the single view?
- */
-
- /**
+/**
  * map and meta data for single proposal
  */
 function mtl_proposal_map($content) {
@@ -270,31 +266,4 @@ function mtl_proposal_map($content) {
 }
 add_filter( 'the_content', 'mtl_proposal_map' );
 
-/**
- * get the taglist for districts/municipalities
- */
-function mtl_taglist($single) {
-	global $post;
-	$output = '';
-	
-	$mtl_options = get_option('mtl-option-name');
-	$tags = get_the_tags();
-	$form_post_link = get_permalink($post->ID);
-	if($tags) {
-		$output .= '<div class="post-tags">';
-		$output .= '<h3>'.__('All administrative subdivisons of this proposal:','my-transit-lines').'</h3>';
-		$output .= '<ul>';
-		foreach ( $tags as $current_tag ) {
-			$tag_link = add_query_arg( array('mtl-tag' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page']));
-			$selected = '';
-			$get_tag = '';
-			if(isset($_GET['mtl-tag'])) $get_tag = intval($_GET['mtl-tag']);
-			if($get_tag == $current_tag->term_id) $selected = ' selected="selected"';
-			$output .= "<li><a href='{$tag_link}' title='{$current_tag->name}'>{$current_tag->name}</a></li> ";
-		}
-		$output .= '</ul>';
-		$output .= '</div>';
-	}
-	return $output;
-}
 ?>

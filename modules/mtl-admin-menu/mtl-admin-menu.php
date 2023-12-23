@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/* ### STILL TO DO ###
- * 1) Bring the map editing function to the edit page of the proposal in the WP dashboard (currently, map editing can only be done via user front end editing)
- */
- 
 /**
  * include the class created for this module
  */

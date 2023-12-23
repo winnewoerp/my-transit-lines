@@ -8,11 +8,7 @@
  
 /* created by Johannes Bouchain, 2014-09-07 */
 
-/* ### STILL TO DO ###
- * we'll see what can be enhanced
- */
-
- /**
+/**
  * load the styles and scripts
  */
 function mtl_flextiles_init()

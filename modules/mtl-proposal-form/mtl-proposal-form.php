@@ -8,11 +8,7 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/* ### STILL TO DO ###
- * niente (except maybe code enhancement)
- */
-
- /**
+/**
  * shortcode [mtl-proposal-form]
  */
 function mtl_proposal_form_output( $atts ){
@@ -76,8 +72,6 @@ function mtl_proposal_form_output( $atts ){
 		$edit_post = get_post($editId);
 		$old_status = $edit_post->post_status;
 		
-		
-		
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
@@ -123,13 +117,6 @@ function mtl_proposal_form_output( $atts ){
 				// insert/update the current post
 				if($editId) $current_post_id = wp_update_post($post);
 				else $current_post_id = wp_insert_post($post);
-							
-				/* uploading files currently not possible
-				if ($_FILES) {
-					foreach ($_FILES as $file => $array) {
-						$newupload = insert_attachment($file,$current_post_id);
-					}
-				} */
 				
 				// dear user, your IP please :)
 				if (isSet($_SERVER)) {
@@ -333,10 +320,6 @@ function mtl_proposal_form_output( $atts ){
 							</p>
 							<p style="text-align:left"><small>'.$import_hints.'</small></p>';
 
-				
-				// input field for district/municipality tags - TO BE FINISHED LATER
-				/* $output .= '<p><label for="mtl-tag-select">'.__('Select/enter all districts/municipalities of your proposal','my-transit-lines').'<br /><input type="text" id="mtl-tag-select" name="mtl-tags" value="" /></label></p>'; */
-				
 				// editor's hints
 				if(is_user_author() && $mtl_options2['mtl-current-project-phase']=='rate' && get_post_type($editId)=='mtlproposal') {
 					$output .= '<div class="editors-hints-box">';

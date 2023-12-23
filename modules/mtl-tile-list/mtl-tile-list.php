@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2014-09-07 */
 
-/* ### STILL TO DO ###
- * any suggestions?
- */
-
 /**
  * create the thumb maps
  */

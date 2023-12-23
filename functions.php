@@ -284,6 +284,14 @@ function mtl_localize_script($getVar = false) {
 		'snapping'=>__('Snapping','my-transit-lines'),
 		'circleNotSupported'=>__('Circles aren\'t saved yet due to technical limitations and can only be used while editing to measure curve radii','my-transit-lines'),
 		'confirmLeaveWebsite'=>__('Confirm that you want to leave? All unsaved data will be lost!', 'my-transit-lines'),
+		'Point'=>__('Add point', 'my-transit-lines'),
+		'LineString'=>__('Add line', 'my-transit-lines'),
+		'Polygon'=>__('Add polygon', 'my-transit-lines'),
+		'Circle'=>__('Add circle', 'my-transit-lines'),
+		'Modify'=>__('Edit features', 'my-transit-lines'),
+		'Select'=>__('Select features', 'my-transit-lines'),
+		'Delete'=>__('Delete selected features', 'my-transit-lines'),
+		'Navigate'=>__('Navigate map', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

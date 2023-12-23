@@ -125,6 +125,7 @@ class InteractionControl extends ol.control.Control {
 		button.className = 'interaction-control';
 		button.style.backgroundImage = 'url(' + path + ')';
 		button.value = value;
+		button.title = objectL10n[value];
 
 		button.addEventListener('click', this.handleClick.bind(this), false);
 

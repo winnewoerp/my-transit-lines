@@ -354,14 +354,19 @@ $('input.cat-select').change(function() {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 });
 
-// Proposal contact form
 $(document).ready(function(){
+	// Proposal contact form
 	if($('#proposal-author-contact-form').length) {
 		$('#proposal-author-contact-form .pacf-toggle').on('click',function(e){
 			e.preventDefault();
 			$(this).closest('div').find('form').slideToggle();
 		});
-	}		
+	}
+
+	// Warning message when description is changed in visual (tinymce) editor
+	$('#tinymce', $('#description_ifr')[0].contentDocument).on('input propertychange paste', function() {
+		warningMessage = objectL10n.confirmLeaveWebsite;
+	});
 });
 
 // returns the style for the given feature

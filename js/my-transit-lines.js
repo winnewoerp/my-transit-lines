@@ -354,6 +354,16 @@ $('input.cat-select').change(function() {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 });
 
+// Proposal contact form
+$(document).ready(function(){
+	if($('#proposal-author-contact-form').length) {
+		$('#proposal-author-contact-form .pacf-toggle').on('click',function(e){
+			e.preventDefault();
+			$(this).closest('div').find('form').slideToggle();
+		});
+	}		
+});
+
 // returns the style for the given feature
 function styleFunction(feature) {
 	const colorUnselected = transportModeStyleData[getCategoryOf(feature)][0];

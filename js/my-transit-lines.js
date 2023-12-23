@@ -6,9 +6,8 @@ const MIN_ZOOM = 0;
 const MAX_ZOOM = 19;
 const MAX_ZOOM_OEPNV_MAP = 18;
 const MAX_ZOOM_OPENTOPO_MAP = 17;
-const SELECTED_Z_INDEX = 2;
-const POINT_UNSELECTED_Z_INDEX = 1;
-const LINE_UNSELECTED_Z_INDEX = 0;
+const SELECTED_Z_INDEX = 1;
+const UNSELECTED_Z_INDEX = 0;
 const ICON_SIZE_UNSELECTED = 21;
 const ICON_SIZE_SELECTED = 23;
 const COLOR_SELECTED = '#07f';
@@ -347,12 +346,14 @@ $(window).bind('beforeunload', function() {
 	if (warningMessage != '') return warningMessage;
 });
 
-$('#title, #description').on('input propertychange paste', function() {
-	warningMessage = objectL10n.confirmLeaveWebsite;
-});
-$('input.cat-select').change(function() {
-	warningMessage = objectL10n.confirmLeaveWebsite;
-});
+if (editMode) {
+	$('#title, #description').on('input propertychange paste', function() {
+		warningMessage = objectL10n.confirmLeaveWebsite;
+	});
+	$('input.cat-select').change(function() {
+		warningMessage = objectL10n.confirmLeaveWebsite;
+	});
+}
 
 $(document).ready(function(){
 	// Proposal contact form
@@ -363,10 +364,12 @@ $(document).ready(function(){
 		});
 	}
 
-	// Warning message when description is changed in visual (tinymce) editor
-	$('#tinymce', $('#description_ifr')[0].contentDocument).on('input propertychange paste', function() {
-		warningMessage = objectL10n.confirmLeaveWebsite;
-	});
+	if (editMode) {
+		// Warning message when description is changed in visual (tinymce) editor
+		$('#tinymce', $('#description_ifr')[0].contentDocument).on('input propertychange paste', function() {
+			warningMessage = objectL10n.confirmLeaveWebsite;
+		});
+	}
 });
 
 // returns the style for the given feature
@@ -402,7 +405,7 @@ function styleFunction(feature) {
 		offsetX: TEXT_X_OFFSET,
 	});
 
-	const zIndex = unselected ? (feature.getGeometry() instanceof ol.geom.Point ? POINT_UNSELECTED_Z_INDEX : LINE_UNSELECTED_Z_INDEX) : SELECTED_Z_INDEX;
+	const zIndex = unselected ? UNSELECTED_Z_INDEX : SELECTED_Z_INDEX;
 
 	return new ol.style.Style({
 		fill: fillStyle,
@@ -624,22 +627,21 @@ function importJSONFiles(filePicker) {
  * @param {string[]} labelsSource labels data
  * @param {string} categorySource category to use
  */
-function importToMapWKT(source, labelsSource, categorySource) {
+function importToMapWKT(source, labelsSource, categorySource, vector = vectorSource) {
 	if (source == '' || source == 'GEOMETRYCOLLECTION()')
 		return;
 
 	let features = WKT_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
 	var labelIndex = 0;
-
 	for (var feature of features) {
 		feature.set('category', categorySource);
 
-		feature.set('name', decodeSpecialChars(labelsSource[labelIndex]));
+		feature.set('name', decodeSpecialChars(labelsSource[labelIndex] || ''));
 		labelIndex++;
 	}
 
-	vectorSource.addFeatures(features);
+	vector.addFeatures(features);
 }
 
 /**
@@ -709,9 +711,9 @@ function toggleLabels() {
 }
 
 // zoom to show all features
-function zoomToFeatures(immediately = false, padding = true) {
-	if (vectorSource.getFeatures().length > 0) {
-		view.fit(vectorSource.getExtent(), {
+function zoomToFeatures(immediately = false, padding = true, vector = vectorSource, viewObject = view) {
+	if (vector.getFeatures().length > 0) {
+		viewObject.fit(vector.getExtent(), {
 			padding: padding ? ZOOM_PADDING : [0, 0, 0, 0],
 			duration: immediately ? 0 : ZOOM_ANIMATION_DURATION,
 		});

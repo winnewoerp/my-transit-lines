@@ -16,9 +16,8 @@ $count_thumblist_maps = 0;
 function mtl_thumblist_map() {
 	// get the mtl options
 	$mtl_options2 = get_option('mtl-option-name2');
-	$output = '';
 	global $post;
-	$output .= '<div id="thumblist-map'.$post->ID.'" class="mtl-thumblist-map'.($mtl_options2['mtl-current-project-phase']=='rate' ? ' rating' : '').'"></div>';
+	$output = '<div id="thumblist-map'.$post->ID.'" class="mtl-thumblist-map'.($mtl_options2['mtl-current-project-phase']=='rate' ? ' rating' : '').'"></div>';
 	$output .= '<script type="text/javascript"> createThumbMap('.$post->ID.'); </script>';
 	return $output;
 }
@@ -44,7 +43,6 @@ function mtl_tile_list_output($atts) {
 	$output .= mtl_search_bar_output($the_query);
 		
 	// start the tile list
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js"></script>';
 	$output .= '<div class="mtl-posttiles-list">';
 	
 	// load the text translations
@@ -54,7 +52,8 @@ function mtl_tile_list_output($atts) {
 	if(!$hidethumbs) $output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
 	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>';
-	if(!$hidethumbs) $output .= '<script type="text/javascript"> var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js"></script>';
+	if(!$hidethumbs) $output .= '<script type="text/javascript"> var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = "'.$mtl_options['mtl-standard-zoom'].'"; </script>'."\r\n";
 	$output .= '<script type="text/javascript"> ';
 	$output .= ' var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";';
 	$output .= ' var tilePageUrl = "'.get_permalink().'"; var initMap = false;';

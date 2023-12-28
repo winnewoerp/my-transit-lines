@@ -323,10 +323,6 @@ const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
 
 const selectedFeatures = selectInteraction.getFeatures();
 
-// TODO show line length/polygon area/circle radius while drawing/modifying them
-// TODO show these metrics when selecting features in edit mode
-// TODO show these metrics when hovering over features in single proposal mode
-
 const map = new ol.Map({
 	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
 	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
@@ -340,6 +336,17 @@ dragBoxInteraction.on('boxend', handleBoxSelect);
 dragBoxInteraction.on('boxstart', function (event) {
 	if (!ol.events.condition.shiftKeyOnly(event.mapBrowserEvent))
 		selectedFeatures.clear();
+});
+
+modifyInteraction.on('modifystart', function (event) {
+	for (var feature of event.features.getArray()) {
+		handleFeatureModified(feature);
+	}
+});
+modifyInteraction.on('modifyend', function (event) {
+	for (var feature of event.features.getArray()) {
+		feature.unset('size');
+	}
 });
 
 selectedFeatures.on('add', handleFeatureSelected);
@@ -409,6 +416,7 @@ function styleFunction(feature) {
 		}),
 		stroke: strokeStyle,
 		offsetX: TEXT_X_OFFSET,
+		overflow: true,
 	});
 
 	const zIndex = unselected ? UNSELECTED_Z_INDEX : SELECTED_Z_INDEX;
@@ -420,6 +428,27 @@ function styleFunction(feature) {
 		text: textStyle,
 		zIndex: zIndex,
 	});
+}
+
+function drawStyleFunction(feature) {
+	style = ol.style.Style.createEditingStyle()[feature.getGeometry().getType()];
+
+	style[0].text_ = new ol.style.Text({
+		font: 'bold 11px sans-serif',
+		text: feature.get('size') || '',
+		textAlign: 'left',
+		fill: new ol.style.Fill({
+			color: 'white',
+		}),
+		stroke: new ol.style.Stroke({
+			color: COLOR_SELECTED,
+			width: STROKE_WIDTH_SELECTED,
+		}),
+		offsetX: TEXT_X_OFFSET,
+		overflow: true,
+	});
+
+	return style;
 }
 
 /**
@@ -447,6 +476,9 @@ function formatNumber(number, squared = false, unit = 'm') {
 	step = 1000 * (squared ? 1000 : 1);
 
 	if (number < step) {
+		if (number > 1E3) {
+			return Math.round(number) + unit;
+		}
 		return number.toPrecision(3).replace('.', objectL10n.decimalSeparator) + unit;
 	} else {
 		if (number / step > 1E3) {
@@ -527,7 +559,15 @@ function handleFeatureUnselected(event) {
 		$('.set-name').css('display', 'none');
 	}
 
-	event.element.set('size', undefined);
+	event.element.unset('size');
+}
+
+function handleFeatureModified(feature) {
+	feature.set('size', getFeatureSize(feature));
+	feature.on('change', function () {
+		if (feature.get('size'))
+			feature.set('size', getFeatureSize(feature));
+	});
 }
 
 // Selects all features inside the box dragged for selection
@@ -587,7 +627,13 @@ function setInteraction(interactionType) {
 		case 'LineString':
 		case 'Point':
 		case 'Polygon':
-			drawInteraction = new ol.interaction.Draw({ source: vectorSource, type: interactionType });
+			drawInteraction = new ol.interaction.Draw({ source: vectorSource, type: interactionType, style: drawStyleFunction });
+			drawInteraction.on('drawstart', function (event) {
+				handleFeatureModified(event.feature);
+			});
+			drawInteraction.on('drawend', function (event) {
+				event.feature.unset('size');
+			});
 			map.addInteraction(drawInteraction);
 			if (snapping)
 				map.addInteraction(snapInteraction);

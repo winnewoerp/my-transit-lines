@@ -323,6 +323,10 @@ const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
 
 const selectedFeatures = selectInteraction.getFeatures();
 
+// TODO show line length/polygon area/circle radius while drawing/modifying them
+// TODO show these metrics when selecting features in edit mode
+// TODO show these metrics when hovering over features in single proposal mode
+
 const map = new ol.Map({
 	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
 	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
@@ -414,6 +418,40 @@ function styleFunction(feature) {
 		text: textStyle,
 		zIndex: zIndex,
 	});
+}
+
+/**
+ * Gets the size (length, radius, area) of the given feature
+ * @param {FeatureLike} feature 
+ * @returns {string} Containing the size in a human readable format (not just the number)
+ */
+function getFeatureSize(feature) {
+	geom = feature.clone().getGeometry();
+
+	if (geom instanceof ol.geom.Point) {
+		return "";
+	} else if (geom instanceof ol.geom.LineString) {
+		return "Length: " + formatNumber(ol.sphere.getLength(geom));
+	} else if (geom instanceof ol.geom.Polygon) {
+		return "Area: " + formatNumber(ol.sphere.getArea(geom), true);
+	} else if (geom instanceof ol.geom.Circle) {
+		return "Radius: " + formatNumber(ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate()));
+	}
+}
+
+// Format a number and its unit
+function formatNumber(number, squared = false, unit = 'm') {
+	unit = unit + (squared ? '²' : '');
+	step = 1000 * (squared ? 1000 : 1);
+
+	if (number < step) {
+		return number.toPrecision(3) + unit;
+	} else {
+		if (number / step > 1E3) {
+			return Math.round(number / step) + 'k' + unit;
+		}
+		return (number / step).toPrecision(3) + 'k' + unit;
+	}
 }
 
 /**

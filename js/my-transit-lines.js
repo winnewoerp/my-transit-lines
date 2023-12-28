@@ -398,9 +398,11 @@ function styleFunction(feature) {
 		width: unselected ? STROKE_WIDTH_UNSELECTED : STROKE_WIDTH_SELECTED,
 	});
 
+	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
+
 	const textStyle = new ol.style.Text({
 		font: 'bold 11px sans-serif',
-		text: showLabels ? feature.get('name') : '',
+		text: text,
 		textAlign: 'left',
 		fill: new ol.style.Fill({
 			color: 'white',
@@ -509,6 +511,8 @@ function handleFeatureSelected(event) {
 		unselectAllFeatures();
 	});
 	selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
+
+	event.element.set('size', getFeatureSize(event.element));
 }
 
 function handleFeatureUnselected(event) {
@@ -522,6 +526,8 @@ function handleFeatureUnselected(event) {
 		$('.feature-textinput-box').slideUp();
 		$('.set-name').css('display', 'none');
 	}
+
+	event.element.set('size', undefined);
 }
 
 // Selects all features inside the box dragged for selection

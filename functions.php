@@ -292,6 +292,10 @@ function mtl_localize_script($getVar = false) {
 		'Select'=>__('Select features', 'my-transit-lines'),
 		'Delete'=>__('Delete selected features', 'my-transit-lines'),
 		'Navigate'=>__('Navigate map', 'my-transit-lines'),
+		'lengthString'=>__('Length: ', 'my-transit-lines'),
+		'radius'=>__('Radius: ', 'my-transit-lines'),
+		'area'=>__('Area: ', 'my-transit-lines'),
+		'decimalSeparator'=>__('.', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

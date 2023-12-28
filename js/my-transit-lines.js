@@ -431,11 +431,11 @@ function getFeatureSize(feature) {
 	if (geom instanceof ol.geom.Point) {
 		return "";
 	} else if (geom instanceof ol.geom.LineString) {
-		return "Length: " + formatNumber(ol.sphere.getLength(geom));
+		return objectL10n.lengthString + formatNumber(ol.sphere.getLength(geom));
 	} else if (geom instanceof ol.geom.Polygon) {
-		return "Area: " + formatNumber(ol.sphere.getArea(geom), true);
+		return objectL10n.area + formatNumber(ol.sphere.getArea(geom), true);
 	} else if (geom instanceof ol.geom.Circle) {
-		return "Radius: " + formatNumber(ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate()));
+		return objectL10n.radius + formatNumber(ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate()));
 	}
 }
 
@@ -445,12 +445,12 @@ function formatNumber(number, squared = false, unit = 'm') {
 	step = 1000 * (squared ? 1000 : 1);
 
 	if (number < step) {
-		return number.toPrecision(3) + unit;
+		return number.toPrecision(3).replace('.', objectL10n.decimalSeparator) + unit;
 	} else {
 		if (number / step > 1E3) {
 			return Math.round(number / step) + 'k' + unit;
 		}
-		return (number / step).toPrecision(3) + 'k' + unit;
+		return (number / step).toPrecision(3).replace('.', objectL10n.decimalSeparator) + 'k' + unit;
 	}
 }
 

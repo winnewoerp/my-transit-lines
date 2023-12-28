@@ -83,58 +83,59 @@ function submitFilter() {
 	window.location.hash  = '!'+newHash;
 }
 
-// thumb maps
-var thumbmap = new Array();
-var thumbvectors = new Array();
-var mapLayers = new Array();
-var getMapLayers = new Array();
-function createThumbMap(mapNumber) {
-	var loadThumbmaps = true;
-	if(!countLoads && currentHash.includes('#!')) {
-		loadThumbmaps = false;
-		$('.mtl-post-tile').css('display','none');
-	}
-	if(loadThumbmaps) {
-		$('.mtl-post-tile').css('display','block');
-		features = '';
-		thumbmap.push(new OpenLayers.Map('thumblist-map'+mapNumber,{controls:[]}));
-		var mapLayers = new Array();
-		// add OSM OePNV Layer
-		mapLayers[thumbmap.length-1] = new OpenLayers.Layer.OSM(
-			objectL10n.titleOSM,
-			["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png","https://b.tile.openstreetmap.org/${z}/${x}/${y}.png","https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
-		
-		thumbmap[thumbmap.length-1].addLayer( mapLayers[thumbmap.length-1] );
+const ICON_SIZE_TILELIST = 13;
+const STROKE_WIDTH_TILELIST = 3;
+const MAX_ZOOM_TILELIST = 15;
 
-		thumbvectors[thumbmap.length-1] = new OpenLayers.Layer.Vector(objectL10n.vectorLayerTitle, { styleMap: new OpenLayers.StyleMap(style), rendererOptions: { zIndexing: true } });
-		thumbmap[thumbmap.length-1].addLayer(thumbvectors[thumbmap.length-1]);
-		
-		var lonlat = new OpenLayers.LonLat(mtlCenterLon,mtlCenterLat);
-		lonlat.transform(proj4326, projmerc);
-		
-		// center map to Hamburg
-		thumbmap[thumbmap.length-1].setCenter(lonlat, 13);
-		
-		wkt = new OpenLayers.Format.WKT();
-		if(vectorData && vectorData.length > 0) {
-			if(vectorData[0].includes('POINT') || vectorData[0].includes('LINESTRING')) {
-				features = wkt.read(vectorData[0]);
-				if(features.constructor != Array) {
-					features = [features];
-				}
-				countFeatures = features.length;
-				thumbvectors[thumbmap.length-1].addFeatures(features);
-				for(var i =0; i < thumbvectors[thumbmap.length-1].features.length; i++) thumbvectors[thumbmap.length-1].features[i].geometry.transform(proj4326,projmerc);
-				zoomToFeatures(thumbmap[thumbmap.length-1],thumbvectors[thumbmap.length-1]);
-			}
-		}
-		fillColor = transportModeStyleData[currentCat][0];
-		strokeColor = transportModeStyleData[currentCat][0];
-		externalGraphicUrl = transportModeStyleData[currentCat][1];
-		externalGraphicUrlSelected = transportModeStyleData[currentCat][2];
-		if(countFeatures>2) var symbolSize = 13;
-		else var symbolSize = 20;
-		changeLinetypeTileList(thumbvectors[thumbmap.length-1],symbolSize,3);
+// thumb maps
+function createThumbMap(mapNumber) {
+	if(!countLoads && currentHash.includes('#!')) {
+		$('.mtl-post-tile').css('display','none');
+	} else {
+		const cat_color = transportModeStyleData[currentCat][0];
+
+		const backgroundTileLayer = new ol.layer.Tile({
+			className: 'background-tilelayer',
+			source: new ol.source.OSM(),
+		});
+
+		const vectorSource = new ol.source.Vector();
+		const vectorLayer = new ol.layer.Vector({
+			source: vectorSource,
+			style: new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: cat_color + '40',
+				}),
+				image: new ol.style.Icon({
+					src: transportModeStyleData[currentCat][1],
+					width: ICON_SIZE_TILELIST,
+					height: ICON_SIZE_TILELIST,
+				}),
+				stroke: new ol.style.Stroke({
+					color: cat_color,
+					width: STROKE_WIDTH_TILELIST,
+				}),
+			}),
+		});
+
+		const view = new ol.View({
+			center: ol.proj.fromLonLat([centerLon, centerLat]),
+			zoom: standardZoom,
+			minZoom: MIN_ZOOM,
+			maxZoom: MAX_ZOOM_TILELIST,
+			constrainResolution: true,
+		});
+
+		const map = new ol.Map({
+			controls: [],
+			layers: [backgroundTileLayer, vectorLayer],
+			target: 'thumblist-map' + mapNumber,
+			view: view,
+		});
+
+		importToMapWKT(vectorData[0], [], currentCat, vectorSource);
+
+		zoomToFeatures(true, false, vectorSource, view);
 		
 		$('.olLayerGrid').css('opacity','.2');
 	}	

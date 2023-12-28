@@ -303,7 +303,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<span class="mtl-tool-hint Polygon">'.__('Click on the map to add a polygon.<br /> Every click adds a new point to the polygon. Click the first point to finish drawing the polygon.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Circle">'.__('Click on the map to add a circle.<br /> <strong> Circles will not be saved! </strong> The first click sets the center, the second one sets the radius.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Modify">'.__('Click on features to edit them.<br /> You can move or modify the feature (move points, add points) with this tool.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
 				$output .= '</p>'."\r\n";
 				$output .= '</div>'."\r\n";

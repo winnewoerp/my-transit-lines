@@ -374,13 +374,6 @@ $(document).ready(function(){
 			$(this).closest('div').find('form').slideToggle();
 		});
 	}
-
-	if (editMode) {
-		// Warning message when description is changed in visual (tinymce) editor
-		$('#tinymce', $('#description_ifr')[0].contentDocument).on('input propertychange paste', function() {
-			warningMessage = objectL10n.confirmLeaveWebsite;
-		});
-	}
 });
 
 // returns the style for the given feature

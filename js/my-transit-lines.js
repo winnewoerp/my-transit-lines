@@ -729,6 +729,10 @@ function importToMapWKT(source, labelsSource, categorySource, vector = vectorSou
 		labelIndex++;
 	}
 
+	if (selectedFeatureIndex) {
+		selectedFeatureIndex += features.length;
+	}
+
 	vector.addFeatures(features);
 }
 
@@ -767,6 +771,10 @@ function importToMapJSON(source, categorySource) {
 	}
 
 	features = addCircles(features);
+
+	if (selectedFeatureIndex) {
+		selectedFeatureIndex += features.length;
+	}
 
 	vectorSource.addFeatures(features);
 }

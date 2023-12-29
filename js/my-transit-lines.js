@@ -423,6 +423,7 @@ function styleFunction(feature) {
 	});
 }
 
+// returns the style for the given feature while being drawn
 function drawStyleFunction(feature) {
 	style = ol.style.Style.createEditingStyle()[feature.getGeometry().getType()];
 
@@ -526,6 +527,7 @@ function deleteSelected() {
 	});
 }
 
+// Open textinput for feature name and show size of feature
 function handleFeatureSelected(event) {
 	interactionControl.deleteButton.classList.remove('unselectable');
 
@@ -540,6 +542,7 @@ function handleFeatureSelected(event) {
 	event.element.set('size', getFeatureSize(event.element));
 }
 
+// Set name of unselected feature to name from the textinput and remove size being shown
 function handleFeatureUnselected(event) {
 	if (selectedFeatures.getArray().length == 0)
 		interactionControl.deleteButton.classList.add('unselectable');
@@ -555,6 +558,7 @@ function handleFeatureUnselected(event) {
 	event.element.unset('size');
 }
 
+// Show the size of modified features
 function handleFeatureModified(feature) {
 	feature.set('size', getFeatureSize(feature));
 	feature.on('change', function () {
@@ -597,13 +601,6 @@ function handleSourceReady() {
 	importAllWKT();
 
 	addSaveEventListeners();
-}
-
-// Toggles snapping on/off
-function toggleSnapping() {
-	snapping = !snapping;
-
-	snapInteraction.setActive(snapping);
 }
 
 /**
@@ -682,7 +679,10 @@ function importAllWKT() {
 	zoomToFeatures(true);
 }
 
-// Imports all feature data from the files of the filePicker input
+/**
+ * Imports all feature data from the files of the filePicker input to the map
+ * @param {Node} filePicker 
+ */
 function importJSONFiles(filePicker) {
 	for (var i = 0; i < filePicker.files.length; i++) {
 		let file = filePicker.files[i];
@@ -792,6 +792,29 @@ function exportToJSON() {
 	return json_string;
 }
 
+/**
+ * Zooms to show all features in the map
+ * @param {boolean} immediately if the zooming should happen immediately or with an animation. Default is animation
+ * @param {boolean} padding if there should be a padding between the features and the map border. Default is padding
+ * @param {ol.source.Vector} source which source's vectors to zoom to. Default is vectorSource
+ * @param {ol.View} viewObject which view to apply the zoom to. Default is view
+ */
+function zoomToFeatures(immediately = false, padding = true, source = vectorSource, viewObject = view) {
+	if (source.getFeatures().length > 0) {
+		viewObject.fit(source.getExtent(), {
+			padding: padding ? ZOOM_PADDING : [0, 0, 0, 0],
+			duration: immediately ? 0 : ZOOM_ANIMATION_DURATION,
+		});
+	}
+}
+
+// toggles snapping
+function toggleSnapping() {
+	snapping = !snapping;
+
+	snapInteraction.setActive(snapping);
+}
+
 // toggles whether the labels get shown on the map or not
 function toggleLabels() {
 	showLabels = !showLabels;
@@ -799,16 +822,7 @@ function toggleLabels() {
 	redraw();
 }
 
-// zoom to show all features
-function zoomToFeatures(immediately = false, padding = true, vector = vectorSource, viewObject = view) {
-	if (vector.getFeatures().length > 0) {
-		viewObject.fit(vector.getExtent(), {
-			padding: padding ? ZOOM_PADDING : [0, 0, 0, 0],
-			duration: immediately ? 0 : ZOOM_ANIMATION_DURATION,
-		});
-	}
-}
-
+// Toggle if the map is displayed in fullscreen or not
 function toggleFullscreen() {
 	fullscreen = !fullscreen;
 	if (fullscreen) {

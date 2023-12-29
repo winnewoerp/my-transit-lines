@@ -635,8 +635,7 @@ function setInteraction(interactionType) {
 				event.feature.unset('size');
 			});
 			map.addInteraction(drawInteraction);
-			if (snapping)
-				map.addInteraction(snapInteraction);
+			map.addInteraction(snapInteraction);
 			break;
 		case 'Select':
 			map.addInteraction(dragBoxInteraction);
@@ -644,8 +643,7 @@ function setInteraction(interactionType) {
 			break;
 		case 'Modify':
 			map.addInteraction(modifyInteraction);
-			if (snapping)
-				map.addInteraction(snapInteraction);
+			map.addInteraction(snapInteraction);
 			break;
 		case 'Navigate':
 			break;

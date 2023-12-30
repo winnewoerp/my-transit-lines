@@ -28,50 +28,60 @@ const PROJECTION_OPTIONS = {
 	featureProjection: 'EPSG:3857',
 };
 
-const OSM_SOURCE = new ol.source.OSM(); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
+const OSM_SOURCE = new ol.source.OSM({
+	crossOrigin: null,
+}); OSM_SOURCE.setProperties({ title: objectL10n.titleOSM, id: 'osm' });
 const OEPNVKARTE_SOURCE = new ol.source.OSM({
 	url: 'https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOPNV,
 	maxZoom: MAX_ZOOM_OEPNV_MAP,
+	crossOrigin: null,
 }); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});
 const OPENTOPOMAP_SOURCE = new ol.source.OSM({
 	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpentopomap,
 	maxZoom: MAX_ZOOM_OPENTOPO_MAP,
+	crossOrigin: null,
 }); OPENTOPOMAP_SOURCE.setProperties({ title: objectL10n.titleOpentopomap, id: 'opentopo' });
 const ESRI_SOURCE = new ol.source.OSM({
 	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
 	attributions: objectL10n.attributionESRISatellite,
+	crossOrigin: null,
 }); ESRI_SOURCE.setProperties({ title: objectL10n.titleESRISatellite, id: 'esri' });
 
 const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymap,
 	opaque: false,
+	crossOrigin: null,
 }); OPENRAILWAYMAP_STANDARD_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymap, id: 'openrailway-standard' });
 const OPENRAILWAYMAP_MAX_SPEED_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapMaxspeed,
 	opaque: false,
+	crossOrigin: null,
 }); OPENRAILWAYMAP_MAX_SPEED_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapMaxspeed, id: 'openrailway-maxspeed' });
 const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/electrified/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapElectrified,
 	opaque: false,
+	crossOrigin: null,
 }); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});
 const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapSignals,
 	opaque: false,
+	crossOrigin: null,
 }); OPENRAILWAYMAP_SIGNALS_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapSignals, id: 'openrailway-signals' });
 const OPENRAILWAYMAP_GAUGE_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/gauge/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapGauge,
 	opaque: false,
+	crossOrigin: null,
 }); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge' });
 
-const BACKGROUND_SOURCES = [OSM_SOURCE, /*OEPNVKARTE_SOURCE,*/ OPENTOPOMAP_SOURCE, ESRI_SOURCE];
-const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, /*OPENRAILWAYMAP_ELECTRIFICATION_SOURCE,*/ OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
+const BACKGROUND_SOURCES = [OSM_SOURCE, OEPNVKARTE_SOURCE, OPENTOPOMAP_SOURCE, ESRI_SOURCE];
+const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, OPENRAILWAYMAP_ELECTRIFICATION_SOURCE, OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
 
 var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;

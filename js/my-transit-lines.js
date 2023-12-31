@@ -1,5 +1,5 @@
 /* my-transit-lines.js
-(C) by Jan Garloff
+(C) by Jan Garloff and Johannes Bouchain - stadtkreation.de
 */
 
 const MIN_ZOOM = 0;

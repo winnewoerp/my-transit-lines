@@ -60,6 +60,7 @@ function mtl_proposal_map($content) {
 		$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
 		$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
 		$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
+		$output .= '<p class="alignright" id="mtl-toggle-sizes"><label><input type="checkbox" autocomplete="off" id="mtl-toggle-sizes-link" onclick="toggleSizes()" /> '.__('Show feature sizes','my-transit-lines').'</label></p>'."\r\n";
 		$output .= '</div>'."\r\n";
 		
 		// output the meta data

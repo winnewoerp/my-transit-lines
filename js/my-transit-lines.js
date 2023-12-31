@@ -176,7 +176,8 @@ class OptionsControl extends ol.control.Control {
 
 		this.innerDiv = document.createElement('div');
 		this.innerDiv.className = 'layer-control hidden';
-		this.innerDiv.appendChild(this.createSnappingToggle());
+		if (editMode)
+			this.innerDiv.appendChild(this.createSnappingToggle());
 		this.innerDiv.appendChild(this.createBackgroundSelector());
 		this.innerDiv.appendChild(this.createOverlaySelector());
 

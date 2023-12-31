@@ -82,6 +82,11 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<div id="mtl-map"></div>'."\r\n";
 	$output .= '</div>';
 
+	$output .= '<div id="popup" class="ol-popup">'."\r\n";
+	$output .= '<a href="#" id="popup-closer" class="ol-popup-closer"></a>'."\r\n";
+	$output .= '<div id="popup-content" class="ol-popup-content"></div>'."\r\n";
+	$output .= '</div>'."\r\n";
+
 	// output proposal data
 	$output .= '<script id="mtl-multiple-proposal-data-script" type="text/javascript"> var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";';
 	$output .= 'var vectorData = ['.$vector_data.'];'."\r\n";
@@ -90,6 +95,7 @@ function mtl_multiple_proposal_output( $atts ) {
 
 	// output relevant scripts
 	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
+	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-multiple-proposal/mtl-multiple-proposal.css">'."\r\n";
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/openlayers/dist/ol.js"></script>'."\r\n";
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.js"></script>'."\r\n";

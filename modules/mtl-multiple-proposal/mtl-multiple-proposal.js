@@ -67,3 +67,48 @@ function submit_new_filter() {
 	var newHash = newLink.replace(multiple_proposal_page_url,'');
 	window.location.hash  = '!'+newHash;
 }
+
+const container = document.getElementById('popup');
+const content = document.getElementById('popup-content');
+const closer = document.getElementById('popup-closer');
+
+const overlay = new ol.Overlay({
+	element: container,
+	autoPan: {
+		animation: {
+			duration: 250,
+		},
+	},
+});
+map.addOverlay(overlay);
+
+const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], style: styleFunction });
+map.addInteraction(selectInteraction);
+
+selectInteraction.on('select', function (evt) {
+	if (evt.selected.length < 1) {
+		closePopup();
+		return;
+	}
+
+	const coordinate = evt.mapBrowserEvent.coordinate;
+
+  	content.innerHTML = 'abcd'; // TODO show title, author, date and link
+
+ 	overlay.setPosition(coordinate);
+});
+
+/**
+ * Add a click handler to hide the popup.
+ * @return {boolean} Don't follow the href.
+ */
+closer.onclick = function () {
+	closePopup();
+	return false;
+};
+
+function closePopup() {
+	overlay.setPosition(undefined);
+	closer.blur();
+	selectInteraction.getFeatures().clear();
+}

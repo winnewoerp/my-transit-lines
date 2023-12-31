@@ -2,11 +2,6 @@
  * (C) by Jan Garloff and Johannes Bouchain - stadtkreation.de
  */
 
-const SELECTED_Z_INDEX = 1;
-const ICON_SIZE_SELECTED = 23;
-const COLOR_SELECTED = '#07f';
-const STROKE_WIDTH_SELECTED = 3;
-
 var selectedFeatureIndex = -1;
 var snapping = true;
 var warningMessage = '';
@@ -81,7 +76,7 @@ class InteractionControl extends ol.control.Control {
 let drawInteraction;
 const modifyInteraction = new ol.interaction.Modify({ source: vectorSource });
 const dragBoxInteraction = new ol.interaction.DragBox();
-const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], multi: true, style: styleFunction });
+const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], multi: true, style: selectedStyleFunction });
 const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
 
 const selectedFeatures = selectInteraction.getFeatures();
@@ -122,48 +117,6 @@ $('#title, #description').on('input propertychange paste', function() {
 $('input.cat-select').change(function() {
     warningMessage = objectL10n.confirmLeaveWebsite;
 });
-
-// returns the style for a selected feature
-function selectedStyleFunction(feature) {
-    const fillStyle = new ol.style.Fill({
-		color: COLOR_SELECTED + '4',
-	});
-
-	const imageStyle = new ol.style.Icon({
-		src: transportModeStyleData[getCategoryOf(feature)][2],
-		width: ICON_SIZE_SELECTED,
-		height: ICON_SIZE_SELECTED,
-	});
-
-	const strokeStyle = new ol.style.Stroke({
-		color: COLOR_SELECTED,
-		width: STROKE_WIDTH_SELECTED,
-	});
-
-	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
-
-	const textStyle = new ol.style.Text({
-		font: 'bold 11px sans-serif',
-		text: text,
-		textAlign: 'left',
-		fill: new ol.style.Fill({
-			color: 'white',
-		}),
-		stroke: strokeStyle,
-		offsetX: TEXT_X_OFFSET,
-		overflow: true,
-	});
-
-	const zIndex = SELECTED_Z_INDEX;
-
-	return new ol.style.Style({
-		fill: fillStyle,
-		image: imageStyle,
-		stroke: strokeStyle,
-		text: textStyle,
-		zIndex: zIndex,
-	});
-}
 
 // returns the style for the given feature while being drawn
 function drawStyleFunction(feature) {

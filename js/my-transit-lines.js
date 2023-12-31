@@ -7,8 +7,12 @@ const MAX_ZOOM = 19;
 const MAX_ZOOM_OEPNV_MAP = 18;
 const MAX_ZOOM_OPENTOPO_MAP = 17;
 const UNSELECTED_Z_INDEX = 0;
+const SELECTED_Z_INDEX = 1;
 const ICON_SIZE_UNSELECTED = 21;
+const ICON_SIZE_SELECTED = 23;
+const COLOR_SELECTED = '#07f';
 const STROKE_WIDTH_UNSELECTED = 4;
+const STROKE_WIDTH_SELECTED = 3;
 const TEXT_X_OFFSET = 15;
 const ZOOM_ANIMATION_DURATION = 100;
 const ZOOM_PADDING = [50, 50, 50, 50];
@@ -257,9 +261,6 @@ $(document).ready(function(){
 
 // returns the style for the given feature
 function styleFunction(feature) {
-	if (editMode && selectedFeatures.getArray().indexOf(feature) > -1)
-		return selectedStyleFunction(feature);
-
 	const color = transportModeStyleData[getCategoryOf(feature)][0];
 
 	const fillStyle = new ol.style.Fill({
@@ -292,6 +293,48 @@ function styleFunction(feature) {
 	});
 
 	const zIndex = UNSELECTED_Z_INDEX;
+
+	return new ol.style.Style({
+		fill: fillStyle,
+		image: imageStyle,
+		stroke: strokeStyle,
+		text: textStyle,
+		zIndex: zIndex,
+	});
+}
+
+// returns the style for a selected feature
+function selectedStyleFunction(feature) {
+    const fillStyle = new ol.style.Fill({
+		color: COLOR_SELECTED + '4',
+	});
+
+	const imageStyle = new ol.style.Icon({
+		src: transportModeStyleData[getCategoryOf(feature)][2],
+		width: ICON_SIZE_SELECTED,
+		height: ICON_SIZE_SELECTED,
+	});
+
+	const strokeStyle = new ol.style.Stroke({
+		color: COLOR_SELECTED,
+		width: STROKE_WIDTH_SELECTED,
+	});
+
+	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
+
+	const textStyle = new ol.style.Text({
+		font: 'bold 11px sans-serif',
+		text: text,
+		textAlign: 'left',
+		fill: new ol.style.Fill({
+			color: 'white',
+		}),
+		stroke: strokeStyle,
+		offsetX: TEXT_X_OFFSET,
+		overflow: true,
+	});
+
+	const zIndex = SELECTED_Z_INDEX;
 
 	return new ol.style.Style({
 		fill: fillStyle,

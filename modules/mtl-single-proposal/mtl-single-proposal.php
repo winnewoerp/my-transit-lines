@@ -53,6 +53,7 @@ function mtl_proposal_map($content) {
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
 		$output .= mtl_localize_script(true);
 		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
+		$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/modules/mtl-single-proposal/mtl-single-proposal.js"></script>'."\r\n";
 		
 		// output opacity change button, map fullscreen link and toggle label checkbox
 		$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";

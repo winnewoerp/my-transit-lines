@@ -117,6 +117,7 @@ class InteractionControl extends ol.control.Control {
 		this.deleteButton = this.createButton('Delete', themeUrl + '/images/deleteFeatures.png');
 		this.deleteButton.classList.add('unselectable');
 		this.navigateButton = this.createButton('Navigate', themeUrl + '/images/navigation.png');
+		this.snappingButton = this.createButton('RemoveSnapping', themeUrl + '/images/removeSnapping.png');
 
 		element.appendChild(this.pointButton);
 		element.appendChild(this.lineStringButton);
@@ -126,6 +127,7 @@ class InteractionControl extends ol.control.Control {
 		element.appendChild(this.selectButton);
 		element.appendChild(this.deleteButton);
 		element.appendChild(this.navigateButton);
+		element.appendChild(this.snappingButton);
 	}
 
 	createButton(value, path) {
@@ -144,19 +146,33 @@ class InteractionControl extends ol.control.Control {
 	handleClick(event) {
 		var target = event.target;
 
-		if (target != this.deleteButton) {
-			for (const node of target.parentElement.childNodes) {
-				node.classList.remove('selected');
-			}
-
-			$('.mtl-tool-hint').css('display','none');
-			$('.mtl-tool-hint.' + target.value).css('display','inline');
-
-			target.classList.add('selected');
-		} else {
+		if (target == this.deleteButton) {
 			deleteSelected();
 			return;
 		}
+
+		if (target == this.snappingButton) {
+			toggleSnapping();
+
+			if (snapping) {
+				this.snappingButton.style.backgroundImage = 'url(' + themeUrl + '/images/removeSnapping.png)';
+				this.snappingButton.title = objectL10n['RemoveSnapping'];
+			} else {
+				this.snappingButton.style.backgroundImage = 'url(' + themeUrl + '/images/addSnapping.png)';
+				this.snappingButton.title = objectL10n['AddSnapping'];
+			}
+
+			return;
+		}
+
+		for (const node of target.parentElement.childNodes) {
+			node.classList.remove('selected');
+		}
+
+		$('.mtl-tool-hint').css('display','none');
+		$('.mtl-tool-hint.' + target.value).css('display','inline');
+
+		target.classList.add('selected');
 
 		setInteraction(target.value);
 	}
@@ -176,8 +192,6 @@ class OptionsControl extends ol.control.Control {
 
 		this.innerDiv = document.createElement('div');
 		this.innerDiv.className = 'layer-control hidden';
-		if (editMode)
-			this.innerDiv.appendChild(this.createSnappingToggle());
 		this.innerDiv.appendChild(this.createBackgroundSelector());
 		this.innerDiv.appendChild(this.createOverlaySelector());
 
@@ -197,24 +211,6 @@ class OptionsControl extends ol.control.Control {
 		menuToggle.addEventListener('click', this.handleMenuToggle.bind(this), false);
 
 		return menuToggle;
-	}
-
-	createSnappingToggle() {
-		let snappingToggle = document.createElement('input');
-		snappingToggle.id = 'toggle-snapping';
-		snappingToggle.type = 'checkbox';
-		snappingToggle.autocomplete = 'off';
-		snappingToggle.checked = true;
-		snappingToggle.addEventListener('change', toggleSnapping, false);
-
-		let snappingToggleLabel = document.createElement('label');
-		snappingToggleLabel.className = 'layer-control alignright';
-		snappingToggleLabel.id = 'toggle-snapping-label';
-		snappingToggleLabel.for = 'toggle-snapping';
-		snappingToggleLabel.textContent = objectL10n.snapping + ' ';
-		snappingToggleLabel.appendChild(snappingToggle);
-
-		return snappingToggleLabel;
 	}
 
 	createBackgroundSelector() {
@@ -295,6 +291,11 @@ class OptionsControl extends ol.control.Control {
 	}
 }
 
+const attributionLayer = new ol.layer.Layer({
+	source: new ol.source.Source({attributions: objectL10n.attributionIcons}),
+	render: function () { return null; }
+});
+
 const backgroundTileLayer = new ol.layer.Tile({
 	className: 'background-tilelayer',
 	source: OSM_SOURCE,
@@ -336,7 +337,7 @@ const selectedFeatures = selectInteraction.getFeatures();
 
 const map = new ol.Map({
 	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), attributionControl, optionsControl].concat(editMode ? [interactionControl] : []),
-	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
+	layers: [attributionLayer, backgroundTileLayer, overlayTileLayer, vectorLayer],
 	target: MAP_ID,
 	view: view,
 });

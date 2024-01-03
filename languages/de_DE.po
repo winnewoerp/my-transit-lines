@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2023-12-28 14:16+0100\n"
-"PO-Revision-Date: 2023-12-28 14:27+0100\n"
+"POT-Creation-Date: 2024-01-03 15:59+0100\n"
+"PO-Revision-Date: 2024-01-03 16:00+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -313,56 +313,66 @@ msgid "OpenStreetMap standard (Mapnik)"
 msgstr "OpenStreetMap-Standard (Mapnik)"
 
 #: ../functions.php:273
+msgid ""
+"Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
+"2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk on "
+"Github</a>"
+msgstr ""
+"Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
+"2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk auf "
+"Github</a>"
+
+#: ../functions.php:274
 msgid "Line proposal (vector data)"
 msgstr "Streckenvorschlag (Vektordaten)"
 
-#: ../functions.php:274
+#: ../functions.php:275
 msgid "Build line"
 msgstr "Strecke bauen"
 
-#: ../functions.php:275
+#: ../functions.php:276
 msgid "Build stations"
 msgstr "Haltestellen bauen"
 
-#: ../functions.php:276
+#: ../functions.php:277
 msgid "Edit line/stations"
 msgstr "Strecke/Haltestellen bearbeiten"
 
-#: ../functions.php:277
+#: ../functions.php:278
 msgid "Select line/stations"
 msgstr "Strecke/Haltestelle auswählen"
 
-#: ../functions.php:278
+#: ../functions.php:279
 msgid "Move selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle verschieben"
 
-#: ../functions.php:279
+#: ../functions.php:280
 msgid "Delete selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle löschen"
 
-#: ../functions.php:280
+#: ../functions.php:281
 msgid "Base layers"
 msgstr "Basis-Kartenebenen"
 
-#: ../functions.php:281
+#: ../functions.php:282
 msgid "Overlays"
 msgstr "Überlagerungen"
 
-#: ../functions.php:282
+#: ../functions.php:283
 msgid "Please select another tool on the map to submit your proposal."
 msgstr ""
 "Bitte wähle ein anderes Werkzeug oben rechts auf der Karte, um deinen "
 "Vorschlag absenden zu können."
 
-#: ../functions.php:283
+#: ../functions.php:284
 msgid "None"
 msgstr "Keine"
 
-#: ../functions.php:284
+#: ../functions.php:285
 msgid "Snapping"
 msgstr "Snapping"
 
-#: ../functions.php:285
+#: ../functions.php:286
 msgid ""
 "Circles aren't saved yet due to technical limitations and can only be used "
 "while editing to measure curve radii"
@@ -370,61 +380,69 @@ msgstr ""
 "Kreise können noch nicht gespeichert werden und können deshalb nur während "
 "des Bearbeitungsvorgangs zum Messen von Kurvenradien eingesetzt werden"
 
-#: ../functions.php:286
+#: ../functions.php:287
 msgid "Confirm that you want to leave? All unsaved data will be lost!"
 msgstr ""
 "Willst du die Seite wirklich verlassen? Nicht gespeicherte Daten werden "
 "gelöscht!"
 
-#: ../functions.php:287
+#: ../functions.php:288
 msgid "Add point"
 msgstr "Station hinzufügen"
 
-#: ../functions.php:288
+#: ../functions.php:289
 msgid "Add line"
 msgstr "Strecke hinzufügen"
 
-#: ../functions.php:289
+#: ../functions.php:290
 msgid "Add polygon"
 msgstr "Fläche hinzufügen"
 
-#: ../functions.php:290
+#: ../functions.php:291
 msgid "Add circle"
 msgstr "Kreis hinzufügen"
 
-#: ../functions.php:291
+#: ../functions.php:292
 msgid "Edit features"
 msgstr "Objekte bearbeiten"
 
-#: ../functions.php:292
+#: ../functions.php:293
 msgid "Select features"
 msgstr "Objekte auswählen"
 
-#: ../functions.php:293
+#: ../functions.php:294
 msgid "Delete selected features"
 msgstr "Ausgewählte Objekte löschen"
 
-#: ../functions.php:294
+#: ../functions.php:295
 msgid "Navigate map"
 msgstr "Navigation"
 
-#: ../functions.php:295
+#: ../functions.php:296
+msgid "Enable snapping"
+msgstr "Snapping einschalten"
+
+#: ../functions.php:297
+msgid "Disable snapping"
+msgstr "Snapping ausschalten"
+
+#: ../functions.php:298
 msgid "Length: "
 msgstr "Länge: "
 
-#: ../functions.php:296
+#: ../functions.php:299
 msgid "Radius: "
 msgstr "Radius: "
 
-#: ../functions.php:297
+#: ../functions.php:300
 msgid "Area: "
 msgstr "Fläche: "
 
-#: ../functions.php:298
+#: ../functions.php:301
 msgid "."
 msgstr ","
 
-#: ../functions.php:335
+#: ../functions.php:338
 #, php-format
 msgid ""
 "<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> by %2$s</span>"
@@ -432,77 +450,77 @@ msgstr ""
 "<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> von %2$s</"
 "span>"
 
-#: ../functions.php:462
+#: ../functions.php:465
 msgctxt "taxonomy general name"
 msgid "Implementation Horizon"
 msgstr "Realisierungshorizont"
 
-#: ../functions.php:463
+#: ../functions.php:466
 msgctxt "taxonomy singular name"
 msgid "Implementation Horizon"
 msgstr "Realisierungshorizont"
 
-#: ../functions.php:464 ../functions.php:492
+#: ../functions.php:467 ../functions.php:495
 msgid "Search items"
 msgstr "Elemente durchsuchen"
 
-#: ../functions.php:465 ../functions.php:493
+#: ../functions.php:468 ../functions.php:496
 msgid "All items"
 msgstr "Alle Elemente"
 
-#: ../functions.php:466 ../functions.php:494
+#: ../functions.php:469 ../functions.php:497
 msgid "Parent item"
 msgstr "Übergeordnetes Element"
 
-#: ../functions.php:467 ../functions.php:495
+#: ../functions.php:470 ../functions.php:498
 msgid "Parent item:"
 msgstr "Übergeordnetes Element:"
 
-#: ../functions.php:468
+#: ../functions.php:471
 msgid "Edit Implementation Horizon"
 msgstr "Realisierungshorizont bearbeiten"
 
-#: ../functions.php:469
+#: ../functions.php:472
 msgid "Update Implementation Horizon"
 msgstr "Realisierungshorizont aktualisieren"
 
-#: ../functions.php:470
+#: ../functions.php:473
 msgid "Add New Implementation Horizon"
 msgstr "Realisierungshorizont hinzufügen"
 
-#: ../functions.php:471
+#: ../functions.php:474
 msgid "New Implementation Horizon Name"
 msgstr "Neuer Realisierungshorizont"
 
-#: ../functions.php:472
+#: ../functions.php:475
 msgid "Implementation Horizons"
 msgstr "Realisierungshorizonte"
 
-#: ../functions.php:490 ../functions.php:491
+#: ../functions.php:493 ../functions.php:494
 msgid "Sorting Phase Status"
 msgstr "Sortierphasenstatus"
 
-#: ../functions.php:496
+#: ../functions.php:499
 msgid "Edit Sorting Phase Status"
 msgstr "Sortierphasenstatus bearbeiten"
 
-#: ../functions.php:497
+#: ../functions.php:500
 msgid "Update Sorting Phase Status"
 msgstr "Sortierphasenstatus aktualisieren"
 
-#: ../functions.php:498
+#: ../functions.php:501
 msgid "Add New Sorting Phase Status"
 msgstr "Sortierphasenstatus hinzufügen"
 
-#: ../functions.php:499
+#: ../functions.php:502
 msgid "New Sorting Phase Status"
 msgstr "Neuer Sortierphasenstatus"
 
-#: ../functions.php:500
+#: ../functions.php:503
 msgid "Sorting Phase Statuses"
 msgstr "Sortierphasenstatus"
 
-#: ../functions.php:510
+#: ../functions.php:513
 msgid "Not Submitted"
 msgstr "Nicht eingereicht"
 

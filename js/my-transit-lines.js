@@ -206,11 +206,6 @@ class OptionsControl extends ol.control.Control {
 	}
 }
 
-const attributionLayer = new ol.layer.Layer({
-	source: new ol.source.Source({attributions: objectL10n.attributionIcons}),
-	render: function () { return null; }
-});
-
 const backgroundTileLayer = new ol.layer.Tile({
 	className: 'background-tilelayer',
 	source: OSM_SOURCE,
@@ -242,7 +237,7 @@ const attributionControl = new ol.control.Attribution({
 
 const map = new ol.Map({
 	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), attributionControl, optionsControl],
-	layers: [attributionLayer, backgroundTileLayer, overlayTileLayer, vectorLayer],
+	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
 	target: MAP_ID,
 	view: view,
 });

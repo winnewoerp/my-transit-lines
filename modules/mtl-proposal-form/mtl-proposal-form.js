@@ -27,6 +27,7 @@ class InteractionControl extends ol.control.Control {
 		this.deleteButton = this.createButton('Delete', themeUrl + '/images/deleteFeatures.png');
 		this.deleteButton.classList.add('unselectable');
 		this.navigateButton = this.createButton('Navigate', themeUrl + '/images/navigation.png');
+		this.snappingButton = this.createButton('RemoveSnapping', themeUrl + '/images/removeSnapping.png');
 
 		element.appendChild(this.pointButton);
 		element.appendChild(this.lineStringButton);
@@ -36,6 +37,7 @@ class InteractionControl extends ol.control.Control {
 		element.appendChild(this.selectButton);
 		element.appendChild(this.deleteButton);
 		element.appendChild(this.navigateButton);
+		element.appendChild(this.snappingButton);
 	}
 
 	createButton(value, path) {
@@ -54,23 +56,43 @@ class InteractionControl extends ol.control.Control {
 	handleClick(event) {
 		var target = event.target;
 
-		if (target != this.deleteButton) {
-			for (const node of target.parentElement.childNodes) {
-				node.classList.remove('selected');
-			}
-
-			$('.mtl-tool-hint').css('display','none');
-			$('.mtl-tool-hint.' + target.value).css('display','inline');
-
-			target.classList.add('selected');
-		} else {
+		if (target == this.deleteButton) {
 			deleteSelected();
 			return;
 		}
 
+		if (target == this.snappingButton) {
+			toggleSnapping();
+
+			if (snapping) {
+				this.snappingButton.style.backgroundImage = 'url(' + themeUrl + '/images/removeSnapping.png)';
+				this.snappingButton.title = objectL10n['RemoveSnapping'];
+			} else {
+				this.snappingButton.style.backgroundImage = 'url(' + themeUrl + '/images/addSnapping.png)';
+				this.snappingButton.title = objectL10n['AddSnapping'];
+			}
+
+			return;
+		}
+
+		for (const node of target.parentElement.childNodes) {
+			node.classList.remove('selected');
+		}
+
+		$('.mtl-tool-hint').css('display','none');
+		$('.mtl-tool-hint.' + target.value).css('display','inline');
+
+		target.classList.add('selected');
+
 		setInteraction(target.value);
 	}
 }
+
+const attributionLayer = new ol.layer.Layer({
+	source: new ol.source.Source({attributions: objectL10n.attributionIcons}),
+	render: function () { return null; }
+});
+map.addLayer(attributionLayer);
 
 // global so we can remove them later
 let drawInteraction;

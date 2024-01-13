@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-01-03 16:11+0100\n"
-"PO-Revision-Date: 2024-01-03 16:11+0100\n"
+"POT-Creation-Date: 2024-01-13 20:38+0100\n"
+"PO-Revision-Date: 2024-01-13 20:38+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -1074,51 +1074,59 @@ msgid "Set new name"
 msgstr "Neuen Namen setzen"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:143
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:106
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:111
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:296
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:59
 msgid "colored map"
 msgstr "farbige Karte"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:143
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:106
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:111
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:296
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:59
 msgid "brightened map"
 msgstr "aufgehellte Karte"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:144
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:107
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:112
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:297
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:60
 msgid "Fit proposition to map"
 msgstr "Vorschlag in die Karte einpassen"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:145
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:109
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:114
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:299
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:62
 msgid "Show labels"
 msgstr "Haltestellennamen anzeigen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:102
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:90
+msgid "By"
+msgstr "Von"
+
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:91
+msgid "on"
+msgstr "am"
+
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:107
 #: ../modules/mtl-tile-list/mtl-tile-list.php:58
 msgid "Loading new set of proposals..."
 msgstr "Neue Vorschlagsauswahl wird geladen..."
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:108
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:113
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:298
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:61
 msgid "Fullscreen view"
 msgstr "Vollbildansicht"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:108
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:113
 #: ../modules/mtl-proposal-form/mtl-proposal-form.php:298
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:61
 msgid "Close fullscreen view"
 msgstr "Vollbildansicht schließen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:115
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:120
 msgid "Proposal list page"
 msgstr "Vorschlagsliste"
 

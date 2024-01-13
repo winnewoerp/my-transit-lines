@@ -69,7 +69,10 @@ function submit_new_filter() {
 }
 
 const container = document.getElementById('popup');
-const content = document.getElementById('popup-content');
+const contentLink = document.getElementById('popup-content-link');
+const contentTitle = document.getElementById('popup-content-title');
+const contentAuthor = document.getElementById('popup-content-author');
+const contentDate = document.getElementById('popup-content-date');
 const closer = document.getElementById('popup-closer');
 
 const overlay = new ol.Overlay({
@@ -93,7 +96,12 @@ selectInteraction.on('select', function (evt) {
 
 	const coordinate = evt.mapBrowserEvent.coordinate;
 
-  	content.innerHTML = 'abcd'; // TODO show title, author, date and link
+	const proposalData = vectorProposalData[evt.selected[0].get('proposal_data_index')];
+
+	contentLink.href = proposalData.link;
+	contentTitle.textContent = proposalData.title;
+	contentAuthor.textContent = proposalData.author;
+	contentDate.textContent = proposalData.date;
 
  	overlay.setPosition(coordinate);
 });

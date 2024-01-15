@@ -75,24 +75,22 @@ function mtl_proposal_form_output( $atts ){
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
-			if(!isset($_POST['submit-save-only'])) {
-				if (!is_user_logged_in()) {
-					if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
-					if (!$_POST['authemail']) $err['authemail']=true;
-					if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
-				}
-				if ($postType == 'mtlproposal') {
-					if(!isset($_POST['cat'])) $err['cat']=true;
-				}
-				
-				if (strlen(trim($_POST['description']))<=2) $err['description']=true;
-				if (!is_user_logged_in()) {
-					if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
-					if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
-				}
-				if($err) $_POST['errorcheck'] = true;
-				$status = 'publish';
+			if (!is_user_logged_in()) {
+				if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
+				if (!$_POST['authemail']) $err['authemail']=true;
+				if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
 			}
+			if ($postType == 'mtlproposal') {
+				if(!isset($_POST['cat'])) $err['cat']=true;
+			}
+			
+			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
+			if (!is_user_logged_in()) {
+				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
+				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
+			}
+			if($err) $_POST['errorcheck'] = true;
+			$status = 'publish';
 			
 			if(!$err) {
 				
@@ -164,7 +162,7 @@ function mtl_proposal_form_output( $atts ){
 				$author_email = $current_user->user_email;
 				if(!$author_email) $author_email = get_post_meta($current_post_id,'author-email',true);
 				
-				//  mail data
+				// mail data
 				$to = get_settings('admin_email');
 				$headers = 'From: '.get_settings('blogname').' <noreply@'.mtl_maildomain().'>' . "\r\n";
 				$subject = '['.get_settings('blogname').'] '.$mtl_string['mail-subject'][$postType][$editType];

@@ -142,6 +142,10 @@ function my_transit_lines_scripts() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
+
+	wp_enqueue_script( 'mtl-util', get_template_directory_uri() . '/js/util.js', array(), wp_get_theme()->version);
+
+	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array(), wp_get_theme()->version, true);
 }
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 

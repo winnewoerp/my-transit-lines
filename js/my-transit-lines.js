@@ -624,11 +624,6 @@ function toggleMapColors() {
 	else $('#mtl-map').addClass('grayscale-map');
 }
 
-function setTitle(newTitle) {
-	$('title').html(newTitle);
-	$('h1.entry-title').html(newTitle);
-}
-
 /*
 * Decodes string to include , " '
 * 

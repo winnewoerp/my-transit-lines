@@ -145,7 +145,8 @@ function my_transit_lines_scripts() {
 
 	wp_enqueue_script( 'mtl-util', get_template_directory_uri() . '/js/util.js', array(), wp_get_theme()->version);
 
-	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array(), wp_get_theme()->version, true);
+	wp_register_script( 'openlayers', get_template_directory_uri() . '/openlayers/dist/ol.js', array(), wp_get_theme()->version, true);
+	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers'), wp_get_theme()->version, true);
 }
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 

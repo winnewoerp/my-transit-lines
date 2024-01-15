@@ -2,7 +2,9 @@
 (C) by Jan Garloff and Johannes Bouchain - stadtkreation.de
 */
 
-// TODO: cache busting using version from wp_enqueue_script?
+// TODO remove these by further refactoring
+var editMode = editMode || false;
+var multipleMode = multipleMode || false;
 
 const MIN_ZOOM = 0;
 const MAX_ZOOM = 19;
@@ -20,7 +22,7 @@ const ZOOM_ANIMATION_DURATION = 100;
 const ZOOM_PADDING = [50, 50, 50, 50];
 const MAP_ID = 'mtl-map';
 const GEO_JSON_FORMAT = new ol.format.GeoJSON({
-	featureClass: (editMode || false) ? ol.Feature : ol.render.RenderFeature,
+	featureClass: editMode ? ol.Feature : ol.render.RenderFeature,
 });
 const WKT_FORMAT = new ol.format.WKT({
 	splitCollection: true,
@@ -88,8 +90,6 @@ const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEE
 var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;
 var standardZoom = standardZoom || 2;
-var editMode = editMode || false;
-var multipleMode = multipleMode || false;
 
 var showLabels = true;
 var lowOpacity = true;

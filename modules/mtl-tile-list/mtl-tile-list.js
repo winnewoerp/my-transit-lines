@@ -92,6 +92,8 @@ function createThumbMap(mapNumber) {
 	if(!countLoads && currentHash.includes('#!')) {
 		$('.mtl-post-tile').css('display','none');
 	} else {
+		const currentCat = catList[mapNumber];
+
 		const cat_color = transportModeStyleData[currentCat][0];
 
 		const backgroundTileLayer = new ol.layer.Tile({
@@ -133,10 +135,14 @@ function createThumbMap(mapNumber) {
 			view: view,
 		});
 
-		importToMapWKT(vectorData[0], [], currentCat, 0, vectorSource);
+		importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
 
 		zoomToFeatures(true, false, vectorSource, view);
 		
 		$('.olLayerGrid').css('opacity','.2');
 	}	
+}
+
+for (var key of Object.keys(catList)) {
+	createThumbMap(key);
 }

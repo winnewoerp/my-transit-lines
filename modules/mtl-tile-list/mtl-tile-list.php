@@ -11,14 +11,11 @@
 /**
  * create the thumb maps
  */
-global $count_thumblist_maps;
-$count_thumblist_maps = 0;
 function mtl_thumblist_map() {
 	// get the mtl options
 	$mtl_options2 = get_option('mtl-option-name2');
 	global $post;
 	$output = '<div id="thumblist-map'.$post->ID.'" class="mtl-thumblist-map'.($mtl_options2['mtl-current-project-phase']=='rate' ? ' rating' : '').'"></div>';
-	$output .= '<script type="text/javascript"> createThumbMap('.$post->ID.'); </script>';
 	return $output;
 }
 
@@ -49,10 +46,8 @@ function mtl_tile_list_output($atts) {
 	$output .= mtl_localize_script(true);
 	
 	// load the necessary scripts and set some JS variables
-	if(!$hidethumbs) $output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>';
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js"></script>';
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
+	wp_enqueue_script('mtl-tile-list', get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js', array('my-transit-lines'), wp_get_theme()->version);
 	if(!$hidethumbs) $output .= '<script type="text/javascript"> var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = "'.$mtl_options['mtl-standard-zoom'].'"; </script>'."\r\n";
 	$output .= '<script type="text/javascript"> ';
 	$output .= ' var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";';
@@ -66,10 +61,14 @@ function mtl_tile_list_output($atts) {
 		$output .= '};';
 	}
 	$output .= '</script>'."\r\n";
+	$output .= '<script type="text/javascript"> var pluginsUrl = "'. plugins_url('', __FILE__) .'"; </script>'."\r\n";
 	
 	// output the add post tile (first tile of the list, shown in most cases)
 	if($type == 'mtlproposal' && $mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
 	
+	$catList = '<script type="text/javascript"> var catList = {';
+	$vectorDataList = '<script type="text/javascript"> var vectorDataList = {';
+
 	// loop through the tiles
 	while($the_query->have_posts()) : $the_query->the_post(); global $post;
 	
@@ -83,8 +82,9 @@ function mtl_tile_list_output($atts) {
 		$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';
 		
 		if(!$hidethumbs) {
+			$catList .= '"'.$post->ID.'": '.$catid.','."\r\n";
 			// Removing line breaks that can be caused by WordPress import/export
-			$output .= '<script type="text/javascript"> var currentCat = '.$catid.'; var pluginsUrl = "'. plugins_url('', __FILE__) .'"; var vectorData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorCategoriesData = [undefined]; var editMode = false; </script>'."\r\n";
+			$vectorDataList .= '"'.$post->ID.'": "'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'",'."\r\n";
 			$output .= mtl_thumblist_map();
 		}
 		$output .= mtl_load_template_part('content', get_post_format());
@@ -96,6 +96,11 @@ function mtl_tile_list_output($atts) {
 	}
 	endwhile;
 	wp_reset_postdata();
+
+	$catList .= '}; </script>'."\r\n";
+	$vectorDataList .= '}; </script>'."\r\n";
+
+	$output .= $catList.$vectorDataList;
 
 	$output .= '<div class="clear"></div></div>';
 	

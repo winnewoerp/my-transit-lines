@@ -52,6 +52,12 @@ button.interaction-control.unselectable {
 	opacity: 0.5;
 }
 
+div.ol-rotate {
+	left: 2.5em;
+	right: auto;
+	top: 0.5em;
+}
+
 /* post form */
 
 #mtl-post-form {

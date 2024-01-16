@@ -239,7 +239,7 @@ const attributionControl = new ol.control.Attribution({
 });
 
 const map = new ol.Map({
-	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), attributionControl, optionsControl],
+	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), new ol.control.Rotate(), attributionControl, optionsControl],
 	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
 	target: MAP_ID,
 	view: view,

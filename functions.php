@@ -304,6 +304,7 @@ function mtl_localize_script($getVar = false) {
 		'radius'=>__('Radius: ', 'my-transit-lines'),
 		'area'=>__('Area: ', 'my-transit-lines'),
 		'decimalSeparator'=>__('.', 'my-transit-lines'),
+		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

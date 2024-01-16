@@ -145,12 +145,16 @@ class OptionsControl extends ol.control.Control {
 	}
 
 	createOverlaySelector() {
-		let none = this.createLayerOption({ title: objectL10n.none, id: 'none' }, 'overlay', true);
-
 		let overlaySelector = document.createElement('div');
 		overlaySelector.className = 'layer-selector alignleft';
 		overlaySelector.id = 'background-layer-selector';
 		overlaySelector.textContent = objectL10n.overlaysTitle;
+
+		this.showVectorLayer = true;
+		let vectorLayerToggle = this.createVectorLayerOption();
+		overlaySelector.appendChild(vectorLayerToggle);
+
+		let none = this.createLayerOption({ title: objectL10n.none, id: 'none' }, 'overlay', true);
 		overlaySelector.appendChild(none);
 
 		for (var source of OVERLAY_SOURCES) {
@@ -177,6 +181,22 @@ class OptionsControl extends ol.control.Control {
 		return label;
 	}
 
+	createVectorLayerOption() {
+		let selector = document.createElement('input');
+		selector.type = 'checkbox';
+		selector.checked = true;
+		selector.id = 'vector-layer-toggle-selector';
+		selector.addEventListener('change', this.handleVectorLayerToggle.bind(this));
+
+		let label = document.createElement('label');
+		label.id = 'vector-layer-toggle';
+		label.textContent = objectL10n.vectorLayerToggle + ' ';
+		label.className = 'alignright layer-control';
+		label.appendChild(selector);
+
+		return label;
+	}
+
 	handleMenuToggle() {
 		this.menuOpen = !this.menuOpen;
 
@@ -185,6 +205,12 @@ class OptionsControl extends ol.control.Control {
 		} else {
 			this.innerDiv.classList.add('hidden');
 		}
+	}
+
+	handleVectorLayerToggle() {
+		this.showVectorLayer = !this.showVectorLayer;
+
+		vectorLayer.setVisible(this.showVectorLayer);
 	}
 
 	handleBackgroundSelector(event) {

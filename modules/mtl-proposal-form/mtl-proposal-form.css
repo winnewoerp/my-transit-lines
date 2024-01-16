@@ -2,6 +2,56 @@
 
 /* created by Johannes Bouchain, 2015-04-11 */
 
+/* map controls */
+
+div.layer-control.ol-control {
+	top: .5em;
+	right: .5em;
+	background-color: #AAAAAADD;
+}
+
+div.layer-control.hidden  {
+	display: none;
+}
+
+div.layer-selector {
+	color: black;
+	margin: 5px;
+}
+
+button.layer-control {
+	margin-right: 0 !important;
+	margin-left: auto !important;
+}
+
+label.layer-control {
+	margin: 5px;
+	color:#666666;
+	display:block;
+}
+
+div.interaction-control {
+	top: 65px;
+	left: .5em;
+}
+.ol-touch .interaction-control {
+	top: 80px;
+}
+
+button.interaction-control {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: white;
+}
+
+button.interaction-control.selected {
+	background-color: gray;
+}
+
+button.interaction-control.unselectable {
+	opacity: 0.5;
+}
+
 /* post form */
 
 #mtl-post-form {
@@ -11,6 +61,9 @@
 #mtl-post-form label {
 	color:#666666;
 	display:block;
+}
+
+#mtl-post-form label:not(.alignright) {
 	text-align:left;
 }
 
@@ -165,17 +218,17 @@ div.success-message-block {
 	background:white;
 }
 
-#mtl-map .olTileImage:not([src*="openrailwaymap.org"]) {
+#mtl-map .background-tilelayer {
 	opacity:.4 !important;
-	filter:grayscale();
+	filter:none;
 }
 
-#mtl-map.full-opacity .olTileImage {
+#mtl-map.full-opacity .background-tilelayer {
 	opacity:1 !important;
 }
 
-#mtl-map.colored-map .olTileImage {
-	filter:none;
+#mtl-map.grayscale-map .background-tilelayer {
+	filter:grayscale();
 }
 
 #mtl-box #mtl-map-box.fullscreen #mtl-map {

@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2017-09-16 */
 
-/* ### STILL TO DO ###
- * any suggestions?
- */
- 
 function download_GeoJSON($content) {
 	global $post;
 
@@ -39,9 +35,9 @@ function get_download_button($postId) {
 		var website_for_geojson = "'.get_bloginfo('url').'";
 		var category_for_geojson = "'.$category[0]->name.'";
 		var license_link_for_geojson = "https://creativecommons.org/licenses/by-nc-sa/3.0/de/";
-		</script>
-		<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-download-geojson/mtl-download-geojson.js"></script>
-		<p><a href="" download="'.$postId.'-'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_title($postId)))).'.geojson" id="mtl-geojson-download">'.__('Download proposal map data as GeoJSON','my-transit-lines').'</a></p>';
+		</script>'.
+		'<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-download-geojson/mtl-download-geojson.js"></script>'.
+		'<p><a href="" download="'.$postId.'-'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_title($postId)))).'.geojson" id="mtl-geojson-download">'.__('Download proposal map data as GeoJSON','my-transit-lines').'</a></p>';
 	}
 
 	return $output;

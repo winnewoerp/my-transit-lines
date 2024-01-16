@@ -189,11 +189,11 @@ function get_posts_per_page() {
 /**
  * Returns the categories to query for
  *
- * @return int|string
+ * @return string
  */
 function get_query_cats() {
 	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != 'all')
-		return intval($_GET['mtl-catid']);
+		return $_GET['mtl-catid'];
 	
 	// get categories from mtl theme options
 	$query_cats = '';

@@ -139,10 +139,6 @@ header.forkMeOnGithub {
 	border: 0;
 }
 
-h2.site-description span {
-
-}
-
 h1.site-title,
 .menu-toggle,
 .screen-reader-text {
@@ -334,6 +330,10 @@ body.single #content .entry-content {
 #content ul,
 #content ol {
 	margin-left:20px;
+}
+
+#content .ol-attribution > ul {
+	margin-left: 5px;
 }
 
 #content div.nav-links {
@@ -567,4 +567,9 @@ button {
 .alignright,
 .rightalign {
 	text-align:right;
+}
+
+.alignleft,
+.leftalign {
+	text-align:left;
 }

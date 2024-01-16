@@ -126,9 +126,6 @@ require get_template_directory() . '/inc/jetpack.php';
 function my_transit_lines_scripts() {
 
 	wp_enqueue_style( 'my-transit-lines-style', get_stylesheet_uri(), array(), wp_get_theme()->version );
-
-	// get the style for the Openlayers Editor
-	wp_enqueue_style('ole-style',get_template_directory_uri() .'/ole/theme/geosilk/geosilk.css', array(), wp_get_theme()->version );
 	
 	// enable jQuery
 	wp_enqueue_script( 'jquery');
@@ -264,11 +261,17 @@ function mtl_localize_script($getVar = false) {
 		'attributionOpenrailwaymap'=>__('OpenRailwayMap Standard overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
 		'titleOpenrailwaymapMaxspeed'=>__('OpenRailwayMap (maxspeed)','my-transit-lines'),
 		'attributionOpenrailwaymapMaxspeed'=>__('OpenRailwayMap maxspeed overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
+		'titleOpenrailwaymapSignals'=>__('OpenRailwayMap (signals)','my-transit-lines'),
+		'attributionOpenrailwaymapSignals'=>__('OpenRailwayMap signals overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
+		'titleOpenrailwaymapElectrified'=>__('OpenRailwayMap (electrification)','my-transit-lines'),
+		'attributionOpenrailwaymapElectrified'=>__('OpenRailwayMap electrification overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
+		'titleOpenrailwaymapGauge'=>__('OpenRailwayMap (gauge)','my-transit-lines'),
+		'attributionOpenrailwaymapGauge'=>__('OpenRailwayMap gauge overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
 		'titleESRISatellite'=>__('Satellite images (ESRI)','my-transit-lines'),
 		'attributionESRISatellite'=>__('Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community','my-transit-lines'),	
 		'titleOSM'=>__('OpenStreetMap standard (Mapnik)','my-transit-lines'),
+		'attributionIcons'=>__('Silk Icons: <a href="http://creativecommons.org/licenses/by/2.5/">CC-BY 2.5</a> <a href="https://github.com/legacy-icons/famfamfam-silk/">Silk on Github</a>'),
 		'vectorLayerTitle'=>__('Line proposal (vector data)','my-transit-lines'),
-		'fitToMap'=>__('Fit proposition to map','my-transit-lines'),
 		'buildLine'=>__('Build line','my-transit-lines'),
 		'buildStations'=>__('Build stations','my-transit-lines'),
 		'editObjects'=>__('Edit line/stations','my-transit-lines'),
@@ -278,7 +281,24 @@ function mtl_localize_script($getVar = false) {
 		'baselayersTitle'=>__('Base layers','my-transit-lines'),
 		'overlaysTitle'=>__('Overlays','my-transit-lines'),
 		'changeToSubmit'=>__('Please select another tool on the map to submit your proposal.','my-transit-lines'),
-		'importDataBeingProcessed'=>__('Import data is being processed. This may take several minutes...','my-transit-lines')
+		'none'=>__('None','my-transit-lines'),
+		'snapping'=>__('Snapping','my-transit-lines'),
+		'circleNotSupported'=>__('Circles aren\'t saved yet due to technical limitations and can only be used while editing to measure curve radii','my-transit-lines'),
+		'confirmLeaveWebsite'=>__('Confirm that you want to leave? All unsaved data will be lost!', 'my-transit-lines'),
+		'Point'=>__('Add point', 'my-transit-lines'),
+		'LineString'=>__('Add line', 'my-transit-lines'),
+		'Polygon'=>__('Add polygon', 'my-transit-lines'),
+		'Circle'=>__('Add circle', 'my-transit-lines'),
+		'Modify'=>__('Edit features', 'my-transit-lines'),
+		'Select'=>__('Select features', 'my-transit-lines'),
+		'Delete'=>__('Delete selected features', 'my-transit-lines'),
+		'Navigate'=>__('Navigate map', 'my-transit-lines'),
+		'AddSnapping'=>__('Enable snapping', 'my-transit-lines'),
+		'RemoveSnapping'=>__('Disable snapping', 'my-transit-lines'),
+		'lengthString'=>__('Length: ', 'my-transit-lines'),
+		'radius'=>__('Radius: ', 'my-transit-lines'),
+		'area'=>__('Area: ', 'my-transit-lines'),
+		'decimalSeparator'=>__('.', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

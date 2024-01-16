@@ -98,7 +98,7 @@
 
 #content .mtl-posttiles-list {
 	margin:0 -10px;
-	width:calc(100% + 20px;);
+	width:calc(100% + 20px);
 	padding: 0;
 	position: relative;
 	display: flex;
@@ -115,13 +115,13 @@
 	margin: 10px;
 }
 
-#content .mtl-post-tile  {
+#content .mtl-post-tile {
 	position:relative;
 	background:#cccccc;
-	position:relative;
 	padding:10px;
 	width:190px;
 	height:250px;
+	display:block;
 }
 
 #content .mtl-post-tile.add-post {
@@ -129,7 +129,7 @@
 }
 
 #content .tile,
-#content .mtl-post-tile  * {
+#content .mtl-post-tile * {
 	color:white !important;
 }
 
@@ -212,6 +212,7 @@
 	width:190px;
 }
 
-/*#content .mtl-thumblist-map .olTileImage {
-	filter:grayscale();
-}*/
+#content div.mtl-post-tile .background-tilelayer {
+	opacity:.2 !important;
+	filter:none;
+}

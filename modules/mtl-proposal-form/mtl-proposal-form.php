@@ -8,11 +8,7 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/* ### STILL TO DO ###
- * niente (except maybe code enhancement)
- */
-
- /**
+/**
  * shortcode [mtl-proposal-form]
  */
 function mtl_proposal_form_output( $atts ){
@@ -76,8 +72,6 @@ function mtl_proposal_form_output( $atts ){
 		$edit_post = get_post($editId);
 		$old_status = $edit_post->post_status;
 		
-		
-		
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
@@ -123,13 +117,6 @@ function mtl_proposal_form_output( $atts ){
 				// insert/update the current post
 				if($editId) $current_post_id = wp_update_post($post);
 				else $current_post_id = wp_insert_post($post);
-							
-				/* uploading files currently not possible
-				if ($_FILES) {
-					foreach ($_FILES as $file => $array) {
-						$newupload = insert_attachment($file,$current_post_id);
-					}
-				} */
 				
 				// dear user, your IP please :)
 				if (isSet($_SERVER)) {
@@ -226,7 +213,7 @@ function mtl_proposal_form_output( $atts ){
 		}
 		
 		if((!$action || $err) && !$hideform) {
-			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data">'."\r\n";
+			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data" onsubmit=" warningMessage = \'\' ">'."\r\n";
 			$output .= '<p><label for="title"><strong>'.$mtl_string['form-title'][$postType].'</strong><br />'."\r\n";
 			
 			// input field title with value set to title from post variables, if existing
@@ -270,44 +257,54 @@ function mtl_proposal_form_output( $atts ){
 				}
 			}
 			$output .= '}; </script>'."\r\n";
-			$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/OpenLayers.js"></script>'."\r\n";
-			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/Editor/Lang/de.js"></script>'."\r\n";
-			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/ole/lib/loader.js"></script>'."\r\n";
-			$output .= mtl_localize_script(true);
-			$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
-			$output .= '<script type="text/javascript"> '.$output_later.' var mtlCenterLon = "'.$mtl_options['mtl-center-lon'].'"; var mtlCenterLat = "'.$mtl_options['mtl-center-lat'].'"; var mtlStandardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {
 				$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 		
+				$checkedAlready = false;
+
 				// getting all categories for selected as transit mode categories, set the given category option to checked
 				foreach($all_categories as $single_category) {
-					$checked='';
-					$post_cat = '';
-					if(isset($_POST['cat'])) $post_cat = $_POST['cat'];
-					if ($err && $post_cat != '' && $single_category->cat_ID == $post_cat ) $checked=' checked="checked"';
-					elseif($editId && $single_category->cat_ID == $current_category[0]->term_id && !$err) $checked=' checked="checked"';
-					if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) $output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="changeLinetype()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+					if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
+						$checked='';
+
+						if (($err && isset($_POST['cat']) && $single_category->cat_ID == $_POST['cat']) ||
+							(!$err && $editId && $single_category->cat_ID == $current_category[0]->term_id) ||
+							(str_contains($single_category->slug, 'other') && !$checkedAlready)) {
+								$checked = ' checked="checked"';
+								$checkedAlready = true;
+						}
+						
+						$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+					}
 				}
 				
 				$output .= '</span><span class="transport-mode-select-inactive">'.__('Please select another tool<br /> to change the transport mode','my-transit-lines').'</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";
+				$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 				$output .= '<div id="mtl-map-box">'."\r\n";
 				$output .= '<div id="mtl-map"></div>'."\r\n";
-				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" /></label><br /><span class="set-name">Neuen Namen setzen</span></div>'."\r\n";
+				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-line').'</span></div>'."\r\n";
 				$output .= '</div>';
-				$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="setMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="setMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
-				$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:mtlFullscreenMap()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
+				$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
+				$output .= mtl_localize_script(true);
+				$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
+				$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
+				$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
+				$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
+				$output .= '<p class="alignright" id="mtl-toggle-labels"><label style="text-align: right;"><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 				$output .= '<p class="alignleft"><strong>'.__('Tool usage hints','my-transit-lines').'</strong>: ';
-				$output .= '<span class="mtl-tool-hint none">'.__('Please use the tools at the top right corner of the map.<br /> Use the point symbol (left) to draw the stations and the line symbol (second from left) to draw the line.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint point">'.__('Click on the map to locate your stations.<br /> You can then add names to the station by using the select tool (fourth from left).','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint line">'.__('Click on the map to add the line.<br /> Every click adds a new point to the line. Doubleclick to finish drawing the line.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint edit">'.__('Click on the stations/line to edit them.<br /> You can move the stations or modify the line (move points, add points) with this tool.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint select">'.__('Use the selected tool to select stations or line.<br /> Select at station to add its name. With the delete tool (second from right) you can delete a selected object','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint move">'.__('Use the selected tool to move stations or line.<br /> Click and hold to move. When you don\'t click on a symbol, you can pan the map.','my-transit-lines').'</span>';
-				$output .= '<span class="mtl-tool-hint navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint none">'.__('Please use the tools at the top left corner of the map.<br /> Use the point symbol (top) to draw the stations and the line symbol (second from top) to draw the line.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Point">'.__('Click on the map to add stations.<br /> You can then add names to the station by using the select tool (third from bottom).','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint LineString">'.__('Click on the map to add a line.<br /> Every click adds a new point to the line. Doubleclick to finish drawing the line.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Polygon">'.__('Click on the map to add a polygon.<br /> Every click adds a new point to the polygon. Click the first point to finish drawing the polygon.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Circle">'.__('Click on the map to add a circle.<br /> <strong> Circles will not be saved! </strong> The first click sets the center, the second one sets the radius.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Modify">'.__('Click on features to edit them.<br /> You can move or modify the feature (move points, add points) with this tool.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
 				$output .= '</p>'."\r\n";
 				$output .= '</div>'."\r\n";
 				
@@ -317,15 +314,12 @@ function mtl_proposal_form_output( $atts ){
 				
 				
 				$output .= '<p><label for="mtl-import-geojson"><strong>'.__('Import GeoJSON file','my-transit-lines').'</strong><br>
-							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson">
+							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson" accept=".geojson,.json" multiple="true">
+							<script type="text/javascript"> document.querySelector("#mtl-import-geojson").addEventListener("change", function() { importJSONFiles(document.querySelector("#mtl-import-geojson")); }); </script>
 							</label>
 							</p>
 							<p style="text-align:left"><small>'.$import_hints.'</small></p>';
 
-				
-				// input field for district/municipality tags - TO BE FINISHED LATER
-				/* $output .= '<p><label for="mtl-tag-select">'.__('Select/enter all districts/municipalities of your proposal','my-transit-lines').'<br /><input type="text" id="mtl-tag-select" name="mtl-tags" value="" /></label></p>'; */
-				
 				// editor's hints
 				if(is_user_author() && $mtl_options2['mtl-current-project-phase']=='rate' && get_post_type($editId)=='mtlproposal') {
 					$output .= '<div class="editors-hints-box">';
@@ -405,7 +399,7 @@ function mtl_proposal_form_output( $atts ){
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
-		if($editId) $output .= '<script type="text/javascript"> manipulateTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
+		if($editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
 		
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		

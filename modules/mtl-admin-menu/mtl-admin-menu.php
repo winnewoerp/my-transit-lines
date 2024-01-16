@@ -8,10 +8,6 @@
  
 /* created by Johannes Bouchain, 2014-09-06 */
 
-/* ### STILL TO DO ###
- * 1) Bring the map editing function to the edit page of the proposal in the WP dashboard (currently, map editing can only be done via user front end editing)
- */
- 
 /**
  * include the class created for this module
  */
@@ -31,13 +27,14 @@ function mtl_admin_scripts( ) {
 	
 	// load main js file for the theme including l10n script
 	if(!$post->ID) {
+		wp_enqueue_style('ol-style', get_template_directory_uri().'/openlayers/ol.css', array());
 		mtl_localize_script();
-		wp_enqueue_script( 'OpenLayers', get_template_directory_uri().'/openlayers/OpenLayers.js', array());
-		wp_enqueue_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array());
+		wp_enqueue_script('OpenLayers', get_template_directory_uri().'/openlayers/dist/ol.js', array());
+		wp_enqueue_script('my-transit-lines-admin-script', get_template_directory_uri().'/modules/mtl-admin-menu/mtl-admin-menu.js', array(), wp_get_theme()->version, true);
 	}
 	
 	// enqueue theme style file to admin pages
-	wp_enqueue_style( 'my-transit-lines-style', get_template_directory_uri().'/modules/mtl-admin-menu/style.css',array() );
+	wp_enqueue_style('my-transit-lines-admin-style', get_template_directory_uri().'/modules/mtl-admin-menu/style.css', array());
 }
 add_action( 'admin_enqueue_scripts', 'mtl_admin_scripts' );
 

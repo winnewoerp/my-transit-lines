@@ -99,7 +99,7 @@ function mtl_proposal_form_output( $atts ){
 				else $this_posttype = $postType;
 				$post = array(
 					'ID' => $editId,
-					'post_title'	=> $_POST['title'],
+					'post_title'	=> esc_html($_POST['title']),
 					'post_content'	=> $_POST['description'],
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,

@@ -59,6 +59,7 @@ function mtl_multiple_proposal_output( $atts ) {
 	$vector_data = "";
 	$vector_labels_data = "";
 	$vector_categories_data = "";
+	$vector_proposal_data = "";
 
 	while ($the_query->have_posts()) : $the_query->the_post(); global $post;
 
@@ -72,6 +73,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		// Removing line breaks that can be caused by WordPress import/export
 		$vector_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-data', true)).'",';
 		$vector_labels_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)).'",';
+		$vector_proposal_data .= '{author: "'.get_the_author_meta( 'display_name' ).'", title: "'.get_the_title().'", date: "'.get_the_date( 'd.m.Y' ).'", link: "'.get_permalink().'"},'."\r\n";
 	}
 
 	endwhile;
@@ -82,17 +84,24 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<div id="mtl-map"></div>'."\r\n";
 	$output .= '</div>';
 
+	$output .= '<div id="popup" class="ol-popup">'."\r\n";
+	$output .= '<a href="#" id="popup-closer" class="ol-popup-closer"></a>'."\r\n";
+	$output .= '<div id="popup-content" class="ol-popup-content"><a id="popup-content-link" href=""><b id="popup-content-title"></b></a><br>';
+	$output .= '<span>'.__('By', 'my-transit-lines').' <span id="popup-content-author"></span> ';
+	$output .= __('on', 'my-transit-lines').' <span id="popup-content-date"></span></span></div>'."\r\n";
+	$output .= '</div>'."\r\n";
+
 	// output proposal data
-	$output .= '<script id="mtl-multiple-proposal-data-script" type="text/javascript"> var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";';
+	$output .= '<script id="mtl-multiple-proposal-data-script" type="text/javascript"> var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";';
 	$output .= 'var vectorData = ['.$vector_data.'];'."\r\n";
 	$output .= 'var vectorLabelsData = ['.$vector_labels_data.'];'."\r\n";
-	$output .= 'var vectorCategoriesData = ['.$vector_categories_data.']; </script>'."\r\n";
+	$output .= 'var vectorCategoriesData = ['.$vector_categories_data.'];'."\r\n";
+	$output .= 'var vectorProposalData = ['.$vector_proposal_data.']; </script>'."\r\n";
 
 	// output relevant scripts
 	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/openlayers/dist/ol.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.js"></script>'."\r\n";
+	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-multiple-proposal/mtl-multiple-proposal.css">'."\r\n";
+	wp_enqueue_script('mtl-multiple-proposal', get_template_directory_uri() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.js', array('my-transit-lines'), wp_get_theme()->version, true);
 	$output .= '<script type="text/javascript"> var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";
 				var multiple_proposal_page_url = "'.get_permalink().'"; </script>'."\r\n";
 

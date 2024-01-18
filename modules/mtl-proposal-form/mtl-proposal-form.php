@@ -75,24 +75,22 @@ function mtl_proposal_form_output( $atts ){
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
-			if(!isset($_POST['submit-save-only'])) {
-				if (!is_user_logged_in()) {
-					if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
-					if (!$_POST['authemail']) $err['authemail']=true;
-					if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
-				}
-				if ($postType == 'mtlproposal') {
-					if(!isset($_POST['cat'])) $err['cat']=true;
-				}
-				
-				if (strlen(trim($_POST['description']))<=2) $err['description']=true;
-				if (!is_user_logged_in()) {
-					if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
-					if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
-				}
-				if($err) $_POST['errorcheck'] = true;
-				$status = 'publish';
+			if (!is_user_logged_in()) {
+				if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
+				if (!$_POST['authemail']) $err['authemail']=true;
+				if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
 			}
+			if ($postType == 'mtlproposal') {
+				if(!isset($_POST['cat'])) $err['cat']=true;
+			}
+			
+			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
+			if (!is_user_logged_in()) {
+				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
+				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
+			}
+			if($err) $_POST['errorcheck'] = true;
+			$status = 'publish';
 			
 			if(!$err) {
 				
@@ -101,7 +99,7 @@ function mtl_proposal_form_output( $atts ){
 				else $this_posttype = $postType;
 				$post = array(
 					'ID' => $editId,
-					'post_title'	=> $_POST['title'],
+					'post_title'	=> esc_html($_POST['title']),
 					'post_content'	=> $_POST['description'],
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
@@ -164,7 +162,7 @@ function mtl_proposal_form_output( $atts ){
 				$author_email = $current_user->user_email;
 				if(!$author_email) $author_email = get_post_meta($current_post_id,'author-email',true);
 				
-				//  mail data
+				// mail data
 				$to = get_settings('admin_email');
 				$headers = 'From: '.get_settings('blogname').' <noreply@'.mtl_maildomain().'>' . "\r\n";
 				$subject = '['.get_settings('blogname').'] '.$mtl_string['mail-subject'][$postType][$editType];
@@ -289,9 +287,8 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<div id="mtl-map"></div>'."\r\n";
 				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-line').'</span></div>'."\r\n";
 				$output .= '</div>';
-				$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
 				$output .= mtl_localize_script(true);
-				$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
+				wp_enqueue_script('mtl-proposal-form', get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.js', array('my-transit-lines'), wp_get_theme()->version, true);
 				$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
 				$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
 				$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";

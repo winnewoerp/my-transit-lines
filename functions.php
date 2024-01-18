@@ -142,6 +142,11 @@ function my_transit_lines_scripts() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
+
+	wp_enqueue_script( 'mtl-util', get_template_directory_uri() . '/js/util.js', array(), wp_get_theme()->version);
+
+	wp_register_script( 'openlayers', get_template_directory_uri() . '/openlayers/dist/ol.js', array(), wp_get_theme()->version, true);
+	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers'), wp_get_theme()->version, true);
 }
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 
@@ -299,6 +304,7 @@ function mtl_localize_script($getVar = false) {
 		'radius'=>__('Radius: ', 'my-transit-lines'),
 		'area'=>__('Area: ', 'my-transit-lines'),
 		'decimalSeparator'=>__('.', 'my-transit-lines'),
+		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	$countValues = 0;

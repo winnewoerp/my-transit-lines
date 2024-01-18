@@ -147,10 +147,9 @@ function mtl_post_class_meta_box($post) {
 	
 	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.css">'."\r\n";
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js"></script>'."\r\n";
 	$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
 	$output .= mtl_localize_script(true);
-	$output .= '<script type="text/javascript" src="'.get_template_directory_uri() . '/js/my-transit-lines.js"></script>'."\r\n";
+	wp_enqueue_script('my-transit-lines');
 	$output .= '<script type="text/javascript"> $(\'#post\').submit(function() { warningMessage = \'\'; }); </script>';
 	
 	// hidden input fields to save feature data

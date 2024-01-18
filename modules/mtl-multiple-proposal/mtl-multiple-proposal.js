@@ -67,3 +67,56 @@ function submit_new_filter() {
 	var newHash = newLink.replace(multiple_proposal_page_url,'');
 	window.location.hash  = '!'+newHash;
 }
+
+const container = document.getElementById('popup');
+const contentLink = document.getElementById('popup-content-link');
+const contentTitle = document.getElementById('popup-content-title');
+const contentAuthor = document.getElementById('popup-content-author');
+const contentDate = document.getElementById('popup-content-date');
+const closer = document.getElementById('popup-closer');
+
+const overlay = new ol.Overlay({
+	element: container,
+	autoPan: {
+		animation: {
+			duration: 250,
+		},
+	},
+});
+map.addOverlay(overlay);
+
+const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], style: styleFunction });
+map.addInteraction(selectInteraction);
+
+selectInteraction.on('select', function (evt) {
+	if (evt.selected.length < 1) {
+		closePopup();
+		return;
+	}
+
+	const coordinate = evt.mapBrowserEvent.coordinate;
+
+	const proposalData = vectorProposalData[evt.selected[0].get('proposal_data_index')];
+
+	contentLink.href = proposalData.link;
+	contentTitle.textContent = proposalData.title;
+	contentAuthor.textContent = proposalData.author;
+	contentDate.textContent = proposalData.date;
+
+ 	overlay.setPosition(coordinate);
+});
+
+/**
+ * Add a click handler to hide the popup.
+ * @return {boolean} Don't follow the href.
+ */
+closer.onclick = function () {
+	closePopup();
+	return false;
+};
+
+function closePopup() {
+	overlay.setPosition(undefined);
+	closer.blur();
+	selectInteraction.getFeatures().clear();
+}

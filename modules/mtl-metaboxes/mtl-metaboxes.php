@@ -149,12 +149,15 @@ function mtl_post_class_meta_box($post) {
 	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.css">'."\r\n";
 	$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; </script>'."\r\n";
 	$output .= mtl_localize_script(true);
-	wp_enqueue_script('my-transit-lines');
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/js/util.js?ver='.wp_get_theme()->version.'"></script>';
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js?ver='.wp_get_theme()->version.'"></script>';
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/js/my-transit-lines.js?ver='.wp_get_theme()->version.'"></script>';
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.js?ver='.wp_get_theme()->version.'"></script>';
 	$output .= '<script type="text/javascript"> $(\'#post\').submit(function() { warningMessage = \'\'; }); </script>';
 	
 	// hidden input fields to save feature data
 	$output .= '<input type="hidden" id="mtl-feature-data" value="'.$mtl_feature_data.'" name="mtl-feature-data" />'."\r\n";
-	$output .= '<input type="hidden" id="mtl-feature-labels-data" value="'.$mtl_feature_labels_data.'" name="mtl-feature-labels-data" />'."\r\n";
+	$output .= '<input type="hidden" id="mtl-feature-labels-data" value="'.htmlspecialchars($mtl_feature_labels_data).'" name="mtl-feature-labels-data" />'."\r\n";
 	
 	// hidden input field for station count
 	$mtl_count_stations =  get_post_meta($post->ID,'mtl-count-stations',true);

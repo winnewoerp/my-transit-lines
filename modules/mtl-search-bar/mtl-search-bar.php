@@ -249,7 +249,7 @@ function get_status() {
  * @return bool
  */
 function show_drafts() {
-	return isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id();
+	return isset($_GET['show-drafts']) && $_GET['show-drafts'] == 'true' && ((isset($_GET['mtl-userid']) && $_GET['mtl-userid'] == get_current_user_id()) || ( current_user_can( 'administrator' )));
 }
 
 /**

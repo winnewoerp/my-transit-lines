@@ -90,7 +90,10 @@ function mtl_proposal_form_output( $atts ){
 				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
 			}
 			if($err) $_POST['errorcheck'] = true;
-			$status = 'publish';
+
+			if(!isset($_POST['submit-save-only'])) {
+				$status = 'publish';
+			}
 			
 			if(!$err) {
 				
@@ -103,7 +106,7 @@ function mtl_proposal_form_output( $atts ){
 					'post_content'	=> $_POST['description'],
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
-					'post_type'	=> $this_posttype
+					'post_type'		=> $this_posttype
 				);
 				
 				if($old_status == 'draft') {

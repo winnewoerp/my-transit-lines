@@ -652,30 +652,34 @@ function toggleMapColors() {
 
 /*
 * Decodes string to include , " '
+* Doesn't change p_string and returns the result
 * 
 * "&#44;"  becomes ','
 * "&quot;" becomes '"'
 * "&apos;" becomes '''
 */
 function decodeSpecialChars(p_string) {
-	p_string = p_string.replace(/&#44;/g,',');
-	p_string = p_string.replace(/&quot;/g,'"');
-	p_string = p_string.replace(/&apos;/g,'\'');
-	return p_string;
+	let new_string = p_string;
+	new_string = new_string.replace(/&#44;/g,',');
+	new_string = new_string.replace(/&quot;/g,'"');
+	new_string = new_string.replace(/&apos;/g,'\'');
+	return new_string;
 }
 
 /*
 * Encodes string and removes , " '
+* Doesn't change p_string and returns the result
 * 
 * ',' becomes "&#44;"
 * '"' becomes "&quot;"
 * ''' becomes "&apos;"
 */
 function encodeSpecialChars(p_string) {
-	p_string = p_string.replace(/,/g,'&#44;');
-	p_string = p_string.replace(/"/g,'&quot;');
-	p_string = p_string.replace(/'/g,'&apos;');
-	return p_string;
+	let new_string = p_string;
+	new_string = new_string.replace(/,/g,'&#44;');
+	new_string = new_string.replace(/"/g,'&quot;');
+	new_string = new_string.replace(/'/g,'&apos;');
+	return new_string;
 }
 
 // check if string can be parsed as JSON

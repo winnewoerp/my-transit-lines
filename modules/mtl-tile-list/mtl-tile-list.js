@@ -42,6 +42,10 @@ function loadNewTiles(link) {
 
 		set_button_behaviour();
 		
+		for (var key of Object.keys(catList)) {
+			createThumbMap(key);
+		}
+		
 		// add rating
 		if($('.mtl-rating-section').length) mtl_rating_section_handler();
 		if($('.mtl-tile-rating').length) mtl_tile_rating_handler();

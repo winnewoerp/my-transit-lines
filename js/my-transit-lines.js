@@ -271,7 +271,7 @@ const map = new ol.Map({
 	view: view,
 });
 
-vectorLayer.on('sourceready', importAllWKT);
+window.onload = importAllWKT;
 
 $(document).ready(function(){
 	// Proposal contact form

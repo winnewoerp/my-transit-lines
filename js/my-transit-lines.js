@@ -271,7 +271,7 @@ const map = new ol.Map({
 	view: view,
 });
 
-window.onload = importAllWKT;
+window.addEventListener("load", importAllWKT);
 
 $(document).ready(function(){
 	// Proposal contact form

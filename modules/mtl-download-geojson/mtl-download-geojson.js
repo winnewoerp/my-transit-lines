@@ -12,8 +12,8 @@ function getGeoJSON() {
 	return JSON.stringify(featuresDataObject);
 }
 
-window.onload = function() {
-  document.getElementById('mtl-geojson-download').onclick = function() {
-	this.href = 'data:text/json;charset=utf-8,'+encodeURIComponent(getGeoJSON());
-  };
-};
+window.addEventListener("load", function() {
+	document.getElementById('mtl-geojson-download').onclick = function() {
+		this.href = 'data:text/json;charset=utf-8,'+encodeURIComponent(getGeoJSON());
+	};
+});

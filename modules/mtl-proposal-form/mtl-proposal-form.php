@@ -85,6 +85,7 @@ function mtl_proposal_form_output( $atts ){
 			}
 			
 			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
+			if (strlen(trim($_POST['mtl-tags']))<=2 && $mtl_options3['mtl-show-districts']) $err['mtl-tags']=true;
 			if (!is_user_logged_in()) {
 				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
 				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
@@ -96,7 +97,6 @@ function mtl_proposal_form_output( $atts ){
 			}
 			
 			if(!$err) {
-				
 				// Add the content of the form to $post as an array
 				if($editId) $this_posttype = get_post_type($editId);
 				else $this_posttype = $postType;
@@ -106,8 +106,12 @@ function mtl_proposal_form_output( $atts ){
 					'post_content'	=> $_POST['description'],
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
-					'post_type'		=> $this_posttype
+					'post_type'		=> $this_posttype,
 				);
+
+				if ($mtl_options3['mtl-show-districts']) {
+					$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(', ', $_POST['mtl-tags']));
+				}
 				
 				if($old_status == 'draft') {
 					$local_time  = current_datetime();
@@ -206,6 +210,7 @@ function mtl_proposal_form_output( $atts ){
 			if(isset($err['authemail_valid'])) $output .= '<li>'.__('Please insert a valid e-mail address', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['title'])) $output .= '<li>'.__('Please insert a title', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['description'])) $output .= '<li>'.__( 'Please insert a description', 'my-transit-lines' ).'</li>'."\r\n";
+			if(isset($err['mtl-tags'])) $output .= '<li>'.__( 'Please insert location tags', 'my-transit-lines').'</li>'."\r\n";
 			if(isset($err['dataprivacy'])) $output .= '<li>'.__( 'Please check that you read our data privacy conditions', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['captcha'])) $output .= '<li>'.__( 'You didn\'t enter the right captcha code', 'my-transit-lines' ).'</li>'."\r\n";
 			$output .= '</ul>'."\r\n";
@@ -353,6 +358,27 @@ function mtl_proposal_form_output( $atts ){
 			elseif($editId && !$err) $current_description = get_post($editId)->post_content;
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
 			$output .= mtl_load_wp_editor($current_description,'description',$settings);
+
+			if($mtl_options3['mtl-show-districts']) {
+				$tags_string = '';
+				foreach (get_tags() as $current_tag) {
+					$tags_string .= '"'.$current_tag->name.'", ';
+				}
+
+				$current_tags = '';
+				if($err && $_POST['mtl-tags']) $current_tags = $_POST['mtl-tags'];
+				elseif($editId && !$err) {
+					foreach(get_the_tags($editId) as $current_tag) {
+						$current_tags .= $current_tag->name.', ';
+					}
+				}
+
+				wp_enqueue_script('jquery-ui-autocomplete');
+				$output .= '<p><link rel="stylesheet" href="'.get_template_directory_uri().'/css/jquery-ui.css">';
+				$output .= '<script type="text/javascript"> const mtl_tags = ['.$tags_string.'];</script>';
+				$output .= '<label for="mtl-tag-input"><strong>'.__('Add location tags to your proposal', 'my-transit-lines').'</strong><label>';
+				$output .= '<input type="text" id="mtl-tag-input" name="mtl-tags" value="'.$current_tags.'"></input></p>';
+			}
 			
 			if (!is_user_logged_in()) {
 				$output .= '<h3>'.__( 'Your personal data', 'my-transit-lines' ).'</h3>'."\r\n";

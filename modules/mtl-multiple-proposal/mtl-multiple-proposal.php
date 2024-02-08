@@ -15,6 +15,7 @@ function mtl_multiple_proposal_output( $atts ) {
 	extract( shortcode_atts( array(
 		'type' => 'mtlproposal',
 		'statusid_query' => 0,
+		'proposal_ids' => '',
 	), $atts ) );
 
 	$output = '';
@@ -22,11 +23,7 @@ function mtl_multiple_proposal_output( $atts ) {
     // get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 
-	if (!$statusid_query) {
-		$the_query = get_query($type, 1);
-
-		$output .= mtl_search_bar_output($the_query);
-	} else {
+	if ($statusid_query) {
 		$the_query = new WP_Query(array(
 			'posts_per_page' => -1,
 			'post_type' => $type,
@@ -35,6 +32,16 @@ function mtl_multiple_proposal_output( $atts ) {
 				'terms' => $statusid_query,
 			)),
 		));
+	} else if ($proposal_ids) {
+		$the_query = new WP_Query(array(
+			'posts_per_page' => -1,
+			'post_type' => $type,
+			'post__in' => explode(',', $proposal_ids),
+		));
+	} else {
+		$the_query = get_query($type, 1);
+
+		$output .= mtl_search_bar_output($the_query);
 	}
 	
 	// load the text translations

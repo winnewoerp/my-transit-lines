@@ -2,6 +2,13 @@
 
 /* created by Johannes Bouchain, 2015-04-11 */
 
+/* Search bar */
+
+form#mtl-filter-form label {
+	padding-right: 0.5em;
+	padding-left: 0.25em;
+}
+
 /* filter line */
 
 #content #mtl-list-filter {

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-02-08 19:23+0100\n"
-"PO-Revision-Date: 2024-02-08 19:23+0100\n"
+"POT-Creation-Date: 2024-02-08 20:07+0100\n"
+"PO-Revision-Date: 2024-02-08 20:07+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -1560,51 +1560,55 @@ msgstr "Alle Verkehrsmittel"
 msgid "All users (incl. unregistered)"
 msgstr "Alle Benutzer (inkl. unregistrierte)"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:58
+#: ../modules/mtl-search-bar/mtl-search-bar.php:56
+msgid "Show drafts"
+msgstr "Entwürfe anzeigen"
+
+#: ../modules/mtl-search-bar/mtl-search-bar.php:64
 msgid "All regions"
 msgstr "Alle Gebiete"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:70
+#: ../modules/mtl-search-bar/mtl-search-bar.php:76
 msgid "Sorting Phase Status:"
 msgstr "Sortierphasenstatus:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:72
+#: ../modules/mtl-search-bar/mtl-search-bar.php:78
 msgid "All statuses"
 msgstr "Alle Status"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:82
+#: ../modules/mtl-search-bar/mtl-search-bar.php:88
 msgid "Sort:"
 msgstr "Sortieren:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:83
+#: ../modules/mtl-search-bar/mtl-search-bar.php:89
 msgid "Date"
 msgstr "Datum"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:84
+#: ../modules/mtl-search-bar/mtl-search-bar.php:90
 msgid "Number of comments"
 msgstr "Anzahl Kommentare"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:85
+#: ../modules/mtl-search-bar/mtl-search-bar.php:91
 msgid "Random"
 msgstr "Zufall"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:86
+#: ../modules/mtl-search-bar/mtl-search-bar.php:92
 msgid "Descendent"
 msgstr "Absteigend"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:86
+#: ../modules/mtl-search-bar/mtl-search-bar.php:92
 msgid "Ascendent"
 msgstr "Aufsteigend"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:92
+#: ../modules/mtl-search-bar/mtl-search-bar.php:98
 msgid "Amount:"
 msgstr "Anzahl:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:102
+#: ../modules/mtl-search-bar/mtl-search-bar.php:108
 msgid "Search:"
 msgstr "Suchen:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:104
+#: ../modules/mtl-search-bar/mtl-search-bar.php:110
 msgid "Filter/sort"
 msgstr "Filtern/sortieren"
 

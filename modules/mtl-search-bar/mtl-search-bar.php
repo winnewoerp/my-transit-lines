@@ -24,6 +24,7 @@ function mtl_search_bar_output($query = null) {
 
     // get the mtl options
 	$mtl_options = get_option('mtl-option-name');
+	$mtl_options3 = get_option('mtl-option-name3');
 
 	$mtl_all_catids = '';
 	foreach(get_categories() as $category) {
@@ -47,7 +48,23 @@ function mtl_search_bar_output($query = null) {
 	foreach(get_users('orderby=display_name') as $bloguser) {
 		$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID == get_userid() ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 	}
-	$output .= '</select></p>';
+	$output .= '</select>';
+		
+	// tag selector (administrative divisions) - only if checkbox set within theme options
+	if($mtl_options3['mtl-show-districts']) {
+		$tags = get_tags();
+		
+		$output .= '<select name="mtl-tag-ids">';
+		$output .= '<option value="all">'.__('All regions','my-transit-lines').' </option>';
+		foreach ( $tags as $current_tag ) {
+			$selected = '';
+			if(get_tag_in() != null && in_array($current_tag->term_id, get_tag_in())) $selected = ' selected="selected"';
+
+			$output .= "<option".$selected." value='{$current_tag->term_id}'>{$current_tag->name} </option>";
+		}
+		$output .= '</select>';
+	}
+	$output .= '</p>';
 
 	// Sorting phase status selector
 	$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';

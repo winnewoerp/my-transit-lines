@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-02-08 14:39+0100\n"
-"PO-Revision-Date: 2024-02-08 14:40+0100\n"
+"POT-Creation-Date: 2024-02-08 19:23+0100\n"
+"PO-Revision-Date: 2024-02-08 19:23+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -1548,59 +1548,63 @@ msgstr ""
 "Der Vorschlag konnte nicht gelöscht werden. Ist es ein Entwurf und bist du "
 "angemeldet und der Autor?"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:35
+#: ../modules/mtl-search-bar/mtl-search-bar.php:36
 msgid "Filter:"
 msgstr "Filtern:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:38
+#: ../modules/mtl-search-bar/mtl-search-bar.php:39
 msgid "All transit modes"
 msgstr "Alle Verkehrsmittel"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:46
+#: ../modules/mtl-search-bar/mtl-search-bar.php:47
 msgid "All users (incl. unregistered)"
 msgstr "Alle Benutzer (inkl. unregistrierte)"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:53
+#: ../modules/mtl-search-bar/mtl-search-bar.php:58
+msgid "All regions"
+msgstr "Alle Gebiete"
+
+#: ../modules/mtl-search-bar/mtl-search-bar.php:70
 msgid "Sorting Phase Status:"
 msgstr "Sortierphasenstatus:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:55
+#: ../modules/mtl-search-bar/mtl-search-bar.php:72
 msgid "All statuses"
 msgstr "Alle Status"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:65
+#: ../modules/mtl-search-bar/mtl-search-bar.php:82
 msgid "Sort:"
 msgstr "Sortieren:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:66
+#: ../modules/mtl-search-bar/mtl-search-bar.php:83
 msgid "Date"
 msgstr "Datum"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:67
+#: ../modules/mtl-search-bar/mtl-search-bar.php:84
 msgid "Number of comments"
 msgstr "Anzahl Kommentare"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:68
+#: ../modules/mtl-search-bar/mtl-search-bar.php:85
 msgid "Random"
 msgstr "Zufall"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:69
+#: ../modules/mtl-search-bar/mtl-search-bar.php:86
 msgid "Descendent"
 msgstr "Absteigend"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:69
+#: ../modules/mtl-search-bar/mtl-search-bar.php:86
 msgid "Ascendent"
 msgstr "Aufsteigend"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:75
+#: ../modules/mtl-search-bar/mtl-search-bar.php:92
 msgid "Amount:"
 msgstr "Anzahl:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:85
+#: ../modules/mtl-search-bar/mtl-search-bar.php:102
 msgid "Search:"
 msgstr "Suchen:"
 
-#: ../modules/mtl-search-bar/mtl-search-bar.php:87
+#: ../modules/mtl-search-bar/mtl-search-bar.php:104
 msgid "Filter/sort"
 msgstr "Filtern/sortieren"
 
@@ -2202,9 +2206,6 @@ msgstr "Suchergebnisse für: %s"
 #~ "verschieben.<br /> Klicke und halte die Maustaste gedrückt zum "
 #~ "Verschieben. Wenn du nicht auf ein Symbol klickst, kannst du den "
 #~ "Kartenausschnitt verschieben."
-
-#~ msgid "All regions"
-#~ msgstr "Alle Gebiete"
 
 #, fuzzy
 #~| msgid "Show rating details"

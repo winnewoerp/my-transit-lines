@@ -133,6 +133,7 @@ function get_query($type = 'mtlproposal', $per_page_multiple = 1) {
         'order' => get_order(),
         'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
         'tax_query' => get_taxonomy_status(),
+		'post__in' => get_post_in(),
     );
 
     if(!show_drafts()) {
@@ -313,6 +314,18 @@ function get_query_statusid() {
 		return intval($_GET['mtl-statusid']);
 	
 	return '';
+}
+
+/**
+ * Returns the list of ids to search in
+ *
+ * @return array|null
+ */
+function get_post_in() {
+	if(isset($_GET['mtl-post-ids']) && $_GET['mtl-post-ids'] != 'all')
+		return explode(",", $_GET['mtl-post-ids']);
+
+	return null;
 }
 
 ?>

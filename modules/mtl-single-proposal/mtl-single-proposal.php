@@ -70,7 +70,7 @@ function mtl_proposal_map($content) {
 		if($countStations) $output2 .= __('Number of stations','my-transit-lines').': '.$countStations.'<br />';
 		if($averageDistance) $output2 .= __('Average station distance','my-transit-lines').': '.$averageDistanceOutput.'<br /><small>'.__('Attention: average station distance calculation is currently only correct when there is one contiguous line with the first and the last station on the respective end of line.','my-transit-lines').'</small><br />';
 		$output2 .= '</p>'."\r\n";
-		if($mtl_options3['mtl-show-districts']) $output2 .= mtl_taglist(true);
+		if($mtl_options3['mtl-show-districts']) $output2 .= mtl_taglist();
 		
 		// check for reCAPTCHA keys
 		$use_recaptcha = false;
@@ -265,5 +265,28 @@ function mtl_proposal_map($content) {
 	return $content;
 }
 add_filter( 'the_content', 'mtl_proposal_map' );
+
+/**
+ * get the taglist for districts/municipalities
+ */
+function mtl_taglist() {
+	$output = '';
+	
+	$mtl_options = get_option('mtl-option-name');
+	$tags = get_the_tags();
+	if($tags) {
+		$output .= '<div class="post-tags">';
+		$output .= '<h3>'.__('All administrative subdivisons of this proposal:','my-transit-lines').'</h3>';
+		$output .= '<ul>';
+		foreach ( $tags as $current_tag ) {
+			$tag_link = add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page']));
+
+			$output .= "<li><a href='{$tag_link}' title='{$current_tag->name}'>{$current_tag->name}</a></li>"."\r\n";
+		}
+		$output .= '</ul>';
+		$output .= '</div>';
+	}
+	return $output;
+}
 
 ?>

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-01-16 22:21+0100\n"
-"PO-Revision-Date: 2024-01-16 22:21+0100\n"
+"POT-Creation-Date: 2024-02-08 14:39+0100\n"
+"PO-Revision-Date: 2024-02-08 14:40+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -1068,69 +1068,69 @@ msgid "Map data of this proposal"
 msgstr "Kartendaten für diesen Vorschlag"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:141
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:288
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:291
 msgid "Station name (optional)"
 msgstr "Name der Haltestelle (optional)"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:141
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:288
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:291
 msgid "Set new name"
 msgstr "Neuen Namen setzen"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:143
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:109
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:292
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:116
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:295
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:57
 msgid "colored map"
 msgstr "farbige Karte"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:143
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:109
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:292
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:116
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:295
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:57
 msgid "brightened map"
 msgstr "aufgehellte Karte"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:144
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:110
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:293
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:117
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:296
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:58
 msgid "Fit proposition to map"
 msgstr "Vorschlag in die Karte einpassen"
 
 #: ../modules/mtl-metaboxes/mtl-metaboxes.php:145
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:112
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:295
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:119
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:298
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:60
 msgid "Show labels"
 msgstr "Haltestellennamen anzeigen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:90
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:97
 msgid "By"
 msgstr "Von"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:91
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:98
 msgid "on"
 msgstr "am"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:105
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:112
 #: ../modules/mtl-tile-list/mtl-tile-list.php:53
 msgid "Loading new set of proposals..."
 msgstr "Neue Vorschlagsauswahl wird geladen..."
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:111
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:294
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:118
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:297
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:59
 msgid "Fullscreen view"
 msgstr "Vollbildansicht"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:111
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:294
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:118
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:297
 #: ../modules/mtl-single-proposal/mtl-single-proposal.php:59
 msgid "Close fullscreen view"
 msgstr "Vollbildansicht schließen"
 
-#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:118
+#: ../modules/mtl-multiple-proposal/mtl-multiple-proposal.php:125
 msgid "Proposal list page"
 msgstr "Vorschlagsliste"
 
@@ -1244,94 +1244,94 @@ msgstr "Vorschlag als Entwurf speichern"
 msgid "Add new proposal"
 msgstr "Neuen Vorschlag hinzufügen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:170
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:173
 #: ../modules/mtl-star-rating/mtl-star-rating.php:426
 msgid "Author name"
 msgstr "Name des Autors"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:171
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:174
 #: ../modules/mtl-star-rating/mtl-star-rating.php:427
 msgid "Author e-mail"
 msgstr "E-Mail-Adresse des Autors"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:172
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:175
 msgid "Title"
 msgstr "Titel"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:173
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:176
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:198
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:201
 msgid "Please verify the following errors:"
 msgstr "Bitte beachte die folgenden Fehlermeldungen:"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:200
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:203
 msgid "Please insert your name or nickname"
 msgstr "Bitte gib deinen Namen oder Spitznamen an"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:201
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:204
 msgid "Please select a category"
 msgstr "Bitte wähle eine Kategorie"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:202
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:205
 msgid "Please insert your e-mail address"
 msgstr "Bitte gib deine E-Mail-Adresse ein"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:203
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:206
 msgid "Please insert a valid e-mail address"
 msgstr "Bitte gib eine gültige E-Mail-Adresse ein"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:204
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:207
 msgid "Please insert a title"
 msgstr "Bitte gib einen Titel ein"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:205
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:208
 msgid "Please insert a description"
 msgstr "Bitte gib eine Beschreibung ein"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:206
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:209
 msgid "Please check that you read our data privacy conditions"
 msgstr ""
 "Bitte bestätige, dass du die Datenschutzbestimmungen gelesen und akzeptiert "
 "hast"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:207
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:210
 msgid "You didn't enter the right captcha code"
 msgstr "Du hast nicht den richtigen Spamschutz-Code eingegeben"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:209
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:212
 msgid "Please fill out/correct the data and press the send button again."
 msgstr ""
 "Bitte ergänze bzw. korrigiere die betreffenden Angaben und klicke erneut auf "
 "den Absenden-Button."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:262
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:265
 msgid "Please select a transportation mode"
 msgstr "Bitte wähle das Verkehrsmittel für deinen Vorschlag"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:282
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:285
 msgid "Please select another tool<br /> to change the transport mode"
 msgstr ""
 "Bitte wähle ein anderes Werkzeug,<br /> um das Verkehrsmittel zu wechseln"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:283
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:286
 msgid "Please draw the line and/or the stations into the map"
 msgstr ""
 "Bitte zeichne die Linie und die Haltestellen deines Vorschlags in die Karte "
 "ein"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:284
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:287
 msgid "Hints for the usage of the respective tool are shown below the map."
 msgstr ""
 "Hinweise zur Benutzung des jeweiligen Werkzeugs werden unter der Karte "
 "angezeigt."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:296
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:299
 msgid "Tool usage hints"
 msgstr "Hinweise zum Werkzeug"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:297
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:300
 msgid ""
 "Please use the tools at the top left corner of the map.<br /> Use the point "
 "symbol (top) to draw the stations and the line symbol (second from top) to "
@@ -1341,7 +1341,7 @@ msgstr ""
 "Punkt-Symbol (oben), um die Haltestellen zu zeichnen und das Liniensymbol "
 "(zweites von oben), um die Strecke zu zeichnen."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:298
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:301
 msgid ""
 "Click on the map to add stations.<br /> You can then add names to the "
 "station by using the select tool (third from bottom)."
@@ -1350,7 +1350,7 @@ msgstr ""
 "Namen der Stationen hinzufügen, indem du auf das Auswahlwerkzeug (drittes "
 "von unten) klickst."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:299
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:302
 msgid ""
 "Click on the map to add a line.<br /> Every click adds a new point to the "
 "line. Doubleclick to finish drawing the line."
@@ -1359,7 +1359,7 @@ msgstr ""
 "wird ein neuer Punkt zur Linie hinzugefügt. Mit Doppelklick wird das "
 "Zeichnen der Strecke beendet."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:300
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:303
 msgid ""
 "Click on the map to add a polygon.<br /> Every click adds a new point to the "
 "polygon. Click the first point to finish drawing the polygon."
@@ -1368,7 +1368,7 @@ msgstr ""
 "wird ein neuer Punkt zur Fläche hinzugefügt. Indem der erste Punkt erneut "
 "angeklickt wird, wird das Zeichnen der Fläche beendet."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:301
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:304
 msgid ""
 "Click on the map to add a circle.<br /> <strong> Circles will not be saved! "
 "</strong> The first click sets the center, the second one sets the radius."
@@ -1377,7 +1377,7 @@ msgstr ""
 "werden nicht gespeichert!</strong> Der erste Klick bestimmt den Mittelpunkt, "
 "der zweite den Radius."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:302
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:305
 msgid ""
 "Click on features to edit them.<br /> You can move or modify the feature "
 "(move points, add points) with this tool."
@@ -1386,7 +1386,7 @@ msgstr ""
 "kannst du die Objekte bewegen oder verändern (Punkte hinzufügen, Punkte "
 "bewegen)."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:303
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:306
 msgid ""
 "Use the tool to select features.<br /> Select a feature to add a name. With "
 "the delete tool (second from bottom) you can delete a selected feature."
@@ -1395,7 +1395,7 @@ msgstr ""
 "Station, um einen Namen hinzuzufügen. Mit dem Löschen-Werkzeug (zweites von "
 "unten) kannst du die gewählten Objekte löschen."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:304
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:307
 msgid ""
 "Use the selected tool to navigate the map.<br /> With this tool, no "
 "modification of the objects is possible."
@@ -1403,7 +1403,7 @@ msgstr ""
 "Benutze das gewählte Werkzeug, um die Karte zu verschieben.<br /> Mit diesem "
 "Werkzeug können keine Veränderungen an den Objekten durchgeführt werden."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:309
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:312
 msgid ""
 "Please note: Only point and linestring features will be imported. Labels "
 "will be set if included as name property for the respective feature. The "
@@ -1418,46 +1418,46 @@ msgstr ""
 "angehängt. Das Koordinatensystem der Importdatei muss WGS84/EPSG:4326 sein "
 "(Standard-Projektion von OpenStreetMap-Tools)."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:313
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:316
 msgid "Import GeoJSON file"
 msgstr "GeoJSON-Datei importieren"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:323
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:326
 msgid "Editor's hints for this proposal"
 msgstr "Redaktionelle Hinweise für diesen Vorschlag"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:325
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:328
 msgid "No editor's hints yet"
 msgstr "Bislang keine redaktionellen Himweise"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:355
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:358
 msgid "Your personal data"
 msgstr "Deine persönlichen daten"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:356
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:359
 msgid "Your name or nickname"
 msgstr "Dein Name oder Spitzname"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:358
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:361
 msgid "Your e-mail address"
 msgstr "Deine E-Mail-Adresse"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:363
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:366
 msgid "Please enter the captcha code (case-sensitive)"
 msgstr "Bitte gib den Spamschutz-Code ein (Groß- und Kleinschreibung beachten)"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:365
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:368
 #, php-format
 msgid "I have read and accepted the <a href=\"%s\">data privacy statement</a>:"
 msgstr ""
 "Ich habe die <a href=\"%s\">Datenschutzbestimmungen</a> gelesen und "
 "akzeptiere sie:"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:378
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:381
 msgid "Enable contact button for my finished proposals"
 msgstr "Kontaktmöglichkeit für fertiggestellte Vorschläge aktivieren"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:379
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:382
 msgid ""
 "This enables a contact button within your proposals linked to a contact form "
 "where interested people can contact you. On submit, an email with the form "
@@ -1473,7 +1473,7 @@ msgstr ""
 "der betreffenden Person nicht offengelegt bis du auf die E-Mail antwortest. "
 "Während der Erarbeitungsphase eines Vorschlags ist der Button nicht sichtbar."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:379
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:382
 msgid ""
 "Important: This global option is being set for all of your finished "
 "proposals, not only for this one."
@@ -1481,15 +1481,15 @@ msgstr ""
 "Wichtig: Diese globale Option wird für alle deine fertiggestellten "
 "Vorschläge gesetzt, nicht nur für diesen."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:387
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:390
 msgid "Delete this draft"
 msgstr "Diesen Entwurf löschen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:388
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:391
 msgid "Cancel update"
 msgstr "Aktualisierung abbrechen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:408
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:411
 #, php-format
 msgid ""
 "You must be logged in to add a new proposal. If you already have an account "
@@ -1503,14 +1503,14 @@ msgstr ""
 "anmelden</a>. Ansonsten <a href=\"%3$s\">erstelle dir hier dein Konto für "
 "\"%1$s\"</a>."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:409
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:412
 #, php-format
 msgid "You must <a href=\"%2$s\">login here</a> to edit your proposal."
 msgstr ""
 "Du musst dich <a href=\"%2$s\">hier anmelden</a>, um deinen Vorschlag zu "
 "bearbeiten."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:425
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:428
 msgid ""
 "You have reached your limit of drafts. Please publish or delete at least one "
 "of your drafts to start a new proposal. These are your current drafts:"
@@ -1519,7 +1519,7 @@ msgstr ""
 "lösche mindestens einen Entwurf, um einen neuen Vorschlag zu erstellen. Dies "
 "sind deine derzeitigen Entwürfe:"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:430
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:433
 #, php-format
 msgid ""
 "Are your sure you want to delete the draft of your proposal \"%s\"? There is "
@@ -1528,19 +1528,19 @@ msgstr ""
 "Bist du sicher, dass du den Entwurf deines Vorschlags \"%s\" löschen "
 "möchtest? Dies kann nicht rückgängig gemacht werden."
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:431
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:434
 msgid "Yes, definetily delete this draft"
 msgstr "Ja, ich möchte den Entwurf definitiv löschen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:432
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:435
 msgid "No, I do not want to delete the draft"
 msgstr "Nein, ich möchte den Entwurf nicht löschen"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:442
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:445
 msgid "Draft successfully deleted!"
 msgstr "Entwurf erfolgreich gelöscht!"
 
-#: ../modules/mtl-proposal-form/mtl-proposal-form.php:446
+#: ../modules/mtl-proposal-form/mtl-proposal-form.php:449
 msgid ""
 "Couldn't delete the proposal. Is it a draft and are you logged in and the "
 "author?"
@@ -1842,6 +1842,10 @@ msgid ""
 msgstr ""
 "<strong>Hinweis:</strong> Dieser Vorschlag befindet sich bereits in der "
 "Bewertungsphase und kann deshalb nicht mehr bearbeitet werden."
+
+#: ../modules/mtl-single-proposal/mtl-single-proposal.php:279
+msgid "All administrative subdivisons of this proposal:"
+msgstr "Alle Gebietseinheiten dieses Vorschlags:"
 
 #: ../modules/mtl-star-rating/mtl-star-rating.php:58
 msgid "An error occurred when trying to submit your rating. Please try again."
@@ -2198,9 +2202,6 @@ msgstr "Suchergebnisse für: %s"
 #~ "verschieben.<br /> Klicke und halte die Maustaste gedrückt zum "
 #~ "Verschieben. Wenn du nicht auf ein Symbol klickst, kannst du den "
 #~ "Kartenausschnitt verschieben."
-
-#~ msgid "All administrative subdivisons of this proposal:"
-#~ msgstr "Alle Gebietseinheiten dieses Vorschlags:"
 
 #~ msgid "All regions"
 #~ msgstr "Alle Gebiete"

@@ -110,7 +110,7 @@ function mtl_proposal_form_output( $atts ){
 				);
 
 				if ($mtl_options3['mtl-show-districts']) {
-					$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(', ', $_POST['mtl-tags']));
+					$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(',', $_POST['mtl-tags']));
 				}
 				
 				if($old_status == 'draft') {

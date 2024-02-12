@@ -24,6 +24,7 @@ function mtl_search_bar_output($query = null) {
 
     // get the mtl options
 	$mtl_options = get_option('mtl-option-name');
+	$mtl_options3 = get_option('mtl-option-name3');
 
 	$mtl_all_catids = '';
 	foreach(get_categories() as $category) {
@@ -47,7 +48,29 @@ function mtl_search_bar_output($query = null) {
 	foreach(get_users('orderby=display_name') as $bloguser) {
 		$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID == get_userid() ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 	}
-	$output .= '</select></p>';
+	$output .= '</select>';
+
+	if(current_user_can('administrator')) {
+		$is_checked = in_array("draft", get_status());
+		$output .= '<input id="mtl-show-drafts" name="show-drafts" value="'.($is_checked ? 'true' : 'false').'" autocomplete="off" type="checkbox" '.($is_checked ? 'checked' : '').' onchange="event.target.value = event.target.checked;">';
+		$output .= '<label for="mtl-show-drafts">'.__('Show drafts', 'my-transit-lines').'</label>';
+	}
+		
+	// tag selector (administrative divisions) - only if checkbox set within theme options
+	if($mtl_options3['mtl-show-districts']) {
+		$tags = get_tags();
+		
+		$output .= '<select name="mtl-tag-ids">';
+		$output .= '<option value="all">'.__('All regions','my-transit-lines').' </option>';
+		foreach ( $tags as $current_tag ) {
+			$selected = '';
+			if(get_tag_in() != null && in_array($current_tag->term_id, get_tag_in())) $selected = ' selected="selected"';
+
+			$output .= "<option".$selected." value='{$current_tag->term_id}'>{$current_tag->name} </option>";
+		}
+		$output .= '</select>';
+	}
+	$output .= '</p>';
 
 	// Sorting phase status selector
 	$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
@@ -133,6 +156,8 @@ function get_query($type = 'mtlproposal', $per_page_multiple = 1) {
         'order' => get_order(),
         'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
         'tax_query' => get_taxonomy_status(),
+		'post__in' => get_post_in(),
+		'tag__in' => get_tag_in(),
     );
 
     if(!show_drafts()) {
@@ -313,6 +338,30 @@ function get_query_statusid() {
 		return intval($_GET['mtl-statusid']);
 	
 	return '';
+}
+
+/**
+ * Returns the list of ids to search in
+ *
+ * @return array|null
+ */
+function get_post_in() {
+	if(isset($_GET['mtl-post-ids']) && $_GET['mtl-post-ids'] != 'all')
+		return explode(",", $_GET['mtl-post-ids']);
+
+	return null;
+}
+
+/**
+ * Returns the list of tags to search in
+ *
+ * @return array|null
+ */
+function get_tag_in() {
+	if(isset($_GET['mtl-tag-ids']) && $_GET['mtl-tag-ids'] != 'all')
+		return explode(",", $_GET['mtl-tag-ids']);
+
+	return null;
 }
 
 ?>

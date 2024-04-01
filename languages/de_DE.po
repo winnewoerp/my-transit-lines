@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-02-08 22:19+0100\n"
-"PO-Revision-Date: 2024-02-08 22:20+0100\n"
+"POT-Creation-Date: 2024-04-01 13:52+0200\n"
+"PO-Revision-Date: 2024-04-01 13:52+0200\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -1611,6 +1611,10 @@ msgstr "Aufsteigend"
 #: ../modules/mtl-search-bar/mtl-search-bar.php:98
 msgid "Amount:"
 msgstr "Anzahl:"
+
+#: ../modules/mtl-search-bar/mtl-search-bar.php:101
+msgid "all"
+msgstr "Alle"
 
 #: ../modules/mtl-search-bar/mtl-search-bar.php:108
 msgid "Search:"

@@ -98,7 +98,7 @@ function mtl_search_bar_output($query = null) {
 	$output .= '<strong>'.__('Amount:','my-transit-lines').'</strong>';
 	$output .= '<select name="num">';
 	if (!in_array($posts_per_page, $amounts)) {
-		$output .= '<option selected="selected" value="'.$posts_per_page.'">'.($posts_per_page > -1 ? $posts_per_page : 'all').'</option>';
+		$output .= '<option selected="selected" value="'.$posts_per_page.'">'.($posts_per_page > -1 ? $posts_per_page : __('all', 'my-transit-lines')).'</option>';
 	}
 	foreach ($amounts as $amount) {
 		$output .= '<option '.($posts_per_page == $amount ? ' selected="selected"' : '').' value="'.$amount.'">'.$amount.'</option>';

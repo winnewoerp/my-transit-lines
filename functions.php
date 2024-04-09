@@ -643,6 +643,10 @@ function allowed_html_tags() {
 			'style' => true,
 			'class' => true,
 		),
+		'tr' => array(
+			'style' => true,
+			'class' => true,
+		),
 		'ul' => array(
 			'style' => true,
 			'class' => true,

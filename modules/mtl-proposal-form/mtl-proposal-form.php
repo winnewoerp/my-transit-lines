@@ -155,7 +155,7 @@ function mtl_proposal_form_output( $atts ){
 					delete_post_meta($current_post_id,'mtl-under-construction','');
 				}
 				
-				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), $editId);
+				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
 				// enable/disable contact button for current user
 				if(is_user_logged_in()) {
@@ -198,7 +198,7 @@ function mtl_proposal_form_output( $atts ){
 			}
 		} // end IF
 		$form_token = uniqid();
-		$_SESSION['form_token'] = $form_token;	// Do the wp_insert_post action to insert it
+		$_SESSION['form_token'] = $form_token;
 		
 		if($err) {
 			$output .= '<div class="error-message-block">'."\r\n";

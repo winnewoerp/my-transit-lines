@@ -108,7 +108,7 @@ function mtl_proposal_form_output( $atts ){
 					'post_type'		=> $this_posttype,
 				);
 
-				$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(',', $_POST['mtl-tags']));
+				$post['tags_input'] = explode(',', $_POST['mtl-tags']);
 				
 				if($old_status == 'draft') {
 					$local_time  = current_datetime();
@@ -263,10 +263,9 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '}; </script>'."\r\n";
 			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
 
-			// TODO make this a setting
-			$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents('http://localhost/wordpress/wp-content/uploads/VG5000_LAN.geojson')).'\';'."\r\n";
-			$output .= 'var stateSource = \''.str_replace(array("\r", "\n"), "", file_get_contents('http://localhost/wordpress/wp-content/uploads/VG5000_STA.geojson')).'\';'."\r\n";
-			$output .= 'var districtSource = \''.str_replace(array("\r", "\n"), "", file_get_contents('http://localhost/wordpress/wp-content/uploads/VG5000_KRS.geojson')).'\'; </script>'."\r\n";
+			$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
+			$output .= 'var stateSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-state-source'])).'\';'."\r\n";
+			$output .= 'var districtSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-district-source'])).'\'; </script>'."\r\n";
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {

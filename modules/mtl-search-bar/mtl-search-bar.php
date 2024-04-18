@@ -49,15 +49,9 @@ function mtl_search_bar_output($query = null) {
 		$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID == get_userid() ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 	}
 	$output .= '</select>';
-
-	if(current_user_can('administrator')) {
-		$is_checked = in_array("draft", get_status());
-		$output .= '<input id="mtl-show-drafts" name="show-drafts" value="'.($is_checked ? 'true' : 'false').'" autocomplete="off" type="checkbox" '.($is_checked ? 'checked' : '').' onchange="event.target.value = event.target.checked;">';
-		$output .= '<label for="mtl-show-drafts">'.__('Show drafts', 'my-transit-lines').'</label>';
-	}
 		
 	// tag selector (administrative divisions) - only if checkbox set within theme options
-	if($mtl_options3['mtl-show-districts']) {
+	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) {
 		$tags = get_tags();
 		
 		$output .= '<select name="mtl-tag-ids">';
@@ -69,6 +63,12 @@ function mtl_search_bar_output($query = null) {
 			$output .= "<option".$selected." value='{$current_tag->term_id}'>{$current_tag->name} </option>";
 		}
 		$output .= '</select>';
+	}
+
+	if(current_user_can('administrator')) {
+		$is_checked = in_array("draft", get_status());
+		$output .= '<input id="mtl-show-drafts" name="show-drafts" value="'.($is_checked ? 'true' : 'false').'" autocomplete="off" type="checkbox" '.($is_checked ? 'checked' : '').' onchange="event.target.value = event.target.checked;">';
+		$output .= '<label for="mtl-show-drafts">'.__('Show drafts', 'my-transit-lines').'</label>';
 	}
 	$output .= '</p>';
 

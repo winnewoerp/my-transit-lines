@@ -70,7 +70,7 @@ function mtl_proposal_map($content) {
 		if($countStations) $output2 .= __('Number of stations','my-transit-lines').': '.$countStations.'<br />';
 		if($averageDistance) $output2 .= __('Average station distance','my-transit-lines').': '.$averageDistanceOutput.'<br /><small>'.__('Attention: average station distance calculation is currently only correct when there is one contiguous line with the first and the last station on the respective end of line.','my-transit-lines').'</small><br />';
 		$output2 .= '</p>'."\r\n";
-		if($mtl_options3['mtl-show-districts']) $output2 .= mtl_taglist();
+		if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output2 .= mtl_taglist();
 		
 		// check for reCAPTCHA keys
 		$use_recaptcha = false;

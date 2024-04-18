@@ -85,7 +85,6 @@ function mtl_proposal_form_output( $atts ){
 			}
 			
 			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
-			if (strlen(trim($_POST['mtl-tags']))<=2 && $mtl_options3['mtl-show-districts']) $err['mtl-tags']=true;
 			if (!is_user_logged_in()) {
 				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
 				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
@@ -109,9 +108,7 @@ function mtl_proposal_form_output( $atts ){
 					'post_type'		=> $this_posttype,
 				);
 
-				if ($mtl_options3['mtl-show-districts']) {
-					$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(',', $_POST['mtl-tags']));
-				}
+				$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(',', $_POST['mtl-tags']));
 				
 				if($old_status == 'draft') {
 					$local_time  = current_datetime();

@@ -279,7 +279,7 @@ function mtl_taglist() {
 		$output .= '<h3>'.__('All administrative subdivisons of this proposal:','my-transit-lines').'</h3>';
 		$output .= '<ul>';
 		foreach ( $tags as $current_tag ) {
-			$tag_link = add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page']));
+			$tag_link = str_replace('?', '#!?', add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page'])));
 
 			$output .= "<li><a href='{$tag_link}' title='{$current_tag->name}'>{$current_tag->name}</a></li>"."\r\n";
 		}

@@ -2,6 +2,10 @@
  * (C) by Jan Garloff and Johannes Bouchain - stadtkreation.de
  */
 
+const countryFeatures = countrySource ? GEO_JSON_FORMAT.readFeatures(countrySource, PROJECTION_OPTIONS) : [];
+const stateFeatures = stateSource ? GEO_JSON_FORMAT.readFeatures(stateSource, PROJECTION_OPTIONS) : [];
+const districtFeatures = districtSource ? GEO_JSON_FORMAT.readFeatures(districtSource, PROJECTION_OPTIONS) : [];
+
 var selectedFeatureIndex = -1;
 var snapping = true;
 var warningMessage = '';
@@ -79,8 +83,8 @@ class InteractionControl extends ol.control.Control {
 			node.classList.remove('selected');
 		}
 
-		$('.mtl-tool-hint').css('display','none');
-		$('.mtl-tool-hint.' + target.value).css('display','inline');
+		$('.mtl-tool-hint').css('display', 'none');
+		$('.mtl-tool-hint.' + target.value).css('display', 'inline');
 
 		target.classList.add('selected');
 
@@ -89,7 +93,7 @@ class InteractionControl extends ol.control.Control {
 }
 
 const attributionLayer = new ol.layer.Layer({
-	source: new ol.source.Source({attributions: objectL10n.attributionIcons}),
+	source: new ol.source.Source({ attributions: objectL10n.attributionIcons }),
 	render: function () { return null; }
 });
 map.addLayer(attributionLayer);
@@ -130,15 +134,15 @@ selectedFeatures.on('add', handleFeatureSelected);
 selectedFeatures.on('remove', handleFeatureUnselected);
 
 //Notify the user when about to leave page without saving changes
-$(window).bind('beforeunload', function() {
+$(window).bind('beforeunload', function () {
 	if (warningMessage != '') return warningMessage;
 });
 
-$('#title, #description').on('input propertychange paste', function() {
-    warningMessage = objectL10n.confirmLeaveWebsite;
+$('#title, #description').on('input propertychange paste', function () {
+	warningMessage = objectL10n.confirmLeaveWebsite;
 });
-$('input.cat-select').change(function() {
-    warningMessage = objectL10n.confirmLeaveWebsite;
+$('input.cat-select').change(function () {
+	warningMessage = objectL10n.confirmLeaveWebsite;
 });
 
 // returns the style for the given feature while being drawn
@@ -217,6 +221,7 @@ function handleFeatureModified(feature) {
 		if (feature.get('size'))
 			feature.set('size', getFeatureSize(feature));
 	});
+	feature.set('location', getStationLocation(feature));
 }
 
 // Selects all features inside the box dragged for selection
@@ -235,12 +240,12 @@ function handleBoxSelect() {
 		const extent = [left, boxExtent[1], right, boxExtent[3]];
 
 		const boxFeatures = vectorSource
-		.getFeaturesInExtent(extent)
-		.filter(
-			(feature) =>
-			!selectedFeatures.getArray().includes(feature) &&
-			feature.getGeometry().intersectsExtent(extent)
-		);
+			.getFeaturesInExtent(extent)
+			.filter(
+				(feature) =>
+					!selectedFeatures.getArray().includes(feature) &&
+					feature.getGeometry().intersectsExtent(extent)
+			);
 
 		// features that intersect the box geometry are added to the
 		// collection of selected features
@@ -330,7 +335,7 @@ function removeInteractions() {
  * Returns the amount of stations in the features array
  * 
  * @param {FeatureLike[]} features the array of features to "search" for stations
- * @returns the amount of stations placed on the map
+ * @returns {number} the amount of stations placed on the map
  */
 function getCountStations(features = vectorSource.getFeatures()) {
 	var count = 0;
@@ -345,7 +350,7 @@ function getCountStations(features = vectorSource.getFeatures()) {
  * Returns the combined length of the lines in the features array
  * 
  * @param {FeatureLike[]} features the array of features to "search" for lines
- * @returns the combined length of the lines placed on the map
+ * @returns {number} the combined length of the lines placed on the map
  */
 function getLineLength(features = vectorSource.getFeatures()) {
 	var length = 0.0;
@@ -355,6 +360,79 @@ function getLineLength(features = vectorSource.getFeatures()) {
 		}
 	}
 	return length;
+}
+
+/**
+ * Returns a comma-separated string list containing all location tags for the stations in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for stations
+ * @returns {string} the location tags of the stations placed on the map
+ */
+function getStationLocations(features = vectorSource.getFeatures()) {
+	var result = '';
+
+	for (station of features) {
+		if (!(station.getGeometry() instanceof ol.geom.Point)) {
+			continue;
+		}
+
+		if (!station.getKeys().includes('location'))
+			station.set('location', getStationLocation(station));
+
+		var tags = station.get('location').split(',');
+
+		for (tag of tags) {
+			if (!result.includes(tag))
+				result += tag + ',';
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Gets the location tags for a single station
+ * @param {FeatureLike} station the feature to get the location of
+ * @return {string} either the empty string or a comma-separated list of up 3 location tags ending with a comma
+ */
+function getStationLocation(station) {
+	if (!(station.getGeometry() instanceof ol.geom.Point))
+		return '';
+
+	var country = '', state = '', district = '';
+
+	country = getStationLocationLayer(station, countryFeatures, true);
+
+	if (!country)
+		return '';
+
+	state = getStationLocationLayer(station, stateFeatures, true);
+
+	if (!state)
+		return country;
+
+	district = getStationLocationLayer(station, districtFeatures, false);
+
+	return country + state + district;
+}
+
+/**
+ * Gets the location tag of the station on the layer specified by features
+ * @param {FeatureLike} station the station to get the location of
+ * @param {FeatureLike[]} features the layer to search on. Individual features need to be able to intersect the stations coordinates and have the "GEN" property set as their name
+ * @param {boolean} onlyFirstWord whether you want only use the first word of the name found in the "GEN" property word seperator is ' '
+ * @return {string} the location tag, either empty or ending with a comma
+ */
+function getStationLocationLayer(station, features, onlyFirstWord) {
+	for (feature of features) {
+		if (feature.getGeometry().intersectsCoordinate(station.getGeometry().getCoordinates())) {
+			var name = feature.get("GEN").replace(',', '');
+			if (onlyFirstWord)
+				name = name.split(' ')[0];
+			return name + ',';
+		}
+	}
+	return "";
 }
 
 /**
@@ -373,57 +451,58 @@ function saveToHTML(features = vectorSource.getFeatures()) {
 	$('#mtl-feature-labels-data').val(wkt_strings[1]);
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
+	$('#mtl-tags').val(getStationLocations(features));
 }
 
 /**
  * Adds event listeners to save to HTML automatically
  */
 function addSaveEventListeners() {
-    vectorSource.on('addfeature', () => {saveToHTML()});
-    vectorSource.on('changefeature', () => {saveToHTML()});
-    vectorSource.on('removefeature', () => {saveToHTML()});
+	vectorSource.on('addfeature', () => { saveToHTML() });
+	vectorSource.on('changefeature', () => { saveToHTML() });
+	vectorSource.on('removefeature', () => { saveToHTML() });
 }
 
 /**
  * Adds event listeners to enable autocompletion for tag input
  */
 function addTagInputEventListeners() {
-	function split( val ) {
-		return val.split( /,\s*/ );
+	function split(val) {
+		return val.split(/,\s*/);
 	}
-	function extractLast( term ) {
-		return split( term ).pop();
+	function extractLast(term) {
+		return split(term).pop();
 	}
 
-	$( "#mtl-tag-input" )
-	// don't navigate away from the field on tab when selecting an item
-	.on( "keydown", function( event ) {
-		if ( event.keyCode === $.ui.keyCode.TAB &&
-			$( this ).autocomplete( "instance" ).menu.active ) {
-			event.preventDefault();
-		}
-	})
-	.autocomplete({
-		minLength: 1,
-		source: function( request, response ) {
-			// delegate back to autocomplete, but extract the last term
-			response( $.ui.autocomplete.filter(
-			mtl_tags, extractLast( request.term ) ) );
-		},
-		focus: function() {
-			// prevent value inserted on focus
-			return false;
-		},
-		select: function( event, ui ) {
-			var terms = split( this.value );
-			// remove the current input
-			terms.pop();
-			// add the selected item
-			terms.push( ui.item.value );
-			// add placeholder to get the comma-and-space at the end
-			terms.push( "" );
-			this.value = terms.join( ", " );
-			return false;
-		}
-	});
+	$("#mtl-tag-input")
+		// don't navigate away from the field on tab when selecting an item
+		.on("keydown", function (event) {
+			if (event.keyCode === $.ui.keyCode.TAB &&
+				$(this).autocomplete("instance").menu.active) {
+				event.preventDefault();
+			}
+		})
+		.autocomplete({
+			minLength: 1,
+			source: function (request, response) {
+				// delegate back to autocomplete, but extract the last term
+				response($.ui.autocomplete.filter(
+					mtl_tags, extractLast(request.term)));
+			},
+			focus: function () {
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function (event, ui) {
+				var terms = split(this.value);
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push(ui.item.value);
+				// add placeholder to get the comma-and-space at the end
+				terms.push("");
+				this.value = terms.join(", ");
+				return false;
+			}
+		});
 }

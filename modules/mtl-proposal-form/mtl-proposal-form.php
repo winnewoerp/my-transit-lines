@@ -265,6 +265,11 @@ function mtl_proposal_form_output( $atts ){
 			}
 			$output .= '}; </script>'."\r\n";
 			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+
+			// TODO make this a setting
+			$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents('http://localhost/wordpress/wp-content/uploads/VG5000_LAN.geojson')).'\';'."\r\n";
+			$output .= 'var stateSource = \''.str_replace(array("\r", "\n"), "", file_get_contents('http://localhost/wordpress/wp-content/uploads/VG5000_STA.geojson')).'\';'."\r\n";
+			$output .= 'var districtSource = \''.str_replace(array("\r", "\n"), "", file_get_contents('http://localhost/wordpress/wp-content/uploads/VG5000_KRS.geojson')).'\'; </script>'."\r\n";
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {

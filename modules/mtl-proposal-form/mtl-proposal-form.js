@@ -58,7 +58,7 @@ class InteractionControl extends ol.control.Control {
 	}
 
 	handleClick(event) {
-		var target = event.target;
+		let target = event.target;
 
 		if (target == this.deleteButton) {
 			deleteSelected();
@@ -111,7 +111,6 @@ const interactionControl = new InteractionControl();
 map.addControl(interactionControl);
 
 window.addEventListener("load", addSaveEventListeners);
-window.addEventListener("load", addTagInputEventListeners);
 
 dragBoxInteraction.on('boxend', handleBoxSelect);
 dragBoxInteraction.on('boxstart', function (event) {
@@ -120,12 +119,12 @@ dragBoxInteraction.on('boxstart', function (event) {
 });
 
 modifyInteraction.on('modifystart', function (event) {
-	for (var feature of event.features.getArray()) {
+	for (let feature of event.features.getArray()) {
 		handleFeatureModified(feature);
 	}
 });
 modifyInteraction.on('modifyend', function (event) {
-	for (var feature of event.features.getArray()) {
+	for (let feature of event.features.getArray()) {
 		feature.unset('size');
 	}
 });
@@ -173,8 +172,8 @@ function unselectAllFeatures() {
 
 // removes all selected features
 function deleteSelected() {
-	var featureArray = Array();
-	for (var i = selectedFeatures.getArray().length; i > 0; i--) {
+	let featureArray = Array();
+	for (let i = selectedFeatures.getArray().length; i > 0; i--) {
 		featureArray.push(selectedFeatures.getArray()[i - 1]);
 		selectedFeatures.removeAt(i - 1);
 	}
@@ -338,8 +337,8 @@ function removeInteractions() {
  * @returns {number} the amount of stations placed on the map
  */
 function getCountStations(features = vectorSource.getFeatures()) {
-	var count = 0;
-	for (var feature of features) {
+	let count = 0;
+	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.Point)
 			count++;
 	}
@@ -353,8 +352,8 @@ function getCountStations(features = vectorSource.getFeatures()) {
  * @returns {number} the combined length of the lines placed on the map
  */
 function getLineLength(features = vectorSource.getFeatures()) {
-	var length = 0.0;
-	for (var feature of features) {
+	let length = 0.0;
+	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.LineString) {
 			length += ol.sphere.getLength(feature.getGeometry());
 		}
@@ -371,7 +370,7 @@ function getLineLength(features = vectorSource.getFeatures()) {
 function getStationLocations(features = vectorSource.getFeatures()) {
 	var result = '';
 
-	for (station of features) {
+	for (let station of features) {
 		if (!(station.getGeometry() instanceof ol.geom.Point)) {
 			continue;
 		}
@@ -379,9 +378,9 @@ function getStationLocations(features = vectorSource.getFeatures()) {
 		if (!station.getKeys().includes('location'))
 			station.set('location', getStationLocation(station));
 
-		var tags = station.get('location').split(',');
+		let tags = station.get('location').split(',');
 
-		for (tag of tags) {
+		for (let tag of tags) {
 			if (!result.includes(tag))
 				result += tag + ',';
 		}
@@ -399,7 +398,7 @@ function getStationLocation(station) {
 	if (!(station.getGeometry() instanceof ol.geom.Point))
 		return '';
 
-	var country = '', state = '', district = '';
+	let country = '', state = '', district = '';
 
 	country = getStationLocationLayer(station, countryFeatures, true);
 
@@ -424,9 +423,9 @@ function getStationLocation(station) {
  * @return {string} the location tag, either empty or ending with a comma
  */
 function getStationLocationLayer(station, features, onlyFirstWord) {
-	for (feature of features) {
+	for (let feature of features) {
 		if (feature.getGeometry().intersectsCoordinate(station.getGeometry().getCoordinates())) {
-			var name = feature.get("GEN").replace(',', '');
+			let name = feature.get("GEN").replace(',', '');
 			if (onlyFirstWord)
 				name = name.split(' ')[0];
 			return name + ',';
@@ -444,7 +443,7 @@ function getStationLocationLayer(station, features, onlyFirstWord) {
 function saveToHTML(features = vectorSource.getFeatures()) {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 
-	var wkt_strings = exportToWKT(features);
+	let wkt_strings = exportToWKT(features);
 
 	// write WKT features data to html element (will be saved to database on form submit)
 	$('#mtl-feature-data').val(wkt_strings[0]);

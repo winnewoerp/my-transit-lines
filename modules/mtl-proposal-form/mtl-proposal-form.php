@@ -85,7 +85,6 @@ function mtl_proposal_form_output( $atts ){
 			}
 			
 			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
-			if (strlen(trim($_POST['mtl-tags']))<=2 && $mtl_options3['mtl-show-districts']) $err['mtl-tags']=true;
 			if (!is_user_logged_in()) {
 				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
 				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
@@ -109,9 +108,7 @@ function mtl_proposal_form_output( $atts ){
 					'post_type'		=> $this_posttype,
 				);
 
-				if ($mtl_options3['mtl-show-districts']) {
-					$post['tags_input'] = str_replace(array(',', ' ', "\r", "\n"), '', explode(',', $_POST['mtl-tags']));
-				}
+				$post['tags_input'] = explode(',', $_POST['mtl-tags']);
 				
 				if($old_status == 'draft') {
 					$local_time  = current_datetime();
@@ -265,6 +262,10 @@ function mtl_proposal_form_output( $atts ){
 			}
 			$output .= '}; </script>'."\r\n";
 			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+
+			$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
+			$output .= 'var stateSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-state-source'])).'\';'."\r\n";
+			$output .= 'var districtSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-district-source'])).'\'; </script>'."\r\n";
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {
@@ -350,6 +351,19 @@ function mtl_proposal_form_output( $atts ){
 				if($editId && !$err) $mtl_line_length =  get_post_meta($editId,'mtl-line-length',true);
 				elseif($err && $_POST['mtl-line-length']) $mtl_line_length = $_POST['mtl-line-length'];	
 				$output .= '<input type="hidden" id="mtl-line-length" value="'.$mtl_line_length.'"  name="mtl-line-length" />'."\r\n";
+
+				// hidden input field for tags
+				$mtl_tags = '';
+				if($editId && !$err) {
+					$posttags = get_the_tags($editId);
+					if ($posttags) {
+						foreach($posttags as $tag) {
+							$mtl_tags .= $tag->name . ','; 
+						}
+					}
+				}
+				elseif($err && $_POST['mtl-tags']) $mtl_tags = $_POST['mtl-tags'];
+				$output .= '<input type="hidden" id="mtl-tags" value="'.$mtl_tags.'" name="mtl-tags" />'."\r\n";
 			} // end if $postType == 'mtlproposal'
 			
 			// continue form: description textbox, filled with text from post variable, if existing
@@ -359,27 +373,6 @@ function mtl_proposal_form_output( $atts ){
 			elseif($editId && !$err) $current_description = get_post($editId)->post_content;
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
 			$output .= mtl_load_wp_editor($current_description,'description',$settings);
-
-			if($mtl_options3['mtl-show-districts']) {
-				$tags_string = '';
-				foreach (get_tags() as $current_tag) {
-					$tags_string .= '"'.$current_tag->name.'", ';
-				}
-
-				$current_tags = '';
-				if($err && $_POST['mtl-tags']) $current_tags = $_POST['mtl-tags'];
-				elseif($editId && !$err) {
-					foreach(get_the_tags($editId) as $current_tag) {
-						$current_tags .= $current_tag->name.', ';
-					}
-				}
-
-				wp_enqueue_script('jquery-ui-autocomplete');
-				$output .= '<p><link rel="stylesheet" href="'.get_template_directory_uri().'/css/jquery-ui.css">';
-				$output .= '<script type="text/javascript"> const mtl_tags = ['.$tags_string.'];</script>';
-				$output .= '<label for="mtl-tag-input"><strong>'.__('Add location tags to your proposal', 'my-transit-lines').'</strong><label>';
-				$output .= '<input type="text" id="mtl-tag-input" name="mtl-tags" value="'.$current_tags.'"></input></p>';
-			}
 			
 			if (!is_user_logged_in()) {
 				$output .= '<h3>'.__( 'Your personal data', 'my-transit-lines' ).'</h3>'."\r\n";

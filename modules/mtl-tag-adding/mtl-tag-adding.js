@@ -115,7 +115,7 @@ function loadNewTags() {
 	$('#tags_input').val(tags);
 
 	for (let tag of tags.split(',')) {
-		$('#list-start').append('<li><a>'+tag+'</a></li> ');
+		$('#list-start').append('<li><a>' + tag + '</a></li> ');
 	}
 }
 
@@ -124,23 +124,29 @@ $(document).ready(function () {
 	loadNewTags();
 });
 
-document.getElementById('add_tags').addEventListener("submit",
-	function (event) {
+document.getElementById('add_tags').addEventListener("submit", onSubmit);
+
+function onSubmit(event) {
+	if (event) {
 		event.preventDefault();
 
-		// TODO custom post submit and new post load
-		$.post(window.location.href, $( "#add_tags" ).serialize(), function(new_data) {
-			var new_id = $('#id_input', new_data);
-			var new_data_script = $('#mtl-data-script', new_data);
-			var new_post_title = $('#post-title', new_data);
-			
-			// add new content
-			$('#id_input').replaceWith(new_id);
-			$('#mtl-data-script').replaceWith(new_data_script);
-			$('#post-title').replaceWith(new_post_title);
+		$('#form-submit').hide();
+	}
 
-			$('#list-start').empty();
+	$.post(window.location.href, $("#add_tags").serialize(), function (new_data) {
+		var new_id = $('#id_input', new_data);
+		var new_data_script = $('#mtl-data-script', new_data);
+		var new_post_title = $('#post-title', new_data);
 
-			loadNewTags();
-		});
+		// add new content
+		$('#id_input').replaceWith(new_id);
+		$('#mtl-data-script').replaceWith(new_data_script);
+		$('#post-title').replaceWith(new_post_title);
+
+		$('#list-start').empty();
+
+		loadNewTags();
+
+		setTimeout(onSubmit, 1);
 	});
+}

@@ -37,8 +37,8 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['posttype-selector']['mtlproposal'] = __('Add a single proposal','my-transit-lines');
 		$mtl_string['mail-subject']['mtlproposal']['add'] = __('New proposal','my-transit-lines');
 		$mtl_string['mail-subject']['mtlproposal']['update'] = __('Updated proposal','my-transit-lines');
-		$mtl_string['mail-text']['mtlproposal']['add'] = sprintf(__('A new proposal has been added to your site "%s".','my-transit-lines'),get_settings('blogname'));
-		$mtl_string['mail-text']['mtlproposal']['update'] = sprintf(__('A proposal has been updated at your site "%s".','my-transit-lines'),get_settings('blogname'));
+		$mtl_string['mail-text']['mtlproposal']['add'] = sprintf(__('A new proposal has been added to your site "%s".','my-transit-lines'),get_option('blogname'));
+		$mtl_string['mail-text']['mtlproposal']['update'] = sprintf(__('A proposal has been updated at your site "%s".','my-transit-lines'),get_option('blogname'));
 		$mtl_string['view-text']['mtlproposal'] = __('View proposal','my-transit-lines');
 		$mtl_string['view-here-text']['mtlproposal'] = __('See your proposal here','my-transit-lines');
 		$mtl_string['edit-text']['mtlproposal'] = __('Edit proposal','my-transit-lines');
@@ -74,17 +74,17 @@ function mtl_proposal_form_output( $atts ){
 		
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
-			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
+			if (!isset($_POST['title']) || strlen(trim($_POST['title']))<=2) $err['title']=true;
 			if (!is_user_logged_in()) {
-				if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
+				if (!isset($_POST['authname']) || strlen(trim($_POST['authname']))<=2) $err['authname']=true;
 				if (!$_POST['authemail']) $err['authemail']=true;
-				if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
+				if (!isset($_POST['authemail']) || strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
 			}
 			if ($postType == 'mtlproposal') {
 				if(!isset($_POST['cat'])) $err['cat']=true;
 			}
 			
-			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
+			if (!isset($_POST['description']) || strlen(trim($_POST['description']))<=2) $err['description']=true;
 			if (!is_user_logged_in()) {
 				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
 				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
@@ -162,16 +162,16 @@ function mtl_proposal_form_output( $atts ){
 				
 				// preparing user info for mail notification			
 				global $current_user;
-				get_currentuserinfo();
+				wp_get_current_user();
 				$author_name = $current_user->user_login;
 				if(!$author_name) $author_name = get_post_meta($current_post_id,'author-name',true);
 				$author_email = $current_user->user_email;
 				if(!$author_email) $author_email = get_post_meta($current_post_id,'author-email',true);
 				
 				// mail data
-				$to = get_settings('admin_email');
-				$headers = 'From: '.get_settings('blogname').' <noreply@'.mtl_maildomain().'>' . "\r\n";
-				$subject = '['.get_settings('blogname').'] '.$mtl_string['mail-subject'][$postType][$editType];
+				$to = get_option('admin_email');
+				$headers = 'From: '.get_option('blogname').' <noreply@'.mtl_maildomain().'>' . "\r\n";
+				$subject = '['.get_option('blogname').'] '.$mtl_string['mail-subject'][$postType][$editType];
 				$message = $mtl_string['mail-text'][$postType][$editType]."\r\n\r\n";
 				$message .= __('Author name','my-transit-lines').': ' . $author_name . "\r\n";
 				$message .= __('Author e-mail','my-transit-lines').': ' . $author_email . "\r\n";
@@ -216,7 +216,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '</div>'."\r\n";
 		}
 		
-		if((!$action || $err) && !$hideform) {
+		if(!$action || $err) {
 			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data" onsubmit=" warningMessage = \'\' ">'."\r\n";
 			$output .= '<p><label for="title"><strong>'.$mtl_string['form-title'][$postType].'</strong><br />'."\r\n";
 			
@@ -415,7 +415,7 @@ function mtl_proposal_form_output( $atts ){
 			wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
-		else if(!$hideform) $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
+		else $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';

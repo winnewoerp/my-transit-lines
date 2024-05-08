@@ -29,7 +29,7 @@ function mtl_login_register_widget($args) {
 	else {
 		global $user_login;
 		$widget_content = '';
-		get_currentuserinfo();
+		wp_get_current_user();
 		echo $before_title . __('Hello','my-transit-lines').' <strong>'.$user_login.'</strong>!' . $after_title;
 		echo $after_widget;
 		$widget_content .= '<li><a href="'.get_permalink($mtl_options3['mtl-proposal-page-id']).'#!?mtl-userid='.get_current_user_id().'&show-drafts=true">'.esc_html__('My proposals','my-transit-lines').'</a></li>';

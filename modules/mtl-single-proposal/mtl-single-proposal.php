@@ -24,10 +24,11 @@ function mtl_proposal_map($content) {
 		$mtl_options3 = get_option('mtl-option-name3');
 		
 		// do the meta data calculations
-		$countStations = get_post_meta($post->ID,'mtl-count-stations',true);
+		$countStations = max(get_post_meta($post->ID,'mtl-count-stations',true), 0);
 		$lineLength = max(get_post_meta($post->ID,'mtl-line-length',true), 0);
 		if($lineLength>=1000) $lineLengthOutput = str_replace('.',',',round($lineLength/1000,3)).' km';
 		else $lineLengthOutput = str_replace('.',',',round($lineLength,1)).' m';
+		$averageDistance = 0;
 		if($countStations > 1 && $lineLength) {
 			$averageDistance = $lineLength/($countStations-1);
 			if($averageDistance>=1000) $averageDistanceOutput = str_replace('.',',',round($averageDistance/1000,3)).' km';
@@ -78,7 +79,7 @@ function mtl_proposal_map($content) {
 
 		// show proposal author contact form if user has enabled this and proposal is not under construction
 		if(get_post_meta($post->ID,'mtl-proposal-phase',true) != 'elaboration-phase') {
-			$authorid = get_the_author_ID();
+			$authorid = get_the_author_meta('ID');
 			if(get_user_meta($authorid,'enable-contact-button',true)) {
 				$output2 .= '
 				<div class="proposal-author-contact-form" id="proposal-author-contact-form">
@@ -108,13 +109,13 @@ function mtl_proposal_map($content) {
 							if(!$use_recaptcha || $responseData->success) {
 								//  mail data
 								global $current_user;
-								get_currentuserinfo();
+								wp_get_current_user();
 								$to = $current_user->user_email;
 								$headers = 'From: '.sanitize_text_field(wp_unslash($_POST['pacf-first-name'])).' '.sanitize_text_field(wp_unslash($_POST['pacf-last-name'])).' <'.sanitize_text_field(wp_unslash($_POST['pacf-email-address'])).'>' . "\r\n";
 								if($_POST['pacf-privacy-admin-mail']) {
 									$headers .= 'CC: Linie Plus Admin Team <'.get_bloginfo('admin_email').'>'."\r\n";
 								}
-								$subject = '['.get_settings('blogname').'] '.sprintf(esc_html__('Your proposal %s','my-transit-lines'),'"'.get_the_title().'"').' – '.esc_html__('Message via proposal contact form:','my-transit-lines').' '.sanitize_text_field(wp_unslash($_POST['pacf-subject']));
+								$subject = '['.get_option('blogname').'] '.sprintf(esc_html__('Your proposal %s','my-transit-lines'),'"'.get_the_title().'"').' – '.esc_html__('Message via proposal contact form:','my-transit-lines').' '.sanitize_text_field(wp_unslash($_POST['pacf-subject']));
 								$message = sprintf(esc_html__('Dear %s!','my-transit-lines'),$current_user->user_nicename)."\r\n\r\n";
 								$message .= sprintf(esc_html__('A message to you has been sent via the contact form of your proposal %s. Just reply to this email to get in touch with the respective person.','my-transit-lines'),'"'.get_the_title().'"')."\r\n\r\n";
 								$message .= esc_html__('Link to proposal:','my-transit-lines')."\r\n";
@@ -135,7 +136,7 @@ function mtl_proposal_map($content) {
 								if(!$_POST['pacf-privacy-admin-mail']) {
 									$to = get_bloginfo('admin_email');
 									$headers = 'From: wordpress@'.mtl_maildomain();
-									$subject = '['.get_settings('blogname').'] '.sprintf(esc_html__('Proposal %s:','my-transit-lines'),'"'.get_the_title().'"').' '.esc_html__('Message via proposal contact form','my-transit-lines');
+									$subject = '['.get_option('blogname').'] '.sprintf(esc_html__('Proposal %s:','my-transit-lines'),'"'.get_the_title().'"').' '.esc_html__('Message via proposal contact form','my-transit-lines');
 									$message = sprintf(esc_html__('A message to the author has been sent via the contact form of proposal %s.','my-transit-lines'),'"'.get_the_title().'"')."\r\n\r\n";
 									$message .= esc_html__('Link to proposal:','my-transit-lines')."\r\n";
 									$message .= get_permalink();
@@ -160,7 +161,7 @@ function mtl_proposal_map($content) {
 					}
 					
 					// output the proposal author contact form
-					if((!isset($_POST['pacf-sent']) && !$_POST['pacf-sent']) || $err) {
+					if((!isset($_POST['pacf-sent']) || !$_POST['pacf-sent']) || $err) {
 						$output2 .= '
 					<p><button><a href="#" class="pacf-toggle"><i class="dashicons dashicons-email"></i> '.esc_html__('Contact the author of this proposal','my-transit-lines').'</a></button></p>
 					'.($use_recaptcha ? '<script src="https://www.google.com/recaptcha/api.js"></script>
@@ -222,7 +223,7 @@ function mtl_proposal_map($content) {
 							</label>
 						</p>
 						<p>
-							<label for="pacf-privacy-policy-accepted"><input type="checkbox" name="pacf-privacy-policy-accepted" id="pacf-privacy-policy-accepted" required /> '.sprintf(esc_html__('I have read and accept the %1$sData privacy policy%2$s.','my-transit-lines'),'<a href="'.get_permalink(get_option('wp_page_for_privacy_policy')).'" target="_blank">','</a>').'</label>
+							<label for="pacf-privacy-policy-accepted"><input type="checkbox" name="pacf-privacy-policy-accepted" id="pacf-privacy-policy-accepted" required /> '.sprintf(esc_html__('I have read and accept the %1$sData privacy policy%2$s.','my-transit-lines'),'<a href="'.get_privacy_policy_url().'" target="_blank">','</a>').'</label>
 						</p>
 						<p>
 							<label for="pacf-privacy-admin-mail"><input type="checkbox" name="pacf-privacy-admin-mail" id="pacf-privacy-admin-mail" /> '.esc_html__('The admin team would like to be informed, too! So please check this box if you accept that a full copy of your data is being sent to the Linie Plus admin team in CC. If you do not accept this, the admin team will only be informed about the usage of the contact form for this proposal without any of your personal data.','my-transit-lines').'</label>
@@ -249,6 +250,7 @@ function mtl_proposal_map($content) {
 		// show edit proposal button if current user equals author and proposal is not rateable
 		$current_user = wp_get_current_user();
 		$author_id=$post->post_author;
+		$rating_possible = false;
 		if($mtl_options2['mtl-current-project-phase']=='rate' && (get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-phase' || get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-ready-phase')) $rating_possible = true;
 		if($mtl_options['mtl-addpost-page']) {
 			if($author_id > 0 && $author_id == $current_user->ID) {
@@ -279,7 +281,7 @@ function mtl_taglist() {
 		$output .= '<h3>'.__('All administrative subdivisons of this proposal:','my-transit-lines').'</h3>';
 		$output .= '<ul>';
 		foreach ( $tags as $current_tag ) {
-			$tag_link = str_replace('?', '#!?', add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page'])));
+			$tag_link = add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page'])."#!");
 
 			$output .= "<li><a href='{$tag_link}' title='{$current_tag->name}'>{$current_tag->name}</a></li>"."\r\n";
 		}

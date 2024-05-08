@@ -86,7 +86,6 @@ class MtlSettingsPage
     {
         ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
             <h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>          
         </div>
         <?php
@@ -99,7 +98,6 @@ class MtlSettingsPage
     {
         ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
             <h2><?php _e('Instructions','my-transit-lines'); ?></h2>
 			<p><?php _e('Page content under preparation for upcoming versions.','my-transit-lines'); ?></p>
@@ -116,7 +114,6 @@ class MtlSettingsPage
         $this->options = get_option( 'mtl-option-name2' );
         ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
             <h2><?php _e('Project phase and drafts','my-transit-lines'); ?></h2>
 			<form method="post" action="options.php">
@@ -138,7 +135,6 @@ class MtlSettingsPage
     {
         $this->options = get_option( 'mtl-option-name3' ); ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
             <h2><?php _e('General settings','my-transit-lines'); ?></h2>
 			<form method="post" action="options.php">
@@ -163,7 +159,6 @@ class MtlSettingsPage
     {
         ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
             <h2><?php _e('Introduction','my-transit-lines'); ?></h2>
 			<ul>
@@ -185,7 +180,6 @@ class MtlSettingsPage
         $this->options = get_option( 'mtl-option-name' );
         ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
             <h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
             <h2><?php _e('Settings','my-transit-lines'); ?></h2>             
             <form method="post" action="options.php">
@@ -316,13 +310,13 @@ class MtlSettingsPage
 			if( isset( $input['mtl-image-cat'.$catid] ) && $input['mtl-image-cat'.$catid] != 'http://') $new_input['mtl-image-cat'.$catid] = $input['mtl-image-cat'.$catid];
 			if( isset( $input['mtl-image-selected-cat'.$catid] ) && $input['mtl-image-selected-cat'.$catid] != 'http://') $new_input['mtl-image-selected-cat'.$catid] = $input['mtl-image-selected-cat'.$catid];
 		}
-		$new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
-		$new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
-		$new_input['mtl-postmap-page'] = $input['mtl-postmap-page'];
+		if( isset( $input['mtl-addpost-page']) ) $new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
+		if( isset( $input['mtl-postlist-page']) ) $new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
+		if( isset( $input['mtl-postmap-page']) ) $new_input['mtl-postmap-page'] = $input['mtl-postmap-page'];
 		
-		$new_input['mtl-current-project-phase'] = $input['mtl-current-project-phase'];
-		$new_input['mtl-prevent-new-proposals'] = $input['mtl-prevent-new-proposals'];
-		$new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
+		if( isset( $input['mtl-current-project-phase']) ) $new_input['mtl-current-project-phase'] = $input['mtl-current-project-phase'];
+		if( isset( $input['mtl-prevent-new-proposals']) ) $new_input['mtl-prevent-new-proposals'] = $input['mtl-prevent-new-proposals'];
+		if( isset( $input['mtl-allowed-drafts']) ) $new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
         return $new_input;
     }
 

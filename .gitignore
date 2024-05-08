@@ -2,3 +2,6 @@
 
 # editors
 /.vscode/
+
+# wp-env files
+/.wp-env.json

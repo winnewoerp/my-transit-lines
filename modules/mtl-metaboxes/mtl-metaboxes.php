@@ -110,7 +110,6 @@ function mtl_post_class_meta_box($post) {
 		$output .= $output_editor;
 		$output .= '</div>';
 		$output .= '<p><label for="minor-changes"><input type="checkbox" name="minor-changes" id="minor-changes" /> '.__('Only minor changes within editor\'s hints text. Do not send update notification e-mail to user.','my-transit-lines').'</label></p>';
-		$output .= '<p><strong><label for="mtl-proposal-status-nok"><input type="checkbox" name="mtl-proposal-status-nok" id="mtl-proposal-status-nok"'.(get_post_meta($post->ID,'mtl-proposal-status-nok',true)=='on' ? ' checked="checked"' : '' ).' /> '.__('Check this box if proposal is not ok yet (the "under construction" flag will appear for the proposal).','my-transit-lines').'</label></strong></p>';
 	}
 	
 	if(get_post_meta($post->ID,'author-name',true)) $output .= '<p><strong>'.__('This proposal was created by an unregistered user and thus it can\'t enter the rating phase.','my-transit-lines').'</strong></p>';
@@ -186,15 +185,13 @@ function mtl_post_class_rating_meta_box($post) {
 // save post from backend
 function mtl_post_save($post_id) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-	if ( !wp_verify_nonce( $_POST['mtl_post_class_nonce'], basename( __FILE__ ) ) ) return;
+	if ( !isset( $_POST['mtl_post_class_nonce']) || !wp_verify_nonce( $_POST['mtl_post_class_nonce'], basename( __FILE__ ) ) ) return;
 	if ( !current_user_can( 'edit_post', $post_id ) ) return;
 	
 	// saving custom fields
 	if($_POST['mtl-manual-proposal-data'] != 'on') {
-		$save_custom_fields = array('mtl-feature-data','mtl-feature-labels-data','mtl-count-stations','mtl-line-length','mtl-proposal-phase','mtl-proposal-status-nok','mtl-editors-hints');
+		$save_custom_fields = array('mtl-feature-data','mtl-feature-labels-data','mtl-count-stations','mtl-line-length','mtl-proposal-phase','mtl-editors-hints');
 		foreach($save_custom_fields as $save_custom_field) if($_POST[$save_custom_field] != get_post_meta($post_id,$save_custom_field,true)) update_post_meta($post_id,$save_custom_field,$_POST[$save_custom_field]);
-		
-		if($_POST['mtl-proposal-status-nok']=='on') update_post_meta($post_id,'mtl-proposal-phase','elaboration-phase');
 		
 		if($_POST['cat']) {
 			remove_action( 'save_post', 'mtl_post_save' ); // remove save action to avoid infinite loop

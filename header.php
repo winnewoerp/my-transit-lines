@@ -16,7 +16,7 @@ if(is_single() && get_post_type()=='mtlproposal') {
 	$catid = $category[0]->cat_ID;
 	$mtl_options = get_option('mtl-option-name');
 	if(!$mtl_options['mtl-use-cat'.$catid] == true) header('Location: '.get_bloginfo('url').'');
-	if(get_current_user_id() != get_the_author_id() && get_post_meta($post->ID,'mtl-proposal-phase',true) == 'elaboration-phase')  header('Location: '.get_bloginfo('url').'');
+	if(get_current_user_id() != get_the_author_meta('ID') && get_post_meta($post->ID,'mtl-proposal-phase',true) == 'elaboration-phase')  header('Location: '.get_bloginfo('url').'');
 }
 
 ?><!DOCTYPE html>
@@ -47,8 +47,8 @@ if(is_single() && get_post_type()=='mtlproposal') {
 
 	<header id="masthead" class="site-header" role="banner">
 		<nav id="top-navigation" class="top-navigation<?php if (!is_user_logged_in()) echo ' not-logged-in'; ?>" role="navigation">
-			<h1 class="menu-toggle"><?php _e( 'Topmenu', 'liniefuenf' ); ?></h1>
-			<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'liniefuenf' ); ?></a>
+			<h1 class="menu-toggle"><?php _e( 'Topmenu', 'my-transit-lines' ); ?></h1>
+			<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'my-transit-lines' ); ?></a>
 			<?php if ( ! dynamic_sidebar( 'sidebar-2' ) ) : ?><?php endif; ?>
 			<?php wp_nav_menu( array( 'theme_location' => 'secondary' ) ); ?>
 		</nav><!-- #site-navigation -->
@@ -62,8 +62,8 @@ if(is_single() && get_post_type()=='mtlproposal') {
 		// hide the menu if custom meta 'hidemenu' is set to true
 		while ( have_posts() ) { the_post(); if(get_post_meta($post->ID,'hidemenu',true)) $hidemenu = true; else $hidemenu = false; } ?>
 		<?php if(!$hidemenu) { ?><nav id="site-navigation" class="main-navigation" role="navigation">
-			<h1 class="menu-toggle"><?php _e( 'Menu', 'liniefuenf' ); ?></h1>
-			<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'liniefuenf' ); ?></a>
+			<h1 class="menu-toggle"><?php _e( 'Menu', 'my-transit-lines' ); ?></h1>
+			<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'my-transit-lines' ); ?></a>
 
 			<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
 		</nav><!-- #site-navigation --><?php } ?>

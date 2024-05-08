@@ -54,7 +54,7 @@ function mtl_tile_list_output($atts) {
 	$output .= ' var tilePageUrl = "'.get_permalink().'"; var initMap = false;';
 	if(!$hidethumbs) {
 		$output .= ' var transportModeStyleData = {';
-		foreach(get_categories('include='.$mtl_all_catids) as $single_category) {
+		foreach(get_categories('include='.get_active_categories()) as $single_category) {
 			$catid = $single_category->cat_ID;
 			$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"],';
 		}

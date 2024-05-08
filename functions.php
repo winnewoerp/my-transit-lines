@@ -19,17 +19,15 @@
  */
 include( get_template_directory() . '/modules/mtl-login-register/mtl-login-register.php'); // Login/Register module
 include( get_template_directory() . '/modules/mtl-admin-menu/mtl-admin-menu.php'); // dashboard admin section module
-include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // new proposal form
+include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // proposal form
 include( get_template_directory() . '/modules/mtl-single-proposal/mtl-single-proposal.php'); // single proposal custom display
 include( get_template_directory() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.php'); // multiple proposal custom display
 include( get_template_directory() . '/modules/mtl-tile-list/mtl-tile-list.php'); // proposal tile list with small maps
 include( get_template_directory() . '/modules/mtl-search-bar/mtl-search-bar.php'); // search bar
 include( get_template_directory() . '/modules/mtl-custom-posttypes/mtl-custom-posttypes.php'); // create the custom posttypes necessary for the theme
 include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comment-notification.php'); // custom comment notification, to be extended
-//include( get_template_directory() . '/modules/mtl-comment-editing/mtl-comment-editing.php'); // add comment editing functionality
 include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php'); // proposal meta boxes for dashboard post edit view
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
-include( get_template_directory() . '/modules/mtl-star-rating/mtl-star-rating.php'); // star rating functioanlity
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
 /**
  * Set the content width based on the theme's design and stylesheet.
@@ -220,8 +218,8 @@ function mtl_load_wp_editor($content, $editor_id, $settings) {
  * create domain output for automatically created e-mail addresses like noreply@...
  */
 function mtl_maildomain() {
-	$maildomain = str_replace('http://','',get_bloginfo('siteurl'));
-	$maildomain = str_replace('https://','',get_bloginfo('siteurl'));
+	$maildomain = str_replace('http://','',get_bloginfo('url'));
+	$maildomain = str_replace('https://','',get_bloginfo('url'));
 	$maildomain = str_replace('www.','',$maildomain);
 	$maildomain = explode('/',$maildomain);
 	$maildomain = $maildomain[0];
@@ -243,7 +241,7 @@ add_filter('comment_form_defaults', 'mtl_commentform_defaults');
 function mtl_main_domain_redirect() {
 	$checkurl='http://'.$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 	$other_domains = array(); // put all possible domains that can be used except the site_url to this array, without http:// and www.
-	$blog_domain = str_replace('http://www.','',get_bloginfo('siteurl'));
+	$blog_domain = str_replace('http://www.','',get_bloginfo('url'));
 	foreach($other_domains as $other_domain) {
 		if(str_replace($other_domain,$blog_domain,$checkurl) != $checkurl) {
 			$new_url = str_replace($other_domain,$blog_domain,$checkurl);
@@ -307,11 +305,8 @@ function mtl_localize_script($getVar = false) {
 		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
-	$countValues = 0;
 	foreach($translatedStrings as $key => $value) {
-		$localizeScript .= '"'.$key.'":"'.addslashes($value).'"';
-		if($countValues<sizeof($translatedStrings)-1) $localizeScript .= ',';
-		$countValues++;
+		$localizeScript .= '"'.$key.'":"'.addslashes($value).'",';
 	}
 	$localizeScript .= '};'."\r\n".'/* ]]> */'."\r\n".'</script>'."\r\n";
 	if($getVar) return $localizeScript;
@@ -451,7 +446,7 @@ function __THEME_PREFIX__wp_head() {
 if(!function_exists('mtl_tiles_rating_output')) {
 	function mtl_tiles_empty_content($content) {
 		global $post;
-		if(get_post_type($post->ID)=='mtlproposal') return;
+		if(get_post_type($post->ID)=='mtlproposal' && !is_single()) return "";
 		else return $content;
 	}
 	add_action('the_content','mtl_tiles_empty_content');

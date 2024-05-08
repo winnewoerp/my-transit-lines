@@ -30,7 +30,7 @@ function get_download_button($postId) {
 	<script type="text/javascript">
 		var title_for_geojson = "'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_title($postId)))).'";
 		var content_for_geojson = "'.str_replace("\r","\\r",str_replace("\n","\\n",addslashes(get_the_content(null, false, $postId)))).'";
-		var author_for_geojson = "'.get_the_author($postId).'";
+		var author_for_geojson = "'.get_post_field( 'post_author', $postId ).'";
 		var date_for_geojson = "'.get_the_date('', $postId).'";
 		var website_for_geojson = "'.get_bloginfo('url').'";
 		var category_for_geojson = "'.$category[0]->name.'";

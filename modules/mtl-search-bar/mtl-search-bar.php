@@ -23,21 +23,14 @@ function mtl_search_bar_output($query = null) {
 	$output = '';
 
     // get the mtl options
-	$mtl_options = get_option('mtl-option-name');
 	$mtl_options3 = get_option('mtl-option-name3');
 
-	$mtl_all_catids = '';
-	foreach(get_categories() as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID])
-            $mtl_all_catids .= $category->cat_ID.',';
-    }
-		
 	// filter start
 	$output .= '<div id="mtl-list-filter"><form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'"><p><strong>'.__('Filter:','my-transit-lines').'</strong> ';
 
 	// transit mode selector
 	$output .= '<select name="mtl-catid">'."\r\n".'<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
-	foreach(get_categories('include='.$mtl_all_catids) as $single_category) {
+	foreach(get_categories('include='.get_active_categories()) as $single_category) {
 		$catid = $single_category->cat_ID;
 		$output .= '<option value="'.$catid.'"'.($catid === get_query_cats() ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
 	}
@@ -124,7 +117,7 @@ function get_paginate_links($max_num_pages) {
 	$big = 999999999; // need an unlikely integer
 	return ('<div class="mtl-paginate-links">'.
 	paginate_links( array(
-		'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+		'base' => str_replace( $big, '%#%', get_pagenum_link( $big ) ),
 		'format' => '?paged=%#%',
 		'current' => max( 1, get_query_var('paged') ),
 		'total' => $max_num_pages,
@@ -362,6 +355,22 @@ function get_tag_in() {
 		return explode(",", $_GET['mtl-tag-ids']);
 
 	return null;
+}
+
+/**
+ * Get the categories that were activated in the admin menu
+ *
+ * @return string that contains a comma-separated list of category ids
+ */
+function get_active_categories() {
+	$mtl_options = get_option('mtl-option-name');
+
+	$mtl_all_catids = '';
+	foreach(get_categories() as $category) {
+        if($mtl_options['mtl-use-cat'.$category->cat_ID])
+            $mtl_all_catids .= $category->cat_ID.',';
+    }
+	return $mtl_all_catids;
 }
 
 ?>

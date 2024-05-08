@@ -369,9 +369,10 @@ function getLineLength(features = vectorSource.getFeatures()) {
  */
 function getStationLocations(features = vectorSource.getFeatures()) {
 	var result = '';
+	let hasStations = getCountStations(features) > 0;
 
 	for (let station of features) {
-		if (!(station.getGeometry() instanceof ol.geom.Point)) {
+		if (!(station.getGeometry() instanceof ol.geom.Point) && hasStations) {
 			continue;
 		}
 
@@ -395,15 +396,12 @@ function getStationLocations(features = vectorSource.getFeatures()) {
  * @return {string} either the empty string or a comma-separated list of up 3 location tags ending with a comma
  */
 function getStationLocation(station) {
-	if (!(station.getGeometry() instanceof ol.geom.Point))
-		return '';
-
 	let country = '', state = '', district = '';
 
 	country = getStationLocationLayer(station, countryFeatures, true);
 
 	if (!country)
-		return '';
+		return 'International,';
 
 	state = getStationLocationLayer(station, stateFeatures, true);
 
@@ -423,8 +421,15 @@ function getStationLocation(station) {
  * @return {string} the location tag, either empty or ending with a comma
  */
 function getStationLocationLayer(station, features, onlyFirstWord) {
+	let coordinate;
+	if (station.getGeometry() instanceof ol.geom.Point)
+		coordinate = station.getGeometry().getCoordinates();
+	else if (station.getGeometry().getCoordinates().length > 0) {
+		coordinate = station.getGeometry().getCoordinates()[0];
+	}
+
 	for (let feature of features) {
-		if (feature.getGeometry().intersectsCoordinate(station.getGeometry().getCoordinates())) {
+		if (feature.getGeometry().intersectsCoordinate(coordinate)) {
 			let name = feature.get("GEN").replace(',', '');
 			if (onlyFirstWord)
 				name = name.split(' ')[0];

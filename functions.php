@@ -29,6 +29,7 @@ include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comme
 include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php'); // proposal meta boxes for dashboard post edit view
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
+include( get_template_directory() . '/modules/mtl-tag-adding/mtl-tag-adding.php'); // automatic tagging for old proposals
 /**
  * Set the content width based on the theme's design and stylesheet.
  */

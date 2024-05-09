@@ -137,10 +137,14 @@ function mtl_proposal_form_output( $atts ){
 
 				// update/add all other needed post meta
 				update_post_meta($current_post_id, 'mtl-author-ip', $realip);
-				update_post_meta($current_post_id, 'mtl-feature-data', $_POST['mtl-feature-data']);
-				update_post_meta($current_post_id, 'mtl-feature-labels-data', $_POST['mtl-feature-labels-data']);
 				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
 				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
+				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
+
+				if (get_post_meta($current_post_id, 'mtl-features', true)) {
+					delete_post_meta($current_post_id, 'mtl-feature-data');
+					delete_post_meta($current_post_id, 'mtl-feature-labels-data');
+				}
 				
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
@@ -221,16 +225,17 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<div id="mtl-box">'."\r\n";
 			$mtl_feature_data = '';
 			$mtl_feature_labels_data = '';
+			$mtl_features = '';
 			if($editId && !$err) {
 				$mtl_feature_data =  get_post_meta($editId,'mtl-feature-data',true);
 				$mtl_feature_labels_data =  get_post_meta($editId,'mtl-feature-labels-data',true);
+				$mtl_features = get_post_meta($editId, 'mtl-features', true);
 			}
-			elseif($err && $_POST['mtl-feature-data']) {
-				$mtl_feature_data = $_POST['mtl-feature-data'];
-				$mtl_feature_labels_data = $_POST['mtl-feature-labels-data'];
+			elseif($err && $_POST['mtl-features']) {
+				$mtl_features = $_POST['mtl-features'];
 			}
 			
-			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
+			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
 			$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 			
 			// get the current category
@@ -317,9 +322,8 @@ function mtl_proposal_form_output( $atts ){
 							</p>
 							<p style="text-align:left"><small>'.$import_hints.'</small></p>';
 			
-				// hidden input fields to save feature data
-				$output .= '<input type="hidden" id="mtl-feature-data" value="'.$mtl_feature_data.'" name="mtl-feature-data" />'."\r\n";
-				$output .= '<input type="hidden" id="mtl-feature-labels-data" value="'.$mtl_feature_labels_data.'" name="mtl-feature-labels-data" />'."\r\n";
+				// hidden input field to save features
+				$output .= '<input type="hidden" id="mtl-features" value="'.$mtl_features.'" name="mtl-features" />'."\r\n";
 			
 				// hidden input field for station count
 				$mtl_count_stations = '';

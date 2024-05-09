@@ -450,11 +450,8 @@ function getStationLocationLayer(geom, features, onlyFirstWord) {
 function saveToHTML(features = vectorSource.getFeatures()) {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 
-	let wkt_strings = exportToWKT(features);
-
 	// write WKT features data to html element (will be saved to database on form submit)
-	$('#mtl-feature-data').val(wkt_strings[0]);
-	$('#mtl-feature-labels-data').val(wkt_strings[1]);
+	$('#mtl-features').val(exportToJSON());
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
 	$('#mtl-tags').val(getStationLocations(features));
@@ -467,4 +464,9 @@ function addSaveEventListeners() {
 	vectorSource.on('addfeature', () => { saveToHTML() });
 	vectorSource.on('changefeature', () => { saveToHTML() });
 	vectorSource.on('removefeature', () => { saveToHTML() });
+
+	for (let i = 0; i < vectorFeatures.length && i < vectorData.length; i++) {
+		if (!vectorFeatures[i] && vectorData[i])
+			saveToHTML();
+	}
 }

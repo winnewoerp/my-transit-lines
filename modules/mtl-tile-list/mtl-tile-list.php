@@ -44,7 +44,7 @@ function mtl_tile_list_output($atts) {
 	$output .= mtl_localize_script(true);
 	
 	// load the necessary scripts and set some JS variables
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorFeatures = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
 	wp_enqueue_script('mtl-tile-list', get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js', array('my-transit-lines'), wp_get_theme()->version);
 	if(!$hidethumbs) $output .= '<script type="text/javascript"> var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = "'.$mtl_options['mtl-standard-zoom'].'"; </script>'."\r\n";
 	$output .= '<script type="text/javascript"> ';
@@ -66,6 +66,7 @@ function mtl_tile_list_output($atts) {
 	
 	$catList = '<script type="text/javascript"> var catList = {';
 	$vectorDataList = '<script type="text/javascript"> var vectorDataList = {';
+	$vectorFeaturesList = '<script type="text/javascript"> var vectorFeaturesList = {';
 
 	// loop through the tiles
 	while($the_query->have_posts()) : $the_query->the_post(); global $post;
@@ -83,6 +84,7 @@ function mtl_tile_list_output($atts) {
 			$catList .= '"'.$post->ID.'": '.$catid.','."\r\n";
 			// Removing line breaks that can be caused by WordPress import/export
 			$vectorDataList .= '"'.$post->ID.'": "'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'",'."\r\n";
+			$vectorFeaturesList .= '"'.$post->ID.'": "'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-features',true)).'",'."\r\n";
 			$output .= mtl_thumblist_map();
 		}
 		$output .= mtl_load_template_part('content', get_post_format());
@@ -97,8 +99,9 @@ function mtl_tile_list_output($atts) {
 
 	$catList .= '}; </script>'."\r\n";
 	$vectorDataList .= '}; </script>'."\r\n";
+	$vectorFeaturesList .= '}; </script>'."\r\n";
 
-	$output .= $catList.$vectorDataList;
+	$output .= $catList.$vectorDataList.$vectorFeaturesList;
 
 	$output .= '<div class="clear"></div></div>';
 	

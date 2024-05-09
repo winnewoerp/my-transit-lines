@@ -139,7 +139,10 @@ function createThumbMap(mapNumber) {
 			view: view,
 		});
 
-		importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
+		if (vectorFeaturesList[mapNumber])
+			importToMapJSON(vectorFeaturesList[mapNumber], currentCat, 0, vectorSource);
+		else if (vectorDataList[mapNumber])
+			importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
 
 		zoomToFeatures(true, false, vectorSource, view);
 		

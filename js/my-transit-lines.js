@@ -271,7 +271,7 @@ const map = new ol.Map({
 	view: view,
 });
 
-window.addEventListener("load", importAllWKT);
+window.addEventListener("load", importAllJSON);
 
 $(document).ready(function(){
 	// Proposal contact form
@@ -444,7 +444,7 @@ function removeAllFeatures() {
 function loadNewFeatures() {
 	removeAllFeatures();
 
-	importAllWKT();
+	importAllJSON();
 }
 
 // Imports all features from vectorData, vectorLabelsData and vectorCategoriesData and handles errors
@@ -452,6 +452,23 @@ function importAllWKT() {
 	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
 		try {
 			importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	zoomToFeatures(true);
+}
+
+// Imports all features from vectorFeatures and vectorCategoriesData and handles errors
+function importAllJSON() {
+	for (var i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+		try {
+			if (vectorFeatures[i])
+				importToMapJSON(vectorFeatures[i], vectorCategoriesData[i], i);
+			else if (i < vectorData.length && vectorData[i]) {
+				importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
+			}
 		} catch (e) {
 			console.log(e);
 		}

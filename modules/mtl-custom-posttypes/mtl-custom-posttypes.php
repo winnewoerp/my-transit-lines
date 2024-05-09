@@ -61,5 +61,32 @@ function mtl_posttype_init() {
 	}
 }
 
+// create a taxonomy to distinguish if 
+add_action( 'init', 'create_sorting_phase_status_taxonomy', 0);
+function create_sorting_phase_status_taxonomy() {
+	$labels = array(
+		'name' => __( 'Sorting Phase Status', 'my-transit-lines' ),
+		'singular_name' => __( 'Sorting Phase Status','my-transit-lines' ),
+		'search_items' =>  __( 'Search items','my-transit-lines' ),
+		'all_items' => __( 'All items','my-transit-lines' ),
+		'parent_item' => __( 'Parent item','my-transit-lines' ),
+		'parent_item_colon' => __( 'Parent item:','my-transit-lines' ),
+		'edit_item' => __( 'Edit Sorting Phase Status','my-transit-lines' ), 
+		'update_item' => __( 'Update Sorting Phase Status','my-transit-lines' ),
+		'add_new_item' => __( 'Add New Sorting Phase Status','my-transit-lines' ),
+		'new_item_name' => __( 'New Sorting Phase Status','my-transit-lines' ),
+		'menu_name' => __( 'Sorting Phase Statuses' ),
+		); 	
+	
+	// Now register the taxonomy
+	register_taxonomy('sorting-phase-status',array('mtlproposal'), array(
+		'hierarchical' => true,
+		'labels' => $labels,
+		'show_ui' => true,
+		'show_admin_column' => true,
+		'rewrite' => array('slug'),
+		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
+		));
+}
 
 ?>

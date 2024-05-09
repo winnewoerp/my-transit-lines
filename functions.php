@@ -413,105 +413,41 @@ add_action( 'wp_head', '__THEME_PREFIX__wp_head' );
 function __THEME_PREFIX__wp_head() {
 ?>
 <script type="text/javascript">
-  jQuery(function($){
-    $('.comment-reply-link, .comment-edit-link').click(function(e){
-      e.preventDefault();
-      var args = $(this).data('onclick');
-      args = args.replace(/.*\(|\)/gi, '').replace(/\"|\s+/g, '');
-      args = args.split(',');
-      tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comment');
-      addComment.moveForm.apply( addComment, args );
-      tinymce.EditorManager.execCommand('mceAddEditor', true, 'comment');
-    });
-  });
+	jQuery(function($) {
+		$('.comment-reply-link, .comment-edit-link').click(function(e) {
+			e.preventDefault();
+			var args = $(this).data('onclick');
+			args = args.replace(/.*\(|\)/gi, '').replace(/\"|\s+/g, '');
+			args = args.split(',');
+			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comment');
+			addComment.moveForm.apply( addComment, args );
+			tinymce.EditorManager.execCommand('mceAddEditor', true, 'comment');
+		});
+	});
 </script>
 <?php
 }
 
-/* fallback: emtpy the needed content hook for tile list if rating not activated */
-if(!function_exists('mtl_tiles_rating_output')) {
-	function mtl_tiles_empty_content($content) {
-		global $post;
-		if(get_post_type($post->ID)=='mtlproposal' && !is_single()) return "";
-		else return $content;
-	}
-	add_action('the_content','mtl_tiles_empty_content');
+function mtl_tiles_empty_content($content) {
+	global $post;
+	if(get_post_type($post->ID)=='mtlproposal' && !is_single()) return "";
+	else return $content;
 }
-
-// create realization horizon custom taxonomy
-//hook into the init action and create_implementation_horizon_taxonomy when it fires
-add_action( 'init', 'create_implementation_horizon_taxonomy', 0 );
-
-//create a custom taxonomy name it topics for your posts
-function create_implementation_horizon_taxonomy() {
-
-// Add new taxonomy, make it hierarchical like categories
-//first do the translations part for GUI
-
-  $labels = array(
-    'name' => _x( 'Implementation Horizon', 'taxonomy general name','my-transit-lines' ),
-    'singular_name' => _x( 'Implementation Horizon', 'taxonomy singular name','my-transit-lines' ),
-    'search_items' =>  __( 'Search items','my-transit-lines' ),
-    'all_items' => __( 'All items','my-transit-lines' ),
-    'parent_item' => __( 'Parent item','my-transit-lines' ),
-    'parent_item_colon' => __( 'Parent item:','my-transit-lines' ),
-    'edit_item' => __( 'Edit Implementation Horizon','my-transit-lines' ), 
-    'update_item' => __( 'Update Implementation Horizon','my-transit-lines' ),
-    'add_new_item' => __( 'Add New Implementation Horizon','my-transit-lines' ),
-    'new_item_name' => __( 'New Implementation Horizon Name','my-transit-lines' ),
-    'menu_name' => __( 'Implementation Horizons' ),
-  ); 	
-
-// Now register the taxonomy
-  register_taxonomy('horizon',array('mtlproposal'), array(
-    'hierarchical' => true,
-    'labels' => $labels,
-    'show_ui' => true,
-    'show_admin_column' => false,
-    'query_var' => true,
-    'rewrite' => array( 'slug' => 'horizon' ),
-  ));
-}
-
-// create a taxonomy to distinguish if 
-add_action( 'init', 'create_sorting_phase_status_taxonomy', 0);
-function create_sorting_phase_status_taxonomy() {
-	$labels = array(
-		'name' => __( 'Sorting Phase Status', 'my-transit-lines' ),
-		'singular_name' => __( 'Sorting Phase Status','my-transit-lines' ),
-		'search_items' =>  __( 'Search items','my-transit-lines' ),
-		'all_items' => __( 'All items','my-transit-lines' ),
-		'parent_item' => __( 'Parent item','my-transit-lines' ),
-		'parent_item_colon' => __( 'Parent item:','my-transit-lines' ),
-		'edit_item' => __( 'Edit Sorting Phase Status','my-transit-lines' ), 
-		'update_item' => __( 'Update Sorting Phase Status','my-transit-lines' ),
-		'add_new_item' => __( 'Add New Sorting Phase Status','my-transit-lines' ),
-		'new_item_name' => __( 'New Sorting Phase Status','my-transit-lines' ),
-		'menu_name' => __( 'Sorting Phase Statuses' ),
-		); 	
-	
-	// Now register the taxonomy
-	register_taxonomy('sorting-phase-status',array('mtlproposal'), array(
-		'hierarchical' => true,
-		'labels' => $labels,
-		'show_ui' => true,
-		'show_admin_column' => true,
-		'rewrite' => array('slug'),
-		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
-		));
-}
+add_action('the_content','mtl_tiles_empty_content');
 
 // current page url
 function curPageURL() {
- $pageURL = 'http';
- if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
- $pageURL .= "://";
- if ($_SERVER["SERVER_PORT"] != "80") {
-  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
- } else {
-  $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
- }
- return $pageURL;
+	$pageURL = 'http';
+	if ($_SERVER["HTTPS"] == "on") {
+		$pageURL .= "s";
+	}
+	$pageURL .= "://";
+	if ($_SERVER["SERVER_PORT"] != "80") {
+		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+	} else {
+		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+	}
+	return $pageURL;
 }
 
 /* disable comments for posts */

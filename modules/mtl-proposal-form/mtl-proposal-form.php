@@ -560,24 +560,22 @@ function is_form_allowed() {
  /**
  * shortcode [hide-if-editmode]
  */
-function hide_if_editmode_output( $atts, $content ){
-	$edit_proposal = '';
-	if(isset($_POST['action'])) $action = $_POST['action'];
-	if(isset($_GET['edit_proposal']) || !empty( $action )) $hideThis = true;
-	if(!$hideThis) return $content;
-	else return;
+function hide_if_editmode_output( $atts, $content ) {
+	if(isset($_GET['edit_proposal']) || !empty( $_POST['action']))
+		return;
+
+	return $content;
 }
 add_shortcode( 'hide-if-editmode', 'hide_if_editmode_output' );
 
  /**
  * shortcode [hide-if-not-editmode]
  */
-function hide_if_not_editmode_output( $atts, $content ){
-	$edit_proposal = '';
-	if(isset($_POST['action'])) $action = $_POST['action'];
-	if(!isset($_GET['edit_proposal']) || !empty( $action )) $hideThis = true;
-	if(!$hideThis) return $content;
-	else return;
+function hide_if_not_editmode_output( $atts, $content ) {
+	if (!isset($_GET['edit_proposal']) || !empty( $_POST['action']))
+		return;
+
+	return $content;
 }
 add_shortcode( 'hide-if-not-editmode', 'hide_if_not_editmode_output' );
 

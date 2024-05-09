@@ -348,26 +348,10 @@ function mtl_posted_on() {
 /**
  * make all users selectable for user dropdown in admin edit proposal page
  */
-add_filter('wp_dropdown_users', 'mtl_switch_user');
-function mtl_switch_user()
-{
-    global $post; // remove if not needed
-    //global $post is available here, hence you can check for the post type here
-    $users = get_users();
-
-    echo'<select id="post_author_override" name="post_author_override" class="">';
-    echo '<option></option>';
-    foreach($users as $user)
-    {
-        echo '<option value="'.$user->ID.'"';
-
-        if ($post->post_author == $user->ID){ echo 'selected="selected"'; }
-
-        echo'>';
-        echo $user->user_login.'</option>';     
-    }
-    echo'</select>';
-
+add_filter('wp_dropdown_users_args', 'mtl_switch_user_args');
+function mtl_switch_user_args($query_args) {
+	$query_args['capability'] = [];
+	return $query_args;
 }
 
 /**

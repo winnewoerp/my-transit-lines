@@ -29,7 +29,8 @@ include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comme
 include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php'); // proposal meta boxes for dashboard post edit view
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
-include( get_template_directory() . '/modules/mtl-tag-adding/mtl-tag-adding.php'); // automatic tagging for old proposals
+include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
+
 /**
  * Set the content width based on the theme's design and stylesheet.
  */
@@ -528,42 +529,6 @@ function curPageURL() {
  }
  return $pageURL;
 }
-
-/**
- * Add ID column to admin post lists
- * @Source: https://www.isitwp.com/add-post-id-to-posts-pages-admin-columns/
- */ 
-/*function mtl_posts_columns_proposal_phase($defaults){
-    $defaults['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
-    return $defaults;
-}
-function mtl_posts_custom_proposal_phase_columns($column_name, $id){
-    if($column_name === 'mtl-proposal-phase'){
-        echo get_post_meta($id,'mtl-proposal-phase',true);
-    }
-}
-add_filter('manage_mtlproposal_posts_columns', 'mtl_posts_columns_proposal_phase', 5);
-add_action('manage_mtlproposal_posts_custom_column', 'mtl_posts_custom_proposal_phase_columns', 5, 2);
-
-function mtl_sortable_proposal_phase_column( $columns ) {
-    $columns['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
-
-    return $columns;
-}
-add_filter( 'manage_edit-mtlproposal_sortable_columns', 'mtl_sortable_proposal_phase_column' );
-
-add_action( 'pre_get_posts', 'mtlproposal_orderby' );
-function mtlproposal_orderby( $query ) {
-	if( ! is_admin() )
-		return;
-
-	$orderby = $query->get( 'orderby');
-
-	if( esc_html__('Proposal phase','my-transit-lines') == $orderby ) {
-		$query->set('meta_key','mtl-proposal-phase');
-		$query->set('orderby','meta_value');
-	}
-}*/
 
 /* disable comments for posts */
 function mtl_filter_media_comment_status( $open, $post_id ) {

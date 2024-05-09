@@ -144,13 +144,6 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-feature-labels-data', $_POST['mtl-feature-labels-data']);
 				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
 				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
-				delete_post_meta($current_post_id, 'mtl-proposal-phase');
-
-				// delete this for future versions
-				if($_POST['mtl-proposal-phase'] != 'elaboration-phase') {
-					delete_post_meta($current_post_id,'mtl-under-construction','on');
-					delete_post_meta($current_post_id,'mtl-under-construction','');
-				}
 				
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
@@ -404,10 +397,10 @@ function mtl_proposal_form_output( $atts ){
 			// send post
 			$submit_editType = $editType;
 			$edit_post = get_post($editId);
-			if($edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase') $submit_editType = 'add';
+			if($edit_post->post_status == 'draft') $submit_editType = 'add';
 			
-			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
-			if($editId && ($edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase')) $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
+			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status == 'draft' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
+			if($editId && $edit_post->post_status == 'draft') $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
 			if($editType=='update') $output .= '<a href="'.get_permalink($editId).'">'.__('Cancel update','my-transit-lines').'</a>';
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
@@ -419,7 +412,7 @@ function mtl_proposal_form_output( $atts ){
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
-		if($editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
+		if(isset($editId) && $editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
 		
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		
@@ -434,14 +427,11 @@ function mtl_proposal_form_output( $atts ){
 		else {
 			if(!get_more_drafts_allowed()) {
 				$list_posts = '<ul>';
-				for($i = 0;$i<=1;$i++) {
-					if($i==0) $query_name = get_drafts_query();
-					else $query_name = get_elaboration_phase_query();
-					while($query_name->have_posts()) {
-						$query_name->the_post();
-						global $post;
-						$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
-					}
+				$query_name = get_drafts_query();
+				while($query_name->have_posts()) {
+					$query_name->the_post();
+					global $post;
+					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
 				}
 				$list_posts .= '<ul>';
 				wp_reset_postdata();
@@ -476,15 +466,6 @@ function mtl_proposal_form_output( $atts ){
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );
 
 /**
- * Returns the amount of drafts the current user has already created
- *
- * @return int
- */
-function get_drafts_count() {
-	return get_drafts_query()->post_count + get_elaboration_phase_query()->post_count;
-}
-
-/**
  * Returns a WP_Query of all the drafts the current user has created
  *
  * @return WP_Query
@@ -497,22 +478,6 @@ function get_drafts_query() {
 	'post_status' => 'draft',
 	);
 	return new WP_Query($drafts_query_string);
-}
-
-/**
- * Returns a WP_Query of all the elabortion phase proposals the current user has created
- * 
- * @return WP_Query
- */
-function get_elaboration_phase_query() {
-	$elaboration_phase_query_string =  array(
-		'posts_per_page' => -1,
-		'post_type' => 'mtlproposal',
-		'author' => get_current_user_id(),
-		'meta_key' => 'mtl-proposal-phase',
-		'meta_value' => 'elaboration-phase',
-	);
-	return new WP_Query($elaboration_phase_query_string);
 }
 
 /**
@@ -557,7 +522,7 @@ function is_user_author() {
  * @return bool
  */
 function get_more_drafts_allowed() {
-	return (is_edit() || get_drafts_count() < get_option('mtl-option-name2')['mtl-allowed-drafts']);
+	return (is_edit() || get_drafts_query()->post_count < get_option('mtl-option-name2')['mtl-allowed-drafts']);
 }
 
 /**

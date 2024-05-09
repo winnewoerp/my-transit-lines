@@ -153,21 +153,6 @@ function get_query($type = 'mtlproposal', $per_page_multiple = 1) {
 		'tag__in' => get_tag_in(),
     );
 
-    if(!show_drafts()) {
-        $query_string['meta_query'] = array(
-            'relation' => 'OR',
-            array(
-                'key'     => 'mtl-proposal-phase',
-                'value'   => 'elaboration-phase',
-                'compare' => '!='
-            ),
-            array(
-                'key'     => 'mtl-proposal-phase',
-                'compare' => 'NOT EXISTS'
-            ),
-        );
-    }
-
     return new WP_Query($query_string);
 }
 

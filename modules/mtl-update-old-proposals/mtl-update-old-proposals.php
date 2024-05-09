@@ -84,6 +84,11 @@ function mtl_update_old_proposals_serverside() {
 }
 
 function mtl_under_construction_deletion_callback($post, $key) {
+	wp_update_post( array(
+		'ID' => $post->ID,
+		'post_status' => 'draft',
+	) );
+
 	delete_post_meta($post->ID, $key);
 }
 

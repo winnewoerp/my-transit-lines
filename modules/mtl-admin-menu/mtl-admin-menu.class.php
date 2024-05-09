@@ -69,14 +69,6 @@ class MtlSettingsPage
 			'mtl-settings',
 			array( $this, 'mtl_submenu_page_settings')
 		);
-		add_submenu_page(
-			'mtl_settings_page',
-			__('Project phase and drafts settings','my-transit-lines'),
-			__('Project phase and drafts settings','my-transit-lines'),
-			'edit_posts',
-			'mtl-project-phase',
-			array( $this, 'mtl_submenu_page_project_phase')
-		);
 	}
 	
     /**
@@ -106,29 +98,6 @@ class MtlSettingsPage
     }
 	
 	/**
-     * MTL Admin Settings project phase subpage callback
-     */
-    public function mtl_submenu_page_project_phase()
-	{
-		// Set class property
-        $this->options = get_option( 'mtl-option-name2' );
-        ?>
-        <div class="wrap">
-			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
-            <h2><?php _e('Project phase and drafts','my-transit-lines'); ?></h2>
-			<form method="post" action="options.php">
-            <?php
-                // This prints out all hidden setting fields
-                settings_fields( 'mtl-settings-group-project-phase' ); 
-                do_settings_sections( 'mtl-settings-project-phase');
-                submit_button(); 
-            ?>
-            </form>
-        </div>
-        <?php
-    }
-	
-	/**
      * MTL Admin Settings logo settings subpage callback
      */
     public function mtl_submenu_page_general_settings()
@@ -144,6 +113,7 @@ class MtlSettingsPage
 				settings_fields('mtl-settings-group-general2');
 				settings_fields('mtl-settings-group-general3');
 				settings_fields('mtl-settings-group-general4');
+				settings_fields('mtl-settings-group-general5');
 				do_settings_sections( 'mtl-settings-general');
 				submit_button(); 
 			?>
@@ -165,7 +135,6 @@ class MtlSettingsPage
 				<li><a href="?page=mtl-instructions"><?php _e('Instructions','my-transit-lines'); ?></a></li>
 				<li><a href="?page=mtl-general-settings"><?php _e('General settings','my-transit-lines'); ?></a></li>
 				<li><a href="?page=mtl-settings"><?php _e('Settings for map and categories','my-transit-lines'); ?></a></li>
-				<li><a href="?page=mtl-project-phase"><?php _e('Settings for project phase and drafts','my-transit-lines'); ?></a></li>
 			</ul>
         </div>
         <?php
@@ -204,10 +173,10 @@ class MtlSettingsPage
 		register_setting('mtl-settings-group-general2', 'mtl-option-name3', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-general3', 'mtl-option-name3', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-general4', 'mtl-option-name3', array( $this, 'sanitize' ));
+		register_setting('mtl-settings-group-general5', 'mtl-option-name3', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-map1', 'mtl-option-name', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-map2', 'mtl-option-name', array( $this, 'sanitize' ));
 		register_setting('mtl-settings-group-categories', 'mtl-option-name', array( $this, 'sanitize' ));
-		register_setting('mtl-settings-group-project-phase', 'mtl-option-name2', array( $this, 'sanitize' ));
 		register_setting('mtl-addpost-page', 'mtl-option-name', array( $this, 'sanitize' ));
 
 		// settings section general
@@ -216,7 +185,7 @@ class MtlSettingsPage
 
 		// settings section general 2
         add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-        add_settings_field('mtl-proposal-page-id', __('ID of proposal page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-proposal-page-id','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','option_name'=>'mtl-option-name3','type' => 'number'));
 		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'checkbox','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));
@@ -249,13 +218,6 @@ class MtlSettingsPage
 		add_settings_field('mtl-postlist-page', __('Page ID for proposal list page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'text','option_name'=>'mtl-option-name'));  
 		add_settings_field('mtl-postmap-page', __('Page ID for proposal map page','my-transit-lines'), array($this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postmap-page','type' => 'text','option_name'=>'mtl-option-name'));
 
-		// settings section project phase
-		add_settings_section('mtl-settings-group-project-phase', __('Project phase settings and drafts settings','my-transit-lines'), array( $this, 'print_project_phase_section_content' ), 'mtl-settings-project-phase');  
-		add_settings_field('mtl-current-project-phase', __('Current phase of the project','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-current-project-phase','option_name'=>'mtl-option-name2','type' => 'select','options' => array(array('collect',__('Collecting phase','my-transit-lines')),array('rate',__('Rating phase','my-transit-lines')))));
-		add_settings_field('mtl-prevent-new-proposals', __('No new proposals allowed, only editing','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-prevent-new-proposals','option_name'=>'mtl-option-name2','type' => 'checkbox'));
-		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-project-phase','mtl-settings-group-project-phase',array('field_name' => 'mtl-allowed-drafts','option_name'=>'mtl-option-name2','type' => 'number'));
-
-		
 		// settings section general texts
         add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');  
 		add_settings_field('mtl-proposal-contact-form-title', __('Title for intro of proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-title','option_name'=>'mtl-option-name3','type' => 'text'));
@@ -280,9 +242,9 @@ class MtlSettingsPage
     {
         $new_input = array();
 		if( isset( $input['mtl-main-logo'] ) && $input['mtl-main-logo'] != 'http://') $new_input['mtl-main-logo'] = $input['mtl-main-logo'];
-		if( isset( $input['mtl-proposal-page-id'] ) ) $new_input['mtl-proposal-page-id'] = $input['mtl-proposal-page-id'];
-		if( isset( $input['mtl-show-districts'] ) ) $new_input['mtl-show-districts'] = $input['mtl-show-districts'];
+		if( isset( $input['mtl-allowed-drafts']) ) $new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
 
+		if( isset( $input['mtl-show-districts'] ) ) $new_input['mtl-show-districts'] = $input['mtl-show-districts'];
 		if( isset( $input['mtl-country-source'] ) ) $new_input['mtl-country-source'] = $input['mtl-country-source'];
 		if( isset( $input['mtl-state-source'] ) ) $new_input['mtl-state-source'] = $input['mtl-state-source'];
 		if( isset( $input['mtl-district-source'] ) ) $new_input['mtl-district-source'] = $input['mtl-district-source'];
@@ -313,10 +275,6 @@ class MtlSettingsPage
 		if( isset( $input['mtl-addpost-page']) ) $new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
 		if( isset( $input['mtl-postlist-page']) ) $new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
 		if( isset( $input['mtl-postmap-page']) ) $new_input['mtl-postmap-page'] = $input['mtl-postmap-page'];
-		
-		if( isset( $input['mtl-current-project-phase']) ) $new_input['mtl-current-project-phase'] = $input['mtl-current-project-phase'];
-		if( isset( $input['mtl-prevent-new-proposals']) ) $new_input['mtl-prevent-new-proposals'] = $input['mtl-prevent-new-proposals'];
-		if( isset( $input['mtl-allowed-drafts']) ) $new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
         return $new_input;
     }
 

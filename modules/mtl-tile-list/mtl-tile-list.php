@@ -12,10 +12,8 @@
  * create the thumb maps
  */
 function mtl_thumblist_map() {
-	// get the mtl options
-	$mtl_options2 = get_option('mtl-option-name2');
 	global $post;
-	$output = '<div id="thumblist-map'.$post->ID.'" class="mtl-thumblist-map'.($mtl_options2['mtl-current-project-phase']=='rate' ? ' rating' : '').'"></div>';
+	$output = '<div id="thumblist-map'.$post->ID.'" class="mtl-thumblist-map"></div>';
 	return $output;
 }
 

@@ -40,7 +40,6 @@ function mtl_post_class_meta_box($post) {
 	
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
-	$mtl_options2 = get_option('mtl-option-name2');
 	
 	$mtl_feature_data =  get_post_meta($post->ID,'mtl-feature-data',true);
 	$mtl_feature_labels_data =  get_post_meta($post->ID,'mtl-feature-labels-data',true);
@@ -84,20 +83,6 @@ function mtl_post_class_meta_box($post) {
 		}
 	}
 	$output .= '</span></span></p>';
-	
-	// editor box for editor's hints field
-	if($mtl_options2['mtl-current-project-phase']=='rate') {
-		$output .= '<p><strong>'.__('Input the editor\'s hints here','my-transit-lines').'</strong><br />';
-		$output .= __('A text is needed to show the author what to change to make the proposal better and to enable "proposal ready status" selection for the author. The text must have at least 10 characters, so write something like "This is a good proposal" if it\'s already good.','my-transit-lines').'</p>';
-		$output .= '<div id="mtl-editors-hints-box">';
-		ob_start();
-		wp_editor(get_post_meta($post->ID, 'mtl-editors-hints', true ),'mtl-editors-hints',array('textarea_name' => 'mtl-editors-hints'));
-		$output_editor = ob_get_clean();
-		ob_end_flush();
-		$output .= $output_editor;
-		$output .= '</div>';
-		$output .= '<p><label for="minor-changes"><input type="checkbox" name="minor-changes" id="minor-changes" /> '.__('Only minor changes within editor\'s hints text. Do not send update notification e-mail to user.','my-transit-lines').'</label></p>';
-	}
 	
 	$output .= '<p><strong>'.__('Map data of this proposal','my-transit-lines').'</strong></p>';
 	$output .= '<div id="mtl-map-box">'."\r\n";

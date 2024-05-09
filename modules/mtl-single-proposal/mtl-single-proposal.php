@@ -20,7 +20,6 @@ function mtl_proposal_map($content) {
 		
 		// get the mtl options
 		$mtl_options = get_option('mtl-option-name');
-		$mtl_options2 = get_option('mtl-option-name2');
 		$mtl_options3 = get_option('mtl-option-name3');
 		
 		// do the meta data calculations

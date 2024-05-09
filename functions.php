@@ -316,7 +316,7 @@ function mtl_localize_script($getVar = false) {
 }
 
 /**
- * add custom post type mtlproposal. If new custom post types are created within the theme, add them to the array
+ * add custom post type mtlproposal to search query
  */
 if (!function_exists('my_theme_filter')) {
     function my_theme_filter( $query ){
@@ -332,7 +332,7 @@ add_filter( 'pre_get_posts', 'my_theme_filter' );
 /**
  * custom post meta display
  */
-function mtl_posted_on2() {
+function mtl_posted_on() {
 	global $post;
 	$time_string = get_the_date( 'd.m.Y' );
 	unset($author);

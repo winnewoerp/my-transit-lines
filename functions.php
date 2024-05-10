@@ -491,6 +491,14 @@ function allowed_html_tags() {
 			'style' => true,
 			'class' => true,
 		),
+		'img' => array(
+			'style' => true,
+			'class' => true,
+			'src' => true,
+			'alt' => true,
+			'height' => true,
+			'width' => true,
+		),
 		'li' => array(
 			'style' => true,
 			'class' => true,

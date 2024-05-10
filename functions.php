@@ -288,7 +288,6 @@ function mtl_localize_script($getVar = false) {
 		'changeToSubmit'=>__('Please select another tool on the map to submit your proposal.','my-transit-lines'),
 		'none'=>__('None','my-transit-lines'),
 		'snapping'=>__('Snapping','my-transit-lines'),
-		'circleNotSupported'=>__('Circles aren\'t saved yet due to technical limitations and can only be used while editing to measure curve radii','my-transit-lines'),
 		'confirmLeaveWebsite'=>__('Confirm that you want to leave? All unsaved data will be lost!', 'my-transit-lines'),
 		'Point'=>__('Add point', 'my-transit-lines'),
 		'LineString'=>__('Add line', 'my-transit-lines'),

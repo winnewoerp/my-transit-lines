@@ -289,7 +289,6 @@ function setInteraction(interactionType) {
 
 	switch (interactionType) {
 		case 'Circle':
-			alert(objectL10n.circleNotSupported);
 		case 'LineString':
 		case 'Point':
 		case 'Polygon':

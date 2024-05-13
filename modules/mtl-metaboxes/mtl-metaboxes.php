@@ -32,19 +32,6 @@ function mtl_add_post_meta_boxes() {
 			'high'
 		);
 	}
-	
-	// creating rating meta box in rating phase
-	$mtl_options2 = get_option('mtl-option-name2');
-	if($mtl_options2['mtl-current-project-phase']=='rate' && get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-phase') {
-		add_meta_box(
-			'mtl-post-class-rating',
-			esc_html__(__('Editor\'s rating of this proposal','my-transit-lines'),__('Editor\'s rating of this proposal','my-transit-lines')),
-			'mtl_post_class_rating_meta_box',
-			'mtlproposal',
-			'normal',
-			'high'
-		);
-	}
 }
 
 function mtl_post_class_meta_box($post) {
@@ -53,10 +40,10 @@ function mtl_post_class_meta_box($post) {
 	
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
-	$mtl_options2 = get_option('mtl-option-name2');
 	
 	$mtl_feature_data =  get_post_meta($post->ID,'mtl-feature-data',true);
 	$mtl_feature_labels_data =  get_post_meta($post->ID,'mtl-feature-labels-data',true);
+	$mtl_features =  get_post_meta($post->ID,'mtl-features',true);
 	
 	$output = '<div id="mtl-box">';
 	$output .= '<p style="clear:both"><label for="mtl-manual-proposal-data"><strong><input type="checkbox" name="mtl-manual-proposal-data" id="mtl-manual-proposal-data" /> '.__('Check this box if you want standard fields like category box or custom field section to overwrite changes within this meta box','my-transit-lines').'</strong></label></p>';
@@ -65,7 +52,7 @@ function mtl_post_class_meta_box($post) {
 	$current_category = get_the_category($post->ID);
 	
 	// load JS stuff (copied from mtl-proposal module)
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
 	$all_categories = get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 	
 	// save category style data to JS array
@@ -98,43 +85,6 @@ function mtl_post_class_meta_box($post) {
 	}
 	$output .= '</span></span></p>';
 	
-	// editor box for editor's hints field
-	if($mtl_options2['mtl-current-project-phase']=='rate') {
-		$output .= '<p><strong>'.__('Input the editor\'s hints here','my-transit-lines').'</strong><br />';
-		$output .= __('A text is needed to show the author what to change to make the proposal better and to enable "proposal ready status" selection for the author. The text must have at least 10 characters, so write something like "This is a good proposal" if it\'s already good.','my-transit-lines').'</p>';
-		$output .= '<div id="mtl-editors-hints-box">';
-		ob_start();
-		wp_editor(get_post_meta($post->ID, 'mtl-editors-hints', true ),'mtl-editors-hints',array('textarea_name' => 'mtl-editors-hints'));
-		$output_editor = ob_get_clean();
-		ob_end_flush();
-		$output .= $output_editor;
-		$output .= '</div>';
-		$output .= '<p><label for="minor-changes"><input type="checkbox" name="minor-changes" id="minor-changes" /> '.__('Only minor changes within editor\'s hints text. Do not send update notification e-mail to user.','my-transit-lines').'</label></p>';
-		$output .= '<p><strong><label for="mtl-proposal-status-nok"><input type="checkbox" name="mtl-proposal-status-nok" id="mtl-proposal-status-nok"'.(get_post_meta($post->ID,'mtl-proposal-status-nok',true)=='on' ? ' checked="checked"' : '' ).' /> '.__('Check this box if proposal is not ok yet (the "under construction" flag will appear for the proposal).','my-transit-lines').'</label></strong></p>';
-	}
-	
-	if(get_post_meta($post->ID,'author-name',true)) $output .= '<p><strong>'.__('This proposal was created by an unregistered user and thus it can\'t enter the rating phase.','my-transit-lines').'</strong></p>';
-
-	$output .= '<p>&nbsp;<br /><label class="mtl-proposal-phase" for="mtl-proposal-phase"><strong>'.__('Please select the current phase of this proposal','my-transit-lines').'</strong> ('.__('default: revision phase','my-transit-lines').')<br />';
-	$output .= '<select name="mtl-proposal-phase" id="mtl-proposal-phase">';
-	$output .= '<option value="elaboration-phase"'.(get_post_meta($post->ID,'mtl-proposal-phase',true) == 'elaboration-phase' || get_post_meta($post->ID,'mtl-under-construction',true) == 'on' ? ' selected="selected"' : '').'>'.__('Elaboration phase','my-transit-lines').'</option>';
-	$output .= '<option value="revision-phase"'.(get_post_meta($post->ID,'mtl-proposal-phase',true) == 'revision-phase' || !get_post_meta($post->ID,'mtl-proposal-phase',true) ? ' selected="selected"' : '').'>'.__('Revision phase','my-transit-lines').'</option>';
-		if(!get_post_meta($post->ID,'author-name',true)) {
-		if($mtl_options2['mtl-current-project-phase']=='rate') {
-			if(get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-ready-phase') $output .= '<option value="rating-ready-phase" selected="selected">'.__('Ready for rating','my-transit-lines').'</option>';
-			if(get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-ready-phase' || get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-phase') {
-				$output .= '<option value="rating-phase"'.(get_post_meta($post->ID,'mtl-proposal-phase',true) == 'rating-phase' ? ' selected="selected"' : '').'>'.__('Rating phase','my-transit-lines').'</option>';
-			}
-			if(get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-ready-phase') $output .= '<option value="rating-phase-refused"'.(get_post_meta($post->ID,'mtl-proposal-phase',true) == 'rating-phase-refused' ? ' selected="selected"' : '').'>'.__('Refuse rating phase','my-transit-lines').'</option>';
-		}
-	}
-	$output .= '</select><br />';
-	$output .= __('<strong>Please note:</strong> Select "Elaboration phase" if you want the flag for unfinished proposals to appear within the proposals list and in the single proposal view. "Revision phase" will only be set if you didn\'t set the proposal to "not yet ok" status (see above).','my-transit-lines');
-	if($mtl_options2['mtl-current-project-phase']=='rate') {
-		if(get_post_meta($post->ID,'mtl-proposal-phase',true)=='rating-ready-phase') $output .= __(' Choose "Rating phase" to enable rating for this proposal or "Refuse rating phase" if you don\'t want to allow rating yet. In both cases, the user will be informed by e-mail.','my-transit-lines');
-	}
-	$output .= '</p>'; 
-	
 	$output .= '<p><strong>'.__('Map data of this proposal','my-transit-lines').'</strong></p>';
 	$output .= '<div id="mtl-map-box">'."\r\n";
 	$output .= '<div id="mtl-map" style="height:400px;"></div>'."\r\n";
@@ -158,6 +108,7 @@ function mtl_post_class_meta_box($post) {
 	// hidden input fields to save feature data
 	$output .= '<input type="hidden" id="mtl-feature-data" value="'.$mtl_feature_data.'" name="mtl-feature-data" />'."\r\n";
 	$output .= '<input type="hidden" id="mtl-feature-labels-data" value="'.htmlspecialchars($mtl_feature_labels_data).'" name="mtl-feature-labels-data" />'."\r\n";
+	$output .= '<input type="hidden" id="mtl-features" value="'.$mtl_features.'" name="mtl-features" />'."\r\n";
 	
 	// hidden input field for station count
 	$mtl_count_stations =  get_post_meta($post->ID,'mtl-count-stations',true);
@@ -178,23 +129,16 @@ function mtl_admin_scripts_metaboxes( ) {
 }
 add_action( 'admin_enqueue_scripts', 'mtl_admin_scripts_metaboxes' );
 
-function mtl_post_class_rating_meta_box($post) {
-	// get contents for this meta box from star rating module
-	if(function_exists('mtl_star_rating_dashboard')) mtl_star_rating_dashboard($post);
-}
-
 // save post from backend
 function mtl_post_save($post_id) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-	if ( !wp_verify_nonce( $_POST['mtl_post_class_nonce'], basename( __FILE__ ) ) ) return;
+	if ( !isset( $_POST['mtl_post_class_nonce']) || !wp_verify_nonce( $_POST['mtl_post_class_nonce'], basename( __FILE__ ) ) ) return;
 	if ( !current_user_can( 'edit_post', $post_id ) ) return;
 	
 	// saving custom fields
-	if($_POST['mtl-manual-proposal-data'] != 'on') {
-		$save_custom_fields = array('mtl-feature-data','mtl-feature-labels-data','mtl-count-stations','mtl-line-length','mtl-proposal-phase','mtl-proposal-status-nok','mtl-editors-hints');
+	if(!isset($_POST['mtl-manual-proposal-data']) || $_POST['mtl-manual-proposal-data'] != 'on') {
+		$save_custom_fields = array('mtl-feature-data','mtl-feature-labels-data','mtl-features','mtl-count-stations','mtl-line-length');
 		foreach($save_custom_fields as $save_custom_field) if($_POST[$save_custom_field] != get_post_meta($post_id,$save_custom_field,true)) update_post_meta($post_id,$save_custom_field,$_POST[$save_custom_field]);
-		
-		if($_POST['mtl-proposal-status-nok']=='on') update_post_meta($post_id,'mtl-proposal-phase','elaboration-phase');
 		
 		if($_POST['cat']) {
 			remove_action( 'save_post', 'mtl_post_save' ); // remove save action to avoid infinite loop
@@ -204,12 +148,6 @@ function mtl_post_save($post_id) {
 			);
 			wp_update_post($post);
 			add_action( 'save_post', 'mtl_post_save' ); // re-add save action
-		}
-		
-		// delete this for future versions
-		if($_POST['mtl-proposal-phase'] != 'elaboration-phase') {
-			delete_post_meta($post_id,'mtl-under-construction','on');
-			delete_post_meta($current_post_id,'mtl-under-construction','');
 		}
 	}
 	

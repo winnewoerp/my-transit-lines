@@ -65,6 +65,7 @@ function mtl_multiple_proposal_output( $atts ) {
 
 	$vector_data = "";
 	$vector_labels_data = "";
+	$vector_features = "";
 	$vector_categories_data = "";
 	$vector_proposal_data = "";
 
@@ -80,6 +81,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		// Removing line breaks that can be caused by WordPress import/export
 		$vector_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-data', true)).'",';
 		$vector_labels_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)).'",';
+		$vector_features .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-features', true)).'",';
 		$vector_proposal_data .= '{author: "'.get_the_author_meta( 'display_name' ).'", title: "'.get_the_title().'", date: "'.get_the_date( 'd.m.Y' ).'", link: "'.get_permalink().'"},'."\r\n";
 	}
 
@@ -102,6 +104,7 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<script id="mtl-multiple-proposal-data-script" type="text/javascript"> var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";';
 	$output .= 'var vectorData = ['.$vector_data.'];'."\r\n";
 	$output .= 'var vectorLabelsData = ['.$vector_labels_data.'];'."\r\n";
+	$output .= 'var vectorFeatures = ['.$vector_features.'];'."\r\n";
 	$output .= 'var vectorCategoriesData = ['.$vector_categories_data.'];'."\r\n";
 	$output .= 'var vectorProposalData = ['.$vector_proposal_data.']; </script>'."\r\n";
 

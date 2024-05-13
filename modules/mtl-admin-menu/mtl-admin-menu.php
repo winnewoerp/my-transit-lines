@@ -26,10 +26,10 @@ function mtl_admin_scripts( ) {
     wp_enqueue_script( 'wp-color-picker-script', plugins_url('script.js', __FILE__ ), array( 'wp-color-picker' ), false, true );
 	
 	// load main js file for the theme including l10n script
-	if(!$post->ID) {
+	if(!$post || !$post->ID) {
 		wp_enqueue_style('ol-style', get_template_directory_uri().'/openlayers/ol.css', array());
 		mtl_localize_script();
-		wp_enqueue_script('OpenLayers', get_template_directory_uri().'/openlayers/dist/ol.js', array());
+		wp_enqueue_script('openlayers', get_template_directory_uri().'/openlayers/dist/ol.js', array(), wp_get_theme()->version, true);
 		wp_enqueue_script('my-transit-lines-admin-script', get_template_directory_uri().'/modules/mtl-admin-menu/mtl-admin-menu.js', array(), wp_get_theme()->version, true);
 	}
 	

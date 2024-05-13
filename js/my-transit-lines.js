@@ -271,7 +271,7 @@ const map = new ol.Map({
 	view: view,
 });
 
-window.addEventListener("load", importAllWKT);
+window.addEventListener("load", importAllJSON);
 
 $(document).ready(function(){
 	// Proposal contact form
@@ -444,7 +444,7 @@ function removeAllFeatures() {
 function loadNewFeatures() {
 	removeAllFeatures();
 
-	importAllWKT();
+	importAllJSON();
 }
 
 // Imports all features from vectorData, vectorLabelsData and vectorCategoriesData and handles errors
@@ -452,6 +452,23 @@ function importAllWKT() {
 	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
 		try {
 			importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	zoomToFeatures(true);
+}
+
+// Imports all features from vectorFeatures and vectorCategoriesData and handles errors
+function importAllJSON() {
+	for (var i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+		try {
+			if (vectorFeatures[i])
+				importToMapJSON(vectorFeatures[i], vectorCategoriesData[i], i);
+			else if (i < vectorData.length && vectorData[i]) {
+				importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
+			}
 		} catch (e) {
 			console.log(e);
 		}
@@ -534,13 +551,16 @@ function exportToWKT() {
  * Imports source string to the map using the GeoJSON format
  * @param {string|JSON} source the JSON string or object to import
  * @param {string} categorySource the category to use for the features
- * @param {int} proposal_data_index relevant for multiple proposal view: which proposal data index to add to the features. Default: undefined
+ * @param {int} proposal_data_index relevant for multiple proposal view: which proposal data index to add to the features. Default: 0
  */
-function importToMapJSON(source, categorySource, proposal_data_index) {
+function importToMapJSON(source, categorySource, proposal_data_index = 0, vector = vectorSource) {
 	if (source == '' || source == '{}')
 		return;
 
-	let features = GEO_JSON_FORMAT.readFeatures(source.replaceAll("\r", "").replaceAll("\n", ""), PROJECTION_OPTIONS);
+	if (typeof source === "string" || source instanceof String)
+		source = source.replaceAll("\r", "").replaceAll("\n", "").replaceAll("'", "\"");
+
+	let features = GEO_JSON_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
 	for (var feature of features) {
 		feature.set('category', categorySource);
@@ -556,7 +576,7 @@ function importToMapJSON(source, categorySource, proposal_data_index) {
 		selectedFeatureIndex += features.length;
 	}
 
-	vectorSource.addFeatures(features);
+	vector.addFeatures(features);
 }
 
 /**
@@ -566,22 +586,14 @@ function importToMapJSON(source, categorySource, proposal_data_index) {
 function exportToJSON() {
 	let features = removeCircles(vectorSource.getFeatures());
 
-	let proposal_data_indices = [];
-
 	for (var feature of features) {
 		feature.set('name', encodeSpecialChars(feature.get('name') || ""));
-		proposal_data_indices.push(feature.get('proposal_data_index'));
 		feature.unset('proposal_data_index');
+		feature.unset('location');
+		feature.unset('category');
 	}
 
-	let json_string = GEO_JSON_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
-
-	proposal_data_indices.reverse();
-
-	for (var feature of features) {
-		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
-		feature.set('proposal_data_index', proposal_data_indices.pop());
-	}
+	let json_string = GEO_JSON_FORMAT.writeFeatures(features, PROJECTION_OPTIONS).replaceAll("\"", "'");
 
 	return json_string;
 }
@@ -713,7 +725,7 @@ function removeCircles(features, replace = true) {
 				result.push(newFeature);
 			}
 		} else {
-			result.push(feature);
+			result.push(feature.clone());
 		}
 	}
 	return result;

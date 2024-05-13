@@ -19,19 +19,18 @@
  */
 include( get_template_directory() . '/modules/mtl-login-register/mtl-login-register.php'); // Login/Register module
 include( get_template_directory() . '/modules/mtl-admin-menu/mtl-admin-menu.php'); // dashboard admin section module
-include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // new proposal form
+include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // proposal form
 include( get_template_directory() . '/modules/mtl-single-proposal/mtl-single-proposal.php'); // single proposal custom display
 include( get_template_directory() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.php'); // multiple proposal custom display
 include( get_template_directory() . '/modules/mtl-tile-list/mtl-tile-list.php'); // proposal tile list with small maps
 include( get_template_directory() . '/modules/mtl-search-bar/mtl-search-bar.php'); // search bar
 include( get_template_directory() . '/modules/mtl-custom-posttypes/mtl-custom-posttypes.php'); // create the custom posttypes necessary for the theme
 include( get_template_directory() . '/modules/mtl-comment-notification/mtl-comment-notification.php'); // custom comment notification, to be extended
-//include( get_template_directory() . '/modules/mtl-comment-editing/mtl-comment-editing.php'); // add comment editing functionality
 include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php'); // proposal meta boxes for dashboard post edit view
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
-include( get_template_directory() . '/modules/mtl-star-rating/mtl-star-rating.php'); // star rating functioanlity
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
-include( get_template_directory() . '/modules/mtl-tag-adding/mtl-tag-adding.php'); // automatic tagging for old proposals
+include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
+
 /**
  * Set the content width based on the theme's design and stylesheet.
  */
@@ -221,8 +220,8 @@ function mtl_load_wp_editor($content, $editor_id, $settings) {
  * create domain output for automatically created e-mail addresses like noreply@...
  */
 function mtl_maildomain() {
-	$maildomain = str_replace('http://','',get_bloginfo('siteurl'));
-	$maildomain = str_replace('https://','',get_bloginfo('siteurl'));
+	$maildomain = str_replace('http://','',get_bloginfo('url'));
+	$maildomain = str_replace('https://','',get_bloginfo('url'));
 	$maildomain = str_replace('www.','',$maildomain);
 	$maildomain = explode('/',$maildomain);
 	$maildomain = $maildomain[0];
@@ -244,7 +243,7 @@ add_filter('comment_form_defaults', 'mtl_commentform_defaults');
 function mtl_main_domain_redirect() {
 	$checkurl='http://'.$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
 	$other_domains = array(); // put all possible domains that can be used except the site_url to this array, without http:// and www.
-	$blog_domain = str_replace('http://www.','',get_bloginfo('siteurl'));
+	$blog_domain = str_replace('http://www.','',get_bloginfo('url'));
 	foreach($other_domains as $other_domain) {
 		if(str_replace($other_domain,$blog_domain,$checkurl) != $checkurl) {
 			$new_url = str_replace($other_domain,$blog_domain,$checkurl);
@@ -289,7 +288,6 @@ function mtl_localize_script($getVar = false) {
 		'changeToSubmit'=>__('Please select another tool on the map to submit your proposal.','my-transit-lines'),
 		'none'=>__('None','my-transit-lines'),
 		'snapping'=>__('Snapping','my-transit-lines'),
-		'circleNotSupported'=>__('Circles aren\'t saved yet due to technical limitations and can only be used while editing to measure curve radii','my-transit-lines'),
 		'confirmLeaveWebsite'=>__('Confirm that you want to leave? All unsaved data will be lost!', 'my-transit-lines'),
 		'Point'=>__('Add point', 'my-transit-lines'),
 		'LineString'=>__('Add line', 'my-transit-lines'),
@@ -308,11 +306,8 @@ function mtl_localize_script($getVar = false) {
 		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
-	$countValues = 0;
 	foreach($translatedStrings as $key => $value) {
-		$localizeScript .= '"'.$key.'":"'.addslashes($value).'"';
-		if($countValues<sizeof($translatedStrings)-1) $localizeScript .= ',';
-		$countValues++;
+		$localizeScript .= '"'.$key.'":"'.addslashes($value).'",';
 	}
 	$localizeScript .= '};'."\r\n".'/* ]]> */'."\r\n".'</script>'."\r\n";
 	if($getVar) return $localizeScript;
@@ -320,7 +315,7 @@ function mtl_localize_script($getVar = false) {
 }
 
 /**
- * add custom post type mtlproposal. If new custom post types are created within the theme, add them to the array
+ * add custom post type mtlproposal to search query
  */
 if (!function_exists('my_theme_filter')) {
     function my_theme_filter( $query ){
@@ -336,7 +331,7 @@ add_filter( 'pre_get_posts', 'my_theme_filter' );
 /**
  * custom post meta display
  */
-function mtl_posted_on2() {
+function mtl_posted_on() {
 	global $post;
 	$time_string = get_the_date( 'd.m.Y' );
 	unset($author);
@@ -352,26 +347,10 @@ function mtl_posted_on2() {
 /**
  * make all users selectable for user dropdown in admin edit proposal page
  */
-add_filter('wp_dropdown_users', 'mtl_switch_user');
-function mtl_switch_user()
-{
-    global $post; // remove if not needed
-    //global $post is available here, hence you can check for the post type here
-    $users = get_users();
-
-    echo'<select id="post_author_override" name="post_author_override" class="">';
-    echo '<option></option>';
-    foreach($users as $user)
-    {
-        echo '<option value="'.$user->ID.'"';
-
-        if ($post->post_author == $user->ID){ echo 'selected="selected"'; }
-
-        echo'>';
-        echo $user->user_login.'</option>';     
-    }
-    echo'</select>';
-
+add_filter('wp_dropdown_users_args', 'mtl_switch_user_args');
+function mtl_switch_user_args($query_args) {
+	$query_args['capability'] = [];
+	return $query_args;
 }
 
 /**
@@ -433,147 +412,47 @@ add_action( 'wp_head', '__THEME_PREFIX__wp_head' );
 function __THEME_PREFIX__wp_head() {
 ?>
 <script type="text/javascript">
-  jQuery(function($){
-    $('.comment-reply-link, .comment-edit-link').click(function(e){
-      e.preventDefault();
-      var args = $(this).data('onclick');
-      args = args.replace(/.*\(|\)/gi, '').replace(/\"|\s+/g, '');
-      args = args.split(',');
-      tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comment');
-      addComment.moveForm.apply( addComment, args );
-      tinymce.EditorManager.execCommand('mceAddEditor', true, 'comment');
-    });
-  });
+	jQuery(function($) {
+		$('.comment-reply-link, .comment-edit-link').click(function(e) {
+			e.preventDefault();
+			var args = $(this).data('onclick');
+			args = args.replace(/.*\(|\)/gi, '').replace(/\"|\s+/g, '');
+			args = args.split(',');
+			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comment');
+			addComment.moveForm.apply( addComment, args );
+			tinymce.EditorManager.execCommand('mceAddEditor', true, 'comment');
+		});
+	});
 </script>
 <?php
 }
 
-/* fallback: emtpy the needed content hook for tile list if rating not activated */
-if(!function_exists('mtl_tiles_rating_output')) {
-	function mtl_tiles_empty_content($content) {
-		global $post;
-		if(get_post_type($post->ID)=='mtlproposal') return;
-		else return $content;
-	}
-	add_action('the_content','mtl_tiles_empty_content');
+function mtl_tiles_empty_content($content) {
+	global $post;
+	if(get_post_type($post->ID)=='mtlproposal' && !is_single()) return "";
+	else return $content;
 }
-
-// create realization horizon custom taxonomy
-//hook into the init action and create_implementation_horizon_taxonomy when it fires
-add_action( 'init', 'create_implementation_horizon_taxonomy', 0 );
-
-//create a custom taxonomy name it topics for your posts
-function create_implementation_horizon_taxonomy() {
-
-// Add new taxonomy, make it hierarchical like categories
-//first do the translations part for GUI
-
-  $labels = array(
-    'name' => _x( 'Implementation Horizon', 'taxonomy general name','my-transit-lines' ),
-    'singular_name' => _x( 'Implementation Horizon', 'taxonomy singular name','my-transit-lines' ),
-    'search_items' =>  __( 'Search items','my-transit-lines' ),
-    'all_items' => __( 'All items','my-transit-lines' ),
-    'parent_item' => __( 'Parent item','my-transit-lines' ),
-    'parent_item_colon' => __( 'Parent item:','my-transit-lines' ),
-    'edit_item' => __( 'Edit Implementation Horizon','my-transit-lines' ), 
-    'update_item' => __( 'Update Implementation Horizon','my-transit-lines' ),
-    'add_new_item' => __( 'Add New Implementation Horizon','my-transit-lines' ),
-    'new_item_name' => __( 'New Implementation Horizon Name','my-transit-lines' ),
-    'menu_name' => __( 'Implementation Horizons' ),
-  ); 	
-
-// Now register the taxonomy
-  register_taxonomy('horizon',array('mtlproposal'), array(
-    'hierarchical' => true,
-    'labels' => $labels,
-    'show_ui' => true,
-    'show_admin_column' => false,
-    'query_var' => true,
-    'rewrite' => array( 'slug' => 'horizon' ),
-  ));
-}
-
-// create a taxonomy to distinguish if 
-add_action( 'init', 'create_sorting_phase_status_taxonomy', 0);
-function create_sorting_phase_status_taxonomy() {
-	$labels = array(
-		'name' => __( 'Sorting Phase Status', 'my-transit-lines' ),
-		'singular_name' => __( 'Sorting Phase Status','my-transit-lines' ),
-		'search_items' =>  __( 'Search items','my-transit-lines' ),
-		'all_items' => __( 'All items','my-transit-lines' ),
-		'parent_item' => __( 'Parent item','my-transit-lines' ),
-		'parent_item_colon' => __( 'Parent item:','my-transit-lines' ),
-		'edit_item' => __( 'Edit Sorting Phase Status','my-transit-lines' ), 
-		'update_item' => __( 'Update Sorting Phase Status','my-transit-lines' ),
-		'add_new_item' => __( 'Add New Sorting Phase Status','my-transit-lines' ),
-		'new_item_name' => __( 'New Sorting Phase Status','my-transit-lines' ),
-		'menu_name' => __( 'Sorting Phase Statuses' ),
-		); 	
-	
-	// Now register the taxonomy
-	register_taxonomy('sorting-phase-status',array('mtlproposal'), array(
-		'hierarchical' => true,
-		'labels' => $labels,
-		'show_ui' => true,
-		'show_admin_column' => true,
-		'rewrite' => array('slug'),
-		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
-		));
-}
+add_action('the_content','mtl_tiles_empty_content');
 
 // current page url
 function curPageURL() {
- $pageURL = 'http';
- if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
- $pageURL .= "://";
- if ($_SERVER["SERVER_PORT"] != "80") {
-  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
- } else {
-  $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
- }
- return $pageURL;
-}
-
-/**
- * Add ID column to admin post lists
- * @Source: https://www.isitwp.com/add-post-id-to-posts-pages-admin-columns/
- */ 
-/*function mtl_posts_columns_proposal_phase($defaults){
-    $defaults['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
-    return $defaults;
-}
-function mtl_posts_custom_proposal_phase_columns($column_name, $id){
-    if($column_name === 'mtl-proposal-phase'){
-        echo get_post_meta($id,'mtl-proposal-phase',true);
-    }
-}
-add_filter('manage_mtlproposal_posts_columns', 'mtl_posts_columns_proposal_phase', 5);
-add_action('manage_mtlproposal_posts_custom_column', 'mtl_posts_custom_proposal_phase_columns', 5, 2);
-
-function mtl_sortable_proposal_phase_column( $columns ) {
-    $columns['mtl-proposal-phase'] = esc_html__('Proposal phase','my-transit-lines');
-
-    return $columns;
-}
-add_filter( 'manage_edit-mtlproposal_sortable_columns', 'mtl_sortable_proposal_phase_column' );
-
-add_action( 'pre_get_posts', 'mtlproposal_orderby' );
-function mtlproposal_orderby( $query ) {
-	if( ! is_admin() )
-		return;
-
-	$orderby = $query->get( 'orderby');
-
-	if( esc_html__('Proposal phase','my-transit-lines') == $orderby ) {
-		$query->set('meta_key','mtl-proposal-phase');
-		$query->set('orderby','meta_value');
+	$pageURL = 'http';
+	if ($_SERVER["HTTPS"] == "on") {
+		$pageURL .= "s";
 	}
-}*/
+	$pageURL .= "://";
+	if ($_SERVER["SERVER_PORT"] != "80") {
+		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+	} else {
+		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+	}
+	return $pageURL;
+}
 
 /* disable comments for posts */
 function mtl_filter_media_comment_status( $open, $post_id ) {
     $post = get_post( $post_id );
-    if( $post->post_type == 'post' ) {
+    if( !$post || $post->post_type == 'post' ) {
         return false;
     }
     return $open;
@@ -611,6 +490,14 @@ function allowed_html_tags() {
 		'em' => array(
 			'style' => true,
 			'class' => true,
+		),
+		'img' => array(
+			'style' => true,
+			'class' => true,
+			'src' => true,
+			'alt' => true,
+			'height' => true,
+			'width' => true,
 		),
 		'li' => array(
 			'style' => true,

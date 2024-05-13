@@ -289,7 +289,6 @@ function setInteraction(interactionType) {
 
 	switch (interactionType) {
 		case 'Circle':
-			alert(objectL10n.circleNotSupported);
 		case 'LineString':
 		case 'Point':
 		case 'Polygon':
@@ -398,34 +397,36 @@ function getStationLocations(features = vectorSource.getFeatures()) {
 function getStationLocation(station) {
 	let country = '', state = '', district = '';
 
-	country = getStationLocationLayer(station, countryFeatures, true);
+	country = getStationLocationLayer(station.getGeometry(), countryFeatures, true);
 
 	if (!country)
 		return 'International,';
 
-	state = getStationLocationLayer(station, stateFeatures, true);
+	state = getStationLocationLayer(station.getGeometry(), stateFeatures, true);
 
 	if (!state)
 		return country;
 
-	district = getStationLocationLayer(station, districtFeatures, false);
+	district = getStationLocationLayer(station.getGeometry(), districtFeatures, false);
 
 	return country + state + district;
 }
 
 /**
  * Gets the location tag of the station on the layer specified by features
- * @param {FeatureLike} station the station to get the location of
+ * @param {Geometry} geom the station to get the location of
  * @param {FeatureLike[]} features the layer to search on. Individual features need to be able to intersect the stations coordinates and have the "GEN" property set as their name
  * @param {boolean} onlyFirstWord whether you want only use the first word of the name found in the "GEN" property word seperator is ' '
  * @return {string} the location tag, either empty or ending with a comma
  */
-function getStationLocationLayer(station, features, onlyFirstWord) {
+function getStationLocationLayer(geom, features, onlyFirstWord) {
 	let coordinate;
-	if (station.getGeometry() instanceof ol.geom.Point)
-		coordinate = station.getGeometry().getCoordinates();
-	else if (station.getGeometry().getCoordinates().length > 0) {
-		coordinate = station.getGeometry().getCoordinates()[0];
+	if (geom instanceof ol.geom.Point)
+		coordinate = geom.getCoordinates();
+	else if (geom instanceof ol.geom.Circle)
+		coordinate = geom.getCenter();
+	else if (geom.getCoordinates().length > 0) {
+		coordinate = geom.getCoordinates()[0];
 	}
 
 	for (let feature of features) {
@@ -448,11 +449,8 @@ function getStationLocationLayer(station, features, onlyFirstWord) {
 function saveToHTML(features = vectorSource.getFeatures()) {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 
-	let wkt_strings = exportToWKT(features);
-
 	// write WKT features data to html element (will be saved to database on form submit)
-	$('#mtl-feature-data').val(wkt_strings[0]);
-	$('#mtl-feature-labels-data').val(wkt_strings[1]);
+	$('#mtl-features').val(exportToJSON());
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
 	$('#mtl-tags').val(getStationLocations(features));
@@ -465,4 +463,9 @@ function addSaveEventListeners() {
 	vectorSource.on('addfeature', () => { saveToHTML() });
 	vectorSource.on('changefeature', () => { saveToHTML() });
 	vectorSource.on('removefeature', () => { saveToHTML() });
+
+	for (let i = 0; i < vectorFeatures.length && i < vectorData.length; i++) {
+		if (!vectorFeatures[i] && vectorData[i])
+			saveToHTML();
+	}
 }

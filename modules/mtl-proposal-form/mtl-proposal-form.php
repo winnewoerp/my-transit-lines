@@ -16,14 +16,11 @@ function mtl_proposal_form_output( $atts ){
 	
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
-	$mtl_options2 = get_option('mtl-option-name2');
 	$mtl_options3 = get_option('mtl-option-name3');
 	
 	// get the posttype from url parameter or set to default
 	$postType = 'mtlproposal';
 	if(isset($_GET['posttype'])) $postType = $_GET['posttype'];
-	$posttype_object = get_post_type_object($postType);
-	$posttype_singular_name = $posttype_object->labels->singular_name;
 
 	$editId = get_editId();
 	$editType = 'add';
@@ -37,8 +34,8 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['posttype-selector']['mtlproposal'] = __('Add a single proposal','my-transit-lines');
 		$mtl_string['mail-subject']['mtlproposal']['add'] = __('New proposal','my-transit-lines');
 		$mtl_string['mail-subject']['mtlproposal']['update'] = __('Updated proposal','my-transit-lines');
-		$mtl_string['mail-text']['mtlproposal']['add'] = sprintf(__('A new proposal has been added to your site "%s".','my-transit-lines'),get_settings('blogname'));
-		$mtl_string['mail-text']['mtlproposal']['update'] = sprintf(__('A proposal has been updated at your site "%s".','my-transit-lines'),get_settings('blogname'));
+		$mtl_string['mail-text']['mtlproposal']['add'] = sprintf(__('A new proposal has been added to your site "%s".','my-transit-lines'),get_option('blogname'));
+		$mtl_string['mail-text']['mtlproposal']['update'] = sprintf(__('A proposal has been updated at your site "%s".','my-transit-lines'),get_option('blogname'));
 		$mtl_string['view-text']['mtlproposal'] = __('View proposal','my-transit-lines');
 		$mtl_string['view-here-text']['mtlproposal'] = __('See your proposal here','my-transit-lines');
 		$mtl_string['edit-text']['mtlproposal'] = __('Edit proposal','my-transit-lines');
@@ -46,7 +43,7 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['check-content']['mtlproposal']['update'] = __('Please have a look at the updated proposal to see if everything\'s alright with it.','my-transit-lines');
 		$mtl_string['success-notice']['mtlproposal']['add'] = __( 'Thank you! Your proposal has been added successfully.', 'my-transit-lines' );
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
-		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink($mtl_options3['mtl-proposal-page-id']).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
+		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink($mtl_options['mtl-postlist-page']).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
@@ -74,17 +71,17 @@ function mtl_proposal_form_output( $atts ){
 		
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
-			if (strlen(trim($_POST['title']))<=2) $err['title']=true;
+			if (!isset($_POST['title']) || strlen(trim($_POST['title']))<=2) $err['title']=true;
 			if (!is_user_logged_in()) {
-				if (strlen(trim($_POST['authname']))<=2) $err['authname']=true;
+				if (!isset($_POST['authname']) || strlen(trim($_POST['authname']))<=2) $err['authname']=true;
 				if (!$_POST['authemail']) $err['authemail']=true;
-				if (strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
+				if (!isset($_POST['authemail']) || strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
 			}
 			if ($postType == 'mtlproposal') {
 				if(!isset($_POST['cat'])) $err['cat']=true;
 			}
 			
-			if (strlen(trim($_POST['description']))<=2) $err['description']=true;
+			if (!isset($_POST['description']) || strlen(trim($_POST['description']))<=2) $err['description']=true;
 			if (!is_user_logged_in()) {
 				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
 				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
@@ -140,16 +137,13 @@ function mtl_proposal_form_output( $atts ){
 
 				// update/add all other needed post meta
 				update_post_meta($current_post_id, 'mtl-author-ip', $realip);
-				update_post_meta($current_post_id, 'mtl-feature-data', $_POST['mtl-feature-data']);
-				update_post_meta($current_post_id, 'mtl-feature-labels-data', $_POST['mtl-feature-labels-data']);
 				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
 				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
-				delete_post_meta($current_post_id, 'mtl-proposal-phase');
+				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
 
-				// delete this for future versions
-				if($_POST['mtl-proposal-phase'] != 'elaboration-phase') {
-					delete_post_meta($current_post_id,'mtl-under-construction','on');
-					delete_post_meta($current_post_id,'mtl-under-construction','');
+				if (get_post_meta($current_post_id, 'mtl-features', true)) {
+					delete_post_meta($current_post_id, 'mtl-feature-data');
+					delete_post_meta($current_post_id, 'mtl-feature-labels-data');
 				}
 				
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
@@ -162,16 +156,16 @@ function mtl_proposal_form_output( $atts ){
 				
 				// preparing user info for mail notification			
 				global $current_user;
-				get_currentuserinfo();
+				wp_get_current_user();
 				$author_name = $current_user->user_login;
 				if(!$author_name) $author_name = get_post_meta($current_post_id,'author-name',true);
 				$author_email = $current_user->user_email;
 				if(!$author_email) $author_email = get_post_meta($current_post_id,'author-email',true);
 				
 				// mail data
-				$to = get_settings('admin_email');
-				$headers = 'From: '.get_settings('blogname').' <noreply@'.mtl_maildomain().'>' . "\r\n";
-				$subject = '['.get_settings('blogname').'] '.$mtl_string['mail-subject'][$postType][$editType];
+				$to = get_option('admin_email');
+				$headers = 'From: '.get_option('blogname').' <noreply@'.mtl_maildomain().'>' . "\r\n";
+				$subject = '['.get_option('blogname').'] '.$mtl_string['mail-subject'][$postType][$editType];
 				$message = $mtl_string['mail-text'][$postType][$editType]."\r\n\r\n";
 				$message .= __('Author name','my-transit-lines').': ' . $author_name . "\r\n";
 				$message .= __('Author e-mail','my-transit-lines').': ' . $author_email . "\r\n";
@@ -216,7 +210,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '</div>'."\r\n";
 		}
 		
-		if((!$action || $err) && !$hideform) {
+		if(!$action || $err) {
 			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data" onsubmit=" warningMessage = \'\' ">'."\r\n";
 			$output .= '<p><label for="title"><strong>'.$mtl_string['form-title'][$postType].'</strong><br />'."\r\n";
 			
@@ -231,16 +225,17 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<div id="mtl-box">'."\r\n";
 			$mtl_feature_data = '';
 			$mtl_feature_labels_data = '';
+			$mtl_features = '';
 			if($editId && !$err) {
 				$mtl_feature_data =  get_post_meta($editId,'mtl-feature-data',true);
 				$mtl_feature_labels_data =  get_post_meta($editId,'mtl-feature-labels-data',true);
+				$mtl_features = get_post_meta($editId, 'mtl-features', true);
 			}
-			elseif($err && $_POST['mtl-feature-data']) {
-				$mtl_feature_data = $_POST['mtl-feature-data'];
-				$mtl_feature_labels_data = $_POST['mtl-feature-labels-data'];
+			elseif($err && $_POST['mtl-features']) {
+				$mtl_features = $_POST['mtl-features'];
 			}
 			
-			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
+			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
 			$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 			
 			// get the current category
@@ -326,19 +321,9 @@ function mtl_proposal_form_output( $atts ){
 							</label>
 							</p>
 							<p style="text-align:left"><small>'.$import_hints.'</small></p>';
-
-				// editor's hints
-				if(is_user_author() && $mtl_options2['mtl-current-project-phase']=='rate' && get_post_type($editId)=='mtlproposal') {
-					$output .= '<div class="editors-hints-box">';
-					$output .= '<h4>'.__('Editor\'s hints for this proposal','my-transit-lines').'</h4>';
-					if(get_post_meta($editId,'mtl-editors-hints',true)) $output .= '<p>'.get_post_meta($editId,'mtl-editors-hints',true).'</p>';
-					else $output .= '<p><em>'.__('No editor\'s hints yet','my-transit-lines').'</em></p>';
-					$output .= '</div>';
-				}
 			
-				// hidden input fields to save feature data
-				$output .= '<input type="hidden" id="mtl-feature-data" value="'.$mtl_feature_data.'" name="mtl-feature-data" />'."\r\n";
-				$output .= '<input type="hidden" id="mtl-feature-labels-data" value="'.$mtl_feature_labels_data.'" name="mtl-feature-labels-data" />'."\r\n";
+				// hidden input field to save features
+				$output .= '<input type="hidden" id="mtl-features" value="'.$mtl_features.'" name="mtl-features" />'."\r\n";
 			
 				// hidden input field for station count
 				$mtl_count_stations = '';
@@ -404,10 +389,10 @@ function mtl_proposal_form_output( $atts ){
 			// send post
 			$submit_editType = $editType;
 			$edit_post = get_post($editId);
-			if($edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase') $submit_editType = 'add';
+			if($edit_post->post_status == 'draft') $submit_editType = 'add';
 			
-			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
-			if($editId && ($edit_post->post_status == 'draft' || get_post_meta($editId,'mtl-proposal-phase',true) == 'elaboration-phase')) $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
+			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status == 'draft' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
+			if($editId && $edit_post->post_status == 'draft') $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
 			if($editType=='update') $output .= '<a href="'.get_permalink($editId).'">'.__('Cancel update','my-transit-lines').'</a>';
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
@@ -415,11 +400,11 @@ function mtl_proposal_form_output( $atts ){
 			wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
-		else if(!$hideform) $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
+		else $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
-		if($editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
+		if(isset($editId) && $editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
 		
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		
@@ -434,14 +419,11 @@ function mtl_proposal_form_output( $atts ){
 		else {
 			if(!get_more_drafts_allowed()) {
 				$list_posts = '<ul>';
-				for($i = 0;$i<=1;$i++) {
-					if($i==0) $query_name = get_drafts_query();
-					else $query_name = get_elaboration_phase_query();
-					while($query_name->have_posts()) {
-						$query_name->the_post();
-						global $post;
-						$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
-					}
+				$query_name = get_drafts_query();
+				while($query_name->have_posts()) {
+					$query_name->the_post();
+					global $post;
+					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
 				}
 				$list_posts .= '<ul>';
 				wp_reset_postdata();
@@ -476,15 +458,6 @@ function mtl_proposal_form_output( $atts ){
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );
 
 /**
- * Returns the amount of drafts the current user has already created
- *
- * @return int
- */
-function get_drafts_count() {
-	return get_drafts_query()->post_count + get_elaboration_phase_query()->post_count;
-}
-
-/**
  * Returns a WP_Query of all the drafts the current user has created
  *
  * @return WP_Query
@@ -500,22 +473,6 @@ function get_drafts_query() {
 }
 
 /**
- * Returns a WP_Query of all the elabortion phase proposals the current user has created
- * 
- * @return WP_Query
- */
-function get_elaboration_phase_query() {
-	$elaboration_phase_query_string =  array(
-		'posts_per_page' => -1,
-		'post_type' => 'mtlproposal',
-		'author' => get_current_user_id(),
-		'meta_key' => 'mtl-proposal-phase',
-		'meta_value' => 'elaboration-phase',
-	);
-	return new WP_Query($elaboration_phase_query_string);
-}
-
-/**
  * Returns the editId for the proposal to edit. Might be the id of a proposal or an empty string for a new proposal
  *
  * @return int|string
@@ -525,14 +482,10 @@ function get_editId() {
 	$editId = '';
 
 	// only if form allowed
-	if(is_user_logged_in() && is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft']) && is_user_author() && !is_rating_possible()) {
+	if(is_user_logged_in() && is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft']) && is_user_author()) {
 		$editId = get_id();
 	}
 	return $editId;
-}
-
-function is_rating_possible() {
-	return is_edit() && get_option('mtl-option-name2')['mtl-current-project-phase'] == 'rate' && get_post_meta(get_id(), 'mtl-proposal-rateable');
 }
 
 /**
@@ -557,7 +510,7 @@ function is_user_author() {
  * @return bool
  */
 function get_more_drafts_allowed() {
-	return (is_edit() || get_drafts_count() < get_option('mtl-option-name2')['mtl-allowed-drafts']);
+	return (is_edit() || get_drafts_query()->post_count < get_option('mtl-option-name3')['mtl-allowed-drafts']);
 }
 
 /**
@@ -589,30 +542,28 @@ function get_id() {
  * @return boolean
  */
 function is_form_allowed() {
-	return (is_user_logged_in() && is_edit()) || (get_option('mtl-option-name2')['mtl-prevent-new-proposals']!='on' && get_more_drafts_allowed());
+	return (is_user_logged_in() && is_edit()) || get_more_drafts_allowed();
 }
 
  /**
  * shortcode [hide-if-editmode]
  */
-function hide_if_editmode_output( $atts, $content ){
-	$edit_proposal = '';
-	if(isset($_POST['action'])) $action = $_POST['action'];
-	if(isset($_GET['edit_proposal']) || !empty( $action )) $hideThis = true;
-	if(!$hideThis) return $content;
-	else return;
+function hide_if_editmode_output( $atts, $content ) {
+	if(isset($_GET['edit_proposal']) || !empty( $_POST['action']))
+		return;
+
+	return $content;
 }
 add_shortcode( 'hide-if-editmode', 'hide_if_editmode_output' );
 
  /**
  * shortcode [hide-if-not-editmode]
  */
-function hide_if_not_editmode_output( $atts, $content ){
-	$edit_proposal = '';
-	if(isset($_POST['action'])) $action = $_POST['action'];
-	if(!isset($_GET['edit_proposal']) || !empty( $action )) $hideThis = true;
-	if(!$hideThis) return $content;
-	else return;
+function hide_if_not_editmode_output( $atts, $content ) {
+	if (!isset($_GET['edit_proposal']) || !empty( $_POST['action']))
+		return;
+
+	return $content;
 }
 add_shortcode( 'hide-if-not-editmode', 'hide_if_not_editmode_output' );
 

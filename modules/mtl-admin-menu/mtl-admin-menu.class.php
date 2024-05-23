@@ -185,7 +185,7 @@ class MtlSettingsPage
 
 		// settings section general 2
         add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','option_name'=>'mtl-option-name3','type' => 'number'));
+		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','type' => 'number','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'checkbox','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));

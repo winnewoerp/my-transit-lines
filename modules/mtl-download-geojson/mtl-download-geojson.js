@@ -1,5 +1,5 @@
 function getGeoJSON() {
-	var featuresDataObject = JSON.parse(exportToJSON());
+	var featuresDataObject = JSON.parse(exportToJSON().replaceAll("'", '"'));
 
 	featuresDataObject.name = title_for_geojson;
 	featuresDataObject.description = content_for_geojson;

@@ -329,9 +329,9 @@ if (!function_exists('my_theme_filter')) {
 add_filter( 'pre_get_posts', 'my_theme_filter' );
 
 /**
- * custom post meta display
+ * custom post meta display for not-single content view
  */
-function mtl_posted_on() {
+function mtl_posted_on_list() {
 	global $post;
 	$time_string = get_the_date( 'd.m.Y' );
 	unset($author);
@@ -413,7 +413,7 @@ function __THEME_PREFIX__wp_head() {
 ?>
 <script type="text/javascript">
 	jQuery(function($) {
-		$('.comment-reply-link, .comment-edit-link').click(function(e) {
+		$('.comment-reply-link, .comment-edit-link').on("click", function(e) {
 			e.preventDefault();
 			var args = $(this).data('onclick');
 			args = args.replace(/.*\(|\)/gi, '').replace(/\"|\s+/g, '');

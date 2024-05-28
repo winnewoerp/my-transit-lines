@@ -9,7 +9,7 @@ $(document).ready(function(){
 	changeTilePadding();
 });
 
-$( window ).resize(function(){
+$( window ).on("resize", function(){
 	changeTilePadding();
 });
 

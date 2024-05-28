@@ -27,7 +27,7 @@ function mtl_proposal_form_output( $atts ){
 	if ($editId) $editType = 'update';
 	
 	// only if form allowed
-	if(is_user_logged_in() && is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
+	if(is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
 
 		// create all necessary strings for this page containing either post type or edit type 
 		$mtl_string['logged-out-notice']['mtlproposal'] = sprintf(__('<strong>Important notice:</strong> You are about to write a proposal without being logged in. You won\'t be able to edit your proposal after publishing. Please <a href="%s">login here</a> to have full access to your proposal after publishing it.','my-transit-lines'),wp_login_url().'?redirect_to='.urlencode(add_query_arg(array('posttype'=>$postType),get_permalink())));
@@ -56,11 +56,6 @@ function mtl_proposal_form_output( $atts ){
 		$action = '';
 		if(isset($_POST['action'])) $action = $_POST['action'];
 		
-		// output a notice for not logged in users
-		if(!is_user_logged_in() &&  'POST' != $_SERVER['REQUEST_METHOD'] && empty( $action )) {
-			$output .= '<p class="important-notice">'.$mtl_string['logged-out-notice'][$postType].'</p>';
-		}
-		
 		// start output of post form
 		$output .= '<div id="mtl-post-form">'."\r\n";
 			
@@ -72,20 +67,11 @@ function mtl_proposal_form_output( $atts ){
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
 			if (!isset($_POST['title']) || strlen(trim($_POST['title']))<=2) $err['title']=true;
-			if (!is_user_logged_in()) {
-				if (!isset($_POST['authname']) || strlen(trim($_POST['authname']))<=2) $err['authname']=true;
-				if (!$_POST['authemail']) $err['authemail']=true;
-				if (!isset($_POST['authemail']) || strlen(trim($_POST['authemail']))>0 && !ereg("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,6})$",$_POST['authemail'])) $err['authemail_valid']=true;
-			}
 			if ($postType == 'mtlproposal') {
 				if(!isset($_POST['cat'])) $err['cat']=true;
 			}
 			
 			if (!isset($_POST['description']) || strlen(trim($_POST['description']))<=2) $err['description']=true;
-			if (!is_user_logged_in()) {
-				if (!$_POST['dataprivacy']) $err['dataprivacy']=true;
-				if ($_POST['code'] != $_SESSION['rand_code']) $err['captcha']=true;
-			}
 			if($err) $_POST['errorcheck'] = true;
 
 			if(!isset($_POST['submit-save-only'])) {
@@ -128,12 +114,6 @@ function mtl_proposal_form_output( $atts ){
 					elseif (getenv('HTTP_CLIENT_IP')) $realip = getenv('HTTP_CLIENT_IP');
 					else $realip = getenv('REMOTE_ADDR');
 				}
-				
-				// update/add personal data of unregistered users
-				if (!is_user_logged_in()) {
-					update_post_meta($current_post_id, 'author-name', $_POST['authname']);
-					update_post_meta($current_post_id, 'author-email', $_POST['authemail']);
-				}
 
 				// update/add all other needed post meta
 				update_post_meta($current_post_id, 'mtl-author-ip', $realip);
@@ -149,14 +129,11 @@ function mtl_proposal_form_output( $atts ){
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
 				// enable/disable contact button for current user
-				if(is_user_logged_in()) {
-					$userid = get_current_user_id();
-					update_user_meta($userid,'enable-contact-button',$_POST['enable-contact-button']);
-				}
+				$userid = get_current_user_id();
+				update_user_meta($userid,'enable-contact-button',$_POST['enable-contact-button']);
 				
 				// preparing user info for mail notification			
-				global $current_user;
-				wp_get_current_user();
+				$current_user = wp_get_current_user();
 				$author_name = $current_user->user_login;
 				if(!$author_name) $author_name = get_post_meta($current_post_id,'author-name',true);
 				$author_email = $current_user->user_email;
@@ -180,8 +157,7 @@ function mtl_proposal_form_output( $atts ){
 				if(!isset($_POST['submit-save-only'])) {
 					$output .= '<strong>'.$mtl_string['success-notice'][$postType][$editType].'</strong><br />'."\r\n";
 					$output .= '<a href="'.get_permalink($current_post_id).'" title="'.$mtl_string['view-text'][$postType].'">'.$mtl_string['view-here-text'][$postType].'</a>'."\r\n";
-				}
-				elseif(isset($_POST['submit-save-only'])) {
+				} else {
 					$output .= '<strong>'.$mtl_string['success-save-only-notice'][$postType].'</strong><br />'."\r\n";
 				}
 				$output .= '</div>'."\r\n";
@@ -359,33 +335,19 @@ function mtl_proposal_form_output( $atts ){
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
 			$output .= mtl_load_wp_editor($current_description,'description',$settings);
 			
-			if (!is_user_logged_in()) {
-				$output .= '<h3>'.__( 'Your personal data', 'my-transit-lines' ).'</h3>'."\r\n";
-				$output .= '<p><label for="authname"><strong>'.__( 'Your name or nickname', 'my-transit-lines' ).'</strong></label>'."\r\n";
-				$output .= '<input type="text" id="authname" value="'.$_POST['authname'].'" name="authname" />'."\r\n";
-				$output .= '<p><label for="authmail"><strong>'.__( 'Your e-mail address', 'my-transit-lines' ).'</strong></label>'."\r\n";
-				$output .= '<input type="text" id="authmail" value="'.$_POST['authemail'].'" name="authemail" /></p>'."\r\n";
-		
-				// captcha
-				$output .= '<p class="alignleft"><img src="'.get_template_directory_uri().'/modules/mtl-proposal-form/captcha.php"/><br />'."\r\n";
-				$output .= '<label for="mtl_input_code" class="lapkarte-code"><strong>'.__("Please enter the captcha code (case-sensitive)",'my-transit-lines').'</strong></label>'."\r\n";
-				$output .= '<input type="text" name="code" id="mtl_input_code" autocomplete="off" /></p>'."\r\n";
-				$output .= '<p><label class="dataprivacy" for="dataprivacy"><strong>'.sprintf( __( 'I have read and accepted the <a href="%s">data privacy statement</a>:','my-transit-lines' ), esc_url(get_permalink(111)) ).' &nbsp; <input type="checkbox" name="dataprivacy"'.($_POST['dataprivacy'] ? ' checked="ckecked"' : '').' /></strong></label></p>'."\r\n";
+			$userid = get_current_user_id();
+			$enable_checked = false;
+			if(get_user_meta($userid,'enable-contact-button',true)) $enable_checked = true;
+			if(isset($_POST['enable-contact-button'])) {
+				if($_POST['enable-contact-button']) $enable_checked = true;
+				else $enable_checked = false;
 			}
 			else {
-				$userid = get_current_user_id();
-				$enable_checked = false;
-				if(get_user_meta($userid,'enable-contact-button',true)) $enable_checked = true;
-				if(isset($_POST['enable-contact-button'])) {
-					if($_POST['enable-contact-button']) $enable_checked = true;
-					else $enable_checked = false;
-				}
-				else {
-					if('POST' == $_SERVER['REQUEST_METHOD']) $enable_checked = false;
-				}
-				$output .= '<p class="alignleft">&nbsp;<br /><label for="enable-contact-button"><input type="checkbox" id="enable-contact-button" '.($enable_checked ? 'checked="checked"' : '').'name="enable-contact-button" /> <strong>'.esc_html__('Enable contact button for my finished proposals','my-transit-lines').'</strong></label>
-				<small>'.esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him. The button is not visible as long as your prposal is still in elaboration phase.','my-transit-lines').' <strong>'.esc_html__('Important: This global option is being set for all of your finished proposals, not only for this one.','my-transit-lines').'<strong></small></p>'."\r\n";
+				if('POST' == $_SERVER['REQUEST_METHOD']) $enable_checked = false;
 			}
+			$output .= '<p class="alignleft">&nbsp;<br /><label for="enable-contact-button"><input type="checkbox" id="enable-contact-button" '.($enable_checked ? 'checked="checked"' : '').'name="enable-contact-button" /> <strong>'.esc_html__('Enable contact button for my finished proposals','my-transit-lines').'</strong></label>
+			<small>'.esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him. The button is not visible as long as your prposal is still in elaboration phase.','my-transit-lines').' <strong>'.esc_html__('Important: This global option is being set for all of your finished proposals, not only for this one.','my-transit-lines').'<strong></small></p>'."\r\n";
+
 			// send post
 			$submit_editType = $editType;
 			$edit_post = get_post($editId);
@@ -408,8 +370,7 @@ function mtl_proposal_form_output( $atts ){
 		
 		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		
-		if(is_user_logged_in()) return $output;
-		
+		return $output;
 	}
 	else {
 		if(!is_user_logged_in()) {
@@ -463,11 +424,11 @@ add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );
  * @return WP_Query
  */
 function get_drafts_query() {
-	$drafts_query_string =  array(
-	'posts_per_page' => -1,
-	'post_type' => 'mtlproposal',
-	'author' => get_current_user_id(),
-	'post_status' => 'draft',
+	$drafts_query_string = array(
+		'posts_per_page' => -1,
+		'post_type' => 'mtlproposal',
+		'author' => get_current_user_id(),
+		'post_status' => 'draft',
 	);
 	return new WP_Query($drafts_query_string);
 }
@@ -478,14 +439,11 @@ function get_drafts_query() {
  * @return int|string
  */
 function get_editId() {
-	// editId to find out, defaults to an empty string
-	$editId = '';
-
 	// only if form allowed
-	if(is_user_logged_in() && is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft']) && is_user_author()) {
-		$editId = get_id();
-	}
-	return $editId;
+	if(is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft']) && is_user_author())
+		return get_id();
+
+	return '';
 }
 
 /**
@@ -494,14 +452,14 @@ function get_editId() {
  * @return boolean
  */
 function is_user_author() {
-	if(is_edit()) {
-		$get_id = get_id();
-		$current_post = get_post($get_id);
-		$current_user = wp_get_current_user();
-		$author_id	  = $current_post->post_author;
-		return ($author_id > 0 && $author_id == $current_user->ID);
-	}
-	return false;
+	if (!is_edit())
+		return false;
+
+	$get_id = get_id();
+	$current_post = get_post($get_id);
+	$current_user = wp_get_current_user();
+	$author_id	  = $current_post->post_author;
+	return ($author_id > 0 && $author_id == $current_user->ID);
 }
 
 /**
@@ -537,12 +495,12 @@ function get_id() {
 }
 
 /**
- * Returns true if the user is either logged in and editing an existing proposal or if new proposals and more drafts are allowed
+ * Returns true if the user is logged in and either editing an existing proposal or if new proposals and more drafts are allowed
  *
  * @return boolean
  */
 function is_form_allowed() {
-	return (is_user_logged_in() && is_edit()) || get_more_drafts_allowed();
+	return is_user_logged_in() && (is_edit() || get_more_drafts_allowed());
 }
 
  /**

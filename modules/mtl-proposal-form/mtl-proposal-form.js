@@ -133,14 +133,14 @@ selectedFeatures.on('add', handleFeatureSelected);
 selectedFeatures.on('remove', handleFeatureUnselected);
 
 //Notify the user when about to leave page without saving changes
-$(window).bind('beforeunload', function () {
+$(window).on('beforeunload', function () {
 	if (warningMessage != '') return warningMessage;
 });
 
 $('#title, #description').on('input propertychange paste', function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 });
-$('input.cat-select').change(function () {
+$('input.cat-select').on("change", function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 });
 

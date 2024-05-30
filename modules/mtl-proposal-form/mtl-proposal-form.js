@@ -2,9 +2,9 @@
  * (C) by Jan Garloff and Johannes Bouchain - stadtkreation.de
  */
 
-const countryFeatures = countrySource ? GEO_JSON_FORMAT.readFeatures(countrySource, PROJECTION_OPTIONS) : [];
-const stateFeatures = stateSource ? GEO_JSON_FORMAT.readFeatures(stateSource, PROJECTION_OPTIONS) : [];
-const districtFeatures = districtSource ? GEO_JSON_FORMAT.readFeatures(districtSource, PROJECTION_OPTIONS) : [];
+const countryFeatures = typeof(countrySource) != 'undefined' && countrySource ? GEO_JSON_FORMAT.readFeatures(countrySource, PROJECTION_OPTIONS) : [];
+const stateFeatures = typeof(stateSource) != 'undefined' && stateSource ? GEO_JSON_FORMAT.readFeatures(stateSource, PROJECTION_OPTIONS) : [];
+const districtFeatures = typeof(districtSource) != 'undefined' && districtSource ? GEO_JSON_FORMAT.readFeatures(districtSource, PROJECTION_OPTIONS) : [];
 
 var selectedFeatureIndex = -1;
 var snapping = true;

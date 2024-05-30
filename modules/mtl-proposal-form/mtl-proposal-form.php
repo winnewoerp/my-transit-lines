@@ -234,9 +234,12 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '}; </script>'."\r\n";
 			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
 
-			$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
-			$output .= 'var stateSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-state-source'])).'\';'."\r\n";
-			$output .= 'var districtSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-district-source'])).'\'; </script>'."\r\n";
+			if(trim($mtl_options3['mtl-country-source']))
+				$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
+			if(trim($mtl_options3['mtl-state-source']))
+				$output .= 'var stateSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-state-source'])).'\';'."\r\n";
+			if(trim($mtl_options3['mtl-district-source']))
+				$output .= 'var districtSource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-district-source'])).'\'; </script>'."\r\n";
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {

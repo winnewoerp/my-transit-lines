@@ -591,6 +591,7 @@ function exportToJSON() {
 		feature.unset('proposal_data_index');
 		feature.unset('location');
 		feature.unset('category');
+		feature.unset('size');
 	}
 
 	let json_string = GEO_JSON_FORMAT.writeFeatures(features, PROJECTION_OPTIONS).replaceAll("\"", "'");

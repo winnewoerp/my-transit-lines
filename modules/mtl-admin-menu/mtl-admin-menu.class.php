@@ -185,7 +185,7 @@ class MtlSettingsPage
 
 		// settings section general 2
 		add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','type' => 'number','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','type' => 'number','step' => '1', 'option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'checkbox','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));
@@ -210,6 +210,7 @@ class MtlSettingsPage
 			add_settings_field('mtl-color-cat'.$catid, sprintf(__('Color for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-color-cat'.$catid,'type' => 'colorpicker','option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-image-cat'.$catid, sprintf(__('Map Icon for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name','separator' => true));
+			add_settings_field('mtl-costs-cat'.$catid, sprintf(__('Costs per kilometer in million euros for category <strong>%s</strong>', 'my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-costs-cat'.$catid,'type' => 'number','step' => 'any','option_name'=>'mtl-option-name','seperator' => true));
 		}
 		
 		// settings section page IDs
@@ -222,6 +223,7 @@ class MtlSettingsPage
 		add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
 		add_settings_field('mtl-proposal-contact-form-title', __('Title for intro of proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-title','option_name'=>'mtl-option-name3','type' => 'text'));
 		add_settings_field('mtl-proposal-contact-form-intro', __('Intro text for proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-intro','option_name'=>'mtl-option-name3','type' => 'textarea'));
+		add_settings_field('mtl-proposal-metadata-contents', __('Contents of the metadata display','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-metadata-contents','option_name'=>'mtl-option-name3','type' => 'textarea'));
 
 		// settings section reCAPTCHA texts
 		add_settings_section('mtl-settings-group-general4', __('ReCAPTCHA settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
@@ -251,6 +253,7 @@ class MtlSettingsPage
 		
 		if( isset( $input['mtl-proposal-contact-form-title'] ) ) $new_input['mtl-proposal-contact-form-title'] = $input['mtl-proposal-contact-form-title'];
 		if( isset( $input['mtl-proposal-contact-form-intro'] ) ) $new_input['mtl-proposal-contact-form-intro'] = $input['mtl-proposal-contact-form-intro'];
+		if( isset( $input['mtl-proposal-metadata-contents'] ) ) $new_input['mtl-proposal-metadata-contents'] = $input['mtl-proposal-metadata-contents'];
 		
 		if( isset( $input['mtl-recaptcha-website-key'] ) ) $new_input['mtl-recaptcha-website-key'] = $input['mtl-recaptcha-website-key'];
 		if( isset( $input['mtl-recaptcha-secret-key'] ) ) $new_input['mtl-recaptcha-secret-key'] = $input['mtl-recaptcha-secret-key'];
@@ -271,6 +274,7 @@ class MtlSettingsPage
 			if( isset( $input['mtl-color-cat'.$catid] ) ) $new_input['mtl-color-cat'.$catid] = $input['mtl-color-cat'.$catid];
 			if( isset( $input['mtl-image-cat'.$catid] ) && $input['mtl-image-cat'.$catid] != 'http://') $new_input['mtl-image-cat'.$catid] = $input['mtl-image-cat'.$catid];
 			if( isset( $input['mtl-image-selected-cat'.$catid] ) && $input['mtl-image-selected-cat'.$catid] != 'http://') $new_input['mtl-image-selected-cat'.$catid] = $input['mtl-image-selected-cat'.$catid];
+			if( isset( $input['mtl-costs-cat'.$catid] ) ) $new_input['mtl-costs-cat'.$catid] = $input['mtl-costs-cat'.$catid];
 		}
 		if( isset( $input['mtl-addpost-page']) ) $new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
 		if( isset( $input['mtl-postlist-page']) ) $new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
@@ -331,10 +335,14 @@ class MtlSettingsPage
 		
 		// options
 		$items = '';
-		if(isset($args['options'])) $options= $args['options'];
+		if(isset($args['options'])) $options = $args['options'];
+
+		// step size for number input
+		$step = '';
+		if(isset($args['step'])) $step = $args['step'];
 		
 		// field output by type
-		if($type == 'text' || $type == 'hidden' || $type == 'number') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$option_name.'['.$field_name.']" value="%s" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
+		if($type == 'text' || $type == 'hidden' || $type == 'number') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$option_name.'['.$field_name.']" value="%s" step="'.$step.'" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
 		
 		if($type == 'textarea') printf( '<textarea'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$option_name.'['.$field_name.']">%s</textarea>', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
 		

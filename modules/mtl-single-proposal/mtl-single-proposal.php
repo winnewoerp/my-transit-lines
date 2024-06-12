@@ -29,6 +29,7 @@ function mtl_proposal_map($content) {
 	if($lineLength>=1000) $lineLengthOutput = str_replace('.',',',round($lineLength/1000,3)).' km';
 	else $lineLengthOutput = str_replace('.',',',round($lineLength,1)).' m';
 	$averageDistance = 0;
+	$averageDistanceOutput = '0 m';
 	if($countStations > 1 && $lineLength) {
 		$averageDistance = $lineLength/($countStations-1);
 		if($averageDistance>=1000) $averageDistanceOutput = str_replace('.',',',round($averageDistance/1000,3)).' km';
@@ -66,10 +67,7 @@ function mtl_proposal_map($content) {
 	$output .= '<h2>'.__('Description of this proposal','my-transit-lines').'</h2>';
 	$output2 .= '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
 	$output2 .= '<p class="mtl-metadata">';
-	$output2 .= __('Transport mode','my-transit-lines').': '.$category_name.'<br />';
-	if($lineLength) $output2 .= __('Line length','my-transit-lines').': '.$lineLengthOutput.'<br />';
-	if($countStations) $output2 .= __('Number of stations','my-transit-lines').': '.$countStations.'<br />';
-	if($averageDistance) $output2 .= __('Average station distance','my-transit-lines').': '.$averageDistanceOutput.'<br /><small>'.__('Attention: average station distance calculation is currently only correct when there is one contiguous line with the first and the last station on the respective end of line.','my-transit-lines').'</small><br />';
+	$output2 .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]'), array($category_name, $lineLengthOutput, $countStations, $averageDistanceOutput), $mtl_options3['mtl-proposal-metadata-contents']);
 	$output2 .= '</p>'."\r\n";
 	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output2 .= mtl_taglist();
 	

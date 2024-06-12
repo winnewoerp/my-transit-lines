@@ -557,13 +557,17 @@ function importToMapJSON(source, categorySource, proposal_data_index = 0, vector
 	if (source == '' || source == '{}')
 		return;
 
+	if (!categorySource)
+		categorySource = getSelectedCategory();
+
 	if (typeof source === "string" || source instanceof String)
 		source = source.replaceAll("\r", "").replaceAll("\n", "").replaceAll("'", "\"");
 
 	let features = GEO_JSON_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
 	for (var feature of features) {
-		feature.set('category', categorySource);
+		if (!feature.get('category'))
+			feature.set('category', categorySource);
 
 		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
 
@@ -590,7 +594,6 @@ function exportToJSON() {
 		feature.set('name', encodeSpecialChars(feature.get('name') || ""));
 		feature.unset('proposal_data_index');
 		feature.unset('location');
-		feature.unset('category');
 		feature.unset('size');
 	}
 
@@ -745,7 +748,11 @@ function addCircles(features) {
 			let center = feature.getGeometry().getCoordinates();
 			let radius = feature.get('radius');
 
+			let old_properties = feature.getProperties();
+			delete old_properties.geometry;
+
 			let newFeature = new ol.Feature(new ol.geom.Circle(center, radius));
+			newFeature.setProperties(old_properties);
 
 			result.push(newFeature);
 		} else {

@@ -35,6 +35,10 @@ function mtl_proposal_map($content) {
 		if($averageDistance>=1000) $averageDistanceOutput = str_replace('.',',',round($averageDistance/1000,3)).' km';
 		else $averageDistanceOutput = str_replace('.',',',round($averageDistance,1)).' m';
 	}
+	$costs = max(get_post_meta($post->ID,'mtl-costs',true), 0);
+	if($costs<=1) $costsOutput = str_replace('.', ',',round($costs*1000,3)).' '.__('thousand','my-transit-lines').' €';
+	elseif($costs<=1000) $costsOutput = str_replace('.',',',round($costs,3)).' '.__('million','my-transit-lines').' €';
+	else $costsOutput = str_replace('.',',',round($costs/1000,3)).' '.__('billion','my-transit-lines').' €';
 	
 	// get data of current category
 	$category = get_the_category($post->ID);
@@ -67,7 +71,7 @@ function mtl_proposal_map($content) {
 	$output .= '<h2>'.__('Description of this proposal','my-transit-lines').'</h2>';
 	$output2 .= '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
 	$output2 .= '<p class="mtl-metadata">';
-	$output2 .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]'), array($category_name, $lineLengthOutput, $countStations, $averageDistanceOutput), $mtl_options3['mtl-proposal-metadata-contents']);
+	$output2 .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]', '[post-costs]'), array($category_name, $lineLengthOutput, $countStations, $averageDistanceOutput, $costsOutput), $mtl_options3['mtl-proposal-metadata-contents']);
 	$output2 .= '</p>'."\r\n";
 	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output2 .= mtl_taglist();
 	

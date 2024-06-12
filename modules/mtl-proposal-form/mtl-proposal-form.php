@@ -120,6 +120,7 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
 				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
 				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
+				update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
 
 				if (get_post_meta($current_post_id, 'mtl-features', true)) {
 					delete_post_meta($current_post_id, 'mtl-feature-data');
@@ -306,13 +307,13 @@ function mtl_proposal_form_output( $atts ){
 			
 				// hidden input field for station count
 				$mtl_count_stations = '';
-				if($editId && !$err) $mtl_count_stations =  get_post_meta($editId,'mtl-count-stations',true);
+				if($editId && !$err) $mtl_count_stations = get_post_meta($editId,'mtl-count-stations',true);
 				elseif($err && $_POST['mtl-count-stations']) $mtl_count_stations = $_POST['mtl-count-stations'];
 				$output .= '<input type="hidden" id="mtl-count-stations" value="'.$mtl_count_stations.'"  name="mtl-count-stations" />'."\r\n";
 				
 				// hidden input field for line length
 				$mtl_line_length = '';
-				if($editId && !$err) $mtl_line_length =  get_post_meta($editId,'mtl-line-length',true);
+				if($editId && !$err) $mtl_line_length = get_post_meta($editId,'mtl-line-length',true);
 				elseif($err && $_POST['mtl-line-length']) $mtl_line_length = $_POST['mtl-line-length'];	
 				$output .= '<input type="hidden" id="mtl-line-length" value="'.$mtl_line_length.'"  name="mtl-line-length" />'."\r\n";
 
@@ -328,6 +329,12 @@ function mtl_proposal_form_output( $atts ){
 				}
 				elseif($err && $_POST['mtl-tags']) $mtl_tags = $_POST['mtl-tags'];
 				$output .= '<input type="hidden" id="mtl-tags" value="'.$mtl_tags.'" name="mtl-tags" />'."\r\n";
+
+				// hidden input field for costs
+				$mtl_costs = '0';
+				if($editId && !$err) $mtl_costs = get_post_meta($editId,'mtl-costs',true);
+				elseif($err && $_POST['mtl-costs']) $mtl_costs = $_POST['mtl-costs'];
+				$output .= '<input type="hidden" id="mtl-costs" value="'.$mtl_costs.'" name="mtl-costs" />'."\r\n";
 			} // end if $postType == 'mtlproposal'
 			
 			// continue form: description textbox, filled with text from post variable, if existing

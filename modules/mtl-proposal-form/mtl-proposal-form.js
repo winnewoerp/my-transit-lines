@@ -142,6 +142,9 @@ $('#title, #description').on('input propertychange paste', function () {
 });
 $('input.cat-select').on("change", function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
+	for (let feature of vectorSource.getFeatures()) {
+		feature.set('category', getSelectedCategory());
+	}
 });
 
 // returns the style for the given feature while being drawn
@@ -361,6 +364,22 @@ function getLineLength(features = vectorSource.getFeatures()) {
 }
 
 /**
+ * Returns the combined costs of the lines in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for lines
+ * @returns {number} the combined cost of the lines placed on the map
+ */
+function getLineCost(features = vectorSource.getFeatures()) {
+	let cost = 0.0;
+	for (let feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.LineString) {
+			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[feature.get('category')][3];
+		}
+	}
+	return cost;
+}
+
+/**
  * Returns a comma-separated string list containing all location tags for the stations in the features array
  * 
  * @param {FeatureLike[]} features the array of features to "search" for stations
@@ -454,6 +473,7 @@ function saveToHTML(features = vectorSource.getFeatures()) {
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
 	$('#mtl-tags').val(getStationLocations(features));
+	$('#mtl-costs').val(getLineCost(features));
 }
 
 /**

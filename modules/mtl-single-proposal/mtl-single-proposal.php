@@ -36,9 +36,9 @@ function mtl_proposal_map($content) {
 		else $averageDistanceOutput = str_replace('.',',',round($averageDistance,1)).' m';
 	}
 	$costs = max(get_post_meta($post->ID,'mtl-costs',true), 0);
-	if($costs<=1) $costsOutput = str_replace('.', ',',round($costs*1000,3)).' '.__('thousand','my-transit-lines').' €';
-	elseif($costs<=1000) $costsOutput = str_replace('.',',',round($costs,3)).' '.__('million','my-transit-lines').' €';
-	else $costsOutput = str_replace('.',',',round($costs/1000,3)).' '.__('billion','my-transit-lines').' €';
+	if($costs<=1) $costsOutput = str_replace('.', ',',round($costs*1000,3)).' '.__('thousand','my-transit-lines').' '.$mtl_options3['mtl-currency-symbol'];
+	elseif($costs<=1000) $costsOutput = str_replace('.',',',round($costs,3)).' '.__('million','my-transit-lines').' '.$mtl_options3['mtl-currency-symbol'];
+	else $costsOutput = str_replace('.',',',round($costs/1000,3)).' '.__('billion','my-transit-lines').' '.$mtl_options3['mtl-currency-symbol'];
 	
 	// get data of current category
 	$category = get_the_category($post->ID);

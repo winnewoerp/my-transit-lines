@@ -182,6 +182,8 @@ class MtlSettingsPage
 		// settings section general
 		add_settings_section('mtl-settings-group-general', __('Logo Settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
 		add_settings_field('mtl-main-logo', __('Load the main site logo','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general',array('field_name' => 'mtl-main-logo','type' => 'image','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-currency-text', __('The currency for the website'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general',array('field_name' => 'mtl-currency-text','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-currency-symbol', __('The currency symbol for the website'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general',array('field_name' => 'mtl-currency-symbol','type' => 'text','option_name'=>'mtl-option-name3'));
 
 		// settings section general 2
 		add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
@@ -210,7 +212,7 @@ class MtlSettingsPage
 			add_settings_field('mtl-color-cat'.$catid, sprintf(__('Color for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-color-cat'.$catid,'type' => 'colorpicker','option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-image-cat'.$catid, sprintf(__('Map Icon for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name','separator' => true));
-			add_settings_field('mtl-costs-cat'.$catid, sprintf(__('Costs per kilometer in million euros for category <strong>%s</strong>', 'my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-costs-cat'.$catid,'type' => 'number','step' => 'any','option_name'=>'mtl-option-name','seperator' => true));
+			add_settings_field('mtl-costs-cat'.$catid, sprintf(__('Costs per kilometer in million %ss for category <strong>%s</strong>', 'my-transit-lines'),get_option( 'mtl-option-name3' )['mtl-currency-text'],$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-costs-cat'.$catid,'type' => 'number','step' => 'any','option_name'=>'mtl-option-name','seperator' => true));
 		}
 		
 		// settings section page IDs
@@ -244,6 +246,8 @@ class MtlSettingsPage
 	{
 		$new_input = array();
 		if( isset( $input['mtl-main-logo'] ) && $input['mtl-main-logo'] != 'http://') $new_input['mtl-main-logo'] = $input['mtl-main-logo'];
+		if( isset( $input['mtl-currency-text']) ) $new_input['mtl-currency-text'] = $input['mtl-currency-text'];
+		if( isset( $input['mtl-currency-symbol']) ) $new_input['mtl-currency-symbol'] = $input['mtl-currency-symbol'];
 		if( isset( $input['mtl-allowed-drafts']) ) $new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
 
 		if( isset( $input['mtl-show-districts'] ) ) $new_input['mtl-show-districts'] = $input['mtl-show-districts'];

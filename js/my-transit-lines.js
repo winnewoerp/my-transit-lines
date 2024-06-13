@@ -418,13 +418,10 @@ function getCategoryOf(feature) {
 }
 
 /**
- * @returns the selected category determined by the selected category checkbox, or if none is selected by the 
+ * @returns the selected category determined by the selected category checkbox, or if none is selected by the defaultCategory variable
  */
 function getSelectedCategory() {
 	var selectedTransportMode = $('.cat-select:checked').val();
-	if (!selectedTransportMode && parseInt(currentCat)) {
-		selectedTransportMode = currentCat;
-	}
 	if (!selectedTransportMode)
 		selectedTransportMode = defaultCategory;
 	return selectedTransportMode;

@@ -244,7 +244,7 @@ function mtl_proposal_map($content) {
 		</div>';
 	}
 
-	$output2 .= '<script type="text/javascript"> currentCat = "'.$catid .'"; </script>';
+	$output2 .= '<script type="text/javascript"> defaultCategory = "'.$catid .'"; </script>';
 	
 	// show edit proposal button iff current user equals author
 	$current_user = wp_get_current_user();

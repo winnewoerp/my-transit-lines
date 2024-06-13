@@ -374,7 +374,7 @@ function getLineCost(features = vectorSource.getFeatures()) {
 	let cost = 0.0;
 	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.LineString) {
-			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[feature.get('category')][3];
+			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[getCategoryOf(feature)][3];
 		}
 	}
 	return cost;

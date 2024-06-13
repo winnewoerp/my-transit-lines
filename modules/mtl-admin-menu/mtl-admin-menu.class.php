@@ -213,6 +213,7 @@ class MtlSettingsPage
 			add_settings_field('mtl-image-cat'.$catid, sprintf(__('Map Icon for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','option_name'=>'mtl-option-name','separator' => true));
 			add_settings_field('mtl-costs-cat'.$catid, sprintf(__('Costs per kilometer in million %ss for category <strong>%s</strong>', 'my-transit-lines'),get_option( 'mtl-option-name3' )['mtl-currency-text'],$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-costs-cat'.$catid,'type' => 'number','step' => 'any','option_name'=>'mtl-option-name','seperator' => true));
+			add_settings_field('mtl-allow-others-cat'.$catid, sprintf(__('Allow other categories (comma separated id-list) to be drawn for category <strong>%s</strong>', 'my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-allow-others-cat'.$catid,'type' => 'text','option_name'=>'mtl-option-name'));
 		}
 		
 		// settings section page IDs
@@ -279,6 +280,7 @@ class MtlSettingsPage
 			if( isset( $input['mtl-image-cat'.$catid] ) && $input['mtl-image-cat'.$catid] != 'http://') $new_input['mtl-image-cat'.$catid] = $input['mtl-image-cat'.$catid];
 			if( isset( $input['mtl-image-selected-cat'.$catid] ) && $input['mtl-image-selected-cat'.$catid] != 'http://') $new_input['mtl-image-selected-cat'.$catid] = $input['mtl-image-selected-cat'.$catid];
 			if( isset( $input['mtl-costs-cat'.$catid] ) ) $new_input['mtl-costs-cat'.$catid] = $input['mtl-costs-cat'.$catid];
+			if( isset( $input['mtl-allow-others-cat'.$catid] ) ) $new_input['mtl-allow-others-cat'.$catid] = $input['mtl-allow-others-cat'.$catid];
 		}
 		if( isset( $input['mtl-addpost-page']) ) $new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
 		if( isset( $input['mtl-postlist-page']) ) $new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
@@ -303,10 +305,6 @@ class MtlSettingsPage
 	}
 
 	public function print_categories_section_content() {
-	}
-
-	public function print_project_phase_section_content() {
-		echo '<p>'.__('<strong>Note:</strong> You should start with the collecting phase and switch to Rating phase after approx. 6 months.','my-transit-lines');
 	}
 
 	public function print_pageids_section_content() {

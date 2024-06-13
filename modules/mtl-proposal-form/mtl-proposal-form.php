@@ -228,7 +228,7 @@ function mtl_proposal_form_output( $atts ){
 				if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later .= 'strokeColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; fillColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; externalGraphicUrl = "'.$mtl_options['mtl-image-cat'.$catid].'"; externalGraphicUrlSelected = "'.$mtl_options['mtl-image-selected-cat'.$catid].'"; defaultCategory = "'.$catid.'";';
 				if($mtl_options['mtl-use-cat'.$catid] == true) {
 					if($count_cats) $output .= ',';
-					$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'","'.$mtl_options['mtl-costs-cat'.$catid].'"]';
+					$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'","'.$mtl_options['mtl-costs-cat'.$catid].'","'.$mtl_options['mtl-allow-others-cat'.$catid].'"]';
 					$count_cats++;
 				}
 			}

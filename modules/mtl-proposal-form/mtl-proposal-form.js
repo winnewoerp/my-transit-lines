@@ -224,6 +224,7 @@ function handleFeatureModified(feature) {
 			feature.set('size', getFeatureSize(feature));
 	});
 	feature.set('location', getStationLocation(feature));
+	feature.set('category', getSelectedCategory());
 }
 
 // Selects all features inside the box dragged for selection

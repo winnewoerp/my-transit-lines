@@ -239,23 +239,27 @@ function mtl_proposal_form_output( $atts ){
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {
-				$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
-		
-				$checkedAlready = false;
+				if (count($all_categories) == 1) {
+					$output .= '<input checked="checked" style="display:none;" class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" />'."\r\n";
+				} else {
+					$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 
-				// getting all categories for selected as transit mode categories, set the given category option to checked
-				foreach($all_categories as $single_category) {
-					if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
-						$checked='';
+					$checkedAlready = false;
 
-						if (($err && isset($_POST['cat']) && $single_category->cat_ID == $_POST['cat']) ||
-							(!$err && $editId && $single_category->cat_ID == $current_category[0]->term_id) ||
-							(str_contains($single_category->slug, 'other') && !$checkedAlready)) {
-								$checked = ' checked="checked"';
-								$checkedAlready = true;
+					// getting all categories for selected as transit mode categories, set the given category option to checked
+					foreach($all_categories as $single_category) {
+						if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
+							$checked='';
+
+							if (($err && isset($_POST['cat']) && $single_category->cat_ID == $_POST['cat']) ||
+								(!$err && $editId && $single_category->cat_ID == $current_category[0]->term_id) ||
+								(str_contains($single_category->slug, 'other') && !$checkedAlready)) {
+									$checked = ' checked="checked"';
+									$checkedAlready = true;
+							}
+							
+							$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
 						}
-						
-						$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
 					}
 				}
 				

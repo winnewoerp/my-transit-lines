@@ -421,7 +421,7 @@ function getCategoryOf(feature) {
  * @returns the selected category determined by the selected category checkbox, or if none is selected by the defaultCategory variable
  */
 function getSelectedCategory() {
-	let selectedTransportMode = $('.cat-select:checked').val();
+	let selectedTransportMode = document.querySelector('input.cat-select[checked]').value;
 	if (!selectedTransportMode)
 		selectedTransportMode = defaultCategory;
 	return selectedTransportMode;

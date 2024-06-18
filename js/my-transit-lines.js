@@ -137,7 +137,7 @@ class OptionsControl extends ol.control.Control {
 		backgroundSelector.id = 'background-layer-selector';
 		backgroundSelector.textContent = objectL10n.baselayersTitle;
 
-		for (var source of BACKGROUND_SOURCES) {
+		for (let source of BACKGROUND_SOURCES) {
 			backgroundSelector.appendChild(this.createLayerOption(source, 'background', source == OSM_SOURCE));
 		}
 
@@ -157,7 +157,7 @@ class OptionsControl extends ol.control.Control {
 		let none = this.createLayerOption({ title: objectL10n.none, id: 'none' }, 'overlay', true);
 		overlaySelector.appendChild(none);
 
-		for (var source of OVERLAY_SOURCES) {
+		for (let source of OVERLAY_SOURCES) {
 			overlaySelector.appendChild(this.createLayerOption(source, 'overlay'));
 		}
 
@@ -217,14 +217,14 @@ class OptionsControl extends ol.control.Control {
 		let target = event.target;
 
 		if (target.id.includes('background')) {
-			for (var source of BACKGROUND_SOURCES) {
+			for (let source of BACKGROUND_SOURCES) {
 				if (target.id.includes(source.get('id'))) {
 					backgroundTileLayer.setSource(source);
 					return;
 				}
 			}
 		} else if (target.id.includes('overlay')) {
-			for (var source of OVERLAY_SOURCES) {
+			for (let source of OVERLAY_SOURCES) {
 				if (target.id.includes(source.get('id'))) {
 					overlayTileLayer.setSource(source);
 					return;
@@ -302,7 +302,7 @@ function styleFunction(feature) {
 		width: STROKE_WIDTH_UNSELECTED,
 	});
 
-	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
+	let text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
 
 	const textStyle = new ol.style.Text({
 		font: 'bold 11px sans-serif',
@@ -344,7 +344,7 @@ function selectedStyleFunction(feature) {
 		width: STROKE_WIDTH_SELECTED,
 	});
 
-	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
+	let text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
 
 	const textStyle = new ol.style.Text({
 		font: 'bold 11px sans-serif',
@@ -421,7 +421,7 @@ function getCategoryOf(feature) {
  * @returns the selected category determined by the selected category checkbox, or if none is selected by the defaultCategory variable
  */
 function getSelectedCategory() {
-	var selectedTransportMode = $('.cat-select:checked').val();
+	let selectedTransportMode = $('.cat-select:checked').val();
 	if (!selectedTransportMode)
 		selectedTransportMode = defaultCategory;
 	return selectedTransportMode;
@@ -446,7 +446,7 @@ function loadNewFeatures() {
 
 // Imports all features from vectorData, vectorLabelsData and vectorCategoriesData and handles errors
 function importAllWKT() {
-	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+	for (let i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
 		try {
 			importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
 		} catch (e) {
@@ -459,7 +459,7 @@ function importAllWKT() {
 
 // Imports all features from vectorFeatures and vectorCategoriesData and handles errors
 function importAllJSON() {
-	for (var i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+	for (let i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
 		try {
 			if (vectorFeatures[i])
 				importToMapJSON(vectorFeatures[i], vectorCategoriesData[i], i);
@@ -479,7 +479,7 @@ function importAllJSON() {
  * @param {Node} filePicker 
  */
 function importJSONFiles(filePicker) {
-	for (var i = 0; i < filePicker.files.length; i++) {
+	for (let i = 0; i < filePicker.files.length; i++) {
 		let file = filePicker.files[i];
 
 		file.text().then((value) => {
@@ -510,8 +510,8 @@ function importToMapWKT(source, labelsSource, categorySource, proposal_data_inde
 
 	let features = WKT_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
-	var labelIndex = 0;
-	for (var feature of features) {
+	let labelIndex = 0;
+	for (let feature of features) {
 		feature.set('category', categorySource);
 
 		feature.set('name', decodeSpecialChars(labelsSource[labelIndex] || ''));
@@ -532,12 +532,12 @@ function importToMapWKT(source, labelsSource, categorySource, proposal_data_inde
  * @returns {string[]}
  */
 function exportToWKT() {
-	var features = removeCircles(vectorSource.getFeatures(), false);
+	let features = removeCircles(vectorSource.getFeatures(), false);
 
 	let wkt_string = WKT_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
 
 	let labelString = '';
-	for (var feature of features) {
+	for (let feature of features) {
 		labelString += encodeSpecialChars(feature.get('name') || "") + ",";
 	}
 
@@ -562,7 +562,7 @@ function importToMapJSON(source, categorySource, proposal_data_index = 0, vector
 
 	let features = GEO_JSON_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
-	for (var feature of features) {
+	for (let feature of features) {
 		if (!feature.get('category'))
 			feature.set('category', categorySource);
 
@@ -587,7 +587,7 @@ function importToMapJSON(source, categorySource, proposal_data_index = 0, vector
 function exportToJSON() {
 	let features = removeCircles(vectorSource.getFeatures());
 
-	for (var feature of features) {
+	for (let feature of features) {
 		feature.set('name', encodeSpecialChars(feature.get('name') || ""));
 		feature.unset('proposal_data_index');
 		feature.unset('location');
@@ -714,7 +714,7 @@ function isJsonParsable(string) {
 function removeCircles(features, replace = true) {
 	let result = [];
 
-	for (var feature of features) {
+	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.Circle) {
 			if (replace) {
 				let center = feature.getGeometry().getCenter();
@@ -740,7 +740,7 @@ function removeCircles(features, replace = true) {
 function addCircles(features) {
 	let result = [];
 
-	for (var feature of features) {
+	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.Point && feature.get('radius')) {
 			let center = feature.getGeometry().getCoordinates();
 			let radius = feature.get('radius');

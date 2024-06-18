@@ -32,6 +32,7 @@ class InteractionControl extends ol.control.Control {
 		this.deleteButton.classList.add('unselectable');
 		this.navigateButton = this.createButton('Navigate', themeUrl + '/images/navigation.png');
 		this.snappingButton = this.createButton('RemoveSnapping', themeUrl + '/images/removeSnapping.png');
+		this.selectCategory = this.categorySelector();
 
 		element.appendChild(this.pointButton);
 		element.appendChild(this.lineStringButton);
@@ -42,6 +43,7 @@ class InteractionControl extends ol.control.Control {
 		element.appendChild(this.deleteButton);
 		element.appendChild(this.navigateButton);
 		element.appendChild(this.snappingButton);
+		element.appendChild(this.selectCategory);
 	}
 
 	createButton(value, path) {
@@ -52,12 +54,12 @@ class InteractionControl extends ol.control.Control {
 		button.value = value;
 		button.title = objectL10n[value];
 
-		button.addEventListener('click', this.handleClick.bind(this), false);
+		button.addEventListener('click', this.handleButtonClick.bind(this), false);
 
 		return button;
 	}
 
-	handleClick(event) {
+	handleButtonClick(event) {
 		let target = event.target;
 
 		if (target == this.deleteButton) {
@@ -89,6 +91,49 @@ class InteractionControl extends ol.control.Control {
 		target.classList.add('selected');
 
 		setInteraction(target.value);
+	}
+
+	categorySelector() {
+		const summary = document.createElement('summary');
+		summary.className = 'interaction-control';
+		summary.style.backgroundImage = 'url(' + transportModeStyleData[getSelectedCategory()][1] + ')';
+
+		const catList = document.createElement('menu');
+		
+		const firstItem = this.catListItem(getSelectedCategory());
+		firstItem.classList.add("selected");
+
+		catList.appendChild(firstItem);
+
+		for (let index of transportModeStyleData[getSelectedCategory()][4].split(',')) {
+			catList.appendChild(this.catListItem(index));
+		}
+
+		const details = document.createElement('details');
+		details.id = 'cat-draw-select';
+
+		details.appendChild(summary);
+		details.appendChild(catList);
+
+		return details;
+	}
+
+	catListItem(index) {
+		const catListItem = document.createElement('li');
+		catListItem.className = 'interaction-control';
+		catListItem.style.backgroundImage = 'url(' + transportModeStyleData[index][1] + ')';
+		catListItem.value = index;
+		catListItem.addEventListener('click', this.handleCatListClick.bind(this), false);
+
+		return catListItem;
+	}
+
+	handleCatListClick(event) {
+		this.selectCategory.querySelectorAll('li.interaction-control.selected').forEach(element => element.classList.remove('selected'));
+		this.selectCategory.querySelector('summary.interaction-control').style.backgroundImage = 'url(' + transportModeStyleData[event.target.value][1] + ')';
+		event.target.classList.add('selected');
+
+		handleDrawCategoryChange();
 	}
 }
 
@@ -142,9 +187,6 @@ $('#title, #description').on('input propertychange paste', function () {
 });
 $('input.cat-select').on("change", function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
-	for (let feature of vectorSource.getFeatures()) {
-		feature.set('category', getSelectedCategory());
-	}
 });
 
 // returns the style for the given feature while being drawn
@@ -224,7 +266,12 @@ function handleFeatureModified(feature) {
 			feature.set('size', getFeatureSize(feature));
 	});
 	feature.set('location', getStationLocation(feature));
-	feature.set('category', getSelectedCategory());
+}
+
+function handleDrawCategoryChange() {
+	for (let feature of selectedFeatures.getArray()) {
+		feature.set('category', getSelectedDrawCategory());
+	}
 }
 
 // Selects all features inside the box dragged for selection
@@ -299,6 +346,7 @@ function setInteraction(interactionType) {
 			drawInteraction = new ol.interaction.Draw({ source: vectorSource, type: interactionType, style: drawStyleFunction });
 			drawInteraction.on('drawstart', function (event) {
 				handleFeatureModified(event.feature);
+				event.feature.set('category', getSelectedDrawCategory());
 			});
 			drawInteraction.on('drawend', function (event) {
 				event.feature.unset('size');
@@ -458,6 +506,16 @@ function getStationLocationLayer(geom, features, onlyFirstWord) {
 		}
 	}
 	return "";
+}
+
+/**
+ * @returns the selected category determined by the map category selector, or if none is selected by the {@link getSelectedCategory()} function
+ */
+function getSelectedDrawCategory() {
+	let cat = document.getElementById('cat-draw-select').querySelector('li.interaction-control.selected').value;
+	if (!cat)
+		cat = getSelectedCategory();
+	return cat;
 }
 
 /**

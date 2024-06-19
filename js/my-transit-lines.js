@@ -421,10 +421,10 @@ function getCategoryOf(feature) {
  * @returns the selected category determined by the selected category checkbox, or if none is selected by the defaultCategory variable
  */
 function getSelectedCategory() {
-	let selectedTransportMode = document.querySelector('input.cat-select[checked]').value;
-	if (!selectedTransportMode)
-		selectedTransportMode = defaultCategory;
-	return selectedTransportMode;
+	if (!document.querySelector('input.cat-select[checked]') || !document.querySelector('input.cat-select[checked]').value)
+		return defaultCategory;
+
+	return document.querySelector('input.cat-select[checked]').value;
 }
 
 // redraws the map to update color/icons

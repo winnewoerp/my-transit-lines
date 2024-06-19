@@ -357,5 +357,3 @@ function get_active_categories() {
     }
 	return $mtl_all_catids;
 }
-
-?>

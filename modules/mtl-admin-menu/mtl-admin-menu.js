@@ -111,21 +111,23 @@ function initMyTransitLinesDashboard() {
         custom_uploader.open();
  
     });
-	
-	// hide not used category image and color fields
-	$('input.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
-	$('input.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
-	$('input.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
-	$('input.category-checkbox').change(function() {
-			$('input.category-checkbox:not(:checked)').parent().parent().next().css('display','none');
-			$('input.category-checkbox:not(:checked)').parent().parent().next().next().css('display','none');
-			$('input.category-checkbox:not(:checked)').parent().parent().next().next().next().css('display','none');
 
-			$('input.category-checkbox:checked').parent().parent().next().css('display','table-row');
-			$('input.category-checkbox:checked').parent().parent().next().next().css('display','table-row');
-			$('input.category-checkbox:checked').parent().parent().next().next().next().css('display','table-row');
-		}
-	);
+	document.querySelectorAll('input.category-checkbox').forEach(element => {
+		showCatSettings(element);
+		element.addEventListener('change', newElement => {
+			showCatSettings(newElement.target);
+		});
+	});
+}
+
+/**
+ * Show/Hide the category settings for the category of the specified checkbox
+ * @param {HTMLElement|Event} element 
+ */
+function showCatSettings(element) {
+	element.parentElement.parentElement.parentElement.querySelectorAll('tr.category-setting'+element.name.replaceAll('mtl-option-name[mtl-use-cat', '').replaceAll(']', '')).forEach(newElement => {
+		newElement.style.display = element.checked ? 'table-row' : 'none';
+	});
 }
 
 function changeMapMarker() {

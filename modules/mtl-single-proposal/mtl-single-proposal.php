@@ -23,28 +23,6 @@ function mtl_proposal_map($content) {
 	$mtl_options = get_option('mtl-option-name');
 	$mtl_options3 = get_option('mtl-option-name3');
 	
-	// do the meta data calculations
-	$countStations = max(get_post_meta($post->ID,'mtl-count-stations',true), 0);
-	$lineLength = max(get_post_meta($post->ID,'mtl-line-length',true), 0);
-	if($lineLength>=1000) $lineLengthOutput = str_replace('.',',',round($lineLength/1000,3)).' km';
-	else $lineLengthOutput = str_replace('.',',',round($lineLength,1)).' m';
-	$averageDistance = 0;
-	$averageDistanceOutput = '0 m';
-	if($countStations > 1 && $lineLength) {
-		$averageDistance = $lineLength/($countStations-1);
-		if($averageDistance>=1000) $averageDistanceOutput = str_replace('.',',',round($averageDistance/1000,3)).' km';
-		else $averageDistanceOutput = str_replace('.',',',round($averageDistance,1)).' m';
-	}
-	$costs = max(get_post_meta($post->ID,'mtl-costs',true), 0);
-	if($costs<=1) $costsOutput = str_replace('.', ',',round($costs*1000,3)).' '.__('thousand','my-transit-lines').' '.$mtl_options3['mtl-currency-symbol'];
-	elseif($costs<=1000) $costsOutput = str_replace('.',',',round($costs,3)).' '.__('million','my-transit-lines').' '.$mtl_options3['mtl-currency-symbol'];
-	else $costsOutput = str_replace('.',',',round($costs/1000,3)).' '.__('billion','my-transit-lines').' '.$mtl_options3['mtl-currency-symbol'];
-	
-	// get data of current category
-	$category = get_the_category($post->ID);
-	$catid = $category[0]->cat_ID;
-	$category_name = $category[0]->name;
-	
 	// load relevant scripts and set some JS variables
 	$output .= "\r".'<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 	$output .= '<div id="mtl-box">'."\r\n";
@@ -53,7 +31,6 @@ function mtl_proposal_map($content) {
 	$output .= '<script type="text/javascript"> var transportModeStyleData = {';
 			
 	$count_cats = 0;
-	$output_later = '';
 	foreach(get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' ) as $single_category) {
 		$catid = $single_category->cat_ID;
 		if($mtl_options['mtl-use-cat'.$catid] == true) {
@@ -81,14 +58,12 @@ function mtl_proposal_map($content) {
 	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '<p class="alignright" id="mtl-toggle-sizes"><label><input type="checkbox" autocomplete="off" id="mtl-toggle-sizes-link" onclick="toggleSizes()" /> '.__('Show feature sizes','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '</div>'."\r\n";
-	
+
 	// output the meta data
 	$output .= '<h2>'.__('Description of this proposal','my-transit-lines').'</h2>';
-	$output2 .= '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
-	$output2 .= '<p class="mtl-metadata">';
-	$output2 .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]', '[post-costs]'), array($category_name, $lineLengthOutput, $countStations, $averageDistanceOutput, $costsOutput), $mtl_options3['mtl-proposal-metadata-contents']);
-	$output2 .= '</p>'."\r\n";
-	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output2 .= mtl_taglist();
+	$output2 .= mtl_show_metadata_output(array(
+		'id' => $post->ID,
+	));
 	
 	// check for reCAPTCHA keys
 	$use_recaptcha = false;
@@ -259,7 +234,7 @@ function mtl_proposal_map($content) {
 		</div>';
 	}
 
-	$output2 .= '<script type="text/javascript"> defaultCategory = "'.$catid .'"; </script>';
+	$output2 .= '<script type="text/javascript"> defaultCategory = "'.get_the_category($post->ID)[0]->cat_ID .'"; </script>';
 	
 	// show edit proposal button iff current user equals author
 	$current_user = wp_get_current_user();

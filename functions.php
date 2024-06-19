@@ -30,6 +30,7 @@ include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php');
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
 include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
+include( get_template_directory() . '/modules/mtl-show-metadata/mtl-show-metadata.php'); // metadata box for proposals
 
 /**
  * Set the content width based on the theme's design and stylesheet.

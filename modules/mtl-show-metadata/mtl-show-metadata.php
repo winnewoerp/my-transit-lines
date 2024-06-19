@@ -27,7 +27,7 @@ function mtl_show_metadata_output($atts) {
 	// output the meta data
 	$output = '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
 	$output .= '<p class="mtl-metadata">';
-	$output .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]', '[post-costs]'), array(get_category_name($id), get_line_length($id), get_count_stations($id), get_average_distance($id), get_cost($id)), $mtl_options3['mtl-proposal-metadata-contents']);
+	$output .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]', '[post-costs]'), array(get_category_name($id), get_line_length($id), get_count_stations($id), get_average_distance($id), get_cost($id)), $a['format_string']);
 	$output .= '</p>'."\r\n";
 	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output .= mtl_taglist();
 

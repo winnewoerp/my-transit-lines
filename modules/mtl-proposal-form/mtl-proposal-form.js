@@ -22,6 +22,8 @@ class InteractionControl extends ol.control.Control {
 			target: options.target,
 		});
 
+		this.element = element;
+
 		this.pointButton = this.createButton('Point', themeUrl + '/images/drawPoint.png');
 		this.lineStringButton = this.createButton('LineString', themeUrl + '/images/drawLineString.png');
 		this.polygonButton = this.createButton('Polygon', themeUrl + '/images/drawPolygon.png');
@@ -34,16 +36,16 @@ class InteractionControl extends ol.control.Control {
 		this.snappingButton = this.createButton('RemoveSnapping', themeUrl + '/images/removeSnapping.png');
 		this.selectCategory = this.categorySelector();
 
-		element.appendChild(this.pointButton);
-		element.appendChild(this.lineStringButton);
-		element.appendChild(this.polygonButton);
-		element.appendChild(this.circleButton);
-		element.appendChild(this.modifyButton);
-		element.appendChild(this.selectButton);
-		element.appendChild(this.deleteButton);
-		element.appendChild(this.navigateButton);
-		element.appendChild(this.snappingButton);
-		element.appendChild(this.selectCategory);
+		this.element.appendChild(this.pointButton);
+		this.element.appendChild(this.lineStringButton);
+		this.element.appendChild(this.polygonButton);
+		this.element.appendChild(this.circleButton);
+		this.element.appendChild(this.modifyButton);
+		this.element.appendChild(this.selectButton);
+		this.element.appendChild(this.deleteButton);
+		this.element.appendChild(this.navigateButton);
+		this.element.appendChild(this.snappingButton);
+		this.element.appendChild(this.selectCategory);
 	}
 
 	createButton(value, path) {
@@ -93,20 +95,23 @@ class InteractionControl extends ol.control.Control {
 		setInteraction(target.value);
 	}
 
-	categorySelector() {
+	categorySelector(selected = getSelectedCategory()) {
 		const summary = document.createElement('summary');
 		summary.className = 'interaction-control';
-		summary.style.backgroundImage = 'url(' + transportModeStyleData[getSelectedCategory()][1] + ')';
+		summary.style.backgroundImage = 'url(' + transportModeStyleData[selected][1] + ')';
 
 		const catList = document.createElement('menu');
-		
-		const firstItem = this.catListItem(getSelectedCategory());
-		firstItem.classList.add("selected");
 
-		catList.appendChild(firstItem);
+		for (let index of [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()][4].split(','))) {
+			if (!index)
+				continue;
 
-		for (let index of transportModeStyleData[getSelectedCategory()][4].split(',')) {
-			catList.appendChild(this.catListItem(index));
+			const item = this.catListItem(index);
+
+			if (index == selected)
+				item.classList.add("selected");
+
+			catList.appendChild(item);
 		}
 
 		const details = document.createElement('details');
@@ -129,11 +134,23 @@ class InteractionControl extends ol.control.Control {
 	}
 
 	handleCatListClick(event) {
-		this.selectCategory.querySelectorAll('li.interaction-control.selected').forEach(element => element.classList.remove('selected'));
-		this.selectCategory.querySelector('summary.interaction-control').style.backgroundImage = 'url(' + transportModeStyleData[event.target.value][1] + ')';
-		event.target.classList.add('selected');
+		this.updateSelectedCategory(event.target.value);
 
 		handleDrawCategoryChange();
+	}
+
+	updateSelectedCategory(id) {
+		this.selectCategory.querySelectorAll('li.interaction-control.selected').forEach(element => element.classList.remove('selected'));
+		this.selectCategory.querySelector('summary.interaction-control').style.backgroundImage = 'url(' + transportModeStyleData[id][1] + ')';
+		this.selectCategory.querySelector('li.interaction-control[value="'+id+'"]').classList.add('selected');
+	}
+
+	updateCategorySelector() {
+		const new_draw_cat = transportModeStyleData[getSelectedCategory()][4].split(',').includes(getSelectedDrawCategory()) ? getSelectedDrawCategory() : getSelectedCategory();
+		let new_category_selector = this.categorySelector(new_draw_cat);
+
+		this.element.replaceChild(new_category_selector, this.selectCategory);
+		this.selectCategory = new_category_selector;
 	}
 }
 
@@ -187,6 +204,15 @@ $('#title, #description').on('input propertychange paste', function () {
 });
 $('input.cat-select').on("change", function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
+
+	const new_allowed_cats = [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()][4].split(','));
+	for (let feature of vectorSource.getFeatures()) {
+		if (!new_allowed_cats.includes(feature.get('category'))) {
+			feature.set('category', getSelectedCategory());
+		}
+	}
+
+	interactionControl.updateCategorySelector();
 });
 
 // returns the style for the given feature while being drawn
@@ -230,6 +256,8 @@ function deleteSelected() {
 // Open textinput for feature name and show size of feature
 function handleFeatureSelected(event) {
 	interactionControl.deleteButton.classList.remove('unselectable');
+
+	interactionControl.updateSelectedCategory(getCategoryOf(event.element));
 
 	$('#feature-textinput').val(event.element.get('name'));
 	$('.feature-textinput-box').slideDown();
@@ -512,7 +540,7 @@ function getStationLocationLayer(geom, features, onlyFirstWord) {
  * @returns the selected category determined by the map category selector, or if none is selected by the {@link getSelectedCategory()} function
  */
 function getSelectedDrawCategory() {
-	let cat = document.getElementById('cat-draw-select').querySelector('li.interaction-control.selected').value;
+	let cat = document.getElementById('cat-draw-select').querySelector('li.interaction-control.selected').value.toString();
 	if (!cat)
 		cat = getSelectedCategory();
 	return cat;

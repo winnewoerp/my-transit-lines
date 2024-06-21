@@ -421,10 +421,14 @@ function getCategoryOf(feature) {
  * @returns the selected category determined by the selected category checkbox, or if none is selected by the defaultCategory variable
  */
 function getSelectedCategory() {
-	if (!document.querySelector('input.cat-select[checked]') || !document.querySelector('input.cat-select[checked]').value)
+	let checkedBox = Array.from(document.querySelectorAll('input.cat-select')).filter(node => {
+		return node.checked;
+	})[0];
+
+	if (!checkedBox || !checkedBox.value)
 		return defaultCategory;
 
-	return document.querySelector('input.cat-select[checked]').value;
+	return checkedBox.value;
 }
 
 // redraws the map to update color/icons

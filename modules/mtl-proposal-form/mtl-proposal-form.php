@@ -25,6 +25,8 @@ function mtl_proposal_form_output( $atts ){
 	$editId = get_editId();
 	$editType = 'add';
 	if ($editId) $editType = 'update';
+			
+	$err = [];
 	
 	// only if form allowed
 	if(is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
@@ -58,8 +60,6 @@ function mtl_proposal_form_output( $atts ){
 		
 		// start output of post form
 		$output .= '<div id="mtl-post-form">'."\r\n";
-			
-		$err = false;
 		
 		$edit_post = get_post($editId);
 		$old_status = $edit_post->post_status;
@@ -172,15 +172,10 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<strong>'.$mtl_string['failure-notice'][$postType][$editType].'</strong><br />'."\r\n";
 			$output .= __( 'Please verify the following errors:', 'my-transit-lines' ).'<br />'."\r\n";
 			$output .= '<ul>'."\r\n";
-			if(isset($err['authname'])) $output .= '<li>'.__( 'Please insert your name or nickname', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['cat'])) $output .= '<li>'.__( 'Please select a category', 'my-transit-lines' ).'</li>'."\r\n";
-			if(isset($err['authemail']) && !$err['authemail_valid']) $output .= '<li>'.__('Please insert your e-mail address','my-transit-lines').'</li>'."\r\n";
-			if(isset($err['authemail_valid'])) $output .= '<li>'.__('Please insert a valid e-mail address', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['title'])) $output .= '<li>'.__('Please insert a title', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['description'])) $output .= '<li>'.__( 'Please insert a description', 'my-transit-lines' ).'</li>'."\r\n";
 			if(isset($err['mtl-tags'])) $output .= '<li>'.__( 'Please insert location tags', 'my-transit-lines').'</li>'."\r\n";
-			if(isset($err['dataprivacy'])) $output .= '<li>'.__( 'Please check that you read our data privacy conditions', 'my-transit-lines' ).'</li>'."\r\n";
-			if(isset($err['captcha'])) $output .= '<li>'.__( 'You didn\'t enter the right captcha code', 'my-transit-lines' ).'</li>'."\r\n";
 			$output .= '</ul>'."\r\n";
 			$output .= __( 'Please fill out/correct the data and press the send button again.', 'my-transit-lines' )."\r\n";
 			$output .= '</div>'."\r\n";

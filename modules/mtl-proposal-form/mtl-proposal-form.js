@@ -410,53 +410,6 @@ function removeInteractions() {
 }
 
 /**
- * Returns the amount of stations in the features array
- * 
- * @param {FeatureLike[]} features the array of features to "search" for stations
- * @returns {number} the amount of stations placed on the map
- */
-function getCountStations(features = vectorSource.getFeatures()) {
-	let count = 0;
-	for (let feature of features) {
-		if (feature.getGeometry() instanceof ol.geom.Point)
-			count++;
-	}
-	return count;
-}
-
-/**
- * Returns the combined length of the lines in the features array
- * 
- * @param {FeatureLike[]} features the array of features to "search" for lines
- * @returns {number} the combined length of the lines placed on the map
- */
-function getLineLength(features = vectorSource.getFeatures()) {
-	let length = 0.0;
-	for (let feature of features) {
-		if (feature.getGeometry() instanceof ol.geom.LineString) {
-			length += ol.sphere.getLength(feature.getGeometry());
-		}
-	}
-	return length;
-}
-
-/**
- * Returns the combined costs of the lines in the features array
- * 
- * @param {FeatureLike[]} features the array of features to "search" for lines
- * @returns {number} the combined cost of the lines placed on the map
- */
-function getLineCost(features = vectorSource.getFeatures()) {
-	let cost = 0.0;
-	for (let feature of features) {
-		if (feature.getGeometry() instanceof ol.geom.LineString) {
-			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[getCategoryOf(feature)]['costs'];
-		}
-	}
-	return cost;
-}
-
-/**
  * Returns a comma-separated string list containing all location tags for the stations in the features array
  * 
  * @param {FeatureLike[]} features the array of features to "search" for stations

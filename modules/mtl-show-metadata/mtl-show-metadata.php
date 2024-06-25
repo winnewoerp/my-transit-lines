@@ -9,11 +9,12 @@
 /* created by Jan Garloff, 2023-10-14 */
 
 function mtl_show_metadata_output($atts) {
+	global $post;
 	$mtl_options3 = get_option('mtl-option-name3');
 
 	$a = shortcode_atts( 
 		array(
-			'id' => '',
+			'id' => $post->ID,
 			'format_string' => $mtl_options3['mtl-proposal-metadata-contents'],
 		),
 		$atts
@@ -24,10 +25,13 @@ function mtl_show_metadata_output($atts) {
 
 	$id = $a['id'];
 
+	$search = array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]', '[post-costs]');
+	$replace = array(get_category_name($id), get_line_length($id), get_count_stations($id), get_average_distance($id), get_cost($id));
+
 	// output the meta data
 	$output = '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
 	$output .= '<p class="mtl-metadata">';
-	$output .= str_replace(array('[post-category]', '[post-length]', '[post-station-count]', '[post-station-distance]', '[post-costs]'), array(get_category_name($id), get_line_length($id), get_count_stations($id), get_average_distance($id), get_cost($id)), $a['format_string']);
+	$output .= str_replace($search, $replace, $a['format_string']);
 	$output .= '</p>'."\r\n";
 	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output .= mtl_taglist();
 
@@ -42,7 +46,7 @@ function get_category_name($id) {
 function get_line_length($id) {
 	$lineLength = max(get_post_meta($id,'mtl-line-length',true), 0);
 
-	return str_replace('.',',', format_unit_prefix($lineLength, false).'m');
+	return format_unit_prefix($lineLength, false).'m';
 }
 
 function get_count_stations($id) {
@@ -58,13 +62,13 @@ function get_average_distance($id) {
 
 	$average_distance = $line_length / ($count_stations - 1);
 
-	return str_replace('.',',', format_unit_prefix($average_distance, false).'m');
+	return format_unit_prefix($average_distance, false).'m';
 }
 
 function get_cost($id) {
 	$costs = max(get_post_meta($id,'mtl-costs',true), 0);
 
-	return str_replace('.',',',  format_unit_prefix($costs * 1E6, true).get_option('mtl-option-name3')['mtl-currency-symbol']);
+	return format_unit_prefix($costs * 1E6, true).get_option('mtl-option-name3')['mtl-currency-symbol'];
 }
 
 /**
@@ -74,29 +78,30 @@ function get_cost($id) {
  * 
  * @param [number] $number the number to format
  * @param [bool] $word_prefix whether to use words (million, billion, ...) or short prefixes (k, M, G) for numbers larger than 1000
+ * @param [number] $step the step size to use instead of 1000, for example for squared or cubed units
  * @return string
  */
-function format_unit_prefix($number, $word_prefix) {
-	if ($number >= 1E9) {
-		return round($number/1E9,3).($word_prefix ? __(' billion ', 'my-transit-lines') : ' G');
+function format_unit_prefix($number, $word_prefix, $step=1E3) {
+	if ($number >= $step**3) {
+		return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number/$step**3,3)).($word_prefix ? ' '.__('billion', 'my-transit-lines').' ' : ' G');
 	}
-	if ($number >= 1E6) {
-		return round($number/1E6,3).($word_prefix ? __(' million ', 'my-transit-lines') : ' M');
+	if ($number >= $step**2) {
+		return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number/$step**2,3)).($word_prefix ? ' '.__('million', 'my-transit-lines').' ' : ' M');
 	}
-	if ($number >= 1E3) {
-		return round($number/1E3,3).($word_prefix ? __(' thousand ', 'my-transit-lines') : ' k');
+	if ($number >= $step**1) {
+		return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number/$step**1,3)).($word_prefix ? ' '.__('thousand', 'my-transit-lines').' ' : ' k');
 	}
 	if ($number == 0) {
-		return $number.' ';
+		return '0 ';
 	}
-	if ($number < 1E-6) {
-		return round($number*1E9,3).' n';
+	if ($number < $step**-2) {
+		return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number/$step**-2,3)).' n';
 	}
-	if ($number < 1E-3) {
-		return round($number*1E6,3).' µ';
+	if ($number < $step**-1) {
+		return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number/$step**-1,3)).' µ';
 	}
-	if ($number < 1) {
-		return round($number*1E3,3).' m';
+	if ($number < $step**0) {
+		return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number/$step**0,3)).' m';
 	}
-	return round($number,3).' ';
+	return str_replace('.',_x('.', 'decimal separator', 'my-transit-lines'), round($number,3)).' ';
 }

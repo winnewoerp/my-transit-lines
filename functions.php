@@ -148,7 +148,7 @@ function my_transit_lines_scripts() {
 	wp_enqueue_script( 'mtl-util', get_template_directory_uri() . '/js/util.js', array(), wp_get_theme()->version);
 
 	wp_register_script( 'openlayers', get_template_directory_uri() . '/openlayers/dist/ol.js', array(), wp_get_theme()->version, true);
-	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers'), wp_get_theme()->version, true);
+	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers', 'mtl-util'), wp_get_theme()->version, true);
 }
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 
@@ -304,8 +304,11 @@ function mtl_localize_script($getVar = false) {
 		'lengthString'=>__('Length: ', 'my-transit-lines'),
 		'radius'=>__('Radius: ', 'my-transit-lines'),
 		'area'=>__('Area: ', 'my-transit-lines'),
-		'decimalSeparator'=>__('.', 'my-transit-lines'),
+		'decimalSeparator'=>_x('.', 'decimal separator', 'my-transit-lines'),
 		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
+		'billion'=>__('billion', 'my-transit-lines'),
+		'million'=>__('million', 'my-transit-lines'),
+		'thousand'=>__('thousand', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	foreach($translatedStrings as $key => $value) {

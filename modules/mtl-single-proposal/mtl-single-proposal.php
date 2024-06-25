@@ -28,18 +28,7 @@ function mtl_proposal_map($content) {
 	$output .= '<div id="mtl-box">'."\r\n";
 
 	// save category style data to JS array
-	$output .= '<script type="text/javascript"> var transportModeStyleData = {';
-			
-	$count_cats = 0;
-	foreach(get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' ) as $single_category) {
-		$catid = $single_category->cat_ID;
-		if($mtl_options['mtl-use-cat'.$catid] == true) {
-			if($count_cats) $output .= ',';
-			$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'","'.$mtl_options['mtl-costs-cat'.$catid].'","'.$mtl_options['mtl-allow-others-cat'.$catid].'"]';
-			$count_cats++;
-		}
-	}
-	$output .= '}; </script>'."\r\n";
+	$output .= get_transport_mode_style_data();
 
 	// Removing line breaks that can be caused by WordPress import/export
 	$output .= '<script type="text/javascript"> var editMode = false; var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorFeatures = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-features',true)).'"]; var vectorCategoriesData = [undefined]; </script>'."\r\n";

@@ -56,20 +56,12 @@ function mtl_post_class_meta_box($post) {
 	$all_categories = get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
 	
 	// save category style data to JS array
-	$output .= '<script type="text/javascript"> var transportModeStyleData = {';
+	$output .= get_transport_mode_style_data();
 	
-	$count_cats = 0;
 	$output_later = '';
 	foreach($all_categories as $single_category) {
-		$catid = $single_category->cat_ID;
-		if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later .= 'defaultCategory = "'.$catid.'";';
-		if($mtl_options['mtl-use-cat'.$catid] == true) {
-			if($count_cats) $output .= ',';
-			$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"]';
-			$count_cats++;
-		}
+		if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later = 'defaultCategory = "'.$single_category->cat_ID.'";';
 	}
-	$output .= '}; </script>'."\r\n";
 
 	$output .= '<p><strong>'.__('If necessary, change transportation mode for this proposal.<br /><span style="font-weight:normal">Please change transport mode here and do not use the default WP category selector.</span>','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 	

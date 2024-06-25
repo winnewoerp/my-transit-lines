@@ -206,29 +206,23 @@ function mtl_proposal_form_output( $atts ){
 			elseif($err && $_POST['mtl-features']) {
 				$mtl_features = $_POST['mtl-features'];
 			}
-			
+
 			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
 			$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
-			
+
 			// get the current category
 			$current_category = get_the_category($editId);
-		
+
 			// save category style data to JS array
-			$output .= '<script type="text/javascript"> var transportModeStyleData = {';
-			
-			$count_cats = 0;
-			$output_later = '';
+			$output .= get_transport_mode_style_data();
+
+			$output .= '<script type="text/javascript"> ';
+
 			foreach($all_categories as $single_category) {
-				$catid = $single_category->cat_ID;
-				if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later .= 'defaultCategory = "'.$catid.'";';
-				if($mtl_options['mtl-use-cat'.$catid] == true) {
-					if($count_cats) $output .= ',';
-					$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'","'.$mtl_options['mtl-costs-cat'.$catid].'","'.$mtl_options['mtl-allow-others-cat'.$catid].'"]';
-					$count_cats++;
-				}
+				if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output .= 'defaultCategory = "'.$single_category->cat_ID.'";';
 			}
-			$output .= '}; </script>'."\r\n";
-			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+
+			$output .= ' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
 
 			if(trim($mtl_options3['mtl-country-source']))
 				$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
@@ -262,7 +256,7 @@ function mtl_proposal_form_output( $atts ){
 						}
 					}
 				}
-				
+
 				$output .= '</span><span class="transport-mode-select-inactive">'.__('Please select another tool<br /> to change the transport mode','my-transit-lines').'</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";

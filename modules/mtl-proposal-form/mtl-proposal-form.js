@@ -98,11 +98,11 @@ class InteractionControl extends ol.control.Control {
 	categorySelector(selected = getSelectedCategory()) {
 		const summary = document.createElement('summary');
 		summary.className = 'interaction-control';
-		summary.style.backgroundImage = 'url(' + transportModeStyleData[selected][1] + ')';
+		summary.style.backgroundImage = 'url(' + transportModeStyleData[selected]['image'] + ')';
 
 		const catList = document.createElement('menu');
 
-		for (let index of [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()][4].split(','))) {
+		for (let index of [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()]['allow-others'].split(','))) {
 			if (!index)
 				continue;
 
@@ -126,7 +126,7 @@ class InteractionControl extends ol.control.Control {
 	catListItem(index) {
 		const catListItem = document.createElement('li');
 		catListItem.className = 'interaction-control';
-		catListItem.style.backgroundImage = 'url(' + transportModeStyleData[index][1] + ')';
+		catListItem.style.backgroundImage = 'url(' + transportModeStyleData[index]['image'] + ')';
 		catListItem.value = index;
 		catListItem.addEventListener('click', this.handleCatListClick.bind(this), false);
 
@@ -141,12 +141,12 @@ class InteractionControl extends ol.control.Control {
 
 	updateSelectedCategory(id) {
 		this.selectCategory.querySelectorAll('li.interaction-control.selected').forEach(element => element.classList.remove('selected'));
-		this.selectCategory.querySelector('summary.interaction-control').style.backgroundImage = 'url(' + transportModeStyleData[id][1] + ')';
+		this.selectCategory.querySelector('summary.interaction-control').style.backgroundImage = 'url(' + transportModeStyleData[id]['image'] + ')';
 		this.selectCategory.querySelector('li.interaction-control[value="'+id+'"]').classList.add('selected');
 	}
 
 	updateCategorySelector() {
-		const new_draw_cat = transportModeStyleData[getSelectedCategory()][4].split(',').includes(getSelectedDrawCategory()) ? getSelectedDrawCategory() : getSelectedCategory();
+		const new_draw_cat = transportModeStyleData[getSelectedCategory()]['allow-others'].split(',').includes(getSelectedDrawCategory()) ? getSelectedDrawCategory() : getSelectedCategory();
 		let new_category_selector = this.categorySelector(new_draw_cat);
 
 		this.element.replaceChild(new_category_selector, this.selectCategory);
@@ -205,7 +205,7 @@ $('#title, #description').on('input propertychange paste', function () {
 $('input.cat-select').on("change", function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 
-	const new_allowed_cats = [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()][4].split(','));
+	const new_allowed_cats = [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()]['allow-others'].split(','));
 	for (let feature of vectorSource.getFeatures()) {
 		if (!new_allowed_cats.includes(feature.get('category'))) {
 			feature.set('category', getSelectedCategory());
@@ -450,7 +450,7 @@ function getLineCost(features = vectorSource.getFeatures()) {
 	let cost = 0.0;
 	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.LineString) {
-			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[getCategoryOf(feature)][3];
+			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[getCategoryOf(feature)]['costs'];
 		}
 	}
 	return cost;

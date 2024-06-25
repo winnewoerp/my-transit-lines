@@ -93,14 +93,14 @@ const MAX_ZOOM_TILELIST = 15;
 
 // returns the style for the given feature
 function tilelistStyleFunction(feature) {
-	const color = transportModeStyleData[getCategoryOf(feature)][0];
+	const color = transportModeStyleData[getCategoryOf(feature)]['color'];
 
 	const fillStyle = new ol.style.Fill({
 		color: color + '40',
 	});
 
 	const imageStyle = new ol.style.Icon({
-		src: transportModeStyleData[getCategoryOf(feature)][1],
+		src: transportModeStyleData[getCategoryOf(feature)]['image'],
 		width: ICON_SIZE_TILELIST,
 		height: ICON_SIZE_TILELIST,
 	});

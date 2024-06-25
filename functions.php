@@ -17,6 +17,7 @@
  /**
  * include module functions files
  */
+include( get_template_directory() . '/modules/common.php'); // Common functions for all modules
 include( get_template_directory() . '/modules/mtl-login-register/mtl-login-register.php'); // Login/Register module
 include( get_template_directory() . '/modules/mtl-admin-menu/mtl-admin-menu.php'); // dashboard admin section module
 include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // proposal form

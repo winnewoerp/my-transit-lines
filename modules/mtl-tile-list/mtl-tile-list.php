@@ -50,15 +50,10 @@ function mtl_tile_list_output($atts) {
 	$output .= '<script type="text/javascript"> ';
 	$output .= ' var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";';
 	$output .= ' var tilePageUrl = "'.get_permalink().'"; var initMap = false;';
-	if(!$hidethumbs) {
-		$output .= ' var transportModeStyleData = {';
-		foreach(get_categories('include='.get_active_categories()) as $single_category) {
-			$catid = $single_category->cat_ID;
-			$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"],';
-		}
-		$output .= '};';
-	}
 	$output .= '</script>'."\r\n";
+	if(!$hidethumbs) {
+		$output .= get_transport_mode_style_data();
+	}
 	$output .= '<script type="text/javascript"> var pluginsUrl = "'. plugins_url('', __FILE__) .'"; </script>'."\r\n";
 	
 	// output the add post tile (first tile of the list, shown in most cases)

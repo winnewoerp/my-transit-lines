@@ -47,21 +47,9 @@ function mtl_multiple_proposal_output( $atts ) {
 	// load the text translations
 	$output .= mtl_localize_script(true);
 
-	$mtl_all_catids = '';
-	foreach(get_categories() as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID])
-            $mtl_all_catids .= $category->cat_ID.',';
-    }
-
-    $all_selectable_categories = get_categories('include='.$mtl_all_catids);
-
 	// load relevant scripts and set some JS variables
-	$output .= "\r".'<div id="mtl-box">'."\r\n".'<script type="text/javascript"> var transportModeStyleData = {';
-	foreach($all_selectable_categories as $single_category) {
-		$catid = $single_category->cat_ID;
-		$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"],';
-	}
-	$output .= '}; </script>';
+	$output .= "\r".'<div id="mtl-box">'."\r\n";
+	$output .= get_transport_mode_style_data();
 
 	$vector_data = "";
 	$vector_labels_data = "";

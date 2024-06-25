@@ -197,15 +197,8 @@ function get_posts_per_page() {
 function get_query_cats() {
 	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != 'all')
 		return $_GET['mtl-catid'];
-	
-	// get categories from mtl theme options
-	$query_cats = '';
-	foreach(get_categories() as $category) {
-        if(get_option('mtl-option-name')['mtl-use-cat'.$category->cat_ID])
-            $query_cats .= $category->cat_ID.',';
-    }
-	
-	return $query_cats;
+
+	return get_active_categories();
 }
 
 /**
@@ -352,7 +345,7 @@ function get_active_categories() {
 
 	$mtl_all_catids = '';
 	foreach(get_categories() as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID])
+        if($mtl_options['mtl-use-cat'.$category->cat_ID] && !($mtl_options['mtl-only-in-map-cat'.$category->cat_ID]))
             $mtl_all_catids .= $category->cat_ID.',';
     }
 	return $mtl_all_catids;

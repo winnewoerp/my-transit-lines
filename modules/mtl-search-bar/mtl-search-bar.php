@@ -345,7 +345,7 @@ function get_active_categories() {
 
 	$mtl_all_catids = '';
 	foreach(get_categories() as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID] && !($mtl_options['mtl-only-in-map-cat'.$category->cat_ID]))
+        if($mtl_options['mtl-use-cat'.$category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$category->cat_ID])
             $mtl_all_catids .= $category->cat_ID.',';
     }
 	return $mtl_all_catids;

@@ -239,10 +239,9 @@ function mtl_proposal_form_output( $atts ){
 					$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 
 					$checkedAlready = false;
-
 					// getting all categories for selected as transit mode categories, set the given category option to checked
 					foreach($all_categories as $single_category) {
-						if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
+						if($mtl_options['mtl-use-cat'.$single_category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$single_category->cat_ID]) {
 							$checked='';
 
 							if (($err && isset($_POST['cat']) && $single_category->cat_ID == $_POST['cat']) ||

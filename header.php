@@ -15,7 +15,7 @@ if(is_single() && get_post_type()=='mtlproposal') {
 	$category = get_the_category($post->ID);
 	$catid = $category[0]->cat_ID;
 	$mtl_options = get_option('mtl-option-name');
-	if(!$mtl_options['mtl-use-cat'.$catid] == true) header('Location: '.get_bloginfo('url').'');
+	if(!current_user_can('administrator') && (!$mtl_options['mtl-use-cat'.$catid] || $mtl_options['mtl-only-in-map-cat'.$catid])) header('Location: '.get_bloginfo('url').'');
 }
 
 ?><!DOCTYPE html>

@@ -67,7 +67,7 @@ function mtl_post_class_meta_box($post) {
 	
 	// getting all categories for selected as transit mode categories, set the given category option to checked
 	foreach($all_categories as $single_category) {
-		if ($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
+		if ($mtl_options['mtl-use-cat'.$single_category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$single_category->cat_ID]) {
 			$checked='';
 
 			if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';

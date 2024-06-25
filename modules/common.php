@@ -14,6 +14,7 @@ const STYLE_DATA_KEYS = array(
 	['mtl-image-selected-cat', 'image-selected'],
 	['mtl-costs-cat', 'costs'],
 	['mtl-allow-others-cat', 'allow-others'],
+	['mtl-only-in-map-cat', 'only-in-map'],
 );
 
 /**

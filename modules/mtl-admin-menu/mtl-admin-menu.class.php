@@ -42,14 +42,13 @@ class MtlSettingsPage
 	/**
 	 * Add MTL subpages
 	 */
-	public function add_mtl_submenu_pages()
-		{
+	public function add_mtl_submenu_pages() {
 		// Creates new menu subpages
 		add_submenu_page(
 			'mtl_settings_page',
 			__('Instructions','my-transit-lines'),
 			__('Instructions','my-transit-lines'),
-			'edit_posts',
+			'manage_options',
 			'mtl-instructions',
 			array( $this, 'mtl_submenu_page_instructions')
 		);
@@ -57,7 +56,7 @@ class MtlSettingsPage
 			'mtl_settings_page',
 			__('General settings','my-transit-lines'),
 			__('General settings','my-transit-lines'),
-			'edit_posts',
+			'manage_options',
 			'mtl-general-settings',
 			array( $this, 'mtl_submenu_page_general_settings')
 		);
@@ -65,7 +64,7 @@ class MtlSettingsPage
 			'mtl_settings_page',
 			__('Map and category settings','my-transit-lines'),
 			__('Map and category settings','my-transit-lines'),
-			'edit_posts',
+			'manage_options',
 			'mtl-settings',
 			array( $this, 'mtl_submenu_page_settings')
 		);
@@ -76,6 +75,8 @@ class MtlSettingsPage
 	 */
 	public function mtl_menu_page()
 	{
+		if (!current_user_can('manage_options'))
+			return;
 		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -88,6 +89,8 @@ class MtlSettingsPage
 	 */
 	public function mtl_submenu_page_instructions()
 	{
+		if (!current_user_can('manage_options'))
+			return;
 		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -102,6 +105,8 @@ class MtlSettingsPage
 	 */
 	public function mtl_submenu_page_general_settings()
 	{
+		if (!current_user_can('manage_options'))
+			return;
 		$this->options = get_option( 'mtl-option-name3' ); ?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -127,6 +132,8 @@ class MtlSettingsPage
 	 */
 	public function mtl_submenu_page_intro()
 	{
+		if (!current_user_can('manage_options'))
+			return;
 		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -145,6 +152,8 @@ class MtlSettingsPage
 	 */
 	public function mtl_submenu_page_settings()
 	{
+		if (!current_user_can('manage_options'))
+			return;
 		// Set class property
 		$this->options = get_option( 'mtl-option-name' );
 		?>

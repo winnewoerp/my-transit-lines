@@ -792,3 +792,17 @@ function getLineCost(features = vectorSource.getFeatures()) {
 	}
 	return cost;
 }
+
+/**
+ * Returns an Array of category ids used in the map
+ * @param {FeatureLike[]} features
+ * @returns {Number[]}
+ */
+function getUsedCats(features = vectorSource.getFeatures()) {
+	let result = [];
+	for (feature of features) {
+		if (!result.includes(Number.parseFloat(feature.get('category'))))
+			result.push(Number.parseFloat(feature.get('category')));
+	}
+	return result;
+}

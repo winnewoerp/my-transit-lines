@@ -35,6 +35,7 @@ function get_transport_mode_style_data() {
 			foreach(STYLE_DATA_KEYS as $style_data) {
 				$output .= '"'.$style_data[1].'":"'.$mtl_options[$style_data[0].$catid].'",';
 			}
+			$output .= '"name":"'.$single_category->name.'",';
 			$output .= '},';
 		}
 	}

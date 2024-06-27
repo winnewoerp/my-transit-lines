@@ -458,6 +458,7 @@ function importAllJSON() {
 	}
 
 	zoomToFeatures(true);
+	window.dispatchEvent(new Event('map-load'));
 }
 
 /**

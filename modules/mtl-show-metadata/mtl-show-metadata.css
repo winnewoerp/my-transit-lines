@@ -1,0 +1,12 @@
+/* Styles for MTL metadata box */
+
+/* created by Jan Garloff, 2024-06-27 */
+
+div.mtl-metadata {
+	background:#f0f0f0;
+	padding:3px 5px;
+}
+
+div.mtl-metadata details:not(.has-content) summary {
+	list-style: none;
+}

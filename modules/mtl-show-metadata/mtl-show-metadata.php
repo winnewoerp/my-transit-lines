@@ -30,9 +30,10 @@ function mtl_show_metadata_output($atts) {
 
 	// output the meta data
 	$output = '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
-	$output .= '<p class="mtl-metadata">';
+	$output .= '<div class="mtl-metadata" id="mtl-metadata">';
 	$output .= str_replace($search, $replace, $a['format_string']);
-	$output .= '</p>'."\r\n";
+	$output .= '</div>'."\r\n";
+	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-show-metadata/mtl-show-metadata.js?ver='.wp_get_theme()->version.'"></script>'."\r\n";
 	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output .= mtl_taglist();
 
 	return $output;
@@ -40,17 +41,34 @@ function mtl_show_metadata_output($atts) {
 add_shortcode( 'mtl-show-metadata', 'mtl_show_metadata_output' );
 
 function get_category_name($id) {
-	return get_the_category($id)[0]->name;
+	$output  = '<details id="mtl-metadata-category-name">';
+	$output .= '<summary>'.__('Transit mode', 'my-transit-lines').': '.get_the_category($id)[0]->name.'</summary>';
+	$output .= '<div></div>';
+	$output .= '</details>';
+
+	return $output;
 }
 
 function get_line_length($id) {
-	$lineLength = max(get_post_meta($id,'mtl-line-length',true), 0);
+	$lineLength = format_unit_prefix(max(get_post_meta($id,'mtl-line-length',true), 0), false).'m';
 
-	return format_unit_prefix($lineLength, false).'m';
+	$output  = '<details id="mtl-metadata-line-length">';
+	$output .= '<summary>'.__('Line length', 'my-transit-lines').': '.$lineLength.'</summary>';
+	$output .= '<div></div>';
+	$output .= '</details>';
+
+	return $output;
 }
 
 function get_count_stations($id) {
-	return max(get_post_meta($id,'mtl-count-stations',true), 0);
+	$countStations = max(get_post_meta($id,'mtl-count-stations',true), 0);
+
+	$output  = '<details id="mtl-metadata-count-stations">';
+	$output .= '<summary>'.__('Station count', 'my-transit-lines').': '.$countStations.'</summary>';
+	$output .= '<div></div>';
+	$output .= '</details>';
+
+	return $output;
 }
 
 function get_average_distance($id) {
@@ -58,17 +76,22 @@ function get_average_distance($id) {
 	$count_stations = max(get_post_meta($id,'mtl-count-stations',true), 0);
 
 	if (!$line_length || $count_stations < 2)
-		return '0 m';
+		return __('Average distance', 'my-transit-lines').': 0 m<br>';
 
 	$average_distance = $line_length / ($count_stations - 1);
 
-	return format_unit_prefix($average_distance, false).'m';
+	return __('Average distance', 'my-transit-lines').': '.format_unit_prefix($average_distance, false).'m<br>';
 }
 
 function get_cost($id) {
-	$costs = max(get_post_meta($id,'mtl-costs',true), 0);
+	$costs = format_unit_prefix(max(get_post_meta($id,'mtl-costs',true), 0) * 1E6, true).get_option('mtl-option-name3')['mtl-currency-symbol'];
 
-	return format_unit_prefix($costs * 1E6, true).get_option('mtl-option-name3')['mtl-currency-symbol'];
+	$output  = '<details id="mtl-metadata-costs">';
+	$output .= '<summary>'.__('Costs', 'my-transit-lines').': '.$costs.'</summary>';
+	$output .= '<div></div>';
+	$output .= '</details>';
+
+	return $output;
 }
 
 /**

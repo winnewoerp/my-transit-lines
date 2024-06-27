@@ -219,7 +219,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<script type="text/javascript"> ';
 
 			foreach($all_categories as $single_category) {
-				if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output .= 'defaultCategory = "'.$single_category->cat_ID.'";';
+				if(str_contains($single_category->slug, 'other')) $output .= 'defaultCategory = "'.$single_category->cat_ID.'";';
 			}
 
 			$output .= ' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";

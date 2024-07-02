@@ -32,7 +32,7 @@ function mtl_search_bar_output($query = null) {
 	$output .= '<select name="mtl-catid">'."\r\n".'<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
 	foreach(get_categories('include='.get_active_categories()) as $single_category) {
 		$catid = $single_category->cat_ID;
-		$output .= '<option value="'.$catid.'"'.($catid === $query->query['cat'] ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
+		$output .= '<option value="'.$catid.'"'.($catid == $query->query['cat'] ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
 	}
 	$output .= '</select>';
 	

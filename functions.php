@@ -333,6 +333,21 @@ if (!function_exists('my_theme_filter')) {
 }}
 add_filter( 'pre_get_posts', 'my_theme_filter' );
 
+ 
+function add_tax_to_pll( $taxonomies, $is_settings ) {
+	// removes categories from being translated by Polylang
+	unset( $taxonomies['category'] );
+    return $taxonomies;
+}
+add_filter( 'pll_get_taxonomies', 'add_tax_to_pll', 10, 2 );
+
+function add_cpt_to_pll( $post_types, $is_settings ) {
+	// removes mtlproposals from being translated by Polylang
+	unset( $post_types['mtlproposal'] );
+	return $post_types;
+}
+add_filter( 'pll_get_post_types', 'add_cpt_to_pll', 10, 2);
+
 /**
  * custom post meta display for not-single content view
  */

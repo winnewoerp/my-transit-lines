@@ -334,19 +334,3 @@ function get_tag_in() {
 
 	return null;
 }
-
-/**
- * Get the categories that were activated in the admin menu
- *
- * @return string that contains a comma-separated list of category ids
- */
-function get_active_categories() {
-	$mtl_options = get_option('mtl-option-name');
-
-	$mtl_all_catids = '';
-	foreach(get_categories() as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$category->cat_ID])
-            $mtl_all_catids .= $category->cat_ID.',';
-    }
-	return $mtl_all_catids;
-}

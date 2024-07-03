@@ -216,7 +216,7 @@ class MtlSettingsPage
 		$all_categories = get_categories('show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category');
 		foreach($all_categories as $single_category) {
 			$catid = $single_category->term_id;
-			$catname = $single_category->name;
+			$catname = __($single_category->name, 'my-transit-lines');
 			add_settings_field('mtl-use-cat'.$catid, sprintf(__('Use category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-use-cat'.$catid,'type' => 'checkbox','class' => 'category-checkbox','option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-only-in-map-cat'.$catid, sprintf(__('Only use category <strong>%s</strong> when drawing but not as proposal\'s category'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-only-in-map-cat'.$catid,'type' => 'checkbox','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-color-cat'.$catid, sprintf(__('Color for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-color-cat'.$catid,'type' => 'colorpicker','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));

@@ -210,6 +210,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
 			$active_categories = get_categories(array(
 				"include" => get_active_categories(),
+				"orderby" => "slug",
 			));
 
 			// get the current category
@@ -245,18 +246,20 @@ function mtl_proposal_form_output( $atts ){
 					// getting all categories for selected as transit mode categories, set the given category option to checked
 					foreach ($active_categories as $single_category) {
 						$single_catid = $single_category->cat_ID;
+						$single_catname = __($single_category->name, 'my-transit-lines');
+						$single_catslug = $single_category->slug;
 
 						if (!$mtl_options['mtl-only-in-map-cat'.$single_catid]) {
 							$checked = '';
 
 							if (($err && isset($_POST['cat']) && $single_catid == $_POST['cat']) ||
 								(!$err && $editId && $single_catid == $current_category[0]->term_id) ||
-								(str_contains($single_catid->slug, 'other') && !$checkedAlready)) {
+								(str_contains($single_catslug, 'other') && !$checkedAlready)) {
 									$checked = ' checked="checked"';
 									$checkedAlready = true;
 							}
 
-							$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+							$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_catid.'" id="cat-'.$single_catslug.'" /> '.$single_catname.'</label>'."\r\n";
 						}
 					}
 				}

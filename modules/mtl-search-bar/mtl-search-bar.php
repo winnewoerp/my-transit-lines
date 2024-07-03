@@ -30,9 +30,9 @@ function mtl_search_bar_output($query = null) {
 
 	// transit mode selector
 	$output .= '<select name="mtl-catid">'."\r\n".'<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
-	foreach(get_categories('include='.get_active_categories()) as $single_category) {
+	foreach(get_categories('orderby=slug&include='.get_active_categories()) as $single_category) {
 		$catid = $single_category->cat_ID;
-		$output .= '<option value="'.$catid.'"'.($catid == $query->query['cat'] ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
+		$output .= '<option value="'.$catid.'"'.($catid == $query->query['cat'] ? ' selected="selected"' : '').'>'.__($single_category->name, "my-transit-lines").' </option>'."\r\n";
 	}
 	$output .= '</select>';
 	

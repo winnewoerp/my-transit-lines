@@ -42,7 +42,7 @@ add_shortcode( 'mtl-show-metadata', 'mtl_show_metadata_output' );
 
 function get_category_name($id) {
 	$output  = '<details id="mtl-metadata-category-name">';
-	$output .= '<summary>'.__('Transit mode', 'my-transit-lines').': '.get_the_category($id)[0]->name.'</summary>';
+	$output .= '<summary>'.__('Transit mode', 'my-transit-lines').': '.__(get_the_category($id)[0]->name, 'my-transit-lines').'</summary>';
 	$output .= '<div></div>';
 	$output .= '</details>';
 

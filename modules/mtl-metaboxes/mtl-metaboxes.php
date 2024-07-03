@@ -72,7 +72,7 @@ function mtl_post_class_meta_box($post) {
 
 			if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
 			
-			$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
+			$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.__($single_category->name, 'my-transit-lines').'</label>'."\r\n";
 		}
 	}
 	$output .= '</span></span></p>';

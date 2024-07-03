@@ -96,9 +96,16 @@ class InteractionControl extends ol.control.Control {
 	}
 
 	categorySelector(selected = getSelectedCategory()) {
+		const details = document.createElement('details');
+		details.id = 'cat-draw-select';
+
 		const summary = document.createElement('summary');
 		summary.className = 'interaction-control';
 		summary.style.backgroundImage = 'url(' + transportModeStyleData[selected]['image'] + ')';
+
+		if (transportModeStyleData[getSelectedCategory()]['allow-others'].trim() == "") {
+			details.style.display = 'none';
+		}
 
 		const catList = document.createElement('menu');
 
@@ -113,9 +120,6 @@ class InteractionControl extends ol.control.Control {
 
 			catList.appendChild(item);
 		}
-
-		const details = document.createElement('details');
-		details.id = 'cat-draw-select';
 
 		details.appendChild(summary);
 		details.appendChild(catList);

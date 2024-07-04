@@ -1280,6 +1280,18 @@ msgid "bus"
 msgstr ""
 
 #: modules/mtl-search-bar/mtl-search-bar.php:35
+msgid "Battery Bus"
+msgstr ""
+
+#: modules/mtl-search-bar/mtl-search-bar.php:35
+msgid "Trolleybus"
+msgstr ""
+
+#: modules/mtl-search-bar/mtl-search-bar.php:35
+msgid "Uncategorized"
+msgstr ""
+
+#: modules/mtl-search-bar/mtl-search-bar.php:35
 msgid "trolleybus"
 msgstr ""
 

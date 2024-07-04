@@ -371,7 +371,8 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
 			$output .= '<input type="hidden" name="delete_id" value="'.$editId.'" />'."\r\n";
-			wp_nonce_field( 'new-post' );
+			if (!is_admin())
+				wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
 		else $output .= '<a href="'.$addpost_page_link.'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";

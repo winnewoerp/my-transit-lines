@@ -348,6 +348,12 @@ function add_cpt_to_pll( $post_types, $is_settings ) {
 }
 add_filter( 'pll_get_post_types', 'add_cpt_to_pll', 10, 2);
 
+if (!function_exists("pll_get_post")) {
+	function pll_get_post($post_id, $lang = '') {
+		return get_post($post_id);
+	}
+}
+
 /**
  * custom post meta display for not-single content view
  */

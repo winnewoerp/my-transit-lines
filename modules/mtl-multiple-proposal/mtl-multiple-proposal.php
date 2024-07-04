@@ -110,7 +110,7 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '</div>'."\r\n";
 
-	$output .= '<script type="text/javascript"> $(document).ready(function(){ document.getElementById("mtl-toggle-labels-link").checked = false; toggleLabels();}); var post_list_url = "'.get_permalink(get_option('mtl-option-name')['mtl-postlist-page']).'"; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> $(document).ready(function(){ document.getElementById("mtl-toggle-labels-link").checked = false; toggleLabels();}); var post_list_url = "'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'"; </script>'."\r\n";
 
 	if (!$statusid_query)
 		$output .= '<p class="alignleft"> <a id="mtl-post-list-link">'.__('Proposal list page','my-transit-lines').'</a> </p>';

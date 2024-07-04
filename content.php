@@ -10,7 +10,7 @@ $post_category = $category[0]->slug;
 $mtl_options = get_option('mtl-option-name');
 
 $post_link = get_permalink($post->ID);
-if($post->post_status=='draft' && $post->post_author == get_current_user_id()) $post_link = get_permalink($mtl_options['mtl-addpost-page']).'?edit_proposal='.$post->ID;
+if($post->post_status=='draft' && $post->post_author == get_current_user_id()) $post_link = get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'?edit_proposal='.$post->ID;
 ?>
 <article id="post-<?php the_ID(); ?>">
 	<?php 

@@ -27,6 +27,8 @@ function mtl_proposal_form_output( $atts ){
 	if ($editId) $editType = 'update';
 			
 	$err = [];
+
+	$addpost_page_link = get_permalink(pll_get_post($mtl_options['mtl-addpost-page']));
 	
 	// only if form allowed
 	if(is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
@@ -45,7 +47,7 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['check-content']['mtlproposal']['update'] = __('Please have a look at the updated proposal to see if everything\'s alright with it.','my-transit-lines');
 		$mtl_string['success-notice']['mtlproposal']['add'] = __( 'Thank you! Your proposal has been added successfully.', 'my-transit-lines' );
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
-		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink($mtl_options['mtl-postlist-page']).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
+		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
@@ -372,7 +374,7 @@ function mtl_proposal_form_output( $atts ){
 			wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
-		else $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
+		else $output .= '<a href="'.$addpost_page_link.'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
@@ -394,7 +396,7 @@ function mtl_proposal_form_output( $atts ){
 				while($query_name->have_posts()) {
 					$query_name->the_post();
 					global $post;
-					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
+					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,$addpost_page_link).'">'.get_the_title().'</a></li>';
 				}
 				$list_posts .= '<ul>';
 				wp_reset_postdata();
@@ -405,7 +407,7 @@ function mtl_proposal_form_output( $atts ){
 				$output = '<div class="success-message-block">'."\r\n";
 				$output .= '<strong>'.sprintf(esc_html__('Are your sure you want to delete the draft of your proposal "%s"? There is no going back.','my-transit-lines'),get_the_title($delete_id)).'</strong><br />'."\r\n";
 				$output .= '<br /><form id="delete_post" name="delete_post" method="post" action="" enctype="multipart/form-data"><input type="hidden" name="deleteid" value="'.$delete_id.'" /><input type="submit" name="really-delete-draft" value="'.esc_html__('Yes, definetily delete this draft','my-transit-lines').'"></form><br />';
-				$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,get_permalink($mtl_options['mtl-addpost-page'])).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
+				$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,$addpost_page_link).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
 				$output .= '</div>'."\r\n";
 				return $output;
 			}

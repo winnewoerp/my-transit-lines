@@ -230,7 +230,7 @@ function mtl_proposal_map($content) {
 	$author_id=$post->post_author;
 	if($mtl_options['mtl-addpost-page']) {
 		if($author_id > 0 && $author_id == $current_user->ID) {
-			$output2 .= '<p class="mtl-edit-proposal"><a href="'.get_permalink($mtl_options['mtl-addpost-page']).'?edit_proposal='.$post->ID.'">'.__('Edit my proposal','my-transit-lines').'</a></p>';
+			$output2 .= '<p class="mtl-edit-proposal"><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'?edit_proposal='.$post->ID.'">'.__('Edit my proposal','my-transit-lines').'</a></p>';
 		}
 	}
 	
@@ -251,7 +251,7 @@ function mtl_taglist() {
 		$output .= '<h3>'.__('All administrative subdivisons of this proposal:','my-transit-lines').'</h3>';
 		$output .= '<ul>';
 		foreach ( $tags as $current_tag ) {
-			$tag_link = str_replace("?", "#!?", add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page'])));
+			$tag_link = str_replace("?", "#!?", add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink(pll_get_post($mtl_options['mtl-postlist-page']))));
 
 			$output .= "<li><a href='{$tag_link}' title='{$current_tag->name}'>{$current_tag->name}</a></li>"."\r\n";
 		}

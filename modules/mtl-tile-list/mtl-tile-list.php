@@ -55,10 +55,9 @@ function mtl_tile_list_output($atts) {
 		$output .= get_transport_mode_style_data();
 	}
 	$output .= '<script type="text/javascript"> var pluginsUrl = "'. plugins_url('', __FILE__) .'"; </script>'."\r\n";
-	
-	// output the add post tile (first tile of the list, shown in most cases)
-	if($type == 'mtlproposal' && $mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
-	
+
+	if($type == 'mtlproposal' && $mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
+
 	$catList = '<script type="text/javascript"> var catList = {';
 	$vectorDataList = '<script type="text/javascript"> var vectorDataList = {';
 	$vectorFeaturesList = '<script type="text/javascript"> var vectorFeaturesList = {';
@@ -102,7 +101,7 @@ function mtl_tile_list_output($atts) {
 	
 	$output .= get_paginate_links($the_query->max_num_pages);
 
-	$output .= '<script type="text/javascript"> var post_map_url = "'.get_permalink(get_option('mtl-option-name')['mtl-postmap-page']).'"; </script><p class="alignleft"> <a id="mtl-post-map-link">'.__('Proposal map page','my-transit-lines').'</a> </p>';
+	$output .= '<script type="text/javascript"> var post_map_url = "'.get_permalink(pll_get_post($mtl_options['mtl-postmap-page'])).'"; </script><p class="alignleft"> <a id="mtl-post-map-link">'.__('Proposal map page','my-transit-lines').'</a> </p>';
 	
 	return $output;
 }

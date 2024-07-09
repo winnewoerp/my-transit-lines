@@ -354,6 +354,16 @@ if (!function_exists("pll_get_post")) {
 	}
 }
 
+function get_site_locale() {
+	$locale = get_option( 'WPLANG' );
+
+	if ( empty($locale) ) {
+		$locale = 'en_US';
+	}
+
+	return $locale;
+}
+
 /**
  * custom post meta display for not-single content view
  */

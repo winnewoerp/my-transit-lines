@@ -76,8 +76,9 @@ function create_sorting_phase_status_taxonomy() {
 		'add_new_item' => __( 'Add New Sorting Phase Status','my-transit-lines' ),
 		'new_item_name' => __( 'New Sorting Phase Status','my-transit-lines' ),
 		'menu_name' => __( 'Sorting Phase Statuses' ),
-		); 	
-	
+		);
+
+	switch_to_locale(get_site_locale());
 	// Now register the taxonomy
 	register_taxonomy('sorting-phase-status',array('mtlproposal'), array(
 		'hierarchical' => true,
@@ -87,6 +88,7 @@ function create_sorting_phase_status_taxonomy() {
 		'rewrite' => array('slug'),
 		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
 		));
+	restore_previous_locale();
 }
 
 ?>

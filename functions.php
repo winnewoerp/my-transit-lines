@@ -336,6 +336,7 @@ add_filter( 'pre_get_posts', 'my_theme_filter' );
 function add_tax_to_pll( $taxonomies, $is_settings ) {
 	// removes categories from being translated by Polylang
 	unset( $taxonomies['category'] );
+	unset( $taxonomies['sorting-phase-status'] );
     return $taxonomies;
 }
 add_filter( 'pll_get_taxonomies', 'add_tax_to_pll', 10, 2 );

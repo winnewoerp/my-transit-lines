@@ -23,27 +23,13 @@ function mtl_proposal_map($content) {
 	$mtl_options = get_option('mtl-option-name');
 	$mtl_options3 = get_option('mtl-option-name3');
 	
-	// do the meta data calculations
-	$countStations = max(get_post_meta($post->ID,'mtl-count-stations',true), 0);
-	$lineLength = max(get_post_meta($post->ID,'mtl-line-length',true), 0);
-	if($lineLength>=1000) $lineLengthOutput = str_replace('.',',',round($lineLength/1000,3)).' km';
-	else $lineLengthOutput = str_replace('.',',',round($lineLength,1)).' m';
-	$averageDistance = 0;
-	if($countStations > 1 && $lineLength) {
-		$averageDistance = $lineLength/($countStations-1);
-		if($averageDistance>=1000) $averageDistanceOutput = str_replace('.',',',round($averageDistance/1000,3)).' km';
-		else $averageDistanceOutput = str_replace('.',',',round($averageDistance,1)).' m';
-	}
-	
-	// get data of current category
-	$category = get_the_category($post->ID);
-	$catid = $category[0]->cat_ID;
-	$category_name = $category[0]->name;
-	
 	// load relevant scripts and set some JS variables
 	$output .= "\r".'<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 	$output .= '<div id="mtl-box">'."\r\n";
-	$output .= '<script type="text/javascript"> var transportModeStyleData = {'.$catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"]}; </script>';
+
+	// save category style data to JS array
+	$output .= get_transport_mode_style_data();
+
 	// Removing line breaks that can be caused by WordPress import/export
 	$output .= '<script type="text/javascript"> var editMode = false; var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorFeatures = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-features',true)).'"]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
 	
@@ -61,17 +47,12 @@ function mtl_proposal_map($content) {
 	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '<p class="alignright" id="mtl-toggle-sizes"><label><input type="checkbox" autocomplete="off" id="mtl-toggle-sizes-link" onclick="toggleSizes()" /> '.__('Show feature sizes','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '</div>'."\r\n";
-	
+
 	// output the meta data
 	$output .= '<h2>'.__('Description of this proposal','my-transit-lines').'</h2>';
-	$output2 .= '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
-	$output2 .= '<p class="mtl-metadata">';
-	$output2 .= __('Transport mode','my-transit-lines').': '.$category_name.'<br />';
-	if($lineLength) $output2 .= __('Line length','my-transit-lines').': '.$lineLengthOutput.'<br />';
-	if($countStations) $output2 .= __('Number of stations','my-transit-lines').': '.$countStations.'<br />';
-	if($averageDistance) $output2 .= __('Average station distance','my-transit-lines').': '.$averageDistanceOutput.'<br /><small>'.__('Attention: average station distance calculation is currently only correct when there is one contiguous line with the first and the last station on the respective end of line.','my-transit-lines').'</small><br />';
-	$output2 .= '</p>'."\r\n";
-	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output2 .= mtl_taglist();
+	$output2 .= mtl_show_metadata_output(array(
+		'id' => $post->ID,
+	));
 	
 	// check for reCAPTCHA keys
 	$use_recaptcha = false;
@@ -242,14 +223,14 @@ function mtl_proposal_map($content) {
 		</div>';
 	}
 
-	$output2 .= '<script type="text/javascript"> currentCat = "'.$catid .'"; </script>';
+	$output2 .= '<script type="text/javascript"> defaultCategory = "'.get_the_category($post->ID)[0]->cat_ID .'"; </script>';
 	
 	// show edit proposal button iff current user equals author
 	$current_user = wp_get_current_user();
 	$author_id=$post->post_author;
 	if($mtl_options['mtl-addpost-page']) {
 		if($author_id > 0 && $author_id == $current_user->ID) {
-			$output2 .= '<p class="mtl-edit-proposal"><a href="'.get_permalink($mtl_options['mtl-addpost-page']).'?edit_proposal='.$post->ID.'">'.__('Edit my proposal','my-transit-lines').'</a></p>';
+			$output2 .= '<p class="mtl-edit-proposal"><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'?edit_proposal='.$post->ID.'">'.__('Edit my proposal','my-transit-lines').'</a></p>';
 		}
 	}
 	
@@ -270,7 +251,7 @@ function mtl_taglist() {
 		$output .= '<h3>'.__('All administrative subdivisons of this proposal:','my-transit-lines').'</h3>';
 		$output .= '<ul>';
 		foreach ( $tags as $current_tag ) {
-			$tag_link = str_replace("?", "#!?", add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink($mtl_options['mtl-postlist-page'])));
+			$tag_link = str_replace("?", "#!?", add_query_arg( array('mtl-tag-ids' => $current_tag->term_id), get_permalink(pll_get_post($mtl_options['mtl-postlist-page']))));
 
 			$output .= "<li><a href='{$tag_link}' title='{$current_tag->name}'>{$current_tag->name}</a></li>"."\r\n";
 		}

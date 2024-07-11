@@ -17,6 +17,7 @@
  /**
  * include module functions files
  */
+include( get_template_directory() . '/modules/common.php'); // Common functions for all modules
 include( get_template_directory() . '/modules/mtl-login-register/mtl-login-register.php'); // Login/Register module
 include( get_template_directory() . '/modules/mtl-admin-menu/mtl-admin-menu.php'); // dashboard admin section module
 include( get_template_directory() . '/modules/mtl-proposal-form/mtl-proposal-form.php'); // proposal form
@@ -30,6 +31,7 @@ include( get_template_directory() . '/modules/mtl-metaboxes/mtl-metaboxes.php');
 include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php'); // flexible tiles e.g. for menues
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
 include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
+include( get_template_directory() . '/modules/mtl-show-metadata/mtl-show-metadata.php'); // metadata box for proposals
 
 /**
  * Set the content width based on the theme's design and stylesheet.
@@ -146,7 +148,7 @@ function my_transit_lines_scripts() {
 	wp_enqueue_script( 'mtl-util', get_template_directory_uri() . '/js/util.js', array(), wp_get_theme()->version);
 
 	wp_register_script( 'openlayers', get_template_directory_uri() . '/openlayers/dist/ol.js', array(), wp_get_theme()->version, true);
-	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers'), wp_get_theme()->version, true);
+	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers', 'mtl-util'), wp_get_theme()->version, true);
 }
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 
@@ -302,8 +304,11 @@ function mtl_localize_script($getVar = false) {
 		'lengthString'=>__('Length: ', 'my-transit-lines'),
 		'radius'=>__('Radius: ', 'my-transit-lines'),
 		'area'=>__('Area: ', 'my-transit-lines'),
-		'decimalSeparator'=>__('.', 'my-transit-lines'),
+		'decimalSeparator'=>_x('.', 'decimal separator', 'my-transit-lines'),
 		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
+		'billion'=>__('billion', 'my-transit-lines'),
+		'million'=>__('million', 'my-transit-lines'),
+		'thousand'=>__('thousand', 'my-transit-lines'),
 	);
 	$localizeScript = '<script type="text/javascript">'."\r\n".'/* <![CDATA[ */'."\r\n".'var objectL10n = {';
 	foreach($translatedStrings as $key => $value) {
@@ -327,6 +332,37 @@ if (!function_exists('my_theme_filter')) {
     return $query;
 }}
 add_filter( 'pre_get_posts', 'my_theme_filter' );
+
+function add_tax_to_pll( $taxonomies, $is_settings ) {
+	// removes categories from being translated by Polylang
+	unset( $taxonomies['category'] );
+	unset( $taxonomies['sorting-phase-status'] );
+    return $taxonomies;
+}
+add_filter( 'pll_get_taxonomies', 'add_tax_to_pll', 10, 2 );
+
+function add_cpt_to_pll( $post_types, $is_settings ) {
+	// removes mtlproposals from being translated by Polylang
+	unset( $post_types['mtlproposal'] );
+	return $post_types;
+}
+add_filter( 'pll_get_post_types', 'add_cpt_to_pll', 10, 2);
+
+if (!function_exists("pll_get_post")) {
+	function pll_get_post($post_id, $lang = '') {
+		return get_post($post_id);
+	}
+}
+
+function get_site_locale() {
+	$locale = get_option( 'WPLANG' );
+
+	if ( empty($locale) ) {
+		$locale = 'en_US';
+	}
+
+	return $locale;
+}
 
 /**
  * custom post meta display for not-single content view

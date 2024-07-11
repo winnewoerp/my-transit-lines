@@ -28,13 +28,16 @@ function mtl_search_bar_output($query = null) {
 	// filter start
 	$output .= '<div id="mtl-list-filter"><form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'"><p><strong>'.__('Filter:','my-transit-lines').'</strong> ';
 
-	// transit mode selector
-	$output .= '<select name="mtl-catid">'."\r\n".'<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
-	foreach(get_categories('include='.get_active_categories()) as $single_category) {
-		$catid = $single_category->cat_ID;
-		$output .= '<option value="'.$catid.'"'.($catid === get_query_cats() ? ' selected="selected"' : '').'>'.$single_category->name.' </option>'."\r\n";
+	$active_categories = get_categories('orderby=slug&include='.get_active_categories());
+	if (count($active_categories) > 1) {
+		// transit mode selector
+		$output .= '<select name="mtl-catid">'."\r\n".'<option value="all">'.__('All transit modes','my-transit-lines').' </option>';
+		foreach($active_categories as $single_category) {
+			$catid = $single_category->cat_ID;
+			$output .= '<option value="'.$catid.'"'.($catid == $query->query['cat'] ? ' selected="selected"' : '').'>'.__($single_category->name, "my-transit-lines").' </option>'."\r\n";
+		}
+		$output .= '</select>';
 	}
-	$output .= '</select>';
 	
 	// user selector
 	$output .= '<select name="mtl-userid">'."\r\n".'<option value="all">'.__('All users (incl. unregistered)','my-transit-lines').' </option>';
@@ -42,11 +45,10 @@ function mtl_search_bar_output($query = null) {
 		$output .= '<option value="'.$bloguser->ID.'"'.($bloguser->ID == get_userid() ? ' selected="selected"' : '').'>'.$bloguser->display_name.' </option>'."\r\n";
 	}
 	$output .= '</select>';
-		
+	
+	$tags = get_tags();
 	// tag selector (administrative divisions) - only if checkbox set within theme options
-	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) {
-		$tags = get_tags();
-		
+	if(($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) && count($tags) > 1) {
 		$output .= '<select name="mtl-tag-ids">';
 		$output .= '<option value="all">'.__('All regions','my-transit-lines').' </option>';
 		foreach ( $tags as $current_tag ) {
@@ -65,15 +67,18 @@ function mtl_search_bar_output($query = null) {
 	}
 	$output .= '</p>';
 
-	// Sorting phase status selector
-	$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
-	$output .= '<select name="mtl-statusid">'."\r\n";
-	$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
-	foreach( get_terms(array('taxonomy' => 'sorting-phase-status', 'hide_empty' => false)) as $single_status) {
-		$statusid = $single_status->term_id;
-		$output .= '<option value="'.$statusid.'"'.($statusid === get_query_statusid() ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
+	$statuses = get_terms(array('taxonomy' => 'sorting-phase-status', 'hide_empty' => false));
+	if (count($statuses) > 1) {
+		// Sorting phase status selector
+		$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
+		$output .= '<select name="mtl-statusid">'."\r\n";
+		$output .= '<option value="all">'.__('All statuses','my-transit-lines').' </option>';
+		foreach( $statuses as $single_status) {
+			$statusid = $single_status->term_id;
+			$output .= '<option value="'.$statusid.'"'.($statusid === get_query_statusid() ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
+		}
+		$output .= '</select></p>';
 	}
-	$output .= '</select></p>';
 
     $order_by = get_orderby();
     $order = get_order();
@@ -197,15 +202,8 @@ function get_posts_per_page() {
 function get_query_cats() {
 	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != 'all')
 		return $_GET['mtl-catid'];
-	
-	// get categories from mtl theme options
-	$query_cats = '';
-	foreach(get_categories() as $category) {
-        if(get_option('mtl-option-name')['mtl-use-cat'.$category->cat_ID])
-            $query_cats .= $category->cat_ID.',';
-    }
-	
-	return $query_cats;
+
+	return get_active_categories();
 }
 
 /**
@@ -341,21 +339,3 @@ function get_tag_in() {
 
 	return null;
 }
-
-/**
- * Get the categories that were activated in the admin menu
- *
- * @return string that contains a comma-separated list of category ids
- */
-function get_active_categories() {
-	$mtl_options = get_option('mtl-option-name');
-
-	$mtl_all_catids = '';
-	foreach(get_categories() as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID])
-            $mtl_all_catids .= $category->cat_ID.',';
-    }
-	return $mtl_all_catids;
-}
-
-?>

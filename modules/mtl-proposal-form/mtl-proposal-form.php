@@ -27,6 +27,8 @@ function mtl_proposal_form_output( $atts ){
 	if ($editId) $editType = 'update';
 			
 	$err = [];
+
+	$addpost_page_link = get_permalink(pll_get_post($mtl_options['mtl-addpost-page']));
 	
 	// only if form allowed
 	if(is_form_allowed() && !isset($_POST['delete-draft']) && !isset($_POST['really-delete-draft'])) {
@@ -45,7 +47,7 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['check-content']['mtlproposal']['update'] = __('Please have a look at the updated proposal to see if everything\'s alright with it.','my-transit-lines');
 		$mtl_string['success-notice']['mtlproposal']['add'] = __( 'Thank you! Your proposal has been added successfully.', 'my-transit-lines' );
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
-		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink($mtl_options['mtl-postlist-page']).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
+		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
@@ -120,6 +122,7 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
 				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
 				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
+				update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
 
 				if (get_post_meta($current_post_id, 'mtl-features', true)) {
 					delete_post_meta($current_post_id, 'mtl-feature-data');
@@ -205,29 +208,26 @@ function mtl_proposal_form_output( $atts ){
 			elseif($err && $_POST['mtl-features']) {
 				$mtl_features = $_POST['mtl-features'];
 			}
-			
+
 			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
-			$all_categories=get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
-			
+			$active_categories = get_categories(array(
+				"include" => get_active_categories(),
+				"orderby" => "slug",
+			));
+
 			// get the current category
 			$current_category = get_the_category($editId);
-		
+
 			// save category style data to JS array
-			$output .= '<script type="text/javascript"> var transportModeStyleData = {';
-			
-			$count_cats = 0;
-			$output_later = '';
-			foreach($all_categories as $single_category) {
-				$catid = $single_category->cat_ID;
-				if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later .= 'strokeColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; fillColor = "'.$mtl_options['mtl-color-cat'.$catid].'"; externalGraphicUrl = "'.$mtl_options['mtl-image-cat'.$catid].'"; externalGraphicUrlSelected = "'.$mtl_options['mtl-image-selected-cat'.$catid].'"; defaultCategory = "'.$catid.'";';
-				if($mtl_options['mtl-use-cat'.$catid] == true) {
-					if($count_cats) $output .= ',';
-					$output .= $catid.' : ["'.$mtl_options['mtl-color-cat'.$catid].'","'.$mtl_options['mtl-image-cat'.$catid].'","'.$mtl_options['mtl-image-selected-cat'.$catid].'"]';
-					$count_cats++;
-				}
+			$output .= get_transport_mode_style_data();
+
+			$output .= '<script type="text/javascript"> ';
+
+			foreach($active_categories as $single_category) {
+				if(str_contains($single_category->slug, 'other')) $output .= 'defaultCategory = "'.$single_category->cat_ID.'";';
 			}
-			$output .= '}; </script>'."\r\n";
-			$output .= '<script type="text/javascript"> '.$output_later.' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+
+			$output .= ' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
 
 			if(trim($mtl_options3['mtl-country-source']))
 				$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
@@ -238,26 +238,34 @@ function mtl_proposal_form_output( $atts ){
 		
 			// select transit mode and add map data for post type "mtlproposal"
 			if($postType == 'mtlproposal') {
-				$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
-		
-				$checkedAlready = false;
+				if (count($active_categories) == 1) {
+					$single_category = $active_categories[0];
+					$output .= '<input checked="checked" style="display:none;" class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" />'."\r\n";
+				} else {
+					$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 
-				// getting all categories for selected as transit mode categories, set the given category option to checked
-				foreach($all_categories as $single_category) {
-					if($mtl_options['mtl-use-cat'.$single_category->cat_ID] == true) {
-						$checked='';
+					$checkedAlready = false;
+					// getting all categories for selected as transit mode categories, set the given category option to checked
+					foreach ($active_categories as $single_category) {
+						$single_catid = $single_category->cat_ID;
+						$single_catname = __($single_category->name, 'my-transit-lines');
+						$single_catslug = $single_category->slug;
 
-						if (($err && isset($_POST['cat']) && $single_category->cat_ID == $_POST['cat']) ||
-							(!$err && $editId && $single_category->cat_ID == $current_category[0]->term_id) ||
-							(str_contains($single_category->slug, 'other') && !$checkedAlready)) {
-								$checked = ' checked="checked"';
-								$checkedAlready = true;
+						if (!$mtl_options['mtl-only-in-map-cat'.$single_catid]) {
+							$checked = '';
+
+							if (($err && isset($_POST['cat']) && $single_catid == $_POST['cat']) ||
+								(!$err && $editId && $single_catid == $current_category[0]->term_id) ||
+								(str_contains($single_catslug, 'other') && !$checkedAlready)) {
+									$checked = ' checked="checked"';
+									$checkedAlready = true;
+							}
+
+							$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_catid.'" id="cat-'.$single_catslug.'" /> '.$single_catname.'</label>'."\r\n";
 						}
-						
-						$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.$single_category->name.'</label>'."\r\n";
 					}
 				}
-				
+
 				$output .= '</span><span class="transport-mode-select-inactive">'.__('Please select another tool<br /> to change the transport mode','my-transit-lines').'</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";
@@ -301,13 +309,13 @@ function mtl_proposal_form_output( $atts ){
 			
 				// hidden input field for station count
 				$mtl_count_stations = '';
-				if($editId && !$err) $mtl_count_stations =  get_post_meta($editId,'mtl-count-stations',true);
+				if($editId && !$err) $mtl_count_stations = get_post_meta($editId,'mtl-count-stations',true);
 				elseif($err && $_POST['mtl-count-stations']) $mtl_count_stations = $_POST['mtl-count-stations'];
 				$output .= '<input type="hidden" id="mtl-count-stations" value="'.$mtl_count_stations.'"  name="mtl-count-stations" />'."\r\n";
 				
 				// hidden input field for line length
 				$mtl_line_length = '';
-				if($editId && !$err) $mtl_line_length =  get_post_meta($editId,'mtl-line-length',true);
+				if($editId && !$err) $mtl_line_length = get_post_meta($editId,'mtl-line-length',true);
 				elseif($err && $_POST['mtl-line-length']) $mtl_line_length = $_POST['mtl-line-length'];	
 				$output .= '<input type="hidden" id="mtl-line-length" value="'.$mtl_line_length.'"  name="mtl-line-length" />'."\r\n";
 
@@ -323,6 +331,12 @@ function mtl_proposal_form_output( $atts ){
 				}
 				elseif($err && $_POST['mtl-tags']) $mtl_tags = $_POST['mtl-tags'];
 				$output .= '<input type="hidden" id="mtl-tags" value="'.$mtl_tags.'" name="mtl-tags" />'."\r\n";
+
+				// hidden input field for costs
+				$mtl_costs = '0';
+				if($editId && !$err) $mtl_costs = get_post_meta($editId,'mtl-costs',true);
+				elseif($err && $_POST['mtl-costs']) $mtl_costs = $_POST['mtl-costs'];
+				$output .= '<input type="hidden" id="mtl-costs" value="'.$mtl_costs.'" name="mtl-costs" />'."\r\n";
 			} // end if $postType == 'mtlproposal'
 			
 			// continue form: description textbox, filled with text from post variable, if existing
@@ -357,10 +371,11 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
 			$output .= '<input type="hidden" name="delete_id" value="'.$editId.'" />'."\r\n";
-			wp_nonce_field( 'new-post' );
+			if (!is_admin())
+				wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
-		else $output .= '<a href="'.get_permalink($mtl_options['mtl-addpost-page']).'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
+		else $output .= '<a href="'.$addpost_page_link.'">'.$mtl_string['add-new'][$postType].'</a>'."\r\n";
 		
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
@@ -382,7 +397,7 @@ function mtl_proposal_form_output( $atts ){
 				while($query_name->have_posts()) {
 					$query_name->the_post();
 					global $post;
-					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,get_permalink($mtl_options['mtl-addpost-page'])).'">'.get_the_title().'</a></li>';
+					$list_posts .= '<li><a href="'.add_query_arg('edit_proposal',$post->ID,$addpost_page_link).'">'.get_the_title().'</a></li>';
 				}
 				$list_posts .= '<ul>';
 				wp_reset_postdata();
@@ -393,7 +408,7 @@ function mtl_proposal_form_output( $atts ){
 				$output = '<div class="success-message-block">'."\r\n";
 				$output .= '<strong>'.sprintf(esc_html__('Are your sure you want to delete the draft of your proposal "%s"? There is no going back.','my-transit-lines'),get_the_title($delete_id)).'</strong><br />'."\r\n";
 				$output .= '<br /><form id="delete_post" name="delete_post" method="post" action="" enctype="multipart/form-data"><input type="hidden" name="deleteid" value="'.$delete_id.'" /><input type="submit" name="really-delete-draft" value="'.esc_html__('Yes, definetily delete this draft','my-transit-lines').'"></form><br />';
-				$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,get_permalink($mtl_options['mtl-addpost-page'])).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
+				$output .= '<br /><a href="'.add_query_arg('edit_proposal',$delete_id,$addpost_page_link).'">'.esc_html__('No, I do not want to delete the draft','my-transit-lines').'</a><br />';
 				$output .= '</div>'."\r\n";
 				return $output;
 			}

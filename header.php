@@ -15,7 +15,7 @@ if(is_single() && get_post_type()=='mtlproposal') {
 	$category = get_the_category($post->ID);
 	$catid = $category[0]->cat_ID;
 	$mtl_options = get_option('mtl-option-name');
-	if(!$mtl_options['mtl-use-cat'.$catid] == true) header('Location: '.get_bloginfo('url').'');
+	if(!current_user_can('administrator') && (!$mtl_options['mtl-use-cat'.$catid] || $mtl_options['mtl-only-in-map-cat'.$catid])) header('Location: '.get_bloginfo('url').'');
 }
 
 ?><!DOCTYPE html>
@@ -59,7 +59,8 @@ if(is_single() && get_post_type()=='mtlproposal') {
 		</div>
 		<?php
 		// hide the menu if custom meta 'hidemenu' is set to true
-		while ( have_posts() ) { the_post(); if(get_post_meta($post->ID,'hidemenu',true)) $hidemenu = true; else $hidemenu = false; } ?>
+		$hidemenu = false;
+		while ( have_posts() ) { the_post(); $hidemenu = get_post_meta($post->ID,'hidemenu',true); } ?>
 		<?php if(!$hidemenu) { ?><nav id="site-navigation" class="main-navigation" role="navigation">
 			<h1 class="menu-toggle"><?php _e( 'Menu', 'my-transit-lines' ); ?></h1>
 			<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'my-transit-lines' ); ?></a>

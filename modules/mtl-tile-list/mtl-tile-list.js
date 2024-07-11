@@ -91,14 +91,38 @@ const ICON_SIZE_TILELIST = 13;
 const STROKE_WIDTH_TILELIST = 3;
 const MAX_ZOOM_TILELIST = 15;
 
+// returns the style for the given feature
+function tilelistStyleFunction(feature) {
+	const color = transportModeStyleData[getCategoryOf(feature)]['color'];
+
+	const fillStyle = new ol.style.Fill({
+		color: color + '40',
+	});
+
+	const imageStyle = new ol.style.Icon({
+		src: transportModeStyleData[getCategoryOf(feature)]['image'],
+		width: ICON_SIZE_TILELIST,
+		height: ICON_SIZE_TILELIST,
+	});
+
+	const strokeStyle = new ol.style.Stroke({
+		color: color,
+		width: STROKE_WIDTH_TILELIST,
+	});
+
+	return new ol.style.Style({
+		fill: fillStyle,
+		image: imageStyle,
+		stroke: strokeStyle,
+	});
+}
+
 // thumb maps
 function createThumbMap(mapNumber) {
 	if(!countLoads && currentHash.includes('#!')) {
 		$('.mtl-post-tile').css('display','none');
 	} else {
 		const currentCat = catList[mapNumber];
-
-		const cat_color = transportModeStyleData[currentCat][0];
 
 		const backgroundTileLayer = new ol.layer.Tile({
 			className: 'background-tilelayer',
@@ -108,20 +132,7 @@ function createThumbMap(mapNumber) {
 		const vectorSource = new ol.source.Vector();
 		const vectorLayer = new ol.layer.Vector({
 			source: vectorSource,
-			style: new ol.style.Style({
-				fill: new ol.style.Fill({
-					color: cat_color + '40',
-				}),
-				image: new ol.style.Icon({
-					src: transportModeStyleData[currentCat][1],
-					width: ICON_SIZE_TILELIST,
-					height: ICON_SIZE_TILELIST,
-				}),
-				stroke: new ol.style.Stroke({
-					color: cat_color,
-					width: STROKE_WIDTH_TILELIST,
-				}),
-			}),
+			style: tilelistStyleFunction,
 		});
 
 		const view = new ol.View({

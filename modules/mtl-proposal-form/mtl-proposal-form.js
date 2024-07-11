@@ -22,6 +22,8 @@ class InteractionControl extends ol.control.Control {
 			target: options.target,
 		});
 
+		this.element = element;
+
 		this.pointButton = this.createButton('Point', themeUrl + '/images/drawPoint.png');
 		this.lineStringButton = this.createButton('LineString', themeUrl + '/images/drawLineString.png');
 		this.polygonButton = this.createButton('Polygon', themeUrl + '/images/drawPolygon.png');
@@ -32,16 +34,18 @@ class InteractionControl extends ol.control.Control {
 		this.deleteButton.classList.add('unselectable');
 		this.navigateButton = this.createButton('Navigate', themeUrl + '/images/navigation.png');
 		this.snappingButton = this.createButton('RemoveSnapping', themeUrl + '/images/removeSnapping.png');
+		this.selectCategory = this.categorySelector();
 
-		element.appendChild(this.pointButton);
-		element.appendChild(this.lineStringButton);
-		element.appendChild(this.polygonButton);
-		element.appendChild(this.circleButton);
-		element.appendChild(this.modifyButton);
-		element.appendChild(this.selectButton);
-		element.appendChild(this.deleteButton);
-		element.appendChild(this.navigateButton);
-		element.appendChild(this.snappingButton);
+		this.element.appendChild(this.pointButton);
+		this.element.appendChild(this.lineStringButton);
+		this.element.appendChild(this.polygonButton);
+		this.element.appendChild(this.circleButton);
+		this.element.appendChild(this.modifyButton);
+		this.element.appendChild(this.selectButton);
+		this.element.appendChild(this.deleteButton);
+		this.element.appendChild(this.navigateButton);
+		this.element.appendChild(this.snappingButton);
+		this.element.appendChild(this.selectCategory);
 	}
 
 	createButton(value, path) {
@@ -52,12 +56,12 @@ class InteractionControl extends ol.control.Control {
 		button.value = value;
 		button.title = objectL10n[value];
 
-		button.addEventListener('click', this.handleClick.bind(this), false);
+		button.addEventListener('click', this.handleButtonClick.bind(this), false);
 
 		return button;
 	}
 
-	handleClick(event) {
+	handleButtonClick(event) {
 		let target = event.target;
 
 		if (target == this.deleteButton) {
@@ -89,6 +93,68 @@ class InteractionControl extends ol.control.Control {
 		target.classList.add('selected');
 
 		setInteraction(target.value);
+	}
+
+	categorySelector(selected = getSelectedCategory()) {
+		const details = document.createElement('details');
+		details.id = 'cat-draw-select';
+
+		const summary = document.createElement('summary');
+		summary.className = 'interaction-control';
+		summary.style.backgroundImage = 'url(' + transportModeStyleData[selected]['image'] + ')';
+
+		if (transportModeStyleData[getSelectedCategory()]['allow-others'].trim() == "") {
+			details.style.display = 'none';
+		}
+
+		const catList = document.createElement('menu');
+
+		for (let index of [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()]['allow-others'].split(','))) {
+			if (!index)
+				continue;
+
+			const item = this.catListItem(index);
+
+			if (index == selected)
+				item.classList.add("selected");
+
+			catList.appendChild(item);
+		}
+
+		details.appendChild(summary);
+		details.appendChild(catList);
+
+		return details;
+	}
+
+	catListItem(index) {
+		const catListItem = document.createElement('li');
+		catListItem.className = 'interaction-control';
+		catListItem.style.backgroundImage = 'url(' + transportModeStyleData[index]['image'] + ')';
+		catListItem.value = index;
+		catListItem.addEventListener('click', this.handleCatListClick.bind(this), false);
+
+		return catListItem;
+	}
+
+	handleCatListClick(event) {
+		this.updateSelectedCategory(event.target.value);
+
+		handleDrawCategoryChange();
+	}
+
+	updateSelectedCategory(id) {
+		this.selectCategory.querySelectorAll('li.interaction-control.selected').forEach(element => element.classList.remove('selected'));
+		this.selectCategory.querySelector('summary.interaction-control').style.backgroundImage = 'url(' + transportModeStyleData[id]['image'] + ')';
+		this.selectCategory.querySelector('li.interaction-control[value="'+id+'"]').classList.add('selected');
+	}
+
+	updateCategorySelector() {
+		const new_draw_cat = transportModeStyleData[getSelectedCategory()]['allow-others'].split(',').includes(getSelectedDrawCategory()) ? getSelectedDrawCategory() : getSelectedCategory();
+		let new_category_selector = this.categorySelector(new_draw_cat);
+
+		this.element.replaceChild(new_category_selector, this.selectCategory);
+		this.selectCategory = new_category_selector;
 	}
 }
 
@@ -142,6 +208,15 @@ $('#title, #description').on('input propertychange paste', function () {
 });
 $('input.cat-select').on("change", function () {
 	warningMessage = objectL10n.confirmLeaveWebsite;
+
+	const new_allowed_cats = [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()]['allow-others'].split(','));
+	for (let feature of vectorSource.getFeatures()) {
+		if (!new_allowed_cats.includes(feature.get('category'))) {
+			feature.set('category', getSelectedCategory());
+		}
+	}
+
+	interactionControl.updateCategorySelector();
 });
 
 // returns the style for the given feature while being drawn
@@ -186,6 +261,8 @@ function deleteSelected() {
 function handleFeatureSelected(event) {
 	interactionControl.deleteButton.classList.remove('unselectable');
 
+	interactionControl.updateSelectedCategory(getCategoryOf(event.element));
+
 	$('#feature-textinput').val(event.element.get('name'));
 	$('.feature-textinput-box').slideDown();
 	$('.set-name').css('display', 'block');
@@ -221,6 +298,12 @@ function handleFeatureModified(feature) {
 			feature.set('size', getFeatureSize(feature));
 	});
 	feature.set('location', getStationLocation(feature));
+}
+
+function handleDrawCategoryChange() {
+	for (let feature of selectedFeatures.getArray()) {
+		feature.set('category', getSelectedDrawCategory());
+	}
 }
 
 // Selects all features inside the box dragged for selection
@@ -295,6 +378,7 @@ function setInteraction(interactionType) {
 			drawInteraction = new ol.interaction.Draw({ source: vectorSource, type: interactionType, style: drawStyleFunction });
 			drawInteraction.on('drawstart', function (event) {
 				handleFeatureModified(event.feature);
+				event.feature.set('category', getSelectedDrawCategory());
 			});
 			drawInteraction.on('drawend', function (event) {
 				event.feature.unset('size');
@@ -327,37 +411,6 @@ function removeInteractions() {
 	map.removeInteraction(modifyInteraction);
 	map.removeInteraction(snapInteraction);
 	map.removeInteraction(dragBoxInteraction);
-}
-
-/**
- * Returns the amount of stations in the features array
- * 
- * @param {FeatureLike[]} features the array of features to "search" for stations
- * @returns {number} the amount of stations placed on the map
- */
-function getCountStations(features = vectorSource.getFeatures()) {
-	let count = 0;
-	for (let feature of features) {
-		if (feature.getGeometry() instanceof ol.geom.Point)
-			count++;
-	}
-	return count;
-}
-
-/**
- * Returns the combined length of the lines in the features array
- * 
- * @param {FeatureLike[]} features the array of features to "search" for lines
- * @returns {number} the combined length of the lines placed on the map
- */
-function getLineLength(features = vectorSource.getFeatures()) {
-	let length = 0.0;
-	for (let feature of features) {
-		if (feature.getGeometry() instanceof ol.geom.LineString) {
-			length += ol.sphere.getLength(feature.getGeometry());
-		}
-	}
-	return length;
 }
 
 /**
@@ -441,6 +494,16 @@ function getStationLocationLayer(geom, features, onlyFirstWord) {
 }
 
 /**
+ * @returns the selected category determined by the map category selector, or if none is selected by the {@link getSelectedCategory()} function
+ */
+function getSelectedDrawCategory() {
+	let cat = document.getElementById('cat-draw-select').querySelector('li.interaction-control.selected').value.toString();
+	if (!cat)
+		cat = getSelectedCategory();
+	return cat;
+}
+
+/**
  * Saves the WKT data of the features array passed into the function to the HTML <input> elements.
  * The data is saved to the DB when the user saves the proposal
  * 
@@ -454,6 +517,7 @@ function saveToHTML(features = vectorSource.getFeatures()) {
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
 	$('#mtl-tags').val(getStationLocations(features));
+	$('#mtl-costs').val(getLineCost(features));
 }
 
 /**

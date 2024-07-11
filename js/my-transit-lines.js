@@ -137,7 +137,7 @@ class OptionsControl extends ol.control.Control {
 		backgroundSelector.id = 'background-layer-selector';
 		backgroundSelector.textContent = objectL10n.baselayersTitle;
 
-		for (var source of BACKGROUND_SOURCES) {
+		for (let source of BACKGROUND_SOURCES) {
 			backgroundSelector.appendChild(this.createLayerOption(source, 'background', source == OSM_SOURCE));
 		}
 
@@ -157,7 +157,7 @@ class OptionsControl extends ol.control.Control {
 		let none = this.createLayerOption({ title: objectL10n.none, id: 'none' }, 'overlay', true);
 		overlaySelector.appendChild(none);
 
-		for (var source of OVERLAY_SOURCES) {
+		for (let source of OVERLAY_SOURCES) {
 			overlaySelector.appendChild(this.createLayerOption(source, 'overlay'));
 		}
 
@@ -217,14 +217,14 @@ class OptionsControl extends ol.control.Control {
 		let target = event.target;
 
 		if (target.id.includes('background')) {
-			for (var source of BACKGROUND_SOURCES) {
+			for (let source of BACKGROUND_SOURCES) {
 				if (target.id.includes(source.get('id'))) {
 					backgroundTileLayer.setSource(source);
 					return;
 				}
 			}
 		} else if (target.id.includes('overlay')) {
-			for (var source of OVERLAY_SOURCES) {
+			for (let source of OVERLAY_SOURCES) {
 				if (target.id.includes(source.get('id'))) {
 					overlayTileLayer.setSource(source);
 					return;
@@ -285,14 +285,14 @@ $(document).ready(function(){
 
 // returns the style for the given feature
 function styleFunction(feature) {
-	const color = transportModeStyleData[getCategoryOf(feature)][0];
+	const color = transportModeStyleData[getCategoryOf(feature)]['color'];
 
 	const fillStyle = new ol.style.Fill({
 		color: color + '40',
 	});
 
 	const imageStyle = new ol.style.Icon({
-		src: transportModeStyleData[getCategoryOf(feature)][1],
+		src: transportModeStyleData[getCategoryOf(feature)]['image'],
 		width: ICON_SIZE_UNSELECTED,
 		height: ICON_SIZE_UNSELECTED,
 	});
@@ -302,7 +302,7 @@ function styleFunction(feature) {
 		width: STROKE_WIDTH_UNSELECTED,
 	});
 
-	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
+	let text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
 
 	const textStyle = new ol.style.Text({
 		font: 'bold 11px sans-serif',
@@ -334,7 +334,7 @@ function selectedStyleFunction(feature) {
 	});
 
 	const imageStyle = new ol.style.Icon({
-		src: transportModeStyleData[getCategoryOf(feature)][2],
+		src: transportModeStyleData[getCategoryOf(feature)]['image-selected'],
 		width: ICON_SIZE_SELECTED,
 		height: ICON_SIZE_SELECTED,
 	});
@@ -344,7 +344,7 @@ function selectedStyleFunction(feature) {
 		width: STROKE_WIDTH_SELECTED,
 	});
 
-	var text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
+	let text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
 
 	const textStyle = new ol.style.Text({
 		font: 'bold 11px sans-serif',
@@ -380,29 +380,11 @@ function getFeatureSize(feature) {
 	if (geom instanceof ol.geom.Point) {
 		return "";
 	} else if (geom instanceof ol.geom.LineString) {
-		return objectL10n.lengthString + formatNumber(ol.sphere.getLength(geom));
+		return objectL10n.lengthString + formatNumber(ol.sphere.getLength(geom), false) + 'm';
 	} else if (geom instanceof ol.geom.Polygon) {
-		return objectL10n.area + formatNumber(ol.sphere.getArea(geom), true);
+		return objectL10n.area + formatNumber(ol.sphere.getArea(geom), false, 1E6) + 'm²';
 	} else if (geom instanceof ol.geom.Circle) {
-		return objectL10n.radius + formatNumber(ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate()));
-	}
-}
-
-// Format a number and its unit
-function formatNumber(number, squared = false, unit = 'm') {
-	unit = unit + (squared ? '²' : '');
-	step = 1000 * (squared ? 1000 : 1);
-
-	if (number < step) {
-		if (number > 1E3) {
-			return Math.round(number) + unit;
-		}
-		return number.toPrecision(3).replace('.', objectL10n.decimalSeparator) + unit;
-	} else {
-		if (number / step > 1E3) {
-			return Math.round(number / step) + 'k' + unit;
-		}
-		return (number / step).toPrecision(3).replace('.', objectL10n.decimalSeparator) + 'k' + unit;
+		return objectL10n.radius + formatNumber(ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate()), false) + 'm';
 	}
 }
 
@@ -418,16 +400,17 @@ function getCategoryOf(feature) {
 }
 
 /**
- * @returns the selected category determined by the selected category checkbox, or if none is selected by the 
+ * @returns the selected category determined by the selected category checkbox, or if none is selected by the defaultCategory variable
  */
 function getSelectedCategory() {
-	var selectedTransportMode = $('.cat-select:checked').val();
-	if (!selectedTransportMode && parseInt(currentCat)) {
-		selectedTransportMode = currentCat;
-	}
-	if (!selectedTransportMode)
-		selectedTransportMode = defaultCategory;
-	return selectedTransportMode;
+	let checkedBox = Array.from(document.querySelectorAll('input.cat-select')).filter(node => {
+		return node.checked;
+	})[0];
+
+	if (!checkedBox || !checkedBox.value)
+		return defaultCategory;
+
+	return checkedBox.value;
 }
 
 // redraws the map to update color/icons
@@ -449,7 +432,7 @@ function loadNewFeatures() {
 
 // Imports all features from vectorData, vectorLabelsData and vectorCategoriesData and handles errors
 function importAllWKT() {
-	for (var i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+	for (let i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
 		try {
 			importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
 		} catch (e) {
@@ -462,7 +445,7 @@ function importAllWKT() {
 
 // Imports all features from vectorFeatures and vectorCategoriesData and handles errors
 function importAllJSON() {
-	for (var i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+	for (let i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
 		try {
 			if (vectorFeatures[i])
 				importToMapJSON(vectorFeatures[i], vectorCategoriesData[i], i);
@@ -475,6 +458,7 @@ function importAllJSON() {
 	}
 
 	zoomToFeatures(true);
+	window.dispatchEvent(new Event('map-load'));
 }
 
 /**
@@ -482,7 +466,7 @@ function importAllJSON() {
  * @param {Node} filePicker 
  */
 function importJSONFiles(filePicker) {
-	for (var i = 0; i < filePicker.files.length; i++) {
+	for (let i = 0; i < filePicker.files.length; i++) {
 		let file = filePicker.files[i];
 
 		file.text().then((value) => {
@@ -513,8 +497,8 @@ function importToMapWKT(source, labelsSource, categorySource, proposal_data_inde
 
 	let features = WKT_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
-	var labelIndex = 0;
-	for (var feature of features) {
+	let labelIndex = 0;
+	for (let feature of features) {
 		feature.set('category', categorySource);
 
 		feature.set('name', decodeSpecialChars(labelsSource[labelIndex] || ''));
@@ -535,12 +519,12 @@ function importToMapWKT(source, labelsSource, categorySource, proposal_data_inde
  * @returns {string[]}
  */
 function exportToWKT() {
-	var features = removeCircles(vectorSource.getFeatures(), false);
+	let features = removeCircles(vectorSource.getFeatures(), false);
 
 	let wkt_string = WKT_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
 
 	let labelString = '';
-	for (var feature of features) {
+	for (let feature of features) {
 		labelString += encodeSpecialChars(feature.get('name') || "") + ",";
 	}
 
@@ -557,13 +541,17 @@ function importToMapJSON(source, categorySource, proposal_data_index = 0, vector
 	if (source == '' || source == '{}')
 		return;
 
+	if (!categorySource)
+		categorySource = getSelectedCategory();
+
 	if (typeof source === "string" || source instanceof String)
 		source = source.replaceAll("\r", "").replaceAll("\n", "").replaceAll("'", "\"");
 
 	let features = GEO_JSON_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
 
-	for (var feature of features) {
-		feature.set('category', categorySource);
+	for (let feature of features) {
+		if (!feature.get('category'))
+			feature.set('category', categorySource);
 
 		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
 
@@ -586,11 +574,10 @@ function importToMapJSON(source, categorySource, proposal_data_index = 0, vector
 function exportToJSON() {
 	let features = removeCircles(vectorSource.getFeatures());
 
-	for (var feature of features) {
+	for (let feature of features) {
 		feature.set('name', encodeSpecialChars(feature.get('name') || ""));
 		feature.unset('proposal_data_index');
 		feature.unset('location');
-		feature.unset('category');
 		feature.unset('size');
 	}
 
@@ -714,7 +701,7 @@ function isJsonParsable(string) {
 function removeCircles(features, replace = true) {
 	let result = [];
 
-	for (var feature of features) {
+	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.Circle) {
 			if (replace) {
 				let center = feature.getGeometry().getCenter();
@@ -740,12 +727,16 @@ function removeCircles(features, replace = true) {
 function addCircles(features) {
 	let result = [];
 
-	for (var feature of features) {
+	for (let feature of features) {
 		if (feature.getGeometry() instanceof ol.geom.Point && feature.get('radius')) {
 			let center = feature.getGeometry().getCoordinates();
 			let radius = feature.get('radius');
 
+			let old_properties = feature.getProperties();
+			delete old_properties.geometry;
+
 			let newFeature = new ol.Feature(new ol.geom.Circle(center, radius));
+			newFeature.setProperties(old_properties);
 
 			result.push(newFeature);
 		} else {
@@ -753,5 +744,66 @@ function addCircles(features) {
 		}
 	}
 
+	return result;
+}
+
+/**
+ * Returns the amount of stations in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for stations
+ * @returns {number} the amount of stations placed on the map
+ */
+function getCountStations(features = vectorSource.getFeatures()) {
+	let count = 0;
+	for (let feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.Point)
+			count++;
+	}
+	return count;
+}
+
+/**
+ * Returns the combined length of the lines in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for lines
+ * @returns {number} the combined length of the lines placed on the map
+ */
+function getLineLength(features = vectorSource.getFeatures()) {
+	let length = 0.0;
+	for (let feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.LineString) {
+			length += ol.sphere.getLength(feature.getGeometry());
+		}
+	}
+	return length;
+}
+
+/**
+ * Returns the combined costs of the lines in the features array
+ * 
+ * @param {FeatureLike[]} features the array of features to "search" for lines
+ * @returns {number} the combined cost of the lines placed on the map
+ */
+function getLineCost(features = vectorSource.getFeatures()) {
+	let cost = 0.0;
+	for (let feature of features) {
+		if (feature.getGeometry() instanceof ol.geom.LineString) {
+			cost += ol.sphere.getLength(feature.getGeometry()) / 1000 * transportModeStyleData[getCategoryOf(feature)]['costs'];
+		}
+	}
+	return cost;
+}
+
+/**
+ * Returns an Array of category ids used in the map
+ * @param {FeatureLike[]} features
+ * @returns {Number[]}
+ */
+function getUsedCats(features = vectorSource.getFeatures()) {
+	let result = [];
+	for (feature of features) {
+		if (!result.includes(Number.parseFloat(feature.get('category'))))
+			result.push(Number.parseFloat(feature.get('category')));
+	}
 	return result;
 }

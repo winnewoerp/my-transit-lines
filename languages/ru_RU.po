@@ -1,0 +1,1637 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: My Transit Lines theme\n"
+"POT-Creation-Date: 2024-07-08 10:59+0200\n"
+"PO-Revision-Date: 2024-07-08 11:01+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % "
+"10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
+"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: openlayers\n"
+"X-Poedit-SearchPathExcluded-1: webfonts\n"
+
+#: 404.php:15
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Страница не найдена."
+
+#: 404.php:19
+msgid ""
+"It looks like nothing was found at this location. Maybe try one of the links "
+"below or a search?"
+msgstr ""
+"Ничего не найдено. Попробуйте воспользоваться следующими ссылками или "
+"поиском."
+
+#: archive.php:27
+#, php-format
+msgid "Author: %s"
+msgstr "Автор: %s"
+
+#: archive.php:30
+#, php-format
+msgid "Day: %s"
+msgstr "День: %s"
+
+#: archive.php:33
+#, php-format
+msgid "Month: %s"
+msgstr "Месяц: %s"
+
+#: archive.php:33
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "Ф Г"
+
+#: archive.php:36
+#, php-format
+msgid "Year: %s"
+msgstr "Год: %s"
+
+#: archive.php:36
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Г"
+
+#: archive.php:39
+msgid "Asides"
+msgstr "Помимо"
+
+#: archive.php:42
+msgid "Galleries"
+msgstr "Галерея"
+
+#: archive.php:45
+msgid "Images"
+msgstr "Картинки"
+
+#: archive.php:48
+msgid "Videos"
+msgstr "Видео"
+
+#: archive.php:51
+msgid "Quotes"
+msgstr "Цитаты"
+
+#: archive.php:54
+msgid "Links"
+msgstr "Ссылки"
+
+#: archive.php:57
+msgid "Statuses"
+msgstr "Статусы"
+
+#: archive.php:60
+msgid "Audios"
+msgstr "Аудио"
+
+#: archive.php:63
+msgid "Chats"
+msgstr "Чаты"
+
+#: archive.php:66
+msgid "Archives"
+msgstr "Архивы"
+
+#: comments.php:28
+#, php-format
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s комментарий о &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s Комментария о &ldquo;%2$s&rdquo;"
+msgstr[2] "%1$s Комментария о &ldquo;%2$s&rdquo;"
+
+#: comments.php:35 comments.php:52
+msgid "Comment navigation"
+msgstr "Поиск по комментариям"
+
+#: comments.php:36 comments.php:53
+msgid "&larr; Older Comments"
+msgstr "&larr; Предыдущие комментарии"
+
+#: comments.php:37 comments.php:54
+msgid "Newer Comments &rarr;"
+msgstr "Новые комментарии &rarr;"
+
+#: comments.php:64
+msgid "Comments are closed."
+msgstr "Комментарии закрыты."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "Ничего не найдено"
+
+#: content-none.php:19
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+"Хотите опубликовать свой первый пост? <a href=\"%1$s\">Starte hier</a>."
+
+#: content-none.php:23
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+"Извините, но по заданным параметрам ничего не найдено. Попробуйте "
+"использовать другие ключевые слова."
+
+#: content-none.php:28
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr "Мы не можем найти то, что вы ищите."
+
+#: content-page.php:20 content-single.php:20
+msgid "Pages:"
+msgstr "Страница:"
+
+#: content-page.php:26 content-single.php:26 content.php:43
+msgid "Edit"
+msgstr "Редактировать"
+
+#: content.php:25
+msgid "Draft"
+msgstr "Черновик"
+
+#: content.php:40
+msgid "Leave a comment"
+msgstr "Оставить комментарий"
+
+#: content.php:40
+msgid "1 Comment"
+msgstr "1 комментарий"
+
+#: content.php:40
+msgid "% Comments"
+msgstr "% Комментария(-ев)"
+
+#: functions.php:159
+msgid "Primary Menu"
+msgstr "Главное меню"
+
+#: functions.php:160
+msgid "Secondary Menu"
+msgstr "Второстепенное меню"
+
+#: functions.php:170
+msgid "Sidebar"
+msgstr "Боковая панель"
+
+#: functions.php:171
+msgid "Top Menu"
+msgstr "Верхнее меню"
+
+#: functions.php:172
+msgid "Footer"
+msgstr "Подвал"
+
+#: functions.php:237
+msgid "Leave a comment for this post"
+msgstr "Оставьте комментарий под этим постом"
+
+#: functions.php:263
+msgid "Public transit map"
+msgstr "Схема маршрутов общественного транспорта"
+
+#: functions.php:264
+msgid ""
+"Map data <a href=\"http://www.openstreetmap.org\">OpenStreetMap</a> (© "
+"OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href=\"http://"
+"memomaps.de/\">MeMoMaps</a>)"
+msgstr ""
+
+#: functions.php:265
+msgid "OpenTopoMap"
+msgstr "OpenTopoMap"
+
+#: functions.php:266
+msgid ""
+"Map data: © <a href=\"https://openstreetmap.org/copyright\">OpenStreetMap</"
+"a> contributors, <a href=\"http://viewfinderpanoramas.org\">SRTM</a> | "
+"Style: © <a href=\"https://opentopomap.org\">OpenTopoMap</a> (<a "
+"href=\"https://creativecommons.org/licenses/by-sa/3.0/\">CC-BY-SA</a>)"
+msgstr "Данные карты: © <a href=\"https://openstreetmap.org/"
+
+#: functions.php:267
+msgid "OpenRailwayMap (standard)"
+msgstr "OpenRailwayMap (стандарт)"
+
+#: functions.php:268
+msgid ""
+"OpenRailwayMap Standard overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+
+#: functions.php:269
+msgid "OpenRailwayMap (maxspeed)"
+msgstr "OpenRailwayMap (скоростной режим)"
+
+#: functions.php:270
+msgid ""
+"OpenRailwayMap maxspeed overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+
+#: functions.php:271
+msgid "OpenRailwayMap (signals)"
+msgstr "OpenRailwayMap (сигнализация)"
+
+#: functions.php:272
+msgid ""
+"OpenRailwayMap signals overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+
+#: functions.php:273
+msgid "OpenRailwayMap (electrification)"
+msgstr "OpenRailwayMap (электрификация)"
+
+#: functions.php:274
+msgid ""
+"OpenRailwayMap electrification overlay style: <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+msgstr ""
+
+#: functions.php:275
+msgid "OpenRailwayMap (gauge)"
+msgstr "OpenRailwayMap (ширина колеи)"
+
+#: functions.php:276
+msgid ""
+"OpenRailwayMap gauge overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+
+#: functions.php:277
+msgid "Satellite images (ESRI)"
+msgstr "Спутниковые снимки (ESRI)"
+
+#: functions.php:278
+msgid ""
+"Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
+"Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+msgstr ""
+"Сектора &copy; Esri &mdash; Ресурсы: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
+"Getmapping, Aerogrid, IGN, IGP, UPR-EGP und die GIS-Nutzer-Gemeinschaft"
+
+#: functions.php:279
+msgid "OpenStreetMap standard (Mapnik)"
+msgstr "OpenStreetMap стандарт(Mapnik)"
+
+#: functions.php:280
+msgid ""
+"Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
+"2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk on "
+"Github</a>"
+msgstr ""
+"Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
+"2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk auf "
+"Github</a>"
+
+#: functions.php:281
+msgid "Line proposal (vector data)"
+msgstr "Создание маршрута (векторные данные)"
+
+#: functions.php:282
+msgid "Build line"
+msgstr "Нарисовать маршрут"
+
+#: functions.php:283
+msgid "Build stations"
+msgstr "Отметить остановку"
+
+#: functions.php:284
+msgid "Edit line/stations"
+msgstr "Редактировать маршрут/остановку"
+
+#: functions.php:285
+msgid "Select line/stations"
+msgstr "Выбрать маршрут/остановку"
+
+#: functions.php:286
+msgid "Move selected line/stations"
+msgstr "Перенести маршрут/остановку"
+
+#: functions.php:287
+msgid "Delete selected line/stations"
+msgstr "Удалить выбранный маршрут/остановку"
+
+#: functions.php:288
+msgid "Base layers"
+msgstr "Основные слои"
+
+#: functions.php:289
+msgid "Overlays"
+msgstr "Слои"
+
+#: functions.php:290
+msgid "Please select another tool on the map to submit your proposal."
+msgstr "Пожалуйста, выберите другой инструмент."
+
+#: functions.php:291
+msgid "None"
+msgstr "Не найдено"
+
+#: functions.php:292
+msgid "Snapping"
+msgstr "Snapping"
+
+#: functions.php:293
+msgid "Confirm that you want to leave? All unsaved data will be lost!"
+msgstr "Вы уверены? Все несохранённые данные будут потеряны!"
+
+#: functions.php:294
+msgid "Add point"
+msgstr "Добавить точку"
+
+#: functions.php:295
+msgid "Add line"
+msgstr "Добавить маршрут"
+
+#: functions.php:296
+msgid "Add polygon"
+msgstr "Добавить полигон"
+
+#: functions.php:297
+msgid "Add circle"
+msgstr "Добавить круг"
+
+#: functions.php:298
+msgid "Edit features"
+msgstr "Редактировать объект"
+
+#: functions.php:299
+msgid "Select features"
+msgstr "Выбрать объект"
+
+#: functions.php:300
+msgid "Delete selected features"
+msgstr "Удалить выбранные объекты"
+
+#: functions.php:301
+msgid "Navigate map"
+msgstr "Навигация"
+
+#: functions.php:302
+msgid "Enable snapping"
+msgstr "Включить snapping"
+
+#: functions.php:303
+msgid "Disable snapping"
+msgstr "Отключить snapping"
+
+#: functions.php:304
+msgid "Length: "
+msgstr "Длина: "
+
+#: functions.php:305
+msgid "Radius: "
+msgstr "Радиус: "
+
+#: functions.php:306
+msgid "Area: "
+msgstr "Зона: "
+
+#: functions.php:307 modules/mtl-show-metadata/mtl-show-metadata.php:109
+#: modules/mtl-show-metadata/mtl-show-metadata.php:112
+#: modules/mtl-show-metadata/mtl-show-metadata.php:115
+#: modules/mtl-show-metadata/mtl-show-metadata.php:121
+#: modules/mtl-show-metadata/mtl-show-metadata.php:124
+#: modules/mtl-show-metadata/mtl-show-metadata.php:127
+#: modules/mtl-show-metadata/mtl-show-metadata.php:129
+#, fuzzy
+#| msgid "."
+msgctxt "decimal separator"
+msgid "."
+msgstr "."
+
+#: functions.php:308
+msgid "Show feature data"
+msgstr "Показать карту объекта"
+
+#: functions.php:309 modules/mtl-show-metadata/mtl-show-metadata.php:109
+msgid "billion"
+msgstr ""
+
+#: functions.php:310 modules/mtl-show-metadata/mtl-show-metadata.php:112
+msgid "million"
+msgstr ""
+
+#: functions.php:311 modules/mtl-show-metadata/mtl-show-metadata.php:115
+msgid "thousand"
+msgstr ""
+
+#: functions.php:366
+#, php-format
+msgid ""
+"<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> by %2$s</span>"
+msgstr ""
+"<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> von %2$s</"
+"span>"
+
+#: header.php:49
+msgid "Topmenu"
+msgstr "Главное меню"
+
+#: header.php:50 header.php:66
+msgid "Skip to content"
+msgstr "Перейти к содержанию"
+
+#: header.php:65
+msgid "Menu"
+msgstr "Меню"
+
+#: inc/extras.php:63
+#, php-format
+msgid "Page %s"
+msgstr "Страница %s"
+
+#: inc/template-tags.php:21
+msgid "Posts navigation"
+msgstr "Навигация по постам"
+
+#: inc/template-tags.php:25
+msgid "<span class=\"meta-nav\">&larr;</span> Older posts"
+msgstr "<span class=\"meta-nav\">&larr;</span> Предыдущие посты"
+
+#: inc/template-tags.php:29
+msgid "Newer posts <span class=\"meta-nav\">&rarr;</span>"
+msgstr "Новые посты <span class=\"meta-nav\">&rarr;</span>"
+
+#: inc/template-tags.php:52
+msgid "Post navigation"
+msgstr "Навигация по посту"
+
+#: inc/template-tags.php:55
+msgctxt "Previous post link"
+msgid "<span class=\"meta-nav\">&larr;</span>&nbsp;%title"
+msgstr "<span class=\"meta-nav\">&larr;</span>&nbsp;%title"
+
+#: inc/template-tags.php:56
+msgctxt "Next post link"
+msgid "%title&nbsp;<span class=\"meta-nav\">&rarr;</span>"
+msgstr "%title&nbsp;<span class=\"meta-nav\">&rarr;</span>"
+
+#: inc/template-tags.php:74
+#, php-format
+msgid ""
+"<span class=\"posted-on\">Posted on %1$s</span><span class=\"byline\"> by "
+"%2$s</span>"
+msgstr ""
+"<span class=\"posted-on\">Опубликовать %1$s</span><span class=\"byline\"> "
+"von %2$s</span>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:49
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:50
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:97
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:142
+msgid "Instructions"
+msgstr "Инструкция"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:57
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:58
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:113
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:143
+msgid "General settings"
+msgstr "Основные настройки"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:65
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:66
+msgid "Map and category settings"
+msgstr "Настройки карт и категорий"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:98
+msgid "Page content under preparation for upcoming versions."
+msgstr "Страница в разработке."
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:140
+msgid "Introduction"
+msgstr "Преамбула"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:144
+msgid "Settings for map and categories"
+msgstr "Настройки карт и категорий"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:162
+msgid "Settings"
+msgstr "Настройки"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:192
+msgid "Logo Settings"
+msgstr "Настройки логотипа"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:193
+msgid "Load the main site logo"
+msgstr "Загрузить логотип"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:194
+msgid "The currency for the website"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:195
+msgid "The currency symbol for the website"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:198
+msgid "Other settings"
+msgstr "Другие настройки"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:199
+msgid "Number of allowed drafts"
+msgstr "Количество черновиков"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:200
+msgid "Show administrative subdivision selection"
+msgstr "Показать территориально-административные единицы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:201
+msgid "Country areas file"
+msgstr "Территории страны"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
+msgid "State areas file"
+msgstr "Территория города"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+msgid "District areas file"
+msgstr "Территория области"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:206
+msgid "Map Settings"
+msgstr "Настройки карты"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:207
+msgid "Map center longitude (decimal)"
+msgstr "Географическая долгота (десятичные)"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:208
+msgid "Map center latitude (decimal)"
+msgstr "Географическая широта (десятичные)"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:212
+msgid "Standard zoom level for overview map"
+msgstr "Стандартный масштаб для карты"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:215
+msgid "Transit Categories Settings"
+msgstr "Настройки для категорий общественного транспорта"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#, php-format
+msgid "Use category <strong>%s</strong>"
+msgstr "Используйте <strong>%s</strong> категорию"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:221
+#, php-format
+msgid ""
+"Only use category <strong>%s</strong> when drawing but not as proposal's "
+"category"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:222
+#, php-format
+msgid "Color for category <strong>%s</strong>"
+msgstr "Цвет для категории <strong>%s</strong>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
+#, php-format
+msgid "Map Icon for category <strong>%s</strong>"
+msgstr "Метка для категории <strong>%s</strong>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:224
+#, php-format
+msgid "Map icon (selected) for category <strong>%s</strong>"
+msgstr "Метка для категории (выбранная) <strong>%s</strong>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
+#, php-format
+msgid "Costs per kilometer in million %ss for category <strong>%s</strong>"
+msgstr "Цвет %s для категории <strong>%s</strong>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
+#, php-format
+msgid ""
+"Allow other categories (comma separated id-list) to be drawn for category "
+"<strong>%s</strong>"
+msgstr "Метка для категории (выбранная) <strong>%s</strong>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:230
+msgid "Page IDs Settings"
+msgstr "Настройки для IDs страницы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
+msgid "Page ID for page to add proposal"
+msgstr "ID страницы для страницы для добавления предложения"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
+msgid "Page ID for proposal list page"
+msgstr "ID страницы для страницы со списком предложений"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
+msgid "Page ID for proposal map page"
+msgstr "ID страницы для страницы с картой предложения"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:236
+msgid "General texts settings"
+msgstr "Общие настройки для текста"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
+msgid "Title for intro of proposal contact form"
+msgstr "Заголовок для формы обратной связи"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:238
+msgid "Intro text for proposal contact form"
+msgstr "Текст для формы обратной связи"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:239
+msgid "Contents of the metadata display"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:242
+msgid "ReCAPTCHA settings"
+msgstr "ReCAPTCHA настройки"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:243
+msgid "ReCAPTCHA website key"
+msgstr "ReCAPTCHA ключ для сайта"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:244
+msgid "ReCAPTCHA secret key"
+msgstr "ReCAPTCHA секретный ключ"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:247
+msgid "GeoJSON import settings"
+msgstr "Настройки для импорта GeoJSON"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:248
+msgid "GeoJSON import hints"
+msgstr "Примечания для импорта GeoJSON"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:311
+msgid ""
+"Click on the map to set the marker to the default map center or input/paste "
+"the values to the fields below"
+msgstr ""
+"Нажмите на карту, чтобы задать позицию карты по умолчанию или введите "
+"значения в полях ниже"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:367
+msgid "Select Image"
+msgstr "Выберите картинку"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:367
+msgid "image for this category"
+msgstr "Картинка для категории"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:367
+msgid "Enter URL or upload image"
+msgstr "Введите URL или загрузите картинку"
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:34
+#, php-format
+msgid "New comment on your post \"%2$s\""
+msgstr "Новый комментарий к вашему посту \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:35
+#, php-format
+msgid "Author : %1$s"
+msgstr "Автор: %1$s"
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:36
+msgid "Comment: "
+msgstr "Комментарий: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:37
+msgid "You can see all comments on this post here: "
+msgstr "Здесь вы можете просмотреть все комментарии к этому посту: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:38
+#, php-format
+msgid "[%1$s] Comment: \"%2$s\""
+msgstr "[%1$s] Комментарий: \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:40
+#, php-format
+msgid "New trackback on your post #%1$s \"%2$s\""
+msgstr "Новый trackback к вашему посту #%1$s \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:41
+#: modules/mtl-comment-notification/mtl-comment-notification.php:47
+#, php-format
+msgid "Website: %1$s"
+msgstr "Веб-сайт: %1$s"
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:42
+#: modules/mtl-comment-notification/mtl-comment-notification.php:48
+msgid "Excerpt: "
+msgstr "Отрывок: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:43
+msgid "You can see all trackbacks on this post here: "
+msgstr "Здесь вы можете посмотреть все trackbacks к вашему посту: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:44
+#, php-format
+msgid "[%1$s] Trackback: \"%2$s\""
+msgstr "[%1$s] Trackback: \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:46
+#, php-format
+msgid "New pingback on your post #%1$s \"%2$s\""
+msgstr "Новый pingback к вашему посту #%1$s \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:49
+msgid "You can see all pingbacks on this post here: "
+msgstr "Здесь вы можете посмотреть все pingbacks к вашему посту: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:50
+#, php-format
+msgid "[%1$s] Pingback: \"%2$s\""
+msgstr "[%1$s] Pingback: \"%2$s\""
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:20
+msgid "Proposal"
+msgstr "Предложение"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:21
+msgid "Proposals"
+msgstr "Предложения"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:31
+msgctxt "mtlproposal"
+msgid "Add New"
+msgstr "Добавить новое"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:32
+#, php-format
+msgid "Add New %s"
+msgstr "Добавить %s новые"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:33
+#, php-format
+msgid "New %s"
+msgstr "Новое %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:34
+#, php-format
+msgid "Edit %s"
+msgstr "Редактировать %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:35
+#, php-format
+msgid "View %s"
+msgstr "Посмотреть %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:36
+#, php-format
+msgid "All %s"
+msgstr "Все %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:37
+#, php-format
+msgid "Search %s"
+msgstr "Поиск %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:38
+#, php-format
+msgid "Parent %s:"
+msgstr "Родитель %s:"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:39
+#, php-format
+msgid "No %s found."
+msgstr "Не %s найден."
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:40
+#, php-format
+msgid "No %s found in Trash."
+msgstr "%s не найден в Корзине."
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:68
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:69
+msgid "Sorting Phase Status"
+msgstr "Статус сортировки"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:70
+msgid "Search items"
+msgstr "Элементы поиска"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:71
+msgid "All items"
+msgstr "Все элементы"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:72
+msgid "Parent item"
+msgstr "Родительский элемент"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:73
+msgid "Parent item:"
+msgstr "Родительский элемент:"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:74
+msgid "Edit Sorting Phase Status"
+msgstr "Редактировать статус сортировки"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:75
+msgid "Update Sorting Phase Status"
+msgstr "Обновить статус сортировки"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:76
+msgid "Add New Sorting Phase Status"
+msgstr "Добавить новый статус сортировки"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:77
+msgid "New Sorting Phase Status"
+msgstr "Новый статус сортировки"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:78
+msgid "Sorting Phase Statuses"
+msgstr "Статусы сортировки"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:88
+msgid "Not Submitted"
+msgstr "Не загружено"
+
+#: modules/mtl-download-geojson/mtl-download-geojson.php:40
+msgid "Download proposal map data as GeoJSON"
+msgstr "Загрузить карту предложений в формате GeoJSON"
+
+#: modules/mtl-login-register/mtl-login-register.php:21
+msgid "Login/Register"
+msgstr "Войти/Регистрация"
+
+#: modules/mtl-login-register/mtl-login-register.php:24
+msgid "Login"
+msgstr "Войти"
+
+#: modules/mtl-login-register/mtl-login-register.php:25
+msgid "Register"
+msgstr "Регистрация"
+
+#: modules/mtl-login-register/mtl-login-register.php:33
+msgid "Hello"
+msgstr "Добрый день"
+
+#: modules/mtl-login-register/mtl-login-register.php:35
+msgid "My proposals"
+msgstr "Мои предложения"
+
+#: modules/mtl-login-register/mtl-login-register.php:36
+msgid "Logout"
+msgstr "Выйти"
+
+#: modules/mtl-login-register/mtl-login-register.php:38
+msgid "Change password"
+msgstr "Изменить пароль"
+
+#: modules/mtl-login-register/mtl-login-register.php:49
+msgid "MTL Login/Register"
+msgstr "MTL Войти/Регистрация"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:28
+#: modules/mtl-show-metadata/mtl-show-metadata.php:32
+msgid "Metadata for this proposal"
+msgstr "Метадата для этого предложения"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:49
+msgid ""
+"Check this box if you want standard fields like category box or custom field "
+"section to overwrite changes within this meta box"
+msgstr ""
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:66
+msgid ""
+"If necessary, change transportation mode for this proposal.<br /><span "
+"style=\"font-weight:normal\">Please change transport mode here and do not "
+"use the default WP category selector.</span>"
+msgstr ""
+"Если необходимо, измените вид транспорта для своего предложения.<br /><span "
+"style=\"font-weight:normal\">Пожалуйста, измените вид транспорта здесь.</"
+"span>"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:80
+msgid "Map data of this proposal"
+msgstr "Данные для карты"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:83
+#: modules/mtl-proposal-form/mtl-proposal-form.php:275
+msgid "Station name (optional)"
+msgstr "Название остановки (опционально)"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:83
+#: modules/mtl-proposal-form/mtl-proposal-form.php:275
+msgid "Set new name"
+msgstr "Установить новое название"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:85
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:107
+#: modules/mtl-proposal-form/mtl-proposal-form.php:279
+#: modules/mtl-single-proposal/mtl-single-proposal.php:44
+msgid "colored map"
+msgstr "цветная карта"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:85
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:107
+#: modules/mtl-proposal-form/mtl-proposal-form.php:279
+#: modules/mtl-single-proposal/mtl-single-proposal.php:44
+msgid "brightened map"
+msgstr "осветленная карта"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:86
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:108
+#: modules/mtl-proposal-form/mtl-proposal-form.php:280
+#: modules/mtl-single-proposal/mtl-single-proposal.php:45
+msgid "Fit proposition to map"
+msgstr "Нанести предложение на карту"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:87
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:110
+#: modules/mtl-proposal-form/mtl-proposal-form.php:282
+#: modules/mtl-single-proposal/mtl-single-proposal.php:47
+msgid "Show labels"
+msgstr "Показать названия остановок"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:87
+msgid "By"
+msgstr "От"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:88
+msgid "on"
+msgstr "на"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:103
+#: modules/mtl-tile-list/mtl-tile-list.php:51
+msgid "Loading new set of proposals..."
+msgstr "Загрузка нового списка предложений..."
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:109
+#: modules/mtl-proposal-form/mtl-proposal-form.php:281
+#: modules/mtl-single-proposal/mtl-single-proposal.php:46
+msgid "Fullscreen view"
+msgstr "Полноэкранный режим"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:109
+#: modules/mtl-proposal-form/mtl-proposal-form.php:281
+#: modules/mtl-single-proposal/mtl-single-proposal.php:46
+msgid "Close fullscreen view"
+msgstr "Выйти из полноэкранного режима"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:116
+msgid "Proposal list page"
+msgstr "Страница списка предложений"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:37
+#, php-format
+msgid ""
+"<strong>Important notice:</strong> You are about to write a proposal without "
+"being logged in. You won't be able to edit your proposal after publishing. "
+"Please <a href=\"%s\">login here</a> to have full access to your proposal "
+"after publishing it."
+msgstr ""
+"<strong>Важно:</strong> Вы пытаетесь добавить предложение, но еще не вошли в "
+"систему. Пожалуйста <a href=\"%s\">войдите</a>,чтобы получить доступ к "
+"вашему предложению после публикации."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:38
+msgid "Add a single proposal"
+msgstr "Добавить одно предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:39
+msgid "New proposal"
+msgstr "Новое предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:40
+msgid "Updated proposal"
+msgstr "Обновленное предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:41
+#, php-format
+msgid "A new proposal has been added to your site \"%s\"."
+msgstr "Новое предложение было добавлено на сайт \"%s\"."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:42
+#, php-format
+msgid "A proposal has been updated at your site \"%s\"."
+msgstr "Предложение было обновлено на вашем сайте \"%s\"."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:43
+msgid "View proposal"
+msgstr "Посмотреть предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:44
+msgid "See your proposal here"
+msgstr "Посмотреть своё предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:45
+msgid "Edit proposal"
+msgstr "Редактировать предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:46
+msgid ""
+"The proposal has already been published. Please check if everything's "
+"alright with it."
+msgstr "Предложение уже опубликовано. Проверьте, всё ли в порядке с ним."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:47
+msgid ""
+"Please have a look at the updated proposal to see if everything's alright "
+"with it."
+msgstr "Пожалуйста, взгляните на обновленное предложение, всё ли верно?"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:48
+msgid "Thank you! Your proposal has been added successfully."
+msgstr "Спасибо! Ваше предложение загружено."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:49
+msgid "Thank you! Your proposal has been updated successfully."
+msgstr "Спасибо! Ваше предложение обновлено."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:50
+#, php-format
+msgid ""
+"Thank you! Your proposal has saved, but is not visible for the public. You "
+"can edit it again via the %1$s\"My proposals\" menu%2$s."
+msgstr ""
+"Спасибо! Ваше предложение сохранено, но не видно другим. Вы можете вернуться "
+"к редактированию %1$sМеню \"Мои предложения\"%2$s."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:51
+msgid "Your proposal couldn't be added."
+msgstr "Ваше предложение не может быть добавлено."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:52
+msgid "Title of your proposal"
+msgstr "Название предложения"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:53
+msgid "Description of your proposal"
+msgstr "Описание предложения"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:54
+msgid "Add your proposal"
+msgstr "Добавить предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:55
+msgid "Update your proposal"
+msgstr "Обновить предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:56
+msgid "Save proposal as draft"
+msgstr "Сохранить как черновик"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:57
+msgid "Add new proposal"
+msgstr "Добавить новое предложение"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:150
+msgid "Author name"
+msgstr "Имя автора"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:151
+msgid "Author e-mail"
+msgstr "Email автора"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:152
+msgid "Title"
+msgstr "Название"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:153
+msgid "Description"
+msgstr "Описание"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:176
+msgid "Please verify the following errors:"
+msgstr "Обратите внимание на ошибки:"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:178
+msgid "Please select a category"
+msgstr "Пожалуйста, выберите категорию"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:179
+msgid "Please insert a title"
+msgstr "Пожалуйста, введите название"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:180
+msgid "Please insert a description"
+msgstr "Пожалуйста, введите описание"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:181
+msgid "Please insert location tags"
+msgstr "Пожалуйста, введите гео-метки"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:183
+msgid "Please fill out/correct the data and press the send button again."
+msgstr "Пожалуйста, введите корректные данные."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:245
+msgid "Please select a transportation mode"
+msgstr "Пожалуйста, выберите вид общественного транспорта"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:269
+msgid "Please select another tool<br /> to change the transport mode"
+msgstr "Пожалуйста, выберите другой инструмент для смены вида транспорта"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:270
+msgid "Please draw the line and/or the stations into the map"
+msgstr "Пожалуйста, нарисуйте маршрут и/или остановки на карте"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:271
+msgid "Hints for the usage of the respective tool are shown below the map."
+msgstr ""
+"Инструкции по использованию соответствующего инструмента отображаются под "
+"картой."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:283
+msgid "Tool usage hints"
+msgstr "Примечания к инструменту"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:284
+msgid ""
+"Please use the tools at the top left corner of the map.<br /> Use the point "
+"symbol (top) to draw the stations and the line symbol (second from top) to "
+"draw the line."
+msgstr ""
+"Пожалуйста, используйте инструменты в левом верхнем углу карты.<br /> "
+"Используйте символ с точкой, чтобы отметить остановки и символ с линией для "
+"маршрута."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:285
+msgid ""
+"Click on the map to add stations.<br /> You can then add names to the "
+"station by using the select tool (third from bottom)."
+msgstr ""
+"Нажмите на карту, чтобы добавить остановки.<br /> затем вы сможете добавить "
+"название остановкам, используя выбранный инструмент (третий снизу)"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:286
+msgid ""
+"Click on the map to add a line.<br /> Every click adds a new point to the "
+"line. Doubleclick to finish drawing the line."
+msgstr ""
+"Нажмите на карту, чтобы добавить маршрут.<br /> Каждый клик добавляет новую "
+"остановку на маршруте. Двойной клик заканчивает маршрут."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:287
+msgid ""
+"Click on the map to add a polygon.<br /> Every click adds a new point to the "
+"polygon. Click the first point to finish drawing the polygon."
+msgstr ""
+"Нажмите на карту, чтобы добавить полигон.<br /> Каждый клик добавляет новый "
+"пункт к полигону. Нажмите на первый пункт, чтобы закончить полигон."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:288
+msgid ""
+"Click on the map to add a circle.<br /> <strong> Circles will not be saved! "
+"</strong> The first click sets the center, the second one sets the radius."
+msgstr ""
+"Нажмите на карту, чтобы добавить область.<br /> <strong> Область не будет "
+"сохранена </strong> Первый клик устанавливает центр, второй - радиус."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:289
+msgid ""
+"Click on features to edit them.<br /> You can move or modify the feature "
+"(move points, add points) with this tool."
+msgstr ""
+"Нажмите на объект, чтобы редактировать его.<br />Вы можете двигать и "
+"модифицировать объект с помощью этого инструмента."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:290
+msgid ""
+"Use the tool to select features.<br /> Select a feature to add a name. With "
+"the delete tool (second from bottom) you can delete a selected feature."
+msgstr ""
+"Используйте инструмент, чтобы выбрать объект.<br /> Выберите объект, чтобы "
+"добавить название. С помощью инструментов удаления вы можете удалить "
+"выбранный объект."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:291
+msgid ""
+"Use the selected tool to navigate the map.<br /> With this tool, no "
+"modification of the objects is possible."
+msgstr ""
+"Используйте выбранный инструмент для навигации по карте.<br /> Данный "
+"инструмент не позволяет модифицировать объект."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:296
+msgid ""
+"Please note: Only point and linestring features will be imported. Labels "
+"will be set if included as name property for the respective feature. The "
+"imported features will be appended to the existing features in your "
+"proposal. The coordinate system of the import file must be WGS84/EPSG:4326 "
+"(the standard projection of OpenStreetMap tools)."
+msgstr ""
+"Обратите внимание! Только точки и линии будут импортированы. Метки будут "
+"установлены, если они включают название объекта. Импортированные объекты "
+"будут добавлены к существующим объектам в вашем предложении. Система "
+"координат импортируемого файла должна соответствовать WGS84/EPSG:4326 "
+"(стандартной проекции инструментов для OpenStreetMap)."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:300
+msgid "Import GeoJSON file"
+msgstr "Импорт файл GeoJSON"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:360
+msgid "Enable contact button for my finished proposals"
+msgstr "Активировать обратную связь для данного предложения"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:361
+msgid ""
+"This enables a contact button within your proposals linked to a contact form "
+"where interested people can contact you. On submit, an email with the form "
+"data is being sent to you (and in copy to the admin team). Your email "
+"address is not visible to the respective person until you reply to her/him. "
+"The button is not visible as long as your prposal is still in elaboration "
+"phase."
+msgstr ""
+"Ставя галочку вы соглашаетесь с тем, что любое заинтересованное лицо может "
+"связаться с вами через форму обратной связи. Данные из формы обратной связи "
+"будут отправлены вам (с копией администраторам). Адрес вашей электронной "
+"почты будет скрыт до тех пор, пока вы не ответите на запрос. Кнопка не "
+"активна до тех пор, пока ваше предложение находится в разработке."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:361
+msgid ""
+"Important: This global option is being set for all of your finished "
+"proposals, not only for this one."
+msgstr "Внимание: Эта опция доступна для всех опубликованных предложений."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:369
+msgid "Delete this draft"
+msgstr "Удалить этот черновик"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:370
+msgid "Cancel update"
+msgstr "Отменить изменения"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:390
+#, php-format
+msgid ""
+"You must be logged in to add a new proposal. If you already have an account "
+"at \"%1$s\" or want to login using Facebook, Google, OpenID or Twitter, you "
+"can <a href=\"%2$s\">login here</a>. Otherwise <a href=\"%3$s\">create your "
+"\"%1$s\" account here</a>."
+msgstr ""
+"Вы должны войти, чтобы добавить ваше предложение. Если вы уже "
+"зарегистрированы\"%1$s\" или у вас есть подтвержденный аккаунт Facebook, "
+"Google, OpenID или Twitter вы можете <a href=\"%2$s\"> войти по этой ссылке</"
+"a>. Либо зарегистрироваться <a href=\"%3$s\">здесь\"%1$s\"</a>."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:391
+#, php-format
+msgid "You must <a href=\"%2$s\">login here</a> to edit your proposal."
+msgstr ""
+"Вы должны <a href=\"%2$s\">войти</a>, для того, чтобы редактировать своё "
+"предложение."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:404
+msgid ""
+"You have reached your limit of drafts. Please publish or delete at least one "
+"of your drafts to start a new proposal. These are your current drafts:"
+msgstr ""
+"Вы достигли лимита по количеству черновиков. Пожалуйста, опубликуйте или "
+"удалите один из своих черновиков. Список черновиков:"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:409
+#, php-format
+msgid ""
+"Are your sure you want to delete the draft of your proposal \"%s\"? There is "
+"no going back."
+msgstr ""
+"Вы уверены, что хотите удалить черновик \"%s\". Все изменения будут отменены."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:410
+msgid "Yes, definetily delete this draft"
+msgstr "Да, я хочу удалить черновик"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:411
+msgid "No, I do not want to delete the draft"
+msgstr "Нет, я не хочу удалять черновик"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:421
+msgid "Draft successfully deleted!"
+msgstr "Черновик удалён!"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:425
+msgid ""
+"Couldn't delete the proposal. Is it a draft and are you logged in and the "
+"author?"
+msgstr ""
+"Невозможно удалить предложение. Возможно вы не являетесь автором, не вошли в "
+"систему или ваше предложение является черновиком?"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:29
+msgid "Filter:"
+msgstr "Фильтр:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:32
+msgid "All transit modes"
+msgstr "Все виды транспорта"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:40
+msgid "All users (incl. unregistered)"
+msgstr "Все пользователи (в том числе незарегистрированные)"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:51
+msgid "All regions"
+msgstr "Все регионы"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:64
+msgid "Show drafts"
+msgstr "Показать черновики"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:69
+msgid "Sorting Phase Status:"
+msgstr "Порядок сортировки:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:71
+msgid "All statuses"
+msgstr "Все статусы"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:81
+msgid "Sort:"
+msgstr "Сортировка:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:82
+msgid "Date"
+msgstr "Дата"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:83
+msgid "Number of comments"
+msgstr "Количество комментариев"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:84
+msgid "Random"
+msgstr "Случайный порядок"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:85
+msgid "Descendent"
+msgstr "По убыванию"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:85
+msgid "Ascendent"
+msgstr "По возрастанию"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:91
+msgid "Amount:"
+msgstr "Количество:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:94
+msgid "all"
+msgstr "все"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:101
+msgid "Search:"
+msgstr "Поиск:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:103
+msgid "Filter/sort"
+msgstr "Фильтровать/сортировать"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:45
+msgid "Transit mode"
+msgstr "Verkehrsmittel"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:56
+msgid "Line length"
+msgstr "Длина маршрута"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:67
+msgid "Station count"
+msgstr ""
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:79
+#: modules/mtl-show-metadata/mtl-show-metadata.php:83
+msgid "Average distance"
+msgstr "Среднее расстояние между остановками"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:90
+msgid "Costs"
+msgstr ""
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:48
+msgid "Show feature sizes"
+msgstr "Показать размеры объекта"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:52
+msgid "Description of this proposal"
+msgstr "Описание предложения"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:82
+msgid "Captcha validation failed."
+msgstr "Попробуйте еще раз."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:97
+#, php-format
+msgid "Your proposal %s"
+msgstr "Ваше предложение %s"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:97
+msgid "Message via proposal contact form:"
+msgstr "Сообщение через форму для обратной связи:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:98
+#, php-format
+msgid "Dear %s!"
+msgstr "Уважаемый(-ая), %s!"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:99
+#, php-format
+msgid ""
+"A message to you has been sent via the contact form of your proposal %s. "
+"Just reply to this email to get in touch with the respective person."
+msgstr ""
+"Данное сообщение отправлено через форму для обратной связи %s. Чтобы "
+"связаться с отправителем используйте адрес его электронной почты."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:100
+#: modules/mtl-single-proposal/mtl-single-proposal.php:120
+msgid "Link to proposal:"
+msgstr "Ссылка на предложение:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:102
+msgid "The following data has been submitted:"
+msgstr "Ваши данные:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:103
+msgid "Gender:"
+msgstr "Гендер:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:104
+msgid "Title:"
+msgstr "Обращение:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:105
+msgid "First name:"
+msgstr "Имя:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:106
+msgid "Last name:"
+msgstr "Фамилия:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:107
+msgid "Institution:"
+msgstr "Место работы:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:108
+msgid "Email address:"
+msgstr "Email:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:109
+msgid "Phone number:"
+msgstr "Номер телефона:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:110
+msgid "Subject:"
+msgstr "Тема:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:111
+msgid "Message:"
+msgstr "Сообщение:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:118
+#, php-format
+msgid "Proposal %s:"
+msgstr "Предложение %s:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:118
+msgid "Message via proposal contact form"
+msgstr "Написать сообщение через форму для обратной связи"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:119
+#, php-format
+msgid ""
+"A message to the author has been sent via the contact form of proposal %s."
+msgstr ""
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:128
+msgid ""
+"Thank you! Your message has been sent to the author of this proposal. A "
+"notice without any of your data has been sent to the admin team for "
+"statistical reasons."
+msgstr ""
+"Большое спасибо! Ваше сообщение отправлено. Уведомление об отправке "
+"сообщения без ваших персональных данных отправлено администраторам сайта для "
+"статистики."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:135
+msgid ""
+"Thank you! Your message has been sent to the author of this proposal. A copy "
+"of your message has been sent to the admin team."
+msgstr ""
+"Большое спасибо! Ваше сообщение отправлено. Копия сообщения отправлена "
+"администраторам."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:145
+msgid "Contact the author of this proposal"
+msgstr "Связаться с автором данного предложения"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:156
+msgid "Please select your gender (optional)"
+msgstr "Пожалуйста, укажите свой гендер (опционально)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:158
+msgid "Please select an option"
+msgstr "Пожалуйста, выберите опцию"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:159
+msgid "Mrs."
+msgstr "Mrs."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:160
+msgid "Mr."
+msgstr "Mr."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:165
+msgid "Your title (optional)"
+msgstr "Обращение (опционально)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:170
+msgid "Your first name"
+msgstr "Имя"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:175
+msgid "Your last name"
+msgstr "Фамилия"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:180
+msgid "Your institution (optional)"
+msgstr "Ваше место работы (опционально)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:185
+msgid "Your email address"
+msgstr "Ваш email"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:190
+msgid "Your phone number (optional)"
+msgstr "Ваш телефон (опционально)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:195
+msgid "Subject of your message"
+msgstr "Тема вашего сообщения"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:200
+msgid "Your message"
+msgstr "Ваше сообщение"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:205
+#, php-format
+msgid "I have read and accept the %1$sData privacy policy%2$s."
+msgstr "Я ознакомился и принимаю %1$sПолитику конфиденциальносту%2$s ."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:208
+msgid ""
+"The admin team would like to be informed, too! So please check this box if "
+"you accept that a full copy of your data is being sent to the Linie Plus "
+"admin team in CC. If you do not accept this, the admin team will only be "
+"informed about the usage of the contact form for this proposal without any "
+"of your personal data."
+msgstr ""
+"Ставя галочку вы даете согласие на передачу ваших персональных данных "
+"администраторам проекта \"Линия плюс\"."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:216
+msgid "Send message"
+msgstr "Отправить сообщение"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:233
+msgid "Edit my proposal"
+msgstr "Редактировать мое предложение"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:251
+#: modules/mtl-update-old-proposals/mtl-update-old-proposals.php:58
+msgid "All administrative subdivisons of this proposal:"
+msgstr "Все административные подразделения этого предложения:"
+
+#: modules/mtl-tile-list/mtl-tile-list.php:59
+msgid "Add a new proposal with map and description"
+msgstr "Добавить новое предложение с использованием карты и описанием"
+
+#: modules/mtl-tile-list/mtl-tile-list.php:59
+msgid "Contribute to the collection!"
+msgstr "Дополнить коллекцию!"
+
+#: modules/mtl-tile-list/mtl-tile-list.php:104
+msgid "Proposal map page"
+msgstr "Карта предложений"
+
+#: search.php:16
+#, php-format
+msgid "Search Results for: %s"
+msgstr "Результаты поиска: %s"

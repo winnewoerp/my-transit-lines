@@ -38,17 +38,31 @@ div.interaction-control {
 	top: 80px;
 }
 
+li.interaction-control,
+summary.interaction-control,
 button.interaction-control {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-color: white;
 }
 
-button.interaction-control.selected {
+li.interaction-control,
+summary.interaction-control {
+	background-size: contain;
+	color: black;
+}
+
+li.interaction-control {
+	width: 22px;
+	height: 22px;
+	list-style-type: none;
+}
+
+.interaction-control.selected {
 	background-color: gray;
 }
 
-button.interaction-control.unselectable {
+.interaction-control.unselectable {
 	opacity: 0.5;
 }
 

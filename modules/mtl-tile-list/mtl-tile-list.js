@@ -25,20 +25,19 @@ function loadNewTiles(link) {
 	$('.mtl-posttiles-list').prepend("<div class=\"mtl-list-loader\">"+loadingNewProposalsText+"</div>");
 	$('.mtl-posttiles-list').prepend("<div class=\"mtl-list-loader bottom\">"+loadingNewProposalsText+"</div>");
 
-	var $content_filter = '#mtl-list-filter';
 	var $content_pagination = '.mtl-paginate-links';
 	var $content_tiles = '.mtl-posttiles-list';
 
 	$.get(link+'', function(data){
-		var $new_content_filter = $($content_filter, data).wrapInner('').html(); // Grab just the filter content
 		var $new_content_pagination = $($content_pagination, data).wrapInner('').html(); // Grab just the pagination content
 		var $new_content_tiles = $($content_tiles, data).wrapInner('').html(); // Grab just the tile content
 		$('.mtl-paginate-links .loader').remove();
 		
 		// add new content
-		$($content_filter).html($new_content_filter);
 		$($content_pagination).html($new_content_pagination);
 		$($content_tiles).html($new_content_tiles);
+
+		window.dispatchEvent(new Event('new-filter'));
 
 		set_button_behaviour();
 		
@@ -70,20 +69,20 @@ function set_button_behaviour() {
 
 // submit filter
 function submitFilter() {
-	var form = $('#mtl-filter-form');
-	var actionUrl = form.attr('action');
-	if(!actionUrl.includes('?')) var paramSeparator = '?';
-	else var paramSeparator = '&';
+	const form = $('#mtl-filter-form');
+	const actionUrl = form.attr('action');
+	let paramSeparator = actionUrl.includes('?') ? '&' : '?';
 	
-	var formInputs = $(form).find(':input');
-	var allParams = '';
+	const formInputs = $(form).find(':input');
+	let allParams = '';
 	formInputs.each(function() {
-		if($(this).attr('name')) allParams = allParams+paramSeparator+$(this).attr('name')+'='+$(this).val();
-		paramSeparator = '&';
+		if ($(this).attr('name')) {
+			allParams += paramSeparator+$(this).attr('name')+'='+$(this).val();
+			paramSeparator = '&';
+		}
 	});
 
-	var newLink = actionUrl+allParams;
-	var newHash = newLink.replace(tilePageUrl,'');
+	const newHash = (actionUrl+allParams).replace(tilePageUrl,'');
 	window.location.hash  = '!'+newHash;
 }
 
@@ -150,10 +149,14 @@ function createThumbMap(mapNumber) {
 			view: view,
 		});
 
-		if (vectorFeaturesList[mapNumber])
-			importToMapJSON(vectorFeaturesList[mapNumber], currentCat, 0, vectorSource);
-		else if (vectorDataList[mapNumber])
-			importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
+		try {
+			if (vectorFeaturesList[mapNumber])
+				importToMapJSON(vectorFeaturesList[mapNumber], currentCat, 0, vectorSource);
+			else if (vectorDataList[mapNumber])
+				importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
+		} catch (e) {
+			console.log(e);
+		}
 
 		zoomToFeatures(true, false, vectorSource, view);
 		

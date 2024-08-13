@@ -46,16 +46,12 @@ function get_transport_mode_style_data() {
 
 /**
  * Get the categories that were activated in the admin menu
- *
- * @return string that contains a comma-separated list of category ids
+ * @return array
  */
 function get_active_categories() {
 	$mtl_options = get_option('mtl-option-name');
 
-	$mtl_all_catids = '';
-	foreach(get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' ) as $category) {
-        if($mtl_options['mtl-use-cat'.$category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$category->cat_ID])
-            $mtl_all_catids .= $category->cat_ID.',';
-    }
-	return $mtl_all_catids;
+	return array_filter(get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' ), function($category) use ($mtl_options) {
+		return $mtl_options['mtl-use-cat'.$category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$category->cat_ID];
+	});
 }

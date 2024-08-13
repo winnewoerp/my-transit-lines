@@ -1,0 +1,8 @@
+.mtl-filter-section {
+	display: inline-flex;
+	align-items: center;
+}
+
+#mtl-filter-form hr {
+	margin: .5em;
+}

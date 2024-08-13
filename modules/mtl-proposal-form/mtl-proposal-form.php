@@ -210,10 +210,7 @@ function mtl_proposal_form_output( $atts ){
 			}
 
 			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
-			$active_categories = get_categories(array(
-				"include" => get_active_categories(),
-				"orderby" => "slug",
-			));
+			$active_categories = get_active_categories();
 
 			// get the current category
 			$current_category = get_the_category($editId);

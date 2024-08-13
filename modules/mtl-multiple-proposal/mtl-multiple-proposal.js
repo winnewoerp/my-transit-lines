@@ -17,17 +17,14 @@ jQuery(document).ready(function($) {
 });
 
 function load_new_data(link) {
-	var $content_filter = '#mtl-list-filter';
 	var $content_pagination = '.mtl-paginate-links';
 	var $content_map = '#mtl-multiple-proposal-data-script';
 
     $.get(link+'', function(data) {
-		var $new_content_filter = $($content_filter, data); // Grab just the filter content
 		var $new_content_pagination = $($content_pagination, data); // Grab just the pagination content
 		var $new_content_map = $($content_map, data); // Grab just the map content
 			
 		// add new content
-		$($content_filter).replaceWith($new_content_filter);
 		$($content_pagination).replaceWith($new_content_pagination);
 		$($content_map).replaceWith($new_content_map);
 		loadNewFeatures();
@@ -51,20 +48,20 @@ function set_button_behaviour() {
 }
 
 function submit_new_filter() {
-    var form = $('#mtl-filter-form');
-	var actionUrl = form.attr('action');
-	if(!actionUrl.includes('?')) var paramSeparator = '?';
-	else var paramSeparator = '&';
+	const form = $('#mtl-filter-form');
+	const actionUrl = form.attr('action');
+	let paramSeparator = actionUrl.includes('?') ? '&' : '?';
 	
-	var formInputs = $(form).find(':input');
-	var allParams = '';
+	const formInputs = $(form).find(':input');
+	let allParams = '';
 	formInputs.each(function() {
-		if($(this).attr('name')) allParams = allParams+paramSeparator+$(this).attr('name')+'='+$(this).val();
-		paramSeparator = '&';
+		if ($(this).attr('name')) {
+			allParams += paramSeparator+$(this).attr('name')+'='+$(this).val();
+			paramSeparator = '&';
+		}
 	});
 
-	var newLink = actionUrl+allParams;
-	var newHash = newLink.replace(multiple_proposal_page_url,'');
+	const newHash = (actionUrl+allParams).replace(tilePageUrl,'');
 	window.location.hash  = '!'+newHash;
 }
 

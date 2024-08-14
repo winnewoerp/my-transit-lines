@@ -34,7 +34,8 @@ function get_transport_mode_style_data() {
 		foreach(STYLE_DATA_KEYS as $style_data) {
 				$output .= "\"{$style_data[1]}\":\"{$mtl_options[$style_data[0].$catid]}\",";
 		}
-		$output .= "\"name\":\"{__($cat->name,'my-transit-lines'}\",";
+		$catname = __($cat->name,'my-transit-lines');
+		$output .= "\"name\":\"$catname\",";
 		$output .= "},";
 	}
 	$output .= "}; </script>\r\n";

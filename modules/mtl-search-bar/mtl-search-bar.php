@@ -35,7 +35,7 @@ function mtl_search_bar_output($query = null) {
 	<label for="mtl-filter-multiple">' . __('Select multiple values','my-transit-lines') . '</label><hr>
 	<p class="mtl-filter-section"><strong>'.__('Filter:','my-transit-lines').'</strong> ';
 
-	$output .= multi_selector_output($query->query['category__in'], array_map(function($cat) {
+	$output .= multi_selector_output(get_query_cats(), array_map(function($cat) {
 		return [
 			'ID' => $cat->term_id,
 			'name' => $cat->name,
@@ -114,7 +114,7 @@ function mtl_search_bar_output($query = null) {
 
 /**
  * Returns the output for a multi-selector
- * @param int[] $queried_options
+ * @param array $queried_options array containing all searched for ids
  * @param array $all_options array containing associative arrays with ID and name fields
  * @param string $selector_name name for the selector. Must be a valid html name
  * @param string $all_selected_option text of the all_selected option
@@ -180,7 +180,7 @@ function get_query($type = 'mtlproposal', $per_page_multiple = 1) {
         'posts_per_page' => max(($posts_per_page - (($posts_per_page + 1) % $per_page_multiple)), -1),
         'post_type' => $type,
         'author__in' => get_query_users(),
-        'category__in' => get_query_cats(),
+        'category__in' => get_query_cats_children(),
 		'tag__in' => get_query_tags(),
         's' => get_search_term(),
         'post_status' => get_status(),
@@ -228,17 +228,29 @@ function get_posts_per_page() {
 }
 
 /**
- * Returns the categories to query for
+ * Returns the categories to query for, including children of passed in categories
  *
  * @return array
  */
-function get_query_cats() {
+function get_query_cats_children() {
 	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != '')
 		return array_merge(...array_map(function($catid) {
 			$ids = get_term_children($catid, 'category');
 			$ids[] = $catid;
 			return $ids;
 		}, explode(',', $_GET['mtl-catid'])));
+
+	return [];
+}
+
+/**
+ * Returns the categories to query for without children
+ * 
+ * @return array
+ */
+function get_query_cats() {
+	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != '')
+		return explode(',', $_GET['mtl-catid']);
 
 	return [];
 }

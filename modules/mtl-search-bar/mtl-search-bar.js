@@ -2,7 +2,11 @@
 	window.addEventListener(type, () => {
 		document.getElementById('mtl-filter-multiple').addEventListener('change', (e) => {
 			document.querySelectorAll('select.allowsMultiple').forEach((select) => {
-				select.multiple = e.target.checked;
+				const multipleSelected = Array.from(select.querySelectorAll(':scope>option')).filter((option) => {
+					return option.selected;
+				}).length > 1;
+
+				select.multiple = e.target.checked || multipleSelected;
 			})
 		});
 	});

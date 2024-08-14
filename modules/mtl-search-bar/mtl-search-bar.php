@@ -127,10 +127,11 @@ function multi_selector_output($queried_options, $all_options, $selector_name, $
 			return $option['ID'];
 		}, $all_options);
 	
+		$multiple = count($queried_options) > 1 ? " multiple" : "";
 		$selected = $all_selected ? " selected" : "";
 
 		// selector
-		$output .= "<select name=\"$selector_name\" class=\"allowsMultiple\">\r\n
+		$output .= "<select name=\"$selector_name\" class=\"allowsMultiple\" $multiple>\r\n
 					<option value=\"\"$selected>$all_selected_option</option>\r\n";
 		foreach($all_options as $option) {
 			$id = $option['ID'];

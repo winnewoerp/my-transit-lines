@@ -1,89 +1,29 @@
 /* My Transit Line posttiles list */
 
-var $ = jQuery;
-var countLoads = 0;
+function handle_new_data(new_document) {
+	const content_pagination = '.mtl-paginate-links';
+	const content_tiles = 'mtl-posttiles-list';
 
-// Ajax Pagination
-var currentHash = window.location.hash;
-var paginationClicked = false;
+	const old_pagination = document.querySelectorAll(content_pagination);
+	const old_tiles = document.getElementById(content_tiles);
 
-jQuery(document).ready(function($){
-	if(currentHash.includes('#!')) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
-	
-	$(window).on('hashchange',function(){
-		if(window.location.href.includes(tilePageUrl)) {
-			currentHash = window.location.hash;
-			if(currentHash.includes('#!') && !paginationClicked) loadNewTiles(tilePageUrl+currentHash.replace('#!',''));
+	const new_pagination = new_document.querySelectorAll(content_pagination);
+	const new_tiles = new_document.getElementById(content_tiles);
+
+	old_pagination.forEach((elem, index) => {
+		elem.replaceWith(new_pagination.item(index));
+	});
+	old_tiles.replaceWith(new_tiles);
+
+	document.getElementById('data-scripts').childNodes.forEach((elem) => {
+		if (elem instanceof HTMLScriptElement) {
+			eval?.(elem.innerText); // Evaluates eval indirectly in the global scope to update js vars from fetched data. TODO replace with retrieval of JSON only
 		}
 	});
-
-	set_button_behaviour();
-	
-}); // end ready function
-
-function loadNewTiles(link) {
-	$('.mtl-posttiles-list').prepend("<div class=\"mtl-list-loader\">"+loadingNewProposalsText+"</div>");
-	$('.mtl-posttiles-list').prepend("<div class=\"mtl-list-loader bottom\">"+loadingNewProposalsText+"</div>");
-
-	var $content_pagination = '.mtl-paginate-links';
-	var $content_tiles = '.mtl-posttiles-list';
-
-	$.get(link+'', function(data){
-		var $new_content_pagination = $($content_pagination, data).wrapInner('').html(); // Grab just the pagination content
-		var $new_content_tiles = $($content_tiles, data).wrapInner('').html(); // Grab just the tile content
-		$('.mtl-paginate-links .loader').remove();
 		
-		// add new content
-		$($content_pagination).html($new_content_pagination);
-		$($content_tiles).html($new_content_tiles);
-
-		window.dispatchEvent(new Event('new-filter'));
-
-		set_button_behaviour();
-		
-		for (var key of Object.keys(catList)) {
-			createThumbMap(key);
-		}
-		
-		// add rating
-		if($('.mtl-rating-section').length) mtl_rating_section_handler();
-		if($('.mtl-tile-rating').length) mtl_tile_rating_handler();
-	});
-	countLoads++;
-	paginationClicked = false;
-}
-
-function set_button_behaviour() {
-	$('#mtl-filter-form').submit(function(e) {
-		e.preventDefault();
-		submitFilter();
-	});
-
-	$('.mtl-paginate-links a').on('click', function(e)  {
-		e.preventDefault();
-		window.location.hash = '!'+$(this).attr('href').replace(tilePageUrl,'');
-	});
-
-	$('#mtl-post-map-link').attr('href', post_map_url + currentHash);
-}
-
-// submit filter
-function submitFilter() {
-	const form = $('#mtl-filter-form');
-	const actionUrl = form.attr('action');
-	let paramSeparator = actionUrl.includes('?') ? '&' : '?';
-	
-	const formInputs = $(form).find(':input');
-	let allParams = '';
-	formInputs.each(function() {
-		if ($(this).attr('name')) {
-			allParams += paramSeparator+$(this).attr('name')+'='+$(this).val();
-			paramSeparator = '&';
-		}
-	});
-
-	const newHash = (actionUrl+allParams).replace(tilePageUrl,'');
-	window.location.hash  = '!'+newHash;
+	for (var key of Object.keys(catList)) {
+		createThumbMap(key);
+	}
 }
 
 const ICON_SIZE_TILELIST = 13;
@@ -118,50 +58,46 @@ function tilelistStyleFunction(feature) {
 
 // thumb maps
 function createThumbMap(mapNumber) {
-	if(!countLoads && currentHash.includes('#!')) {
-		$('.mtl-post-tile').css('display','none');
-	} else {
-		const currentCat = catList[mapNumber];
+	const currentCat = catList[mapNumber];
 
-		const backgroundTileLayer = new ol.layer.Tile({
-			className: 'background-tilelayer',
-			source: new ol.source.OSM(),
-		});
+	const backgroundTileLayer = new ol.layer.Tile({
+		className: 'background-tilelayer',
+		source: new ol.source.OSM(),
+	});
 
-		const vectorSource = new ol.source.Vector();
-		const vectorLayer = new ol.layer.Vector({
-			source: vectorSource,
-			style: tilelistStyleFunction,
-		});
+	const vectorSource = new ol.source.Vector();
+	const vectorLayer = new ol.layer.Vector({
+		source: vectorSource,
+		style: tilelistStyleFunction,
+	});
 
-		const view = new ol.View({
-			center: ol.proj.fromLonLat([centerLon, centerLat]),
-			zoom: standardZoom,
-			minZoom: MIN_ZOOM,
-			maxZoom: MAX_ZOOM_TILELIST,
-			constrainResolution: true,
-		});
+	const view = new ol.View({
+		center: ol.proj.fromLonLat([centerLon, centerLat]),
+		zoom: standardZoom,
+		minZoom: MIN_ZOOM,
+		maxZoom: MAX_ZOOM_TILELIST,
+		constrainResolution: true,
+	});
 
-		const map = new ol.Map({
-			controls: [],
-			layers: [backgroundTileLayer, vectorLayer],
-			target: 'thumblist-map' + mapNumber,
-			view: view,
-		});
+	const map = new ol.Map({
+		controls: [],
+		layers: [backgroundTileLayer, vectorLayer],
+		target: 'thumblist-map' + mapNumber,
+		view: view,
+	});
 
-		try {
-			if (vectorFeaturesList[mapNumber])
-				importToMapJSON(vectorFeaturesList[mapNumber], currentCat, 0, vectorSource);
-			else if (vectorDataList[mapNumber])
-				importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
-		} catch (e) {
-			console.log(e);
-		}
+	try {
+		if (vectorFeaturesList[mapNumber])
+			importToMapJSON(vectorFeaturesList[mapNumber], currentCat, 0, vectorSource);
+		else if (vectorDataList[mapNumber])
+			importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
+	} catch (e) {
+		console.log(e);
+	}
 
-		zoomToFeatures(true, false, vectorSource, view);
-		
-		$('.olLayerGrid').css('opacity','.2');
-	}	
+	zoomToFeatures(true, false, vectorSource, view);
+	
+	$('.olLayerGrid').css('opacity','.2');	
 }
 
 for (var key of Object.keys(catList)) {

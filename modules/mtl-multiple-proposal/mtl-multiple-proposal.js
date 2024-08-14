@@ -1,68 +1,20 @@
 /* My Transit Line posttiles list */
 
-var $ = jQuery;
-var currentHash = window.location.hash;
+function handle_new_data(new_document) {
+	const content_pagination = '.mtl-paginate-links';
+	const content_map = 'mtl-multiple-proposal-data-script';
 
-jQuery(document).ready(function($) {
-	if(currentHash.includes('#!')) load_new_data(multiple_proposal_page_url+currentHash.replace('#!',''));
-	
-	$(window).on('hashchange', function() {
-		if(window.location.href.includes(multiple_proposal_page_url)) {
-			currentHash = window.location.hash;
-			if(currentHash.includes('#!')) load_new_data(multiple_proposal_page_url+currentHash.replace('#!',''));
-		}
+	const old_pagination = document.querySelectorAll(content_pagination);
+
+	const new_pagination = new_document.querySelectorAll(content_pagination);
+	const new_map = new_document.getElementById(content_map);
+
+	old_pagination.forEach((elem, index) => {
+		elem.replaceWith(new_pagination.item(index));
 	});
-	
-	set_button_behaviour();
-});
+	eval?.(new_map.innerText); // Evaluates eval indirectly in the global scope to update js vars from fetched data. TODO replace with retrieval of JSON only
 
-function load_new_data(link) {
-	var $content_pagination = '.mtl-paginate-links';
-	var $content_map = '#mtl-multiple-proposal-data-script';
-
-    $.get(link+'', function(data) {
-		var $new_content_pagination = $($content_pagination, data); // Grab just the pagination content
-		var $new_content_map = $($content_map, data); // Grab just the map content
-			
-		// add new content
-		$($content_pagination).replaceWith($new_content_pagination);
-		$($content_map).replaceWith($new_content_map);
-		loadNewFeatures();
-
-		set_button_behaviour();
-	});
-}
-
-function set_button_behaviour() {
-	$('#mtl-filter-form').submit(function(e) {
-		e.preventDefault();
-		submit_new_filter();
-	});
-
-	$('.mtl-paginate-links a').on('click', function(e)  {
-		e.preventDefault();
-		window.location.hash = '!'+$(this).attr('href').replace(multiple_proposal_page_url,'');
-	});
-
-	$('#mtl-post-list-link').attr('href', post_list_url + currentHash);
-}
-
-function submit_new_filter() {
-	const form = $('#mtl-filter-form');
-	const actionUrl = form.attr('action');
-	let paramSeparator = actionUrl.includes('?') ? '&' : '?';
-	
-	const formInputs = $(form).find(':input');
-	let allParams = '';
-	formInputs.each(function() {
-		if ($(this).attr('name')) {
-			allParams += paramSeparator+$(this).attr('name')+'='+$(this).val();
-			paramSeparator = '&';
-		}
-	});
-
-	const newHash = (actionUrl+allParams).replace(tilePageUrl,'');
-	window.location.hash  = '!'+newHash;
+	loadNewFeatures();
 }
 
 const container = document.getElementById('popup');
@@ -95,6 +47,7 @@ selectInteraction.on('select', function (evt) {
 
 	const proposalData = vectorProposalData[evt.selected[0].get('proposal_data_index')];
 
+	container.style.display = '';
 	contentLink.href = proposalData.link;
 	contentTitle.textContent = proposalData.title;
 	contentAuthor.textContent = proposalData.author;
@@ -113,6 +66,7 @@ closer.onclick = function () {
 };
 
 function closePopup() {
+	container.style.display = 'none';
 	overlay.setPosition(undefined);
 	closer.blur();
 	selectInteraction.getFeatures().clear();

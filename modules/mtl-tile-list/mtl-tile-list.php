@@ -38,7 +38,12 @@ function mtl_tile_list_output($atts) {
 	$output .= mtl_search_bar_output($the_query);
 		
 	// start the tile list
-	$output .= '<div class="mtl-posttiles-list">';
+	$output .= '<div id="mtl-posttiles-list" class="mtl-posttiles-list">';
+
+	// Add the list-loader notification
+	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
+	$output .= "<div style=\"display:none;\" class=\"mtl-list-loader\">$newProposalText</div>";
+	$output .= "<div style=\"display:none;\" class=\"mtl-list-loader bottom\">$newProposalText</div>";
 	
 	// load the text translations
 	$output .= mtl_localize_script(true);
@@ -47,10 +52,6 @@ function mtl_tile_list_output($atts) {
 	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorFeatures = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
 	wp_enqueue_script('mtl-tile-list', get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js', array('my-transit-lines'), wp_get_theme()->version);
 	if(!$hidethumbs) $output .= '<script type="text/javascript"> var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = "'.$mtl_options['mtl-standard-zoom'].'"; </script>'."\r\n";
-	$output .= '<script type="text/javascript"> ';
-	$output .= ' var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";';
-	$output .= ' var tilePageUrl = "'.get_permalink().'"; var initMap = false;';
-	$output .= '</script>'."\r\n";
 	if(!$hidethumbs) {
 		$output .= get_transport_mode_style_data();
 	}
@@ -95,13 +96,13 @@ function mtl_tile_list_output($atts) {
 	$vectorDataList .= '}; </script>'."\r\n";
 	$vectorFeaturesList .= '}; </script>'."\r\n";
 
-	$output .= $catList.$vectorDataList.$vectorFeaturesList;
+	$output .= '<div id="data-scripts">'.$catList.$vectorDataList.$vectorFeaturesList.'</div>';
 
 	$output .= '<div class="clear"></div></div>';
 	
 	$output .= get_paginate_links($the_query->max_num_pages);
 
-	$output .= '<script type="text/javascript"> var post_map_url = "'.get_permalink(pll_get_post($mtl_options['mtl-postmap-page'])).'"; </script><p class="alignleft"> <a id="mtl-post-map-link">'.__('Proposal map page','my-transit-lines').'</a> </p>';
+	$output .= '<p class="alignleft"><a data-mtl-search-link href="'.get_permalink(pll_get_post($mtl_options['mtl-postmap-page'])).'">'.__('Proposal map page','my-transit-lines').'</a></p>';
 	
 	return $output;
 }

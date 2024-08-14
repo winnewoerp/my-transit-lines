@@ -41,3 +41,8 @@
 	max-width:400px;
 	height:100px;
 }
+
+.form-table hr {
+	border-top-color: #000000;
+	border-bottom-color: #444444;
+}

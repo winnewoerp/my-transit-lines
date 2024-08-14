@@ -40,7 +40,7 @@ function mtl_search_bar_output($query = null) {
 			'ID' => $cat->term_id,
 			'name' => $cat->name,
 		];
-	}, get_active_categories()), 'mtl-catid', __('All transit modes','my-transit-lines'));
+	}, get_searchable_categories()), 'mtl-catid', __('All transit modes','my-transit-lines'));
 
 	$output .= multi_selector_output($query->query['author__in'], array_map(function($user) {
 		return [
@@ -233,7 +233,11 @@ function get_posts_per_page() {
  */
 function get_query_cats() {
 	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != '')
-		return explode(',', $_GET['mtl-catid']);
+		return array_merge(...array_map(function($catid) {
+			$ids = get_term_children($catid, 'category');
+			$ids[] = $catid;
+			return $ids;
+		}, explode(',', $_GET['mtl-catid'])));
 
 	return [];
 }

@@ -248,18 +248,16 @@ function mtl_proposal_form_output( $atts ){
 						$single_catname = __($single_category->name, 'my-transit-lines');
 						$single_catslug = $single_category->slug;
 
-						if (!$mtl_options['mtl-only-in-map-cat'.$single_catid]) {
-							$checked = '';
+						$checked = '';
 
-							if (($err && isset($_POST['cat']) && $single_catid == $_POST['cat']) ||
-								(!$err && $editId && $single_catid == $current_category[0]->term_id) ||
-								(str_contains($single_catslug, 'other') && !$checkedAlready)) {
-									$checked = ' checked="checked"';
-									$checkedAlready = true;
-							}
-
-							$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_catid.'" id="cat-'.$single_catslug.'" /> '.$single_catname.'</label>'."\r\n";
+						if (($err && isset($_POST['cat']) && $single_catid == $_POST['cat']) ||
+							(!$err && $editId && $single_catid == $current_category[0]->term_id) ||
+							(str_contains($single_catslug, 'other') && !$checkedAlready)) {
+								$checked = ' checked="checked"';
+								$checkedAlready = true;
 						}
+
+						$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_catid.'" id="cat-'.$single_catslug.'" /> '.$single_catname.'</label>'."\r\n";
 					}
 				}
 

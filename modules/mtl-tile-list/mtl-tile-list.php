@@ -69,7 +69,7 @@ function mtl_tile_list_output($atts) {
 	
 	$catid = get_the_category($post->ID)[0]->cat_ID;
 	
-	if(!$hide_proposal && $mtl_options['mtl-use-cat'.$catid] && !$mtl_options['mtl-only-in-map-cat'.$catid]) {
+	if(!$hide_proposal && !in_array($mtl_options['mtl-cat-use'.$catid], ['no','only-in-search'])) {
 		$bgcolor = $mtl_options['mtl-color-cat'.$catid];
 		
 		$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';

@@ -53,27 +53,25 @@ function mtl_post_class_meta_box($post) {
 	
 	// load JS stuff (copied from mtl-proposal module)
 	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
-	$all_categories = get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
+	$all_categories = get_active_categories();
 	
 	// save category style data to JS array
 	$output .= get_transport_mode_style_data();
 	
 	$output_later = '';
-	foreach($all_categories as $single_category) {
-		if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later = 'defaultCategory = "'.$single_category->cat_ID.'";';
+	foreach($all_categories as $cat) {
+		if(str_contains($cat->slug, 'other')) $output_later = "defaultCategory = \"{$cat->cat_ID}\";";
 	}
 
 	$output .= '<p><strong>'.__('If necessary, change transportation mode for this proposal.<br /><span style="font-weight:normal">Please change transport mode here and do not use the default WP category selector.</span>','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 	
 	// getting all categories for selected as transit mode categories, set the given category option to checked
-	foreach($all_categories as $single_category) {
-		if ($mtl_options['mtl-use-cat'.$single_category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$single_category->cat_ID]) {
-			$checked='';
+	foreach($all_categories as $cat) {
+		$catid = $cat->term_id;
 
-			if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
-			
-			$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.__($single_category->name, 'my-transit-lines').'</label>'."\r\n";
-		}
+		$checked = $catid == $current_category[0]->term_id ? ' checked' : '';
+		
+		$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$catid.'" id="cat-'.$cat->slug.'" /> '.__($cat->name, 'my-transit-lines').'</label>'."\r\n";
 	}
 	$output .= '</span></span></p>';
 	

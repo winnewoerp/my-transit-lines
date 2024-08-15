@@ -1,30 +1,8 @@
 /* My Transit Line posttiles list */
 
-function handle_new_data(new_document) {
-	const content_pagination = '.mtl-paginate-links';
-	const content_tiles = 'mtl-posttiles-list';
-
-	const old_pagination = document.querySelectorAll(content_pagination);
-	const old_tiles = document.getElementById(content_tiles);
-
-	const new_pagination = new_document.querySelectorAll(content_pagination);
-	const new_tiles = new_document.getElementById(content_tiles);
-
-	old_pagination.forEach((elem, index) => {
-		elem.replaceWith(new_pagination.item(index));
-	});
-	old_tiles.replaceWith(new_tiles);
-
-	document.getElementById('data-scripts').childNodes.forEach((elem) => {
-		if (elem instanceof HTMLScriptElement) {
-			eval?.(elem.innerText); // Evaluates eval indirectly in the global scope to update js vars from fetched data. TODO replace with retrieval of JSON only
-		}
-	});
-		
-	for (var key of Object.keys(catList)) {
-		createThumbMap(key);
-	}
-}
+['load', 'reload'].forEach((type) => {
+	window.addEventListener(type, createThumbMaps);
+});
 
 const ICON_SIZE_TILELIST = 13;
 const STROKE_WIDTH_TILELIST = 3;
@@ -100,6 +78,8 @@ function createThumbMap(mapNumber) {
 	$('.olLayerGrid').css('opacity','.2');	
 }
 
-for (var key of Object.keys(catList)) {
-	createThumbMap(key);
+function createThumbMaps() {
+	for (var key of Object.keys(catList)) {
+		createThumbMap(key);
+	}
 }

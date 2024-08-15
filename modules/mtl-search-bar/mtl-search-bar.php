@@ -153,7 +153,7 @@ function multi_selector_output($queried_options, $all_options, $selector_name, $
  */
 function get_paginate_links($max_num_pages) {
 	$big = 999999999; // need an unlikely integer
-	return ('<div class="mtl-paginate-links">'.
+	return ('<div data-mtl-replace-with=".mtl-paginate-links" class="mtl-paginate-links">'.
 	paginate_links( array(
 		'base' => str_replace( $big, '%#%', get_pagenum_link( $big ) ),
 		'format' => '?paged=%#%',

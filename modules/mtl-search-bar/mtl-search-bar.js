@@ -11,6 +11,8 @@ window.addEventListener('load', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+	loadDataScripts();
+
 	// Redirect old links
 	if (window.location.hash.includes('#!')) {
 		const new_query = window.location.hash.replace('#!','');
@@ -42,13 +44,17 @@ function load_new_data(link) {
 	request.responseType = "document";
 
 	request.addEventListener('load', () => {
-		try {
-			handle_new_data(request.responseXML);
-		} catch (e) {
-			console.log(e);
-		}
+		const to_replace = document.querySelectorAll('[data-mtl-replace-with]');
+
+		to_replace.forEach((elem) => {
+			elem.replaceWith(request.responseXML.querySelector(elem.dataset.mtlReplaceWith));
+		});
+
+		loadDataScripts();
 
 		set_button_behaviour();
+
+		window.dispatchEvent(new Event('reload'));
 
 		document.querySelectorAll('.mtl-list-loader').forEach((elem) => {
 			elem.style.display = 'none';
@@ -100,4 +106,17 @@ function submit_new_filter() {
 		history.pushState({},"",actionUrl.toString());
 		window.dispatchEvent(new Event('querychange'));
 	}
+}
+
+function loadDataScripts() {
+	document.querySelectorAll('[data-mtl-data-script]').forEach((elem) => {
+		if (!(elem instanceof HTMLScriptElement) || elem.type != "application/json")
+			return;
+
+		const data = JSON.parse(elem.innerText);
+
+		for (let key in data) {
+			globalThis[key] = data[key];
+		}
+	});
 }

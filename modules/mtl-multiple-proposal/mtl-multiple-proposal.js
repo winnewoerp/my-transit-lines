@@ -1,21 +1,6 @@
 /* My Transit Line posttiles list */
 
-function handle_new_data(new_document) {
-	const content_pagination = '.mtl-paginate-links';
-	const content_map = 'mtl-multiple-proposal-data-script';
-
-	const old_pagination = document.querySelectorAll(content_pagination);
-
-	const new_pagination = new_document.querySelectorAll(content_pagination);
-	const new_map = new_document.getElementById(content_map);
-
-	old_pagination.forEach((elem, index) => {
-		elem.replaceWith(new_pagination.item(index));
-	});
-	eval?.(new_map.innerText); // Evaluates eval indirectly in the global scope to update js vars from fetched data. TODO replace with retrieval of JSON only
-
-	loadNewFeatures();
-}
+window.addEventListener('reload', loadNewFeatures);
 
 const container = document.getElementById('popup');
 const contentLink = document.getElementById('popup-content-link');

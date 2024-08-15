@@ -38,7 +38,7 @@ function mtl_tile_list_output($atts) {
 	$output .= mtl_search_bar_output($the_query);
 		
 	// start the tile list
-	$output .= '<div id="mtl-posttiles-list" class="mtl-posttiles-list">';
+	$output .= '<div data-mtl-replace-with="#mtl-posttiles-list" id="mtl-posttiles-list" class="mtl-posttiles-list">';
 
 	// Add the list-loader notification
 	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
@@ -59,9 +59,9 @@ function mtl_tile_list_output($atts) {
 
 	if($type == 'mtlproposal' && $mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
 
-	$catList = '<script type="text/javascript"> var catList = {';
-	$vectorDataList = '<script type="text/javascript"> var vectorDataList = {';
-	$vectorFeaturesList = '<script type="text/javascript"> var vectorFeaturesList = {';
+	$catList = '';
+	$vectorDataList = '';
+	$vectorFeaturesList = '';
 
 	// loop through the tiles
 	while($the_query->have_posts()) : $the_query->the_post(); global $post;
@@ -76,10 +76,14 @@ function mtl_tile_list_output($atts) {
 		$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';
 		
 		if(!$hidethumbs) {
-			$catList .= '"'.$post->ID.'": '.$catid.','."\r\n";
+			$comma = isset($comma) ? ",\r\n" : "";
+
 			// Removing line breaks that can be caused by WordPress import/export
-			$vectorDataList .= '"'.$post->ID.'": "'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'",'."\r\n";
-			$vectorFeaturesList .= '"'.$post->ID.'": "'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-features',true)).'",'."\r\n";
+			$vectorDataList .= $comma.'"'.$post->ID.'":"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'"';
+			$vectorFeaturesList .= $comma.'"'.$post->ID.'":"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID,'mtl-features',true)).'"';
+
+			$catList .= $comma.'"'.$post->ID.'":'.$catid;
+
 			$output .= mtl_thumblist_map();
 		}
 		$output .= mtl_load_template_part('content', get_post_format());
@@ -92,11 +96,11 @@ function mtl_tile_list_output($atts) {
 	endwhile;
 	wp_reset_postdata();
 
-	$catList .= '}; </script>'."\r\n";
-	$vectorDataList .= '}; </script>'."\r\n";
-	$vectorFeaturesList .= '}; </script>'."\r\n";
-
-	$output .= '<div id="data-scripts">'.$catList.$vectorDataList.$vectorFeaturesList.'</div>';
+	$output .= '<script data-mtl-data-script id="mtl-tile-list-data-script" type="application/json">{'.
+	'"catList":{'.$catList.'},'.
+	'"vectorDataList":{'.$vectorDataList.'},'.
+	'"vectorFeaturesList":{'.$vectorFeaturesList.'}'.
+	'}</script>';
 
 	$output .= '<div class="clear"></div></div>';
 	

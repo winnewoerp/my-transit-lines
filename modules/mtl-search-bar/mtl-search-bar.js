@@ -1,3 +1,9 @@
+document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => {
+	const dest = document.getElementById(e.target.open ? 'mtl-search-submit-open' : 'mtl-search-submit-closed');
+
+	dest.append(...document.querySelectorAll('.mtl-search-submit'));
+});
+
 window.addEventListener('load', () => {
 	document.getElementById('mtl-filter-multiple').addEventListener('change', (e) => {
 		document.querySelectorAll('select.allowsMultiple').forEach((select) => {

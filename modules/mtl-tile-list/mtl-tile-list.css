@@ -33,11 +33,6 @@ form#mtl-filter-form label {
 	margin:0;
 }
 
-#content #mtl-list-filter button {
-	float:right;
-	display:inline-block;
-}
-
 /* paginate links */
 
 #content .mtl-paginate-links {

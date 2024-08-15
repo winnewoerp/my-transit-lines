@@ -28,12 +28,23 @@ function mtl_search_bar_output($query = null) {
 	wp_enqueue_script('mtl-search-bar', get_template_directory_uri().'/modules/mtl-search-bar/mtl-search-bar.js', array(), wp_get_theme()->version);
 
 	// filter start
-	$output .= '<div id="mtl-list-filter"><details id="mtl-filter-details">
-	<summary>' . __('Search options','my-transit-lines') . '</summary>
-	<form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'">
-	<input type="checkbox" id="mtl-filter-multiple">
-	<label for="mtl-filter-multiple">' . __('Select multiple values','my-transit-lines') . '</label><hr>
-	<p class="mtl-filter-section"><strong>'.__('Filter:','my-transit-lines').'</strong> ';
+	$output .= '
+	<div id="mtl-list-filter">
+		<form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'">
+			<details id="mtl-filter-details">
+				<summary>
+					<span id="mtl-search-submit-closed">'.__('Search options','my-transit-lines').'
+						<span class="mtl-search-submit">
+							<strong>'.__('Search:','my-transit-lines').'</strong>
+							<input type="search" name="search" value="'.get_search_term().'">
+						</span>
+						<button class="mtl-search-submit" type="submit">'.__('Filter/sort','my-transit-lines').'</button>
+					</span>
+				</summary>
+				<input type="checkbox" id="mtl-filter-multiple">
+				<label for="mtl-filter-multiple">' . __('Select multiple values','my-transit-lines') . '</label><hr>
+				<p class="mtl-filter-section">
+					<strong>'.__('Filter:','my-transit-lines').'</strong>';
 
 	$output .= multi_selector_output(get_query_cats(), array_map(function($cat) {
 		return [
@@ -62,50 +73,64 @@ function mtl_search_bar_output($query = null) {
 	if(current_user_can('administrator')) {
 		$is_checked = in_array("draft", get_status());
 		$output .= '
-		<input id="mtl-show-drafts" name="show-drafts" value="'.($is_checked ? 'true' : 'false').'" autocomplete="off" type="checkbox" '.($is_checked ? 'checked' : '').' onchange="event.target.value = event.target.checked;">
-		<label for="mtl-show-drafts">'.__('Show drafts', 'my-transit-lines').'</label>';
+					<input id="mtl-show-drafts" name="show-drafts" value="'.($is_checked ? 'true' : 'false').'" autocomplete="off" type="checkbox" '.($is_checked ? 'checked' : '').' onchange="event.target.value = event.target.checked;">
+					<label for="mtl-show-drafts">'.__('Show drafts', 'my-transit-lines').'</label>';
 	}
 	$output .= '</p>';
 
 	$statuses = get_terms(array('taxonomy' => 'sorting-phase-status', 'hide_empty' => false));
 	if (count($statuses) > 1) {
 		// Sorting phase status selector
-		$output .= '<p><strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>';
-		$output .= '<select name="mtl-statusid">'."\r\n";
-		$output .= '<option value="">'.__('All statuses','my-transit-lines').' </option>';
+		$output .= '
+				<p>
+					<strong>'.__('Sorting Phase Status:','my-transit-lines').'</strong>
+					<select name="mtl-statusid">
+						<option value="">'.__('All statuses','my-transit-lines').' </option>';
 		foreach( $statuses as $single_status) {
 			$statusid = $single_status->term_id;
 			$output .= '<option value="'.$statusid.'"'.($statusid === get_query_statusid() ? ' selected="selected"' : '').'>'.$single_status->name.' </option>'."\r\n";
 		}
-		$output .= '</select></p>';
+		$output .= '</select>
+				</p>';
 	}
 
     $order_by = get_orderby();
     $order = get_order();
 
-	$output .= '<p><strong>'.__('Sort:','my-transit-lines').'</strong><select name="orderby">';
-	$output .= '<option'.($order_by=='date' ? ' selected="selected"' : '').' value="date">'.__('Date','my-transit-lines').'</option>';
-	$output .= '<option'.($order_by=='comment_count' ? ' selected="selected"' : '').' value="comment_count">'.__('Number of comments','my-transit-lines').'</option>';
-	$output .= '<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>';
-	$output .= '</select><select name="order"><option'.($order=='DESC' ? ' selected="selected"' : '').' value="DESC">'.__('Descendent','my-transit-lines').'</option><option'.($order == 'ASC' ? ' selected="selected"' : '').' value="ASC">'.__('Ascendent','my-transit-lines').'</option></select>';
+	$output .= '<p>
+					<strong>'.__('Sort:','my-transit-lines').'</strong>
+					<select name="orderby">
+						<option'.($order_by=='date' ? ' selected="selected"' : '').' value="date">'.__('Date','my-transit-lines').'</option>
+						<option'.($order_by=='comment_count' ? ' selected="selected"' : '').' value="comment_count">'.__('Number of comments','my-transit-lines').'</option>
+						<option'.($order_by=='rand' ? ' selected="selected"' : '').' value="rand">'.__('Random','my-transit-lines').'</option>
+					</select>
+					<select name="order">
+						<option'.($order=='DESC' ? ' selected="selected"' : '').' value="DESC">'.__('Descendent','my-transit-lines').'</option>
+						<option'.($order == 'ASC' ? ' selected="selected"' : '').' value="ASC">'.__('Ascendent','my-transit-lines').'</option>
+					</select>
+	';
 
     $posts_per_page = get_posts_per_page();
 
 	// Selector for amount of proposals shown
 	$amounts = [25, 50, 100, 250];
-	$output .= '<strong>'.__('Amount:','my-transit-lines').'</strong>';
-	$output .= '<select name="num">';
+	$output .= '	<strong>'.__('Amount:','my-transit-lines').'</strong>';
+	$output .= '	<select name="num">';
 	if (!in_array($posts_per_page, $amounts)) {
-		$output .= '<option selected="selected" value="'.$posts_per_page.'">'.($posts_per_page > -1 ? $posts_per_page : __('all', 'my-transit-lines')).'</option>';
+		$output .= '	<option selected="selected" value="'.$posts_per_page.'">'.($posts_per_page > -1 ? $posts_per_page : __('all', 'my-transit-lines')).'</option>';
 	}
 	foreach ($amounts as $amount) {
-		$output .= '<option '.($posts_per_page == $amount ? ' selected="selected"' : '').' value="'.$amount.'">'.$amount.'</option>';
+		$output .= '	<option '.($posts_per_page == $amount ? ' selected="selected"' : '').' value="'.$amount.'">'.$amount.'</option>';
 	}
-	$output .= ' </select></p>';
+	$output .= '	</select>
+				</p>';
 
-	$output .= '<p><strong>'.__('Search:','my-transit-lines').'</strong><input type="search" name="search" value="'.get_search_term().'">';
-
-	$output .= '<button type="submit">'.__('Filter/sort','my-transit-lines').'</button></p></form></details></div>'."\r\n";
+	$output .= '<p id="mtl-search-submit-open"></p>';
+	
+	$output .= '
+			</details>
+		</form>
+	</div>'."\r\n";
 
 	$output .= get_paginate_links($query->max_num_pages);
 

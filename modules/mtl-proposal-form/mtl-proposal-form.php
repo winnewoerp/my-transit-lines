@@ -203,7 +203,7 @@ function mtl_proposal_form_output( $atts ){
 				$mtl_features = $_POST['mtl-features'];
 			}
 
-			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($post->ID).']</script>'."\r\n";
+			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($editId).']</script>'."\r\n";
 			$active_categories = get_active_categories();
 
 			// get the current category

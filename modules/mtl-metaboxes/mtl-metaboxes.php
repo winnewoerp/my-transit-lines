@@ -51,8 +51,7 @@ function mtl_post_class_meta_box($post) {
 	// get the current category
 	$current_category = get_the_category($post->ID);
 	
-	// load JS stuff (copied from mtl-proposal module)
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($post->ID).']; var editMode = true;</script>';
 	$all_categories = get_active_categories();
 	
 	// save category style data to JS array

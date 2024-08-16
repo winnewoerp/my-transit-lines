@@ -74,3 +74,19 @@ function get_searchable_categories() {
 		return in_array($mtl_options['mtl-cat-use'.$cat->term_id], ['use', 'only-in-search']);
 	});
 }
+
+/**
+ * Returns a JSON string with all the relevant data of the specified proposal
+ * @param int $post_id the id of the proposal
+ * @return string the JSON data
+ */
+function get_proposal_data_json($post_id) {
+	$author = get_the_author_meta('display_name', get_post_field ('post_author', $post_id));
+	$title = get_the_title($post_id);
+	$date = get_the_date('d.m.Y', $post_id);
+	$link = get_permalink($post_id);
+	$catid = get_the_category($post_id)[0]->term_id;
+	$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, 'mtl-features', true));
+
+	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'"}';
+}

@@ -527,9 +527,4 @@ function addSaveEventListeners() {
 	vectorSource.on('addfeature', () => { saveToHTML() });
 	vectorSource.on('changefeature', () => { saveToHTML() });
 	vectorSource.on('removefeature', () => { saveToHTML() });
-
-	for (let i = 0; i < vectorFeatures.length && i < vectorData.length; i++) {
-		if (!vectorFeatures[i] && vectorData[i])
-			saveToHTML();
-	}
 }

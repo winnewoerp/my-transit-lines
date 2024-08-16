@@ -35,8 +35,8 @@ function tilelistStyleFunction(feature) {
 }
 
 // thumb maps
-function createThumbMap(mapNumber) {
-	const currentCat = catList[mapNumber];
+function createThumbMap(proposal) {
+	const currentCat = proposal.category;
 
 	const backgroundTileLayer = new ol.layer.Tile({
 		className: 'background-tilelayer',
@@ -60,15 +60,12 @@ function createThumbMap(mapNumber) {
 	const map = new ol.Map({
 		controls: [],
 		layers: [backgroundTileLayer, vectorLayer],
-		target: 'thumblist-map' + mapNumber,
+		target: 'thumblist-map' + proposal.id,
 		view: view,
 	});
 
 	try {
-		if (vectorFeaturesList[mapNumber])
-			importToMapJSON(vectorFeaturesList[mapNumber], currentCat, 0, vectorSource);
-		else if (vectorDataList[mapNumber])
-			importToMapWKT(vectorDataList[mapNumber], [], currentCat, 0, vectorSource);
+		importToMapJSON(proposal.features, currentCat, 0, vectorSource);
 	} catch (e) {
 		console.log(e);
 	}
@@ -79,7 +76,7 @@ function createThumbMap(mapNumber) {
 }
 
 function createThumbMaps() {
-	for (var key of Object.keys(catList)) {
-		createThumbMap(key);
+	for (let proposal of proposalList) {
+		createThumbMap(proposal);
 	}
 }

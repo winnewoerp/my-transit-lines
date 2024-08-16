@@ -445,13 +445,9 @@ function importAllWKT() {
 
 // Imports all features from vectorFeatures and vectorCategoriesData and handles errors
 function importAllJSON() {
-	for (let i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+	for (let proposal of proposalList) {
 		try {
-			if (vectorFeatures[i])
-				importToMapJSON(vectorFeatures[i], vectorCategoriesData[i], i);
-			else if (i < vectorData.length && vectorData[i]) {
-				importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
-			}
+			importToMapJSON(proposal.features, proposal.category, proposal.id);
 		} catch (e) {
 			console.log(e);
 		}

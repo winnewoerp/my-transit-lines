@@ -30,13 +30,15 @@ selectInteraction.on('select', function (evt) {
 
 	const coordinate = evt.mapBrowserEvent.coordinate;
 
-	const proposalData = vectorProposalData[evt.selected[0].get('proposal_data_index')];
+	const proposal = proposalList.find((elem) => {
+		return elem.id === evt.selected[0].get('proposal_data_index');
+	});
 
 	container.style.display = '';
-	contentLink.href = proposalData.link;
-	contentTitle.textContent = proposalData.title;
-	contentAuthor.textContent = proposalData.author;
-	contentDate.textContent = proposalData.date;
+	contentLink.href = proposal.link;
+	contentTitle.textContent = proposal.title;
+	contentAuthor.textContent = proposal.author;
+	contentDate.textContent = proposal.date;
 
  	overlay.setPosition(coordinate);
 });

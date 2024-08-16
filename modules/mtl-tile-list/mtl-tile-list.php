@@ -49,7 +49,7 @@ function mtl_tile_list_output($atts) {
 	$output .= mtl_localize_script(true);
 	
 	// load the necessary scripts and set some JS variables
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = [""]; var vectorFeatures = [""]; var vectorLabelsData = [""]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
+	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'";</script>'."\r\n";
 	wp_enqueue_script('mtl-tile-list', get_template_directory_uri().'/modules/mtl-tile-list/mtl-tile-list.js', array('my-transit-lines'), wp_get_theme()->version);
 	if(!$hidethumbs) $output .= '<script type="text/javascript"> var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = "'.$mtl_options['mtl-standard-zoom'].'"; </script>'."\r\n";
 	if(!$hidethumbs) {
@@ -59,9 +59,7 @@ function mtl_tile_list_output($atts) {
 
 	if($type == 'mtlproposal' && $mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
 
-	$catList = '';
-	$vectorDataList = '';
-	$vectorFeaturesList = '';
+	$proposalDataList = '';
 
 	// loop through the tiles
 	while($the_query->have_posts()) : $the_query->the_post(); global $post;
@@ -78,29 +76,18 @@ function mtl_tile_list_output($atts) {
 		if(!$hidethumbs) {
 			$comma = isset($comma) ? ",\r\n" : "";
 
-			// Removing line breaks that can be caused by WordPress import/export
-			$vectorDataList .= $comma.'"'.$post->ID.'":"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'"';
-			$vectorFeaturesList .= $comma.'"'.$post->ID.'":"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID,'mtl-features',true)).'"';
-
-			$catList .= $comma.'"'.$post->ID.'":'.$catid;
+			$proposalDataList .= $comma.get_proposal_data_json($post->ID);
 
 			$output .= mtl_thumblist_map();
 		}
 		$output .= mtl_load_template_part('content', get_post_format());
 
-		if(current_user_can('manage_options') && strlen(get_post_meta($post->ID, 'mtl-editors-hints', true)) > 10)
-			$output .= 'hints text ready';
-		
-		$output .= '</p></div>';
+		$output .= '</div>';
 	}
 	endwhile;
 	wp_reset_postdata();
 
-	$output .= '<script data-mtl-data-script id="mtl-tile-list-data-script" type="application/json">{'.
-	'"catList":{'.$catList.'},'.
-	'"vectorDataList":{'.$vectorDataList.'},'.
-	'"vectorFeaturesList":{'.$vectorFeaturesList.'}'.
-	'}</script>';
+	$output .= '<script data-mtl-data-script id="mtl-tile-list-data-script" type="application/json">{"proposalList":['.$proposalDataList.']}</script>';
 
 	$output .= '<div class="clear"></div></div>';
 	

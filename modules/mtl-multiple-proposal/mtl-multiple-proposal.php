@@ -51,29 +51,16 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= "\r".'<div id="mtl-box">'."\r\n";
 	$output .= get_transport_mode_style_data();
 
-	$vector_data = "";
-	$vector_labels_data = "";
-	$vector_features = "";
-	$vector_categories_data = "";
-	$vector_proposal_data = "";
+	$proposal_data = "";
 
 	while ($the_query->have_posts()) : $the_query->the_post(); global $post;
 
 	$hide_proposal = (bool)(get_post_meta($post->ID, 'author-name', true) && $the_query->query_vars['author']);
 	
 	if(!$hide_proposal) {
-		$category = get_the_category($post->ID);
-		$catid = $category[0]->cat_ID;
-
 		$comma = isset($comma) ? ",\r\n" : "";
 
-		// Removing line breaks that can be caused by WordPress import/export and unused backslashes
-		$vector_data .= $comma.'"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID, 'mtl-feature-data', true)).'"';
-		$vector_labels_data .= $comma.'"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)).'"';
-		$vector_features .= $comma.'"'.str_replace(array("\n", "\r", "\\"), "", get_post_meta($post->ID, 'mtl-features', true)).'"';
-
-		$vector_categories_data .= $comma.'"'.$catid.'"';
-		$vector_proposal_data .= $comma.'{"author": "'.get_the_author_meta( 'display_name' ).'", "title": "'.get_the_title().'", "date": "'.get_the_date( 'd.m.Y' ).'", "link": "'.get_permalink().'"}';
+		$proposal_data .= $comma.get_proposal_data_json($post->ID);
 	}
 
 	endwhile;
@@ -98,12 +85,10 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '</div>'."\r\n";
 
 	// output proposal data
-	$output .= "<script data-mtl-data-script data-mtl-replace-with=\"#mtl-multiple-proposal-data-script\" id=\"mtl-multiple-proposal-data-script\" type=\"application/json\">".
-	"{\"vectorData\":[$vector_data],".
-	"\"vectorLabelsData\":[$vector_labels_data],".
-	"\"vectorFeatures\":[$vector_features],".
-	"\"vectorCategoriesData\":[$vector_categories_data],".
-	"\"vectorProposalData\":[$vector_proposal_data]}</script>\r\n";
+	$output .= '
+	<script data-mtl-data-script data-mtl-replace-with="#mtl-multiple-proposal-data-script" id="mtl-multiple-proposal-data-script" type="application/json">
+		{"proposalList":['.$proposal_data.']}
+	</script>';
 
 	$output .= '<script type="text/javascript"> var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";</script>';
 

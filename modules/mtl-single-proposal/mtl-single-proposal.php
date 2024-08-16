@@ -30,8 +30,8 @@ function mtl_proposal_map($content) {
 	// save category style data to JS array
 	$output .= get_transport_mode_style_data();
 
-	// Removing line breaks that can be caused by WordPress import/export
-	$output .= '<script type="text/javascript"> var editMode = false; var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-data',true)).'"]; var vectorLabelsData = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-feature-labels-data',true)).'"]; var vectorFeatures = ["'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID,'mtl-features',true)).'"]; var vectorCategoriesData = [undefined]; </script>'."\r\n";
+	// Add data for JS scripts
+	$output .= '<script type="text/javascript">var editMode = false; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($post->ID).']</script>';
 	
 	// output the map box
 	$output .= '<div id="mtl-map-box">'."\r\n";

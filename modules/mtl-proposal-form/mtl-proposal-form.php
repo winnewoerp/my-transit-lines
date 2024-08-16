@@ -124,10 +124,8 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
 				update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
 
-				if (get_post_meta($current_post_id, 'mtl-features', true)) {
-					delete_post_meta($current_post_id, 'mtl-feature-data');
-					delete_post_meta($current_post_id, 'mtl-feature-labels-data');
-				}
+				delete_post_meta($current_post_id, 'mtl-feature-data');
+				delete_post_meta($current_post_id, 'mtl-feature-labels-data');
 				
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
@@ -197,12 +195,8 @@ function mtl_proposal_form_output( $atts ){
 			// start mtl editor map
 			$output .= "\r";
 			$output .= '<div id="mtl-box">'."\r\n";
-			$mtl_feature_data = '';
-			$mtl_feature_labels_data = '';
 			$mtl_features = '';
 			if($editId && !$err) {
-				$mtl_feature_data =  get_post_meta($editId,'mtl-feature-data',true);
-				$mtl_feature_labels_data =  get_post_meta($editId,'mtl-feature-labels-data',true);
 				$mtl_features = get_post_meta($editId, 'mtl-features', true);
 			}
 			elseif($err && $_POST['mtl-features']) {

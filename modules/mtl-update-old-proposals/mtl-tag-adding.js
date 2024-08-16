@@ -5,9 +5,6 @@
 const GEO_JSON_FORMAT = new ol.format.GeoJSON({
 	featureClass: ol.render.RenderFeature,
 });
-const WKT_FORMAT = new ol.format.WKT({
-	splitCollection: true,
-});
 const PROJECTION_OPTIONS = {
 	dataProjection: 'EPSG:4326',
 	featureProjection: 'EPSG:3857',
@@ -110,7 +107,7 @@ function getCountStations(features = feature_data) {
 }
 
 function loadNewTags() {
-	feature_data = data ? WKT_FORMAT.readFeatures(data, PROJECTION_OPTIONS) : [];
+	feature_data = proposal ? GEO_JSON_FORMAT.readFeatures(proposal.features, PROJECTION_OPTIONS) : [];
 	let tags = getStationLocations();
 	$('#tags_input').val(tags);
 

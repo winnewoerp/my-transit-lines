@@ -109,7 +109,9 @@ function submit_new_filter() {
 		paramsObject.set(key, paramsObject.getAll(key).join(','));
 	}
 
-	const params = Array.from(paramsObject.entries()).map(([key, value]) => {
+	const params = Array.from(paramsObject.entries()).filter(([key, value]) => {
+		return value !== "";
+	}).map(([key, value]) => {
 		return key + "=" + value;
 	}).join("&");
 

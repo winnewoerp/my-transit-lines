@@ -7,12 +7,29 @@
 	margin: .5em;
 }
 
+#mtl-filter-details>summary.closed {
+	position: relative;
+	top: .5em;
+}
+
 #mtl-search-submit-closed {
 	display: flex;
 	position: relative;
-	bottom: 1.3em;
 	left: 1em;
 	width: calc(100% - 1em);
 	justify-content: space-between;
 	margin-bottom: -1.3em;
+}
+
+#mtl-search-submit-closed.open {
+	bottom: 1.3em;
+}
+
+#mtl-search-submit-closed.closed {
+	bottom: 1.8em;
+}
+
+.vertical-center {
+	margin-top: auto;
+	margin-bottom: auto;
 }

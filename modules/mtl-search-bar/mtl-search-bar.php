@@ -32,8 +32,9 @@ function mtl_search_bar_output($query = null) {
 	<div id="mtl-list-filter">
 		<form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'">
 			<details id="mtl-filter-details">
-				<summary>
-					<span id="mtl-search-submit-closed">'.__('Search options','my-transit-lines').'
+				<summary data-mtl-toggle-class class="closed">
+					<span data-mtl-toggle-class id="mtl-search-submit-closed" class="closed">
+						<span class="vertical-center">'.__('Search options','my-transit-lines').'</span>
 						<span class="mtl-search-submit">
 							<strong>'.__('Search:','my-transit-lines').'</strong>
 							<input type="search" name="search" value="'.get_search_term().'">

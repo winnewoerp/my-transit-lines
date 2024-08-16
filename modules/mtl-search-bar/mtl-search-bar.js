@@ -2,6 +2,13 @@ document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => 
 	const dest = document.getElementById(e.target.open ? 'mtl-search-submit-open' : 'mtl-search-submit-closed');
 
 	dest.append(...document.querySelectorAll('.mtl-search-submit'));
+
+	const to_replace = e.target.open ? 'closed' : 'open';
+	const replace_with = e.target.open ? 'open' : 'closed';
+
+	document.querySelectorAll('[data-mtl-toggle-class]').forEach((elem) => {
+		elem.classList.replace(to_replace, replace_with);
+	});
 });
 
 window.addEventListener('load', () => {

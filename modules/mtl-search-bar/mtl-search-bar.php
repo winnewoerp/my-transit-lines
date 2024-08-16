@@ -209,6 +209,7 @@ function get_query($type = 'mtlproposal', $per_page_multiple = 1) {
         'category__in' => get_query_cats_children(),
 		'tag__in' => get_query_tags(),
         's' => get_search_term(),
+		'search_columns' => ['post_title'],
         'post_status' => get_status(),
         'orderby' => get_orderby(),
         'order' => get_order(),

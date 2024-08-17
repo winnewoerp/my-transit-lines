@@ -24,7 +24,6 @@ function mtl_tile_list_output($atts) {
 	global $post;
 	$output = '';
 	extract( shortcode_atts( array(
-		'type' => 'mtlproposal',
 		'hidethumbs' => false,
 	), $atts ) );
 	
@@ -33,7 +32,7 @@ function mtl_tile_list_output($atts) {
     // get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 
-	$the_query = get_query($type, 4);
+	$the_query = get_query(4);
 
 	$output .= mtl_search_bar_output($the_query);
 		
@@ -55,20 +54,17 @@ function mtl_tile_list_output($atts) {
 	if(!$hidethumbs) {
 		$output .= get_transport_mode_style_data();
 	}
-	$output .= '<script type="text/javascript"> var pluginsUrl = "'. plugins_url('', __FILE__) .'"; </script>'."\r\n";
 
-	if($type == 'mtlproposal' && $mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
+	if($mtl_options['mtl-addpost-page']) $output .= '<div class="mtl-post-tile add-post"><div class="entry-thumbnail placeholder"></div><h1><a href="'.get_permalink(pll_get_post($mtl_options['mtl-addpost-page'])).'">'.__('Add a new proposal with map and description','my-transit-lines').'</a></h1><div class="entry-meta">'.__('Contribute to the collection!','my-transit-lines').'</div></div>';
 
 	$proposalDataList = '';
 
 	// loop through the tiles
 	while($the_query->have_posts()) : $the_query->the_post(); global $post;
 	
-	$hide_proposal = (bool)(get_post_meta($post->ID, 'author-name', true) && $get_userid);
-	
 	$catid = get_the_category($post->ID)[0]->cat_ID;
 	
-	if(!$hide_proposal && !in_array($mtl_options['mtl-cat-use'.$catid], ['no','only-in-search'])) {
+	if(!in_array($mtl_options['mtl-cat-use'.$catid], ['no','only-in-search'])) {
 		$bgcolor = $mtl_options['mtl-color-cat'.$catid];
 		
 		$output .= '<div class="mtl-post-tile" style="background-color:'.$bgcolor.'" >';

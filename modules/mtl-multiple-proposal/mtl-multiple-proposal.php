@@ -13,7 +13,6 @@
  */
 function mtl_multiple_proposal_output( $atts ) {
 	extract( shortcode_atts( array(
-		'type' => 'mtlproposal',
 		'statusid_query' => 0,
 		'proposal_ids' => '',
 	), $atts ) );
@@ -26,7 +25,7 @@ function mtl_multiple_proposal_output( $atts ) {
 	if ($statusid_query) {
 		$the_query = new WP_Query(array(
 			'posts_per_page' => -1,
-			'post_type' => $type,
+			'post_type' => 'mtlproposal',
 			'tax_query' => array(array(
 				'taxonomy' => 'sorting-phase-status',
 				'terms' => $statusid_query,
@@ -35,11 +34,11 @@ function mtl_multiple_proposal_output( $atts ) {
 	} else if ($proposal_ids) {
 		$the_query = new WP_Query(array(
 			'posts_per_page' => -1,
-			'post_type' => $type,
+			'post_type' => 'mtlproposal',
 			'post__in' => explode(',', $proposal_ids),
 		));
 	} else {
-		$the_query = get_query($type, 1);
+		$the_query = get_query();
 
 		$output .= mtl_search_bar_output($the_query);
 	}
@@ -55,13 +54,9 @@ function mtl_multiple_proposal_output( $atts ) {
 
 	while ($the_query->have_posts()) : $the_query->the_post(); global $post;
 
-	$hide_proposal = (bool)(get_post_meta($post->ID, 'author-name', true) && $the_query->query_vars['author']);
-	
-	if(!$hide_proposal) {
-		$comma = isset($comma) ? ",\r\n" : "";
+	$comma = isset($comma) ? ",\r\n" : "";
 
-		$proposal_data .= $comma.get_proposal_data_json($post->ID);
-	}
+	$proposal_data .= $comma.get_proposal_data_json($post->ID);
 
 	endwhile;
 	wp_reset_postdata();

@@ -193,18 +193,17 @@ function get_paginate_links($max_num_pages) {
 /**
  * Returns the WP_Query determined by the $_GET arguments
  * 
- * @param string which post type will be queried
- * @param int which number the posts per page has to be a multiple of
+ * @param int $per_page_multiple which number the posts per page has to be a multiple of
  *
  * @return WP_Query
  */
-function get_query($type = 'mtlproposal', $per_page_multiple = 1) {
+function get_query($per_page_multiple = 1) {
 
     $posts_per_page = get_posts_per_page();
     
     $query_string = array(
         'posts_per_page' => max(($posts_per_page - (($posts_per_page + 1) % $per_page_multiple)), -1),
-        'post_type' => $type,
+        'post_type' => 'mtlproposal',
         'author__in' => get_query_users(),
         'category__in' => get_query_cats_children(),
 		'tag__in' => get_query_tags(),

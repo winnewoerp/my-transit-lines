@@ -1,3 +1,5 @@
+let current_location = new URL(window.location);
+
 document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => {
 	const dest = document.getElementById(e.target.open ? 'mtl-search-submit-open' : 'mtl-search-submit-closed');
 
@@ -33,10 +35,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		window.location.search = new_query;
 	}
 
-	['querychange','popstate'].forEach((elem) => {
-		window.addEventListener(elem, () => {
-			load_new_data(window.location.toString());
-		});
+	window.addEventListener('querychange', () => {
+		load_new_data();
+		current_location = new URL(window.location);
+	});
+	window.addEventListener('popstate', (e) => {
+		if (e.state && e.state.previous_location)
+			return;
+
+		e.stopImmediatePropagation();
+		window.dispatchEvent(new PopStateEvent('popstate', {state: {previous_location: current_location}}));
+
+		const query = new URLSearchParams(window.location.search);
+		const old_query = new URLSearchParams(current_location.search);
+		const form = document.getElementById('mtl-filter-form');
+
+		current_location = new URL(window.location);
+
+		let same_query = true;
+		for (const key of new FormData(form).keys()) {
+			if (query.get(key) !== old_query.get(key)) {
+				same_query = false;
+				break;
+			}
+		}
+
+		if (!same_query)
+			load_new_data();
 	});
 
 	document.getElementById('mtl-filter-form').addEventListener('submit', (e) => {
@@ -47,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	set_button_behaviour();
 });
 
-function load_new_data(link) {
+function load_new_data(link = window.location.toString()) {
 	document.querySelectorAll('.mtl-list-loader').forEach((elem) => {
 		elem.style.display = '';
 	});

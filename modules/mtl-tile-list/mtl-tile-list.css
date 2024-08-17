@@ -86,7 +86,7 @@ form#mtl-filter-form label {
 #content .mtl-list-loader {
 	width:100%;
 	background:rgba(255,255,255,.8);
-	padding:50px 10px;
+	padding:50px 0px;
 	text-align:center;
 	z-index:1;
 	position:absolute;
@@ -163,7 +163,7 @@ form#mtl-filter-form label {
 	position:relative;
 }
 
-#content .mtl-post-tile .entry-meta,
+#content .mtl-post-tile :not(footer)>.entry-meta,
 #content .mtl-post-tile .entry-footer {
 	font-size:80%;
 	white-space:nowrap;
@@ -216,5 +216,4 @@ form#mtl-filter-form label {
 
 #content div.mtl-post-tile .background-tilelayer {
 	opacity:.2 !important;
-	filter:none;
 }

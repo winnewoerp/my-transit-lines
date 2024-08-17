@@ -88,7 +88,7 @@ var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;
 var standardZoom = standardZoom || 2;
 
-var showLabels = true;
+var showLabels = typeof showLabels === "undefined" ? true : showLabels;
 var lowOpacity = true;
 var mapColor = true;
 var fullscreen = false;

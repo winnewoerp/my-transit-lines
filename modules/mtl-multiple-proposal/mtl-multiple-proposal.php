@@ -85,7 +85,7 @@ function mtl_multiple_proposal_output( $atts ) {
 		{"proposalList":['.$proposal_data.']}
 	</script>';
 
-	$output .= '<script type="text/javascript"> var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";</script>';
+	$output .= '<script type="text/javascript"> var showLabels = false; var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";</script>';
 
 	// output relevant scripts
 	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
@@ -96,10 +96,8 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
 	$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
 	$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
-	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
+	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '</div>'."\r\n";
-
-	$output .= '<script type="text/javascript"> $(document).ready(function(){ document.getElementById("mtl-toggle-labels-link").checked = false; toggleLabels();});</script>'."\r\n";
 
 	if (!$statusid_query)
 		$output .= '<p class="alignleft"><a data-mtl-search-link href="' . get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])) . '">'.__('Proposal list page','my-transit-lines').'</a></p>';

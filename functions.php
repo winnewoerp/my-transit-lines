@@ -32,6 +32,7 @@ include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php');
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
 include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
 include( get_template_directory() . '/modules/mtl-show-metadata/mtl-show-metadata.php'); // metadata box for proposals
+include( get_template_directory() . '/modules/mtl-proposal-list/mtl-proposal-list.php'); // proposal list with multiple tabs
 
 /**
  * Set the content width based on the theme's design and stylesheet.

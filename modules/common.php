@@ -90,3 +90,22 @@ function get_proposal_data_json($post_id) {
 
 	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'"}';
 }
+
+/**
+ * Returns a JSON list string with all the relevant data of all proposals within the query
+ * @param WP_Query $the_query
+ * @return string the JSON list
+ */
+function get_all_proposal_data_json($the_query) {
+	$proposalData = '';
+
+	while($the_query->have_posts()) : $the_query->the_post(); global $post;
+		$comma = isset($comma) ? ",\r\n" : "";
+
+		$proposalData .= $comma.get_proposal_data_json($post->ID);
+	endwhile;
+	wp_reset_postdata();
+	$the_query->rewind_posts();
+
+	return "[$proposalData]";
+}

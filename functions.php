@@ -468,7 +468,7 @@ function mtl_tiles_empty_content($content) {
 	if(get_post_type($post->ID)=='mtlproposal' && !is_single()) return "";
 	else return $content;
 }
-add_action('the_content','mtl_tiles_empty_content');
+add_filter('the_content','mtl_tiles_empty_content', 9);
 
 // current page url
 function curPageURL() {

@@ -12,6 +12,9 @@
  * map and meta data for single proposal
  */
 function mtl_proposal_map($content) {
+	if ($content === "")
+		return "";
+
 	if (!(get_post_type() == 'mtlproposal'))
 		return $content;
 	

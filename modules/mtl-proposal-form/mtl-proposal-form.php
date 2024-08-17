@@ -258,7 +258,6 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '</span><span class="transport-mode-select-inactive">'.__('Please select another tool<br /> to change the transport mode','my-transit-lines').'</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";
-				$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 				$output .= '<div id="mtl-map-box">'."\r\n";
 				$output .= '<div id="mtl-map"></div>'."\r\n";
 				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-lines').'</span></div>'."\r\n";

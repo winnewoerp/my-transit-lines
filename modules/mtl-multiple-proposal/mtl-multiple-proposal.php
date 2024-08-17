@@ -88,8 +88,6 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '<script type="text/javascript"> var showLabels = false; var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";</script>';
 
 	// output relevant scripts
-	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
-	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-multiple-proposal/mtl-multiple-proposal.css">'."\r\n";
 	wp_enqueue_script('mtl-multiple-proposal', get_template_directory_uri() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.js', array('my-transit-lines'), wp_get_theme()->version, true);
 
 	// output opacity change button, map fullscreen link and toggle label checkbox

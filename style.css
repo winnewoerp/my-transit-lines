@@ -29,3 +29,5 @@ My Transit Lines is based on Underscores http://underscores.me/, (C) 2012-2014 A
 @import url('modules/mtl-tile-list/mtl-tile-list.css');
 @import url('modules/mtl-show-metadata/mtl-show-metadata.css');
 @import url('modules/mtl-search-bar/mtl-search-bar.css');
+@import url('modules/mtl-multiple-proposal/mtl-multiple-proposal.css');
+@import url('openlayers/ol.css');

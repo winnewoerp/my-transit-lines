@@ -27,7 +27,6 @@ function mtl_proposal_map($content) {
 	$mtl_options3 = get_option('mtl-option-name3');
 	
 	// load relevant scripts and set some JS variables
-	$output .= "\r".'<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 	$output .= '<div id="mtl-box">'."\r\n";
 
 	// save category style data to JS array

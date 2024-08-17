@@ -1,0 +1,3 @@
+[list.svg](list.svg), [map.svg](map.svg) and [tiles.svg](tiles.svg) are taken from [Flaticon](https://www.flaticon.com/uicons)
+
+[addSnapping.png](addSnapping.png), [deleteFeatures.png](deleteFeatures.png), [drawCircle.png](drawCircle.png), [drawLineString.png](drawLineString.png), [drawPoint.png](drawPoint.png), [drawPolygon.png](drawPolygon.png), [modifyFeature.png](modifyFeature.png), [navigation.png](navigation.png), [removeSnapping](removeSnapping.png) and [selectFeatureAddName.png](selectFeatureAddName.png) are taken or adapted from [Silk Icons](https://github.com/legacy-icons/famfamfam-silk/)

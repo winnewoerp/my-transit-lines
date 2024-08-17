@@ -13,9 +13,10 @@
  * If null or nothing is passed the query from get_query() is used
  *
  * @param WP_Query $query
+ * @param string $additional_html This will be included as-is in the form. Can be used to add more input fields
  * @return string
  */
-function mtl_search_bar_output($query = null) {
+function mtl_search_bar_output($query = null, $additional_html = '') {
     if ($query == null) {
         $query = get_query();
     }
@@ -41,8 +42,9 @@ function mtl_search_bar_output($query = null) {
 						</span>
 						<button class="mtl-search-submit" type="submit">'.__('Filter/sort','my-transit-lines').'</button>
 					</span>
-				</summary>
-				<input type="checkbox" id="mtl-filter-multiple">
+				</summary>'.
+				$additional_html.
+				'<input type="checkbox" id="mtl-filter-multiple">
 				<label for="mtl-filter-multiple">' . __('Select multiple values','my-transit-lines') . '</label><hr>
 				<p class="mtl-filter-section">
 					<strong>'.__('Filter:','my-transit-lines').'</strong>';

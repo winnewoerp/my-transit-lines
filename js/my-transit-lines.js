@@ -528,7 +528,7 @@ function exportToJSON() {
 function zoomToFeatures(immediately = false, padding = true, source = vectorSource, viewObject = view) {
 	if (source.getFeatures().length > 0) {
 		viewObject.fit(source.getExtent(), {
-			padding: padding ? ZOOM_PADDING : [0, 0, 0, 0],
+			padding: padding ? ZOOM_PADDING : [5, 5, 5, 5],
 			duration: immediately ? 0 : ZOOM_ANIMATION_DURATION,
 		});
 	}

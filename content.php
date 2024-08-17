@@ -26,7 +26,7 @@ if($post->post_status=='draft' && $post->post_author == get_current_user_id()) $
 
 		<?php if ( 'post' == get_post_type() || 'mtlproposal' == get_post_type()) : ?>
 		<div class="entry-meta">
-			<?php mtl_posted_on_list(); ?>
+			<?php mtl_posted_on_list(false); ?>
 		</div><!-- .entry-meta -->
 		<?php endif; ?>
 		<?php if ( has_post_thumbnail() && ! post_password_required() ) : ?>

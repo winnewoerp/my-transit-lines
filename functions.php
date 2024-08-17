@@ -367,17 +367,25 @@ function get_site_locale() {
 /**
  * custom post meta display for not-single content view
  */
-function mtl_posted_on_list() {
+function mtl_posted_on_list($getVar) {
 	global $post;
+
 	$time_string = get_the_date( 'd.m.Y' );
 	unset($author);
+
 	if(get_post_meta($post->ID,'author-name',true)) $author = get_post_meta($post->ID,'author-name',true);
 	else $author = esc_html( get_the_author() );
-	printf( __( '<span class="posted-on">%1$s</span>, <span class="byline"> by %2$s</span>', 'my-transit-lines' ),
+	
+	$output = sprintf( __( '<span class="posted-on">%1$s</span>, <span class="byline"> by %2$s</span>', 'my-transit-lines' ),
 		$time_string, 
 		$author
-		
 	);
+
+	if ($getVar) {
+		return $output;
+	} else {
+		echo $output;
+	}
 }
 
 /**

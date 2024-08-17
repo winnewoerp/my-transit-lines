@@ -28,23 +28,28 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 
 	wp_enqueue_script('mtl-search-bar', get_template_directory_uri().'/modules/mtl-search-bar/mtl-search-bar.js', array(), wp_get_theme()->version);
 
+	$open_class = get_search_bar_open() ? "open" : "closed";
+	$open_details = get_search_bar_open() ? "open" : "";
+
 	// filter start
 	$output .= '
 	<div id="mtl-list-filter">
 		<form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'">
-			<details id="mtl-filter-details">
-				<summary data-mtl-toggle-class class="closed">
-					<span data-mtl-toggle-class id="mtl-search-submit-closed" class="closed">
-						<span class="vertical-center">'.__('Search options','my-transit-lines').'</span>
-						<span class="mtl-search-submit">
+			<details data-mtl-replace-with="#mtl-filter-details" id="mtl-filter-details" '.$open_details.'>
+				<summary data-mtl-toggle-class class="'.$open_class.'">
+					<span data-mtl-toggle-class id="mtl-search-submit-closed" class="'.$open_class.'">
+						<span class="vertical-center">'.__('Search options','my-transit-lines').'</span>'.
+						(get_search_bar_open() ? '' :
+						'<span class="mtl-search-submit">
 							<strong>'.__('Search:','my-transit-lines').'</strong>
 							<input type="search" name="search" value="'.get_search_term().'">
 						</span>
-						<button class="mtl-search-submit" type="submit">'.__('Filter/sort','my-transit-lines').'</button>
-					</span>
+						<button class="mtl-search-submit" type="submit">'.__('Filter/sort','my-transit-lines').'</button>').
+					'</span>
 				</summary>'.
 				$additional_html.
-				'<input type="checkbox" id="mtl-filter-multiple">
+				'<input type="hidden" name="mtl-search-bar-open" id="mtl-search-bar-open" value="'.$open_details.'">
+				<input type="checkbox" id="mtl-filter-multiple">
 				<label for="mtl-filter-multiple">' . __('Select multiple values','my-transit-lines') . '</label><hr>
 				<p class="mtl-filter-section">
 					<strong>'.__('Filter:','my-transit-lines').'</strong>';
@@ -128,7 +133,14 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 	$output .= '	</select>
 				</p>';
 
-	$output .= '<p id="mtl-search-submit-open"></p>';
+	$output .= '<p id="mtl-search-submit-open">'.
+					(get_search_bar_open() ?
+					'<span class="mtl-search-submit">
+						<strong>'.__('Search:','my-transit-lines').'</strong>
+						<input type="search" name="search" value="'.get_search_term().'">
+					</span>
+					<button class="mtl-search-submit" type="submit">'.__('Filter/sort','my-transit-lines').'</button>' : '').
+				'</p>';
 	
 	$output .= '
 			</details>
@@ -415,4 +427,16 @@ function get_query_tags() {
 		return explode(",", $_GET['mtl-tag-ids']);
 
 	return [];
+}
+
+/**
+ * Returns whether the search bar is open
+ * 
+ * @return bool
+ */
+function get_search_bar_open() {
+	if(!empty($_GET['mtl-search-bar-open']))
+		return $_GET['mtl-search-bar-open'] === "open";
+	
+	return false;
 }

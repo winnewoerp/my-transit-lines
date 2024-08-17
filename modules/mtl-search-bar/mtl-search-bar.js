@@ -1,17 +1,24 @@
 let current_location = new URL(window.location);
 
-document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => {
-	const dest = document.getElementById(e.target.open ? 'mtl-search-submit-open' : 'mtl-search-submit-closed');
-
-	dest.append(...document.querySelectorAll('.mtl-search-submit'));
-
-	const to_replace = e.target.open ? 'closed' : 'open';
-	const replace_with = e.target.open ? 'open' : 'closed';
-
-	document.querySelectorAll('[data-mtl-toggle-class]').forEach((elem) => {
-		elem.classList.replace(to_replace, replace_with);
-	});
+['load', 'reload'].forEach((elem) => {
+	window.addEventListener(elem, addSearchBarOpenListener);
 });
+
+function addSearchBarOpenListener() {
+	document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => {
+		const dest = document.getElementById(e.target.open ? 'mtl-search-submit-open' : 'mtl-search-submit-closed');
+		dest.append(...document.querySelectorAll('.mtl-search-submit'));
+
+		document.getElementById('mtl-search-bar-open').value = e.target.open ? 'open' : '';
+
+		const to_replace = e.target.open ? 'closed' : 'open';
+		const replace_with = e.target.open ? 'open' : 'closed';
+
+		document.querySelectorAll('[data-mtl-toggle-class]').forEach((elem) => {
+			elem.classList.replace(to_replace, replace_with);
+		});
+	});
+}
 
 window.addEventListener('load', () => {
 	document.getElementById('mtl-filter-multiple').addEventListener('change', (e) => {

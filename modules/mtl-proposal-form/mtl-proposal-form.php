@@ -334,7 +334,9 @@ function mtl_proposal_form_output( $atts ){
 			if($err && $_POST['description']) $current_description = $_POST['description'];
 			elseif($editId && !$err) $current_description = get_post($editId)->post_content;
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
-			$output .= mtl_load_wp_editor($current_description,'description',$settings);
+			$output .= mtl_get_output(function() use ($current_description, $settings) {
+				wp_editor($current_description, 'description', $settings);
+			});
 			
 			$userid = get_current_user_id();
 			$enable_checked = false;

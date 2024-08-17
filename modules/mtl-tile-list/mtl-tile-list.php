@@ -76,7 +76,9 @@ function mtl_tile_list_output($atts) {
 
 			$output .= mtl_thumblist_map();
 		}
-		$output .= mtl_load_template_part('content', get_post_format());
+		$output .= mtl_get_output(function() {
+			get_template_part('content', get_post_format());
+		});
 
 		$output .= '</div>';
 	}

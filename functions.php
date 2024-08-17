@@ -197,25 +197,16 @@ function mtl_session_start() {
 add_action( 'init', 'mtl_session_start' );
 
 /**
- * save contents from get_template_part() to variable - needed e.g. for returning shortcode content.
+ * Uses output buffering to return the echoed output of the function passed as a variable
+ * @param callable $function
+ * @return string
  */
-function mtl_load_template_part($template_name, $part_name=null) {
-    ob_start();
-    get_template_part($template_name, $part_name);
-    $var = ob_get_contents();
-    ob_end_clean();
-    return $var;
-}
-
-/**
- * save contents of wp_editor() to variable - needed e.g. for returning shortcode content.
- */
-function mtl_load_wp_editor($content, $editor_id, $settings) {
-    ob_start();
-    wp_editor($content, $editor_id, $settings);
-    $var = ob_get_contents();
-    ob_end_clean();
-    return $var;
+function mtl_get_output($function) {
+	ob_start();
+	$function();
+	$output = ob_get_contents();
+	ob_end_clean();
+	return $output;
 }
 
 /**

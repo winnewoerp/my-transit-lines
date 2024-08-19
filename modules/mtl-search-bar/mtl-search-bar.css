@@ -1,6 +1,7 @@
 .mtl-filter-section {
 	display: inline-flex;
 	align-items: center;
+	flex-wrap: wrap;
 }
 
 #mtl-filter-form hr {
@@ -13,12 +14,14 @@
 }
 
 #mtl-search-submit-closed {
-	display: flex;
 	position: relative;
 	left: 1em;
 	width: calc(100% - 1em);
-	justify-content: space-between;
 	margin-bottom: -1.3em;
+
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
 }
 
 #mtl-search-submit-closed.open {

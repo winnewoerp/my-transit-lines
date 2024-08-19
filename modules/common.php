@@ -78,9 +78,12 @@ function get_searchable_categories() {
 /**
  * Returns a JSON string with all the relevant data of the specified proposal
  * @param int $post_id the id of the proposal
- * @return string the JSON data
+ * @return string the JSON data or the empty string if the given post_id was invalid
  */
 function get_proposal_data_json($post_id) {
+	if (!is_numeric($post_id) || !get_post_status($post_id))
+		return '';
+
 	$author = get_the_author_meta('display_name', get_post_field ('post_author', $post_id));
 	$title = get_the_title($post_id);
 	$date = get_the_date('d.m.Y', $post_id);

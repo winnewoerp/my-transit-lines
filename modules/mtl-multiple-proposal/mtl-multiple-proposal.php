@@ -13,7 +13,6 @@
  */
 function mtl_multiple_proposal_output( $atts ) {
 	extract( shortcode_atts( array(
-		'type' => 'mtlproposal',
 		'statusid_query' => 0,
 		'proposal_ids' => '',
 	), $atts ) );
@@ -26,7 +25,7 @@ function mtl_multiple_proposal_output( $atts ) {
 	if ($statusid_query) {
 		$the_query = new WP_Query(array(
 			'posts_per_page' => -1,
-			'post_type' => $type,
+			'post_type' => 'mtlproposal',
 			'tax_query' => array(array(
 				'taxonomy' => 'sorting-phase-status',
 				'terms' => $statusid_query,
@@ -35,11 +34,11 @@ function mtl_multiple_proposal_output( $atts ) {
 	} else if ($proposal_ids) {
 		$the_query = new WP_Query(array(
 			'posts_per_page' => -1,
-			'post_type' => $type,
+			'post_type' => 'mtlproposal',
 			'post__in' => explode(',', $proposal_ids),
 		));
 	} else {
-		$the_query = get_query($type, 1);
+		$the_query = get_query();
 
 		$output .= mtl_search_bar_output($the_query);
 	}
@@ -51,37 +50,29 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= "\r".'<div id="mtl-box">'."\r\n";
 	$output .= get_transport_mode_style_data();
 
-	$vector_data = "";
-	$vector_labels_data = "";
-	$vector_features = "";
-	$vector_categories_data = "";
-	$vector_proposal_data = "";
+	$proposal_data = "";
 
 	while ($the_query->have_posts()) : $the_query->the_post(); global $post;
 
-	$hide_proposal = (bool)(get_post_meta($post->ID, 'author-name', true) && $the_query->query_vars['author']);
-	
-	if(!$hide_proposal) {
-		$category = get_the_category($post->ID);
-		$catid = $category[0]->cat_ID;
+	$comma = isset($comma) ? ",\r\n" : "";
 
-		$vector_categories_data .= "\r\n".'"'.$catid.'",';
-		// Removing line breaks that can be caused by WordPress import/export
-		$vector_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-data', true)).'",';
-		$vector_labels_data .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-feature-labels-data', true)).'",';
-		$vector_features .= "\r\n".'"'.str_replace(array("\n", "\r"), "", get_post_meta($post->ID, 'mtl-features', true)).'",';
-		$vector_proposal_data .= '{author: "'.get_the_author_meta( 'display_name' ).'", title: "'.get_the_title().'", date: "'.get_the_date( 'd.m.Y' ).'", link: "'.get_permalink().'"},'."\r\n";
-	}
+	$proposal_data .= $comma.get_proposal_data_json($post->ID);
 
 	endwhile;
 	wp_reset_postdata();
 	
 	// output the map box
 	$output .= '<div id="mtl-map-box">'."\r\n";
+
+	// Add the list-loader notification
+	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
+	$output .= "<div style=\"display:none;\" class=\"mtl-list-loader\">$newProposalText</div>";
+	$output .= "<div style=\"display:none;\" class=\"mtl-list-loader bottom\">$newProposalText</div>";
+
 	$output .= '<div id="mtl-map"></div>'."\r\n";
 	$output .= '</div>';
 
-	$output .= '<div id="popup" class="ol-popup">'."\r\n";
+	$output .= '<div id="popup" class="ol-popup" style="display:none;">'."\r\n";
 	$output .= '<a href="#" id="popup-closer" class="ol-popup-closer"></a>'."\r\n";
 	$output .= '<div id="popup-content" class="ol-popup-content"><a id="popup-content-link" href=""><b id="popup-content-title"></b></a><br>';
 	$output .= '<span>'.__('By', 'my-transit-lines').' <span id="popup-content-author"></span> ';
@@ -89,31 +80,25 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= '</div>'."\r\n";
 
 	// output proposal data
-	$output .= '<script id="mtl-multiple-proposal-data-script" type="text/javascript"> var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";';
-	$output .= 'var vectorData = ['.$vector_data.'];'."\r\n";
-	$output .= 'var vectorLabelsData = ['.$vector_labels_data.'];'."\r\n";
-	$output .= 'var vectorFeatures = ['.$vector_features.'];'."\r\n";
-	$output .= 'var vectorCategoriesData = ['.$vector_categories_data.'];'."\r\n";
-	$output .= 'var vectorProposalData = ['.$vector_proposal_data.']; </script>'."\r\n";
+	$output .= '
+	<script data-mtl-data-script data-mtl-replace-with="#mtl-multiple-proposal-data-script" id="mtl-multiple-proposal-data-script" type="application/json">
+		{"proposalList":['.$proposal_data.']}
+	</script>';
+
+	$output .= '<script type="text/javascript"> var showLabels = false; var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";</script>';
 
 	// output relevant scripts
-	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
-	$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/modules/mtl-multiple-proposal/mtl-multiple-proposal.css">'."\r\n";
 	wp_enqueue_script('mtl-multiple-proposal', get_template_directory_uri() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.js', array('my-transit-lines'), wp_get_theme()->version, true);
-	$output .= '<script type="text/javascript"> var loadingNewProposalsText = "'.__('Loading new set of proposals...','my-transit-lines').'";
-				var multiple_proposal_page_url = "'.get_permalink().'"; </script>'."\r\n";
 
 	// output opacity change button, map fullscreen link and toggle label checkbox
 	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
 	$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
 	$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
-	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
+	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
 	$output .= '</div>'."\r\n";
 
-	$output .= '<script type="text/javascript"> $(document).ready(function(){ document.getElementById("mtl-toggle-labels-link").checked = false; toggleLabels();}); var post_list_url = "'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'"; </script>'."\r\n";
-
 	if (!$statusid_query)
-		$output .= '<p class="alignleft"> <a id="mtl-post-list-link">'.__('Proposal list page','my-transit-lines').'</a> </p>';
+		$output .= '<p class="alignleft"><a data-mtl-search-link href="' . get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])) . '">'.__('Proposal list page','my-transit-lines').'</a></p>';
 
     return $output;
 }

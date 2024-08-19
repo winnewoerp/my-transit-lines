@@ -32,6 +32,7 @@ include( get_template_directory() . '/modules/mtl-flextiles/mtl-flextiles.php');
 include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-geojson.php'); // download geojson functioanlity
 include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
 include( get_template_directory() . '/modules/mtl-show-metadata/mtl-show-metadata.php'); // metadata box for proposals
+include( get_template_directory() . '/modules/mtl-proposal-list/mtl-proposal-list.php'); // proposal list with multiple tabs
 
 /**
  * Set the content width based on the theme's design and stylesheet.
@@ -197,25 +198,16 @@ function mtl_session_start() {
 add_action( 'init', 'mtl_session_start' );
 
 /**
- * save contents from get_template_part() to variable - needed e.g. for returning shortcode content.
+ * Uses output buffering to return the echoed output of the function passed as a variable
+ * @param callable $function
+ * @return string
  */
-function mtl_load_template_part($template_name, $part_name=null) {
-    ob_start();
-    get_template_part($template_name, $part_name);
-    $var = ob_get_contents();
-    ob_end_clean();
-    return $var;
-}
-
-/**
- * save contents of wp_editor() to variable - needed e.g. for returning shortcode content.
- */
-function mtl_load_wp_editor($content, $editor_id, $settings) {
-    ob_start();
-    wp_editor($content, $editor_id, $settings);
-    $var = ob_get_contents();
-    ob_end_clean();
-    return $var;
+function mtl_get_output($function) {
+	ob_start();
+	$function();
+	$output = ob_get_contents();
+	ob_end_clean();
+	return $output;
 }
 
 /**
@@ -367,17 +359,25 @@ function get_site_locale() {
 /**
  * custom post meta display for not-single content view
  */
-function mtl_posted_on_list() {
+function mtl_posted_on_list($getVar) {
 	global $post;
+
 	$time_string = get_the_date( 'd.m.Y' );
 	unset($author);
+
 	if(get_post_meta($post->ID,'author-name',true)) $author = get_post_meta($post->ID,'author-name',true);
 	else $author = esc_html( get_the_author() );
-	printf( __( '<span class="posted-on">%1$s</span>, <span class="byline"> by %2$s</span>', 'my-transit-lines' ),
+	
+	$output = sprintf( __( '<span class="posted-on">%1$s</span>, <span class="byline"> by %2$s</span>', 'my-transit-lines' ),
 		$time_string, 
 		$author
-		
 	);
+
+	if ($getVar) {
+		return $output;
+	} else {
+		echo $output;
+	}
 }
 
 /**
@@ -468,7 +468,7 @@ function mtl_tiles_empty_content($content) {
 	if(get_post_type($post->ID)=='mtlproposal' && !is_single()) return "";
 	else return $content;
 }
-add_action('the_content','mtl_tiles_empty_content');
+add_filter('the_content','mtl_tiles_empty_content', 9);
 
 // current page url
 function curPageURL() {

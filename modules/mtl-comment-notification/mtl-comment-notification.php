@@ -73,4 +73,3 @@ function mtl_notify_postauthor($comment_id, $comment_type='') {
 	return true;
 }
 add_action('comment_post', 'mtl_notify_postauthor');
-?>

@@ -217,13 +217,13 @@ class MtlSettingsPage
 		foreach($all_categories as $single_category) {
 			$catid = $single_category->term_id;
 			$catname = __($single_category->name, 'my-transit-lines');
-			add_settings_field('mtl-use-cat'.$catid, sprintf(__('Use category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-use-cat'.$catid,'type' => 'checkbox','class' => 'category-checkbox','option_name'=>'mtl-option-name'));
-			add_settings_field('mtl-only-in-map-cat'.$catid, sprintf(__('Only use category <strong>%s</strong> when drawing but not as proposal\'s category'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-only-in-map-cat'.$catid,'type' => 'checkbox','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
+			add_settings_field('mtl-cat-use'.$catid, sprintf(__('How to use category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-cat-use'.$catid,'type' => 'select','class' => 'category-select','options'=>array(['use', __('Use everywhere','my-transit-lines')],['only-in-map', __('Use only in map','my-transit-lines')],['only-in-search', __('Use only for searching','my-transit-lines')],['no',__('Don\'t use category','my-transit-lines')]),'option_name'=>'mtl-option-name'));
+
 			add_settings_field('mtl-color-cat'.$catid, sprintf(__('Color for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-color-cat'.$catid,'type' => 'colorpicker','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
 			add_settings_field('mtl-image-cat'.$catid, sprintf(__('Map Icon for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-cat'.$catid,'type' => 'image','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
-			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name','separator' => true));
-			add_settings_field('mtl-costs-cat'.$catid, sprintf(__('Costs per kilometer in million %ss for category <strong>%s</strong>', 'my-transit-lines'),get_option( 'mtl-option-name3' )['mtl-currency-text'],$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-costs-cat'.$catid,'type' => 'number','step' => 'any','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name','seperator' => true));
-			add_settings_field('mtl-allow-others-cat'.$catid, sprintf(__('Allow other categories (comma separated id-list) to be drawn for category <strong>%s</strong>', 'my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-allow-others-cat'.$catid,'type' => 'text','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
+			add_settings_field('mtl-image-selected-cat'.$catid, sprintf(__('Map icon (selected) for category <strong>%s</strong>','my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-image-selected-cat'.$catid,'type' => 'image','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
+			add_settings_field('mtl-costs-cat'.$catid, sprintf(__('Costs per kilometer in million %ss for category <strong>%s</strong>', 'my-transit-lines'),get_option( 'mtl-option-name3' )['mtl-currency-text'],$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-costs-cat'.$catid,'type' => 'number','step' => 'any','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name'));
+			add_settings_field('mtl-allow-others-cat'.$catid, sprintf(__('Allow other categories (comma separated id-list) to be drawn for category <strong>%s</strong>', 'my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-allow-others-cat'.$catid,'type' => 'text','class' => 'category-setting'.$catid,'option_name'=>'mtl-option-name','separator'=>true));
 		}
 		
 		// settings section page IDs
@@ -283,19 +283,20 @@ class MtlSettingsPage
 			if($new_input['mtl-standard-zoom'] < 0) $new_input['mtl-standard-zoom'] = 0;
 			elseif($new_input['mtl-standard-zoom'] > 19) $new_input['mtl-standard-zoom'] = 19;
 		}
+
 		$all_categories = get_categories('show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category');
 		foreach($all_categories as $single_category) {
 			$catid = $single_category->term_id;
-			if( isset( $input['mtl-use-cat'.$catid] ) ) $new_input['mtl-use-cat'.$catid] = $input['mtl-use-cat'.$catid];
-			else $new_input['mtl-use-cat'.$catid] = false;
-			if( isset( $input['mtl-only-in-map-cat'.$catid] ) ) $new_input['mtl-only-in-map-cat'.$catid] = $input['mtl-only-in-map-cat'.$catid];
-			else $new_input['mtl-only-in-map-cat'.$catid] = false;
+
+			$new_input['mtl-cat-use'.$catid] = isset( $input['mtl-cat-use'.$catid] ) ? $input['mtl-cat-use'.$catid] : 'no';
+
 			if( isset( $input['mtl-color-cat'.$catid] ) ) $new_input['mtl-color-cat'.$catid] = $input['mtl-color-cat'.$catid];
 			if( isset( $input['mtl-image-cat'.$catid] ) && $input['mtl-image-cat'.$catid] != 'http://') $new_input['mtl-image-cat'.$catid] = $input['mtl-image-cat'.$catid];
 			if( isset( $input['mtl-image-selected-cat'.$catid] ) && $input['mtl-image-selected-cat'.$catid] != 'http://') $new_input['mtl-image-selected-cat'.$catid] = $input['mtl-image-selected-cat'.$catid];
 			if( isset( $input['mtl-costs-cat'.$catid] ) ) $new_input['mtl-costs-cat'.$catid] = $input['mtl-costs-cat'.$catid];
 			if( isset( $input['mtl-allow-others-cat'.$catid] ) ) $new_input['mtl-allow-others-cat'.$catid] = $input['mtl-allow-others-cat'.$catid];
 		}
+		
 		if( isset( $input['mtl-addpost-page']) ) $new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
 		if( isset( $input['mtl-postlist-page']) ) $new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
 		if( isset( $input['mtl-postmap-page']) ) $new_input['mtl-postmap-page'] = $input['mtl-postmap-page'];
@@ -342,7 +343,7 @@ class MtlSettingsPage
 		if(isset($args['type'])) $type = $args['type'];
 		
 		// separator
-		$separator = '';
+		$separator = false;
 		if(isset($args['separator'])) $separator = $args['separator'];
 		
 		// class
@@ -350,7 +351,7 @@ class MtlSettingsPage
 		if(isset($args['class'])) $class = $args['class'];
 		
 		// options
-		$items = '';
+		$options = [''];
 		if(isset($args['options'])) $options = $args['options'];
 
 		// step size for number input

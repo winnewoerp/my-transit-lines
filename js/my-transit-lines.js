@@ -24,9 +24,6 @@ const MAP_ID = 'mtl-map';
 const GEO_JSON_FORMAT = new ol.format.GeoJSON({
 	featureClass: editMode ? ol.Feature : ol.render.RenderFeature,
 });
-const WKT_FORMAT = new ol.format.WKT({
-	splitCollection: true,
-});
 const PROJECTION_OPTIONS = {
 	dataProjection: 'EPSG:4326',
 	featureProjection: 'EPSG:3857',
@@ -91,7 +88,7 @@ var centerLon = centerLon || 0;
 var centerLat = centerLat || 0;
 var standardZoom = standardZoom || 2;
 
-var showLabels = true;
+var showLabels = typeof showLabels === "undefined" ? true : showLabels;
 var lowOpacity = true;
 var mapColor = true;
 var fullscreen = false;
@@ -430,28 +427,11 @@ function loadNewFeatures() {
 	importAllJSON();
 }
 
-// Imports all features from vectorData, vectorLabelsData and vectorCategoriesData and handles errors
-function importAllWKT() {
-	for (let i = 0; i < vectorData.length && i < vectorCategoriesData.length && i < vectorLabelsData.length && (!multipleMode || i < vectorProposalData.length); i++) {
-		try {
-			importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
-		} catch (e) {
-			console.log(e);
-		}
-	}
-
-	zoomToFeatures(true);
-}
-
 // Imports all features from vectorFeatures and vectorCategoriesData and handles errors
 function importAllJSON() {
-	for (let i = 0; i < vectorFeatures.length && i < vectorCategoriesData.length && (!multipleMode || i < vectorProposalData.length); i++) {
+	for (let proposal of proposalList) {
 		try {
-			if (vectorFeatures[i])
-				importToMapJSON(vectorFeatures[i], vectorCategoriesData[i], i);
-			else if (i < vectorData.length && vectorData[i]) {
-				importToMapWKT(vectorData[i], vectorLabelsData[i].split(','), vectorCategoriesData[i], i);
-			}
+			importToMapJSON(proposal.features, proposal.category, proposal.id);
 		} catch (e) {
 			console.log(e);
 		}
@@ -481,54 +461,6 @@ function importJSONFiles(filePicker) {
 			}
 		}, (value) => alert(value));
 	}
-}
-
-/**
- * Imports source strings to the map using the WKT format
- * Only handles one WKT string at a time
- * @param {string} source vector data
- * @param {string[]} labelsSource labels data
- * @param {string} categorySource category to use
- * @param {int} proposal_data_index relevant for multiple proposal view: which proposal data index to add to the features. Default: 0
- */
-function importToMapWKT(source, labelsSource, categorySource, proposal_data_index = 0, vector = vectorSource) {
-	if (source == '' || source == 'GEOMETRYCOLLECTION()')
-		return;
-
-	let features = WKT_FORMAT.readFeatures(source, PROJECTION_OPTIONS);
-
-	let labelIndex = 0;
-	for (let feature of features) {
-		feature.set('category', categorySource);
-
-		feature.set('name', decodeSpecialChars(labelsSource[labelIndex] || ''));
-		labelIndex++;
-
-		feature.set('proposal_data_index', proposal_data_index);
-	}
-
-	if (editMode && selectedFeatureIndex) {
-		selectedFeatureIndex += features.length;
-	}
-
-	vector.addFeatures(features);
-}
-
-/**
- * Exports features from vectorSource to an array of a wkt string and a labels string (separated by commas)
- * @returns {string[]}
- */
-function exportToWKT() {
-	let features = removeCircles(vectorSource.getFeatures(), false);
-
-	let wkt_string = WKT_FORMAT.writeFeatures(features, PROJECTION_OPTIONS);
-
-	let labelString = '';
-	for (let feature of features) {
-		labelString += encodeSpecialChars(feature.get('name') || "") + ",";
-	}
-
-	return [wkt_string, labelString];
 }
 
 /**
@@ -596,7 +528,7 @@ function exportToJSON() {
 function zoomToFeatures(immediately = false, padding = true, source = vectorSource, viewObject = view) {
 	if (source.getFeatures().length > 0) {
 		viewObject.fit(source.getExtent(), {
-			padding: padding ? ZOOM_PADDING : [0, 0, 0, 0],
+			padding: padding ? ZOOM_PADDING : [5, 5, 5, 5],
 			duration: immediately ? 0 : ZOOM_ANIMATION_DURATION,
 		});
 	}

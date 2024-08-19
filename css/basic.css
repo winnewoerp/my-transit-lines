@@ -85,6 +85,10 @@ a:active {
 	color:var(--primary-color);
 }
 
+a.more-link {
+	text-decoration-line: underline;
+}
+
 big {
 	font-size:120%;
 }
@@ -352,7 +356,7 @@ body.single #content .entry-content {
 
 #content div.nav-previous {
 	float:left;
-	display:inline-block;
+	display:block;
 	padding-right:20px;
 	max-width:45%;
 	min-width:300px;
@@ -360,7 +364,7 @@ body.single #content .entry-content {
 }
 
 #content div.nav-next {
-	display:inline-block;
+	display:block;
 	text-align:right;
 	float:right;
 	padding-left:20px;

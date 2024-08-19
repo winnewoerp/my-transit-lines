@@ -112,7 +112,7 @@ function initMyTransitLinesDashboard() {
  
     });
 
-	document.querySelectorAll('input.category-checkbox').forEach(element => {
+	document.querySelectorAll('select.category-select').forEach(element => {
 		showCatSettings(element);
 		element.addEventListener('change', newElement => {
 			showCatSettings(newElement.target);
@@ -125,8 +125,10 @@ function initMyTransitLinesDashboard() {
  * @param {HTMLElement|Event} element 
  */
 function showCatSettings(element) {
-	element.parentElement.parentElement.parentElement.querySelectorAll('tr.category-setting'+element.name.replaceAll('mtl-option-name[mtl-use-cat', '').replaceAll(']', '')).forEach(newElement => {
-		newElement.style.display = element.checked ? 'table-row' : 'none';
+	const displayValue = ['use','only-in-map'].includes(element.value) ? 'table-row' : 'none';
+
+	element.parentElement.parentElement.parentElement.querySelectorAll('tr.category-setting'+element.name.replaceAll('mtl-option-name[mtl-cat-use', '').replaceAll(']', '')).forEach(newElement => {
+		newElement.style.display = displayValue;
 	});
 }
 

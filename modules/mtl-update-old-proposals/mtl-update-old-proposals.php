@@ -43,7 +43,7 @@ function mtl_tag_adding_output() {
 	$the_query->the_post();
 	global $post;
 
-	$output = '<script id="mtl-data-script" type="text/javascript"> var data = "' . str_replace(array("\r", "\n"), "", get_post_meta($post->ID, 'mtl-feature-data', true)) . '";</script>';
+	$output = '<script id="mtl-data-script" type="text/javascript">var proposal = '.get_proposal_data_json($post->ID).';</script>';
 
 	if (!isset($_POST['no-reload']) || !$_POST['no-reload']) {
 		$output .= '<script id="mtl-source-script" type="text/javascript"> var countrySource = \'' . str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])) . '\';' . "\r\n";
@@ -137,12 +137,10 @@ function mtl_modify_meta_key($post_type, $max_num, $key, $callback = null) {
  */
 function mtl_remove_WKT_output() {
 	if (current_user_can('administrator') && isset($_POST['mtl-id']) && isset($_POST['mtl-features']) && get_post_type($_POST['mtl-id']) == 'mtlproposal' && !get_post_meta($_POST['mtl-id'], 'mtl-features')) {
-
 		update_post_meta($_POST['mtl-id'], 'mtl-features', $_POST['mtl-features']);
 
 		delete_post_meta($_POST['mtl-id'], 'mtl-feature-data');
 		delete_post_meta($_POST['mtl-id'], 'mtl-feature-labels-data');
-
 	}
 
 	$args = array(

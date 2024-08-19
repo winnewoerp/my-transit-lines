@@ -124,10 +124,8 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
 				update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
 
-				if (get_post_meta($current_post_id, 'mtl-features', true)) {
-					delete_post_meta($current_post_id, 'mtl-feature-data');
-					delete_post_meta($current_post_id, 'mtl-feature-labels-data');
-				}
+				delete_post_meta($current_post_id, 'mtl-feature-data');
+				delete_post_meta($current_post_id, 'mtl-feature-labels-data');
 				
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
@@ -197,23 +195,16 @@ function mtl_proposal_form_output( $atts ){
 			// start mtl editor map
 			$output .= "\r";
 			$output .= '<div id="mtl-box">'."\r\n";
-			$mtl_feature_data = '';
-			$mtl_feature_labels_data = '';
 			$mtl_features = '';
 			if($editId && !$err) {
-				$mtl_feature_data =  get_post_meta($editId,'mtl-feature-data',true);
-				$mtl_feature_labels_data =  get_post_meta($editId,'mtl-feature-labels-data',true);
 				$mtl_features = get_post_meta($editId, 'mtl-features', true);
 			}
 			elseif($err && $_POST['mtl-features']) {
 				$mtl_features = $_POST['mtl-features'];
 			}
 
-			$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
-			$active_categories = get_categories(array(
-				"include" => get_active_categories(),
-				"orderby" => "slug",
-			));
+			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($editId).']</script>'."\r\n";
+			$active_categories = get_active_categories();
 
 			// get the current category
 			$current_category = get_the_category($editId);
@@ -251,25 +242,22 @@ function mtl_proposal_form_output( $atts ){
 						$single_catname = __($single_category->name, 'my-transit-lines');
 						$single_catslug = $single_category->slug;
 
-						if (!$mtl_options['mtl-only-in-map-cat'.$single_catid]) {
-							$checked = '';
+						$checked = '';
 
-							if (($err && isset($_POST['cat']) && $single_catid == $_POST['cat']) ||
-								(!$err && $editId && $single_catid == $current_category[0]->term_id) ||
-								(str_contains($single_catslug, 'other') && !$checkedAlready)) {
-									$checked = ' checked="checked"';
-									$checkedAlready = true;
-							}
-
-							$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_catid.'" id="cat-'.$single_catslug.'" /> '.$single_catname.'</label>'."\r\n";
+						if (($err && isset($_POST['cat']) && $single_catid == $_POST['cat']) ||
+							(!$err && $editId && $single_catid == $current_category[0]->term_id) ||
+							(str_contains($single_catslug, 'other') && !$checkedAlready)) {
+								$checked = ' checked="checked"';
+								$checkedAlready = true;
 						}
+
+						$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_catid.'" id="cat-'.$single_catslug.'" /> '.$single_catname.'</label>'."\r\n";
 					}
 				}
 
 				$output .= '</span><span class="transport-mode-select-inactive">'.__('Please select another tool<br /> to change the transport mode','my-transit-lines').'</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";
-				$output .= '<link rel="stylesheet" href="'.get_template_directory_uri().'/openlayers/ol.css">'."\r\n";
 				$output .= '<div id="mtl-map-box">'."\r\n";
 				$output .= '<div id="mtl-map"></div>'."\r\n";
 				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-lines').'</span></div>'."\r\n";
@@ -345,7 +333,9 @@ function mtl_proposal_form_output( $atts ){
 			if($err && $_POST['description']) $current_description = $_POST['description'];
 			elseif($editId && !$err) $current_description = get_post($editId)->post_content;
 			$settings = array( 'media_buttons' => false,  'textarea_name' => 'description','teeny'=>true);
-			$output .= mtl_load_wp_editor($current_description,'description',$settings);
+			$output .= mtl_get_output(function() use ($current_description, $settings) {
+				wp_editor($current_description, 'description', $settings);
+			});
 			
 			$userid = get_current_user_id();
 			$enable_checked = false;

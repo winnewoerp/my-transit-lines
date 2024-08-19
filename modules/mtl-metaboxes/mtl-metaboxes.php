@@ -41,9 +41,7 @@ function mtl_post_class_meta_box($post) {
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 	
-	$mtl_feature_data =  get_post_meta($post->ID,'mtl-feature-data',true);
-	$mtl_feature_labels_data =  get_post_meta($post->ID,'mtl-feature-labels-data',true);
-	$mtl_features =  get_post_meta($post->ID,'mtl-features',true);
+	$mtl_features = get_post_meta($post->ID,'mtl-features',true);
 	
 	$output = '<div id="mtl-box">';
 	$output .= '<p style="clear:both"><label for="mtl-manual-proposal-data"><strong><input type="checkbox" name="mtl-manual-proposal-data" id="mtl-manual-proposal-data" /> '.__('Check this box if you want standard fields like category box or custom field section to overwrite changes within this meta box','my-transit-lines').'</strong></label></p>';
@@ -51,29 +49,26 @@ function mtl_post_class_meta_box($post) {
 	// get the current category
 	$current_category = get_the_category($post->ID);
 	
-	// load JS stuff (copied from mtl-proposal module)
-	$output .= '<script type="text/javascript"> var themeUrl = "'. get_template_directory_uri() .'"; var vectorData = ["'.$mtl_feature_data.'"]; var vectorLabelsData = ["'.$mtl_feature_labels_data.'"]; var vectorFeatures = ["'.$mtl_features.'"]; var vectorCategoriesData = [undefined]; var editMode = true; </script>'."\r\n";
-	$all_categories = get_categories( 'show_option_none=Category&hide_empty=0&tab_index=4&taxonomy=category&orderby=slug' );
+	$output .= '<script type="text/javascript"> var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($post->ID).']; var editMode = true;</script>';
+	$all_categories = get_active_categories();
 	
 	// save category style data to JS array
 	$output .= get_transport_mode_style_data();
 	
 	$output_later = '';
-	foreach($all_categories as $single_category) {
-		if(str_replace('other','',$single_category->slug)!=$single_category->slug) $output_later = 'defaultCategory = "'.$single_category->cat_ID.'";';
+	foreach($all_categories as $cat) {
+		if(str_contains($cat->slug, 'other')) $output_later = "defaultCategory = \"{$cat->cat_ID}\";";
 	}
 
 	$output .= '<p><strong>'.__('If necessary, change transportation mode for this proposal.<br /><span style="font-weight:normal">Please change transport mode here and do not use the default WP category selector.</span>','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
 	
 	// getting all categories for selected as transit mode categories, set the given category option to checked
-	foreach($all_categories as $single_category) {
-		if ($mtl_options['mtl-use-cat'.$single_category->cat_ID] && !$mtl_options['mtl-only-in-map-cat'.$single_category->cat_ID]) {
-			$checked='';
+	foreach($all_categories as $cat) {
+		$catid = $cat->term_id;
 
-			if($single_category->cat_ID == $current_category[0]->term_id) $checked=' checked="checked"';
-			
-			$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" /> '.__($single_category->name, 'my-transit-lines').'</label>'."\r\n";
-		}
+		$checked = $catid == $current_category[0]->term_id ? ' checked' : '';
+		
+		$output .= '<label class="mtl-category"><input'.$checked.' class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$catid.'" id="cat-'.$cat->slug.'" /> '.__($cat->name, 'my-transit-lines').'</label>'."\r\n";
 	}
 	$output .= '</span></span></p>';
 	
@@ -98,8 +93,6 @@ function mtl_post_class_meta_box($post) {
 	$output .= '<script type="text/javascript"> $(\'#post\').submit(function() { warningMessage = \'\'; }); </script>';
 	
 	// hidden input fields to save feature data
-	$output .= '<input type="hidden" id="mtl-feature-data" value="'.$mtl_feature_data.'" name="mtl-feature-data" />'."\r\n";
-	$output .= '<input type="hidden" id="mtl-feature-labels-data" value="'.htmlspecialchars($mtl_feature_labels_data).'" name="mtl-feature-labels-data" />'."\r\n";
 	$output .= '<input type="hidden" id="mtl-features" value="'.$mtl_features.'" name="mtl-features" />'."\r\n";
 	
 	// hidden input field for station count
@@ -129,7 +122,7 @@ function mtl_post_save($post_id) {
 	
 	// saving custom fields
 	if(!isset($_POST['mtl-manual-proposal-data']) || $_POST['mtl-manual-proposal-data'] != 'on') {
-		$save_custom_fields = array('mtl-feature-data','mtl-feature-labels-data','mtl-features','mtl-count-stations','mtl-line-length');
+		$save_custom_fields = array('mtl-features','mtl-count-stations','mtl-line-length');
 		foreach($save_custom_fields as $save_custom_field) if($_POST[$save_custom_field] != get_post_meta($post_id,$save_custom_field,true)) update_post_meta($post_id,$save_custom_field,$_POST[$save_custom_field]);
 		
 		if($_POST['cat']) {

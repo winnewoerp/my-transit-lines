@@ -504,7 +504,7 @@ function getSelectedDrawCategory() {
 }
 
 /**
- * Saves the WKT data of the features array passed into the function to the HTML <input> elements.
+ * Saves the JSON data of the features array passed into the function to the HTML <input> elements.
  * The data is saved to the DB when the user saves the proposal
  * 
  * @param {FeatureLike[]} features the array of features to save
@@ -512,7 +512,7 @@ function getSelectedDrawCategory() {
 function saveToHTML(features = vectorSource.getFeatures()) {
 	warningMessage = objectL10n.confirmLeaveWebsite;
 
-	// write WKT features data to html element (will be saved to database on form submit)
+	// write JSON features data to html element (will be saved to database on form submit)
 	$('#mtl-features').val(exportToJSON());
 	$('#mtl-count-stations').val(getCountStations(features));
 	$('#mtl-line-length').val(getLineLength(features));
@@ -527,9 +527,4 @@ function addSaveEventListeners() {
 	vectorSource.on('addfeature', () => { saveToHTML() });
 	vectorSource.on('changefeature', () => { saveToHTML() });
 	vectorSource.on('removefeature', () => { saveToHTML() });
-
-	for (let i = 0; i < vectorFeatures.length && i < vectorData.length; i++) {
-		if (!vectorFeatures[i] && vectorData[i])
-			saveToHTML();
-	}
 }

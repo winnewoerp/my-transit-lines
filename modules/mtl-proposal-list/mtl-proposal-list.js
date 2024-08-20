@@ -1,16 +1,23 @@
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
 	document.querySelectorAll('button.mtl-tab-selector-option').forEach((elem) => {
-		elem.addEventListener('click', (e) => {
-			e.preventDefault();
-
-			if (!elem.classList.contains('unselected'))
-				return;
-
-			show_tab(elem.id.replace('mtl-tab-selector-',''));
-		});
+		elem.addEventListener('click', tabSwitchListener);
 	});
 });
 
+/**
+ * The event listener for clicks on tab switch buttons
+ * @param {Event} e 
+ */
+function tabSwitchListener(e) {
+	e.preventDefault();
+
+	if (!e.currentTarget.classList.contains('unselected'))
+		return;
+
+	show_tab(e.currentTarget.id.replace('mtl-tab-selector-',''));
+}
+
+let selectedTab = "";
 /**
  * Display the tab with the given id
  * @param {string} id 
@@ -42,6 +49,14 @@ function show_tab(id, update_url = true) {
 	}
 }
 
+function show_all_tabs() {
+	selectedTab = document.querySelector('.mtl-tab:not(.unselected)').id.replace('mtl-tab-','');
+
+	document.querySelectorAll('.mtl-tab-selector-option, .mtl-tab').forEach((elem) => {
+		elem.classList.remove('unselected');
+	});
+}
+
 window.addEventListener('popstate', (e) => {
 	if (!e.state || !e.state.previous_location)
 		return;
@@ -56,19 +71,13 @@ window.addEventListener('popstate', (e) => {
 		show_tab(tab, false);
 });
 
-window.addEventListener('reload', () => {
-	selectedTab = document.querySelector('.mtl-tab:not(.unselected)').id.replace('mtl-tab-', '');
-
-	document.querySelectorAll('.mtl-tab-selector-option, .mtl-tab').forEach((elem) => {
-		elem.classList.remove('unselected');
-	});
+window.addEventListener('load', () => {
+	show_all_tabs();
 
 	map.updateSize();
+	zoomToFeatures(true);
 
-	loadNewFeatures();
-});
-window.addEventListener('map-load', createThumbMaps);
-window.addEventListener('tiles-list-load', () => {
+	createThumbMaps();
 	show_tab(selectedTab, false);
 });
 
@@ -210,6 +219,4 @@ function createThumbMaps() {
 		createThumbMap(proposal, 'tiles-map');
 		createThumbMap(proposal, 'list-map');
 	}
-
-	window.dispatchEvent(new Event('tiles-list-load'));
 }

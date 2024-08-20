@@ -268,7 +268,7 @@ const map = new ol.Map({
 	view: view,
 });
 
-window.addEventListener("load", importAllJSON);
+window.addEventListener('load', loadNewFeatures);
 
 $(document).ready(function(){
 	// Proposal contact form

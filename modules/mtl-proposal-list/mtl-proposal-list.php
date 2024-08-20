@@ -32,13 +32,13 @@ function mtl_proposal_list_output($atts) {
 	// Start the tab switcher
 	$output .= '
 	<div id="mtl-tab-selector" class="mtl-tab-selector">
-		<button id="mtl-tab-selector-tiles" class="mtl-tab-selector-option">
+		<button id="mtl-tab-selector-tiles" class="mtl-tab-selector-option'.($selected_tab == "tiles" ? '' : ' unselected').'">
 			<img src="'.get_template_directory_uri().'/images/tiles.svg" height="40" width="40" alt="'.__('tiles','my-transit-lines').'">
 		</button>
-		<button id="mtl-tab-selector-list" class="mtl-tab-selector-option">
+		<button id="mtl-tab-selector-list" class="mtl-tab-selector-option'.($selected_tab == "list" ? '' : ' unselected').'">
 			<img src="'.get_template_directory_uri().'/images/list.svg" height="40" width="40" alt="'.__('list','my-transit-lines').'">
 		</button>
-		<button id="mtl-tab-selector-map" class="mtl-tab-selector-option">
+		<button id="mtl-tab-selector-map" class="mtl-tab-selector-option'.($selected_tab == "map" ? '' : ' unselected').'">
 			<img src="'.get_template_directory_uri().'/images/map.svg" height="40" width="40" alt="'.__('map','my-transit-lines').'">
 		</button>
 	</div>
@@ -54,7 +54,6 @@ function mtl_proposal_list_output($atts) {
 			var multipleMode = true;
 			var editMode = false;
 			var showLabels = false;
-			var selectedTab = "'.$selected_tab.'";
 		</script>'.
 		get_transport_mode_style_data().
 		mtl_localize_script(true).

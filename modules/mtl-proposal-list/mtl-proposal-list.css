@@ -38,6 +38,7 @@
 	flex-wrap: wrap;
 	flex-direction: column;
 	justify-content: center;
+	overflow-x: auto;
 }
 
 .mtl-postlist-item {
@@ -49,6 +50,7 @@
 	display: flex;
 	background: #cccccc;
 	text-align: left;
+	overflow-y: auto;
 }
 
 .mtl-postlist-item.add-post {
@@ -96,7 +98,7 @@
 .mtl-list-content>.the_content {
 	padding: 5px;
 
-	overflow: scroll;
+	overflow: auto;
 
 	border: 1px solid;
 	border-radius: 10px;

@@ -1,8 +1,6 @@
 /* My Transit Line posttiles list */
 
-['load', 'reload'].forEach((type) => {
-	window.addEventListener(type, createThumbMaps);
-});
+window.addEventListener('load', createThumbMaps);
 
 const ICON_SIZE_TILELIST = 13;
 const STROKE_WIDTH_TILELIST = 3;

@@ -176,7 +176,7 @@ const selectedFeatures = selectInteraction.getFeatures();
 const interactionControl = new InteractionControl();
 map.addControl(interactionControl);
 
-window.addEventListener("load", addSaveEventListeners);
+window.addEventListener('DOMContentLoaded', addSaveEventListeners);
 
 dragBoxInteraction.on('boxend', handleBoxSelect);
 dragBoxInteraction.on('boxstart', function (event) {

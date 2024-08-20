@@ -1,8 +1,6 @@
 let current_location = new URL(window.location);
 
-['load', 'reload'].forEach((elem) => {
-	window.addEventListener(elem, addSearchBarOpenListener);
-});
+window.addEventListener('load', addSearchBarOpenListener);
 
 function addSearchBarOpenListener() {
 	document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => {
@@ -20,13 +18,11 @@ function addSearchBarOpenListener() {
 	});
 }
 
-['load', 'reload'].forEach((elem) => {
-	window.addEventListener(elem, () => {
-		document.getElementById('mtl-filter-multiple').addEventListener('change', (e) => {
-			document.querySelectorAll('select.allowsMultiple').forEach((select) => {
-				select.multiple = e.target.checked || select.selectedOptions.length > 1;
-			})
-		});
+window.addEventListener('load', () => {
+	document.getElementById('mtl-filter-multiple').addEventListener('change', (e) => {
+		document.querySelectorAll('select.allowsMultiple').forEach((select) => {
+			select.multiple = e.target.checked || select.selectedOptions.length > 1;
+		})
 	});
 });
 
@@ -97,7 +93,7 @@ function load_new_data(link = window.location.toString()) {
 
 		set_button_behaviour();
 
-		window.dispatchEvent(new Event('reload'));
+		window.dispatchEvent(new Event('load'));
 
 		document.querySelectorAll('.mtl-list-loader').forEach((elem) => {
 			elem.style.display = 'none';

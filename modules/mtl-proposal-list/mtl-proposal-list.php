@@ -150,11 +150,9 @@ function proposal_tile() {
 						comments_popup_link( __( 'Leave a comment', 'my-transit-lines' ), __( '1 Comment', 'my-transit-lines' ), __( '% Comments', 'my-transit-lines' ) );
 					}).
 					'</strong>
-				</span>
-				<span class="edit-link">
-					<a class="post-edit-link" href="'.get_edit_post_link().'">'.__( 'Edit', 'my-transit-lines' ).'</a>
-				</span>
-			</footer>
+				</span>'.
+				get_edit_post_link_checked(' class="edit-link"').
+			'</footer>
 		</article>
 	</div>';
 }
@@ -227,11 +225,9 @@ function proposal_list_item() {
 					mtl_get_output(function() {
 						comments_popup_link( __( 'Leave a comment', 'my-transit-lines' ), __( '1 Comment', 'my-transit-lines' ), __( '% Comments', 'my-transit-lines' ) );
 					}).
-				'</strong>
-				<span>
-					 - <a class="post-edit-link" href="'.get_edit_post_link().'">'.__( 'Edit', 'my-transit-lines' ).'</a>
-				</span>
-			</footer>
+				'</strong>'.
+				get_edit_post_link_checked("", " - ").
+			'</footer>
 		</div>
 	</article>';
 }
@@ -296,6 +292,21 @@ function map_output() {
 			</div>
 		</div>
 	</div>';
+}
+
+/**
+ * Returns the output link in a <span> container iff the user is an admin
+ */
+function get_edit_post_link_checked($container_attributes = "", $pre_link_text = "") {
+	global $post;
+
+	if (!current_user_can('administrator'))
+		return '';
+
+	return '
+	<span'.$container_attributes.'>
+		'.$pre_link_text.'<a class="post-edit-link" href="'.get_edit_post_link().'">'.__('Edit','my-transit-lines').'</a>
+	</span>';
 }
 
 function get_selected_tab() {

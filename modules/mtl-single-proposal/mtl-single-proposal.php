@@ -262,5 +262,3 @@ function mtl_taglist() {
 	}
 	return $output;
 }
-
-?>

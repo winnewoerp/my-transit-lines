@@ -97,6 +97,7 @@ var showLabels = typeof showLabels === "undefined" ? true : showLabels;
 var lowOpacity = true;
 var mapColor = true;
 var fullscreen = false;
+var showSizes = false;
 
 class OptionsControl extends ol.control.Control {
 	constructor(opt_options) {
@@ -585,6 +586,22 @@ function toggleMapColors() {
 
 	if (mapColor) $('#mtl-map').removeClass('grayscale-map');
 	else $('#mtl-map').addClass('grayscale-map');
+}
+
+// Toggle if the features' sizes are shown or not
+function toggleSizes() {
+	showSizes = !showSizes;
+
+	if (showSizes) {
+		for (var feature of vectorSource.getFeatures()) {
+			feature.set('size', getFeatureSize(feature));
+		}
+	} else {
+		for (var feature of vectorSource.getFeatures()) {
+			if (!selectedFeatures.getArray().includes(feature))
+				feature.unset('size');
+		}
+	}
 }
 
 /*

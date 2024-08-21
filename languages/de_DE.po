@@ -1,28 +1,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-<<<<<<< Updated upstream
-"POT-Creation-Date: 2024-08-17 13:23+0200\n"
-"PO-Revision-Date: 2024-08-17 13:23+0200\n"
-=======
-"POT-Creation-Date: 2024-08-25 00:47+0200\n"
-"PO-Revision-Date: 2024-08-25 00:48+0200\n"
->>>>>>> Stashed changes
-"Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
-"Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.2\n"
-"X-Poedit-Basepath: .\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
-"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
-"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPath-1: ..\n"
 
 #: 404.php:15
 msgid "Oops! That page can&rsquo;t be found."
@@ -235,13 +223,10 @@ msgstr ""
 "opentopomap.org\">OpenTopoMap</a> (<a href=\"https://creativecommons.org/"
 "licenses/by-sa/3.0/\">CC-BY-SA</a>)"
 
-<<<<<<< Updated upstream
-#: functions.php:259
+#: functions.php:259 functions.php:262
 msgid "OpenRailwayMap (standard)"
 msgstr "OpenRailwayMap (Standard)"
 
-#: functions.php:260
-=======
 #: functions.php:260
 msgid "Basemap (Germany)"
 msgstr "Basemap (Deutschland)"
@@ -254,12 +239,7 @@ msgstr ""
 "© GeoBasis-DE / <a href=\"https://www.bkg.bund.de\">BKG</a>, <a "
 "href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
 
-#: functions.php:262
-msgid "OpenRailwayMap (standard)"
-msgstr "OpenRailwayMap (Standard)"
-
 #: functions.php:263
->>>>>>> Stashed changes
 msgid ""
 "OpenRailwayMap Standard overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -269,19 +249,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-<<<<<<< Updated upstream
-#: functions.php:261
-msgid "OpenRailwayMap (maxspeed)"
-msgstr "OpenRailwayMap (Höchstgeschw.)"
-
-#: functions.php:262
-=======
-#: functions.php:264
+#: functions.php:261 functions.php:262 functions.php:264
 msgid "OpenRailwayMap (maxspeed)"
 msgstr "OpenRailwayMap (Höchstgeschw.)"
 
 #: functions.php:265
->>>>>>> Stashed changes
 msgid ""
 "OpenRailwayMap maxspeed overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -291,19 +263,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-<<<<<<< Updated upstream
-#: functions.php:263
-msgid "OpenRailwayMap (signals)"
-msgstr "OpenRailwayMap (Signale)"
-
-#: functions.php:264
-=======
-#: functions.php:266
+#: functions.php:263 functions.php:264 functions.php:266
 msgid "OpenRailwayMap (signals)"
 msgstr "OpenRailwayMap (Signale)"
 
 #: functions.php:267
->>>>>>> Stashed changes
 msgid ""
 "OpenRailwayMap signals overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -313,19 +277,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-<<<<<<< Updated upstream
-#: functions.php:265
-msgid "OpenRailwayMap (electrification)"
-msgstr "OpenRailwayMap (Elektrifizierung)"
-
-#: functions.php:266
-=======
-#: functions.php:268
+#: functions.php:265 functions.php:266 functions.php:268
 msgid "OpenRailwayMap (electrification)"
 msgstr "OpenRailwayMap (Elektrifizierung)"
 
 #: functions.php:269
->>>>>>> Stashed changes
 msgid ""
 "OpenRailwayMap electrification overlay style: <a href=\"http://"
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
@@ -335,19 +291,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-<<<<<<< Updated upstream
-#: functions.php:267
-msgid "OpenRailwayMap (gauge)"
-msgstr "OpenRailwayMap (Spurbreite)"
-
-#: functions.php:268
-=======
-#: functions.php:270
+#: functions.php:267 functions.php:268 functions.php:270
 msgid "OpenRailwayMap (gauge)"
 msgstr "OpenRailwayMap (Spurbreite)"
 
 #: functions.php:271
->>>>>>> Stashed changes
 msgid ""
 "OpenRailwayMap gauge overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -357,19 +305,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-<<<<<<< Updated upstream
-#: functions.php:269
-msgid "Satellite images (ESRI)"
-msgstr "Satellitenbilder (ESRI)"
-
-#: functions.php:270
-=======
-#: functions.php:272
+#: functions.php:269 functions.php:270 functions.php:272
 msgid "Satellite images (ESRI)"
 msgstr "Satellitenbilder (ESRI)"
 
 #: functions.php:273
->>>>>>> Stashed changes
 msgid ""
 "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
 "Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
@@ -378,19 +318,11 @@ msgstr ""
 "GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP und die GIS-Nutzer-"
 "Gemeinschaft"
 
-<<<<<<< Updated upstream
-#: functions.php:271
-msgid "OpenStreetMap standard (Mapnik)"
-msgstr "OpenStreetMap-Standard (Mapnik)"
-
-#: functions.php:272
-=======
-#: functions.php:274
+#: functions.php:271 functions.php:272 functions.php:274
 msgid "OpenStreetMap standard (Mapnik)"
 msgstr "OpenStreetMap-Standard (Mapnik)"
 
 #: functions.php:275
->>>>>>> Stashed changes
 msgid ""
 "Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
 "2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk on "
@@ -400,223 +332,116 @@ msgstr ""
 "2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk auf "
 "Github</a>"
 
-<<<<<<< Updated upstream
-#: functions.php:273
+#: functions.php:273 functions.php:282 functions.php:276
 msgid "Line proposal (vector data)"
 msgstr "Streckenvorschlag (Vektordaten)"
 
-#: functions.php:274
+#: functions.php:274 functions.php:277
 msgid "Build line"
 msgstr "Strecke bauen"
 
-#: functions.php:275
+#: functions.php:275 functions.php:278
 msgid "Build stations"
 msgstr "Haltestellen bauen"
 
-#: functions.php:276
+#: functions.php:276 functions.php:279
 msgid "Edit line/stations"
 msgstr "Strecke/Haltestellen bearbeiten"
 
-#: functions.php:277
+#: functions.php:277 functions.php:280
 msgid "Select line/stations"
 msgstr "Strecke/Haltestelle auswählen"
 
-#: functions.php:278
+#: functions.php:278 functions.php:281
 msgid "Move selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle verschieben"
 
-#: functions.php:279
+#: functions.php:279 functions.php:282
 msgid "Delete selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle löschen"
 
-#: functions.php:280
+#: functions.php:280 functions.php:283
 msgid "Base layers"
 msgstr "Basis-Kartenebenen"
 
-#: functions.php:281
-msgid "Overlays"
-msgstr "Überlagerungen"
-
-#: functions.php:282
-=======
-#: functions.php:276
-msgid "Line proposal (vector data)"
-msgstr "Streckenvorschlag (Vektordaten)"
-
-#: functions.php:277
-msgid "Build line"
-msgstr "Strecke bauen"
-
-#: functions.php:278
-msgid "Build stations"
-msgstr "Haltestellen bauen"
-
-#: functions.php:279
-msgid "Edit line/stations"
-msgstr "Strecke/Haltestellen bearbeiten"
-
-#: functions.php:280
-msgid "Select line/stations"
-msgstr "Strecke/Haltestelle auswählen"
-
-#: functions.php:281
-msgid "Move selected line/stations"
-msgstr "Ausgewählte Strecke/Haltestelle verschieben"
-
-#: functions.php:282
-msgid "Delete selected line/stations"
-msgstr "Ausgewählte Strecke/Haltestelle löschen"
-
-#: functions.php:283
-msgid "Base layers"
-msgstr "Basis-Kartenebenen"
-
-#: functions.php:284
+#: functions.php:281 functions.php:284
 msgid "Overlays"
 msgstr "Überlagerungen"
 
 #: functions.php:285
->>>>>>> Stashed changes
 msgid "Please select another tool on the map to submit your proposal."
 msgstr ""
 "Bitte wähle ein anderes Werkzeug oben rechts auf der Karte, um deinen "
 "Vorschlag absenden zu können."
 
-<<<<<<< Updated upstream
-#: functions.php:283
+#: functions.php:283 functions.php:285 functions.php:286
 msgid "None"
 msgstr "Keine"
 
-#: functions.php:284
-msgid "Snapping"
-msgstr "Snapping"
-
-#: functions.php:285
-=======
-#: functions.php:286
-msgid "None"
-msgstr "Keine"
-
-#: functions.php:287
+#: functions.php:284 functions.php:287
 msgid "Snapping"
 msgstr "Snapping"
 
 #: functions.php:288
->>>>>>> Stashed changes
 msgid "Confirm that you want to leave? All unsaved data will be lost!"
 msgstr ""
 "Willst du die Seite wirklich verlassen? Nicht gespeicherte Daten werden "
 "gelöscht!"
 
-<<<<<<< Updated upstream
-#: functions.php:286
+#: functions.php:286 functions.php:299
+#: modules/mtl-show-metadata/mtl-show-metadata.php:109 functions.php:289
 msgid "Add point"
 msgstr "Station hinzufügen"
 
-#: functions.php:287
+#: functions.php:287 functions.php:290
 msgid "Add line"
 msgstr "Strecke hinzufügen"
 
-#: functions.php:288
+#: functions.php:288 functions.php:291
 msgid "Add polygon"
 msgstr "Fläche hinzufügen"
 
-#: functions.php:289
+#: functions.php:289 functions.php:292
 msgid "Add circle"
 msgstr "Kreis hinzufügen"
 
-#: functions.php:290
+#: functions.php:290 functions.php:293
 msgid "Edit features"
 msgstr "Objekte bearbeiten"
 
-#: functions.php:291
+#: functions.php:291 functions.php:294
 msgid "Select features"
 msgstr "Objekte auswählen"
 
-#: functions.php:292
+#: functions.php:292 functions.php:295
 msgid "Delete selected features"
 msgstr "Ausgewählte Objekte löschen"
 
-#: functions.php:293
+#: functions.php:293 functions.php:296
 msgid "Navigate map"
 msgstr "Navigation"
 
-#: functions.php:294
+#: functions.php:294 functions.php:297
 msgid "Enable snapping"
 msgstr "Snapping einschalten"
 
-#: functions.php:295
+#: functions.php:295 functions.php:298
 msgid "Disable snapping"
 msgstr "Snapping ausschalten"
 
-#: functions.php:296
+#: functions.php:296 functions.php:299
 msgid "Length: "
 msgstr "Länge: "
 
-#: functions.php:297
+#: functions.php:297 functions.php:300
 msgid "Radius: "
 msgstr "Radius: "
 
-#: functions.php:298
-msgid "Area: "
-msgstr "Fläche: "
-
-#: functions.php:299 modules/mtl-show-metadata/mtl-show-metadata.php:109
-=======
-#: functions.php:289
-msgid "Add point"
-msgstr "Station hinzufügen"
-
-#: functions.php:290
-msgid "Add line"
-msgstr "Strecke hinzufügen"
-
-#: functions.php:291
-msgid "Add polygon"
-msgstr "Fläche hinzufügen"
-
-#: functions.php:292
-msgid "Add circle"
-msgstr "Kreis hinzufügen"
-
-#: functions.php:293
-msgid "Edit features"
-msgstr "Objekte bearbeiten"
-
-#: functions.php:294
-msgid "Select features"
-msgstr "Objekte auswählen"
-
-#: functions.php:295
-msgid "Delete selected features"
-msgstr "Ausgewählte Objekte löschen"
-
-#: functions.php:296
-msgid "Navigate map"
-msgstr "Navigation"
-
-#: functions.php:297
-msgid "Enable snapping"
-msgstr "Snapping einschalten"
-
-#: functions.php:298
-msgid "Disable snapping"
-msgstr "Snapping ausschalten"
-
-#: functions.php:299
-msgid "Length: "
-msgstr "Länge: "
-
-#: functions.php:300
-msgid "Radius: "
-msgstr "Radius: "
-
-#: functions.php:301
+#: functions.php:298 functions.php:301
 msgid "Area: "
 msgstr "Fläche: "
 
 #: functions.php:302 modules/mtl-show-metadata/mtl-show-metadata.php:109
->>>>>>> Stashed changes
 #: modules/mtl-show-metadata/mtl-show-metadata.php:112
 #: modules/mtl-show-metadata/mtl-show-metadata.php:115
 #: modules/mtl-show-metadata/mtl-show-metadata.php:121
@@ -627,43 +452,26 @@ msgctxt "decimal separator"
 msgid "."
 msgstr ","
 
-<<<<<<< Updated upstream
-#: functions.php:300
+#: functions.php:300 functions.php:371 functions.php:303
 msgid "Show feature data"
 msgstr "Kartenobjekte anzeigen"
 
 #: functions.php:301 modules/mtl-show-metadata/mtl-show-metadata.php:109
+#: functions.php:304
 msgid "billion"
 msgstr "Milliarden"
 
 #: functions.php:302 modules/mtl-show-metadata/mtl-show-metadata.php:112
+#: functions.php:305
 msgid "million"
 msgstr "Millionen"
 
 #: functions.php:303 modules/mtl-show-metadata/mtl-show-metadata.php:115
-msgid "thousand"
-msgstr "tausend"
-
-#: functions.php:371
-=======
-#: functions.php:303
-msgid "Show feature data"
-msgstr "Kartenobjekte anzeigen"
-
-#: functions.php:304 modules/mtl-show-metadata/mtl-show-metadata.php:109
-msgid "billion"
-msgstr "Milliarden"
-
-#: functions.php:305 modules/mtl-show-metadata/mtl-show-metadata.php:112
-msgid "million"
-msgstr "Millionen"
-
-#: functions.php:306 modules/mtl-show-metadata/mtl-show-metadata.php:115
+#: functions.php:306
 msgid "thousand"
 msgstr "tausend"
 
 #: functions.php:374
->>>>>>> Stashed changes
 #, php-format
 msgid ""
 "<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> by %2$s</span>"
@@ -1181,50 +989,38 @@ msgid "Set new name"
 msgstr "Neuen Namen setzen"
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:80
-<<<<<<< Updated upstream
 #: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:94
 #: modules/mtl-proposal-form/mtl-proposal-form.php:267
 #: modules/mtl-proposal-list/mtl-proposal-list.php:251
 #: modules/mtl-single-proposal/mtl-single-proposal.php:46
-=======
 #: modules/mtl-the-map/mtl-the-map.php:25
->>>>>>> Stashed changes
 msgid "colored map"
 msgstr "farbige Karte"
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:80
-<<<<<<< Updated upstream
 #: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:94
 #: modules/mtl-proposal-form/mtl-proposal-form.php:267
 #: modules/mtl-proposal-list/mtl-proposal-list.php:258
 #: modules/mtl-single-proposal/mtl-single-proposal.php:46
-=======
 #: modules/mtl-the-map/mtl-the-map.php:32
->>>>>>> Stashed changes
 msgid "brightened map"
 msgstr "aufgehellte Karte"
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:81
-<<<<<<< Updated upstream
 #: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:95
 #: modules/mtl-proposal-form/mtl-proposal-form.php:268
 #: modules/mtl-proposal-list/mtl-proposal-list.php:264
 #: modules/mtl-single-proposal/mtl-single-proposal.php:47
-=======
 #: modules/mtl-the-map/mtl-the-map.php:38
->>>>>>> Stashed changes
 msgid "Fit proposition to map"
 msgstr "Vorschlag in die Karte einpassen"
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:82
-<<<<<<< Updated upstream
 #: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:97
 #: modules/mtl-proposal-form/mtl-proposal-form.php:270
 #: modules/mtl-proposal-list/mtl-proposal-list.php:280
 #: modules/mtl-single-proposal/mtl-single-proposal.php:49
-=======
 #: modules/mtl-the-map/mtl-the-map.php:54
->>>>>>> Stashed changes
 msgid "Show labels"
 msgstr "Haltestellennamen anzeigen"
 
@@ -1248,6 +1044,7 @@ msgstr "am"
 #: modules/mtl-proposal-form/mtl-proposal-form.php:269
 #: modules/mtl-proposal-list/mtl-proposal-list.php:270
 #: modules/mtl-single-proposal/mtl-single-proposal.php:48
+#: modules/mtl-the-map/mtl-the-map.php:44
 msgid "Fullscreen view"
 msgstr "Vollbildansicht"
 
@@ -1255,6 +1052,7 @@ msgstr "Vollbildansicht"
 #: modules/mtl-proposal-form/mtl-proposal-form.php:269
 #: modules/mtl-proposal-list/mtl-proposal-list.php:273
 #: modules/mtl-single-proposal/mtl-single-proposal.php:48
+#: modules/mtl-the-map/mtl-the-map.php:47
 msgid "Close fullscreen view"
 msgstr "Vollbildansicht schließen"
 
@@ -1430,11 +1228,8 @@ msgstr ""
 "Hinweise zur Benutzung des jeweiligen Werkzeugs werden unter der Karte "
 "angezeigt."
 
-<<<<<<< Updated upstream
 #: modules/mtl-proposal-form/mtl-proposal-form.php:271
-=======
 #: modules/mtl-proposal-form/mtl-proposal-form.php:266
->>>>>>> Stashed changes
 msgid "Tool usage hints"
 msgstr "Hinweise zum Werkzeug"
 
@@ -1666,7 +1461,7 @@ msgstr "Filtern/sortieren"
 
 #: modules/mtl-search-bar/mtl-search-bar.php:48
 msgid "Select multiple values"
-msgstr "Mehrere Objekte auswählen"
+msgstr "Mehrere Möglichkeiten auswählen"
 
 #: modules/mtl-search-bar/mtl-search-bar.php:50
 msgid "Filter:"
@@ -1750,6 +1545,7 @@ msgid "Costs"
 msgstr "Kosten"
 
 #: modules/mtl-single-proposal/mtl-single-proposal.php:50
+#: modules/mtl-the-map/mtl-the-map.php:60
 msgid "Show feature sizes"
 msgstr "Größe der Kartenobjekte anzeigen"
 
@@ -1950,21 +1746,6 @@ msgstr "Meinen Vorschlag bearbeiten"
 msgid "All administrative subdivisons of this proposal:"
 msgstr "Alle Gebietseinheiten dieses Vorschlags:"
 
-<<<<<<< Updated upstream
-=======
-#: modules/mtl-the-map/mtl-the-map.php:44
-msgid "Fullscreen view"
-msgstr "Vollbildansicht"
-
-#: modules/mtl-the-map/mtl-the-map.php:47
-msgid "Close fullscreen view"
-msgstr "Vollbildansicht schließen"
-
-#: modules/mtl-the-map/mtl-the-map.php:60
-msgid "Show feature sizes"
-msgstr "Größe der Kartenobjekte anzeigen"
-
->>>>>>> Stashed changes
 #: modules/mtl-tile-list/mtl-tile-list.php:94
 msgid "Proposal map page"
 msgstr "Vorschlagskarte"

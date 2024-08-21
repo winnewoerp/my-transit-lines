@@ -61,17 +61,17 @@ function mtl_proposal_list_output($atts) {
 			{"proposalList":'.get_all_proposal_data_json($the_query).'}
 		</script>
 
-		<div id="mtl-tab-tiles" class="mtl-tab">
+		<div id="mtl-tab-tiles" class="mtl-tab'.($selected_tab == "tiles" ? '' : ' unselected').'">
 			<div data-mtl-replace-with="#mtl-posttiles-list" id="mtl-posttiles-list" class="mtl-posttiles-list">'.
 				tiles_output($the_query).
 			'</div>
 		</div>
-		<div id="mtl-tab-list" class="mtl-tab">
+		<div id="mtl-tab-list" class="mtl-tab'.($selected_tab == "list" ? '' : ' unselected').'">
 			<div data-mtl-replace-with="#mtl-postlist" id="mtl-postlist" class="mtl-postlist">'.
 				list_output($the_query).
 			'</div>
 		</div>
-		<div id="mtl-tab-map" class="mtl-tab">'.
+		<div id="mtl-tab-map" class="mtl-tab'.($selected_tab == "map" ? '' : ' unselected').'">'.
 			map_output().
 		'</div>
 	</div>'.

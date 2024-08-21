@@ -1,7 +1,7 @@
 <?php
 /**
  * My Transit Lines
- * Proposal search bar
+ * Proposal metadata display
  *
  * @package My Transit Lines
  */

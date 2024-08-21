@@ -42,35 +42,26 @@ function mtl_multiple_proposal_output( $atts ) {
 
 		$output .= mtl_search_bar_output($the_query);
 	}
-	
+
 	// load the text translations
 	$output .= mtl_localize_script(true);
-
-	// load relevant scripts and set some JS variables
-	$output .= "\r".'<div id="mtl-box">'."\r\n";
 	$output .= get_transport_mode_style_data();
 
-	$proposal_data = "";
+	// output proposal data
+	$output .= '
+	<script data-mtl-data-script data-mtl-replace-with="#mtl-multiple-proposal-data-script" id="mtl-multiple-proposal-data-script" type="application/json">
+		{"proposalList":'.get_all_proposal_data_json($the_query).'}
+	</script>';
 
-	while ($the_query->have_posts()) : $the_query->the_post(); global $post;
+	$output .= '
+	<script type="text/javascript">
+		var showLabels = false;
+		var multipleMode = true;
+		var editMode = false;
+		var themeUrl = "'. get_template_directory_uri() .'";
+	</script>';
 
-	$comma = isset($comma) ? ",\r\n" : "";
-
-	$proposal_data .= $comma.get_proposal_data_json($post->ID);
-
-	endwhile;
-	wp_reset_postdata();
-	
-	// output the map box
-	$output .= '<div id="mtl-map-box">'."\r\n";
-
-	// Add the list-loader notification
-	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
-	$output .= "<div style=\"display:none;\" class=\"mtl-list-loader\">$newProposalText</div>";
-	$output .= "<div style=\"display:none;\" class=\"mtl-list-loader bottom\">$newProposalText</div>";
-
-	$output .= '<div id="mtl-map"></div>'."\r\n";
-	$output .= '</div>';
+	$output .= the_map_output();
 
 	$output .= '<div id="popup" class="ol-popup" style="display:none;">'."\r\n";
 	$output .= '<a href="#" id="popup-closer" class="ol-popup-closer"></a>'."\r\n";
@@ -79,23 +70,8 @@ function mtl_multiple_proposal_output( $atts ) {
 	$output .= __('on', 'my-transit-lines').' <span id="popup-content-date"></span></span></div>'."\r\n";
 	$output .= '</div>'."\r\n";
 
-	// output proposal data
-	$output .= '
-	<script data-mtl-data-script data-mtl-replace-with="#mtl-multiple-proposal-data-script" id="mtl-multiple-proposal-data-script" type="application/json">
-		{"proposalList":['.$proposal_data.']}
-	</script>';
-
-	$output .= '<script type="text/javascript"> var showLabels = false; var multipleMode = true; var editMode = false; var themeUrl = "'. get_template_directory_uri() .'";</script>';
-
 	// output relevant scripts
 	wp_enqueue_script('mtl-multiple-proposal', get_template_directory_uri() . '/modules/mtl-multiple-proposal/mtl-multiple-proposal.js', array('my-transit-lines'), wp_get_theme()->version, true);
-
-	// output opacity change button, map fullscreen link and toggle label checkbox
-	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
-	$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
-	$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
-	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
-	$output .= '</div>'."\r\n";
 
 	if (!$statusid_query)
 		$output .= '<p class="alignleft"><a data-mtl-search-link href="' . get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])) . '">'.__('Proposal list page','my-transit-lines').'</a></p>';
@@ -103,5 +79,3 @@ function mtl_multiple_proposal_output( $atts ) {
     return $output;
 }
 add_shortcode( 'mtl-multiple-proposal', 'mtl_multiple_proposal_output' );
-
-?>

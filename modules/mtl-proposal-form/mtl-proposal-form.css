@@ -83,10 +83,6 @@ div.ol-rotate {
 	display:block;
 }
 
-#mtl-post-form label:not(.alignright) {
-	text-align:left;
-}
-
 #mtl-post-form #map-color-opacity {
 	text-align:left;
 }
@@ -118,14 +114,6 @@ div.error-message-block {
 
 div.success-message-block {
 	background:#eeffee;
-}
-
-#mtl-post-form p.alignleft {
-	text-align:left;
-}
-
-#mtl-post-form p.alignright {
-	text-align:right;
 }
 
 #mtl-post-form p.no-bottom-margin {
@@ -218,10 +206,6 @@ div.success-message-block {
 	border:1px solid #cccccc;
 }
 
-#mtl-box #mtl-map-box {
-	position:relative;
-}
-
 #mtl-box #mtl-map-box.fullscreen {
 	position:fixed;
 	top:0;
@@ -302,7 +286,7 @@ div.success-message-block {
 	display:none;
 }
 
-#mtl-box .feature-textinput-box {
+.feature-textinput-box {
 	position:absolute;
 	top:30px;
 	right:8px;
@@ -315,20 +299,20 @@ div.success-message-block {
 	text-align:left;
 }
 
-#mtl-box .feature-textinput-box * {
+.feature-textinput-box * {
 	font-size:13px;
 }
 
-#mtl-box .feature-textinput-box label {
+.feature-textinput-box label {
 	display:inline;
 }	
 
-#mtl-box .feature-textinput-box input {
+.feature-textinput-box input {
 	min-width:auto;
 	max-width:222px;
 }
 
-#mtl-box .set-name {
+.set-name {
 	display:none;
 	text-decoration:underline;
 	cursor:pointer;
@@ -338,24 +322,9 @@ div.success-message-block {
 	opacity:.2;
 }
 
-#mtl-box input[type="radio"] {
-	border:none !important;
-	background:none !important;
-}
-
 #mtl-category-select {
 	display:block;
 	position:relative;
-}
-
-#mtl-box .transport-mode-select-inactive {
-	display:block;
-	position:absolute;
-	top:0;
-	width:100%;
-	visibility:hidden;
-	height:100%;
-	background:rgba(255,255,255,.9);
 }
 
 #mtl-box .olControlAttribution  {
@@ -365,17 +334,17 @@ div.success-message-block {
 	background:rgba(255,255,255,.7);
 }
 
-#mtl-box .mtl-tool-hint {
+.mtl-tool-hint {
 	display:none;
 }
 
-#mtl-box .mtl-tool-hint.none {
+.mtl-tool-hint.none {
 	display:inline;
 }
 
 /* layer switcher */
 
-#mtl-box  .olControlLayerSwitcher div {
+#mtl-box .olControlLayerSwitcher div {
 	color:white;
 	font-size:95%;
 	font-family:'Open Sans',sans-serif;

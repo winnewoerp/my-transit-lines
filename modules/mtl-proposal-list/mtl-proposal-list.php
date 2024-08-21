@@ -233,63 +233,20 @@ function proposal_list_item() {
 }
 
 function map_output() {
-	return '
-	<div id="mtl-box">
-		<div id="mtl-map-box">
-			<div id="mtl-map"></div>
-		</div>
-		<div class="mtl-map-controls">
-			<p id="map-color-opacity">
-				<span id="mtl-colored-map-box">
-					<label for="mtl-colored-map">
-						<input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()"> '.
-						__('colored map','my-transit-lines').
-					'</label>
-				</span>
-				&nbsp;
-				<span id="mtl-opacity-low-box">
-					<label for="mtl-opacity-low">
-						<input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()"> '.
-						__('brightened map','my-transit-lines').
-					'</label>
-				</span>
-			</p>
-			<p id="zoomtofeatures" class="alignright" style="margin-top:-12px">
-				<a href="javascript:zoomToFeatures()">'.
-					__('Fit proposition to map','my-transit-lines').
-				'</a>
-			</p>
-			<p class="alignright">
-				<a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()">
-					<span class="fullscreen-closed">'.
-						__('Fullscreen view','my-transit-lines').
-					'</span>
-					<span class="fullscreen-open">'.
-						__('Close fullscreen view','my-transit-lines').
-					'</span>
-				</a>
-			</p>
-			<p class="alignright" id="mtl-toggle-labels">
-				<label>
-					<input type="checkbox" id="mtl-toggle-labels-link" onclick="toggleLabels()"> '.
-					__('Show labels','my-transit-lines').
-				'</label>
-			</p>
-		</div>
-		<div id="popup" class="ol-popup" style="display:none;">
-			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
-			<div id="popup-content" class="ol-popup-content">
-				<a id="popup-content-link" href="">
-					<b id="popup-content-title"></b>
-				</a>
-				<br>
-				<span>'.
-					__('By', 'my-transit-lines').
-					' <span id="popup-content-author"></span>'.
-					__('on', 'my-transit-lines').
-					' <span id="popup-content-date"></span>
-				</span>
-			</div>
+	return the_map_output().
+	'<div id="popup" class="ol-popup" style="display:none;">
+		<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+		<div id="popup-content" class="ol-popup-content">
+			<a id="popup-content-link" href="">
+				<b id="popup-content-title"></b>
+			</a>
+			<br>
+			<span>'.
+				__('By', 'my-transit-lines').
+				' <span id="popup-content-author"></span>'.
+				__('on', 'my-transit-lines').
+				' <span id="popup-content-date"></span>
+			</span>
 		</div>
 	</div>';
 }

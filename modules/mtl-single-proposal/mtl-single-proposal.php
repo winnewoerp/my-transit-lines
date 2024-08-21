@@ -19,40 +19,27 @@ function mtl_proposal_map($content) {
 		return $content;
 	
 	global $post;
-	$output = '';
-	$output2 = '';
 	
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 	$mtl_options3 = get_option('mtl-option-name3');
 	
-	// load relevant scripts and set some JS variables
-	$output .= '<div id="mtl-box">'."\r\n";
-
-	// save category style data to JS array
-	$output .= get_transport_mode_style_data();
-
-	// Add data for JS scripts
-	$output .= '<script type="text/javascript">var editMode = false; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($post->ID).']</script>';
-	
-	// output the map box
-	$output .= '<div id="mtl-map-box">'."\r\n";
-	$output .= '<div id="mtl-map"></div>'."\r\n";
-	$output .= '</div>';
-	$output .= mtl_localize_script(true);
 	wp_enqueue_script('mtl-single-proposal', get_template_directory_uri() . '/modules/mtl-single-proposal/mtl-single-proposal.js', array('my-transit-lines'), wp_get_theme()->version, true);
-	
-	// output opacity change button, map fullscreen link and toggle label checkbox
-	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span></p>'."\r\n";
-	$output .= '<p id="zoomtofeatures" class="alignright" style="margin-top:-12px"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></p>';
-	$output .= '<p class="alignright"><a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()"><span class="fullscreen-closed">'.__('Fullscreen view','my-transit-lines').'</span><span class="fullscreen-open">'.__('Close fullscreen view','my-transit-lines').'</span></a></p>'."\r\n";
-	$output .= '<p class="alignright" id="mtl-toggle-labels"><label><input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()" /> '.__('Show labels','my-transit-lines').'</label></p>'."\r\n";
-	$output .= '<p class="alignright" id="mtl-toggle-sizes"><label><input type="checkbox" autocomplete="off" id="mtl-toggle-sizes-link" onclick="toggleSizes()" /> '.__('Show feature sizes','my-transit-lines').'</label></p>'."\r\n";
-	$output .= '</div>'."\r\n";
 
-	// output the meta data
-	$output .= '<h2>'.__('Description of this proposal','my-transit-lines').'</h2>';
-	$output2 .= mtl_show_metadata_output(array(
+	$output = '
+	<script type="text/javascript">
+		var editMode = false;
+		var themeUrl = "'.get_template_directory_uri().'";
+		var proposalList = ['.get_proposal_data_json($post->ID).']
+	</script>'.
+	get_transport_mode_style_data().
+	mtl_localize_script(true).
+	the_map_output().
+	'<h2>'.
+		__('Description of this proposal','my-transit-lines').
+	'</h2>';
+
+	$output2 = mtl_show_metadata_output(array(
 		'id' => $post->ID,
 	));
 	

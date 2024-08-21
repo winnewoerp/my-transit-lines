@@ -129,8 +129,6 @@
 	padding: 10px;
 }
 
-.mtl-map-controls {
-	color: white;
-	accent-color: var(--secondary-color);
-	font-size: 1.2em;
+.mtl-tab .mtl-map-controls {
+	font-weight: bold;
 }

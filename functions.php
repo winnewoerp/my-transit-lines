@@ -256,6 +256,8 @@ function mtl_localize_script($getVar = false) {
 		'attributionOPNV'=>__('Map data <a href="http://www.openstreetmap.org">OpenStreetMap</a> (© OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href="http://memomaps.de/">MeMoMaps</a>)','my-transit-lines'),
 		'titleOpentopomap'=>__('OpenTopoMap','my-transit-lines'),
 		'attributionOpentopomap'=>__('Map data: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Style: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)','my-transit-lines'),
+		'titleBasemap' => __('Basemap (Germany)','my-transit-lines'),
+		'attributionBasemap' => __('© GeoBasis-DE / <a href="https://www.bkg.bund.de">BKG</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>','my-transit-lines'),
 		'titleOpenrailwaymap'=>__('OpenRailwayMap (standard)','my-transit-lines'),
 		'attributionOpenrailwaymap'=>__('OpenRailwayMap Standard overlay style: <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA 2.0</a> <a href="http://www.openrailwaymap.org/">OpenRailwayMap</a>','my-transit-lines'),
 		'titleOpenrailwaymapMaxspeed'=>__('OpenRailwayMap (maxspeed)','my-transit-lines'),

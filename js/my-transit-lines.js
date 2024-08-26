@@ -44,6 +44,11 @@ const OPENTOPOMAP_SOURCE = new ol.source.OSM({
 	maxZoom: MAX_ZOOM_OPENTOPO_MAP,
 	crossOrigin: null,
 }); OPENTOPOMAP_SOURCE.setProperties({ title: objectL10n.titleOpentopomap, id: 'opentopo' });
+const BASEMAP_SOURCE = new ol.source.OSM({
+	url: 'https://sgx.geodatenzentrum.de/wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_farbe/default/GLOBAL_WEBMERCATOR/{z}/{y}/{x}.png',
+	attributions: objectL10n.attributionBasemap,
+	crossOrigin: null,
+}); BASEMAP_SOURCE.setProperties({ title: objectL10n.titleBasemap, id: 'basemap' });
 const ESRI_SOURCE = new ol.source.OSM({
 	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
 	attributions: objectL10n.attributionESRISatellite,
@@ -81,7 +86,7 @@ const OPENRAILWAYMAP_GAUGE_SOURCE = new ol.source.OSM({
 	crossOrigin: null,
 }); OPENRAILWAYMAP_GAUGE_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapGauge, id: 'openrailway-gauge' });
 
-const BACKGROUND_SOURCES = [OSM_SOURCE, OEPNVKARTE_SOURCE, OPENTOPOMAP_SOURCE, ESRI_SOURCE];
+const BACKGROUND_SOURCES = [OSM_SOURCE, OEPNVKARTE_SOURCE, OPENTOPOMAP_SOURCE, BASEMAP_SOURCE, ESRI_SOURCE];
 const OVERLAY_SOURCES = [OPENRAILWAYMAP_STANDARD_SOURCE, OPENRAILWAYMAP_MAX_SPEED_SOURCE, OPENRAILWAYMAP_ELECTRIFICATION_SOURCE, OPENRAILWAYMAP_SIGNALS_SOURCE, OPENRAILWAYMAP_GAUGE_SOURCE];
 
 var centerLon = centerLon || 0;

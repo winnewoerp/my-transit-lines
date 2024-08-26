@@ -146,6 +146,7 @@ function mtl_remove_WKT_output() {
 	$args = array(
 		'post_type' => 'mtlproposal',
 		'posts_per_page' => 1,
+		'post_status' => 'any',
 		'meta_query' => array(
 			'relation' => 'OR',
 			array(

@@ -28,10 +28,10 @@
 	position: relative;
 	margin-bottom: 1em;
 	width: calc(100% + 20px);
+	min-width: fit-content;
 	left: -10px;
 
 	background-color: var(--primary-color);
-	overflow-x: auto;
 }
 
 .mtl-postlist {

@@ -31,9 +31,11 @@ function show_tab(id, update_url = true) {
 	document.getElementById('mtl-tab-selector-' + id).classList.remove('unselected');
 
 	const form = document.getElementById('mtl-filter-form');
-	const actionUrl = new URL(form.action);
-	actionUrl.searchParams.set('mtl-tab', id);
-	form.action = actionUrl.toString();
+	if (form) {
+		const actionUrl = new URL(form.action);
+		actionUrl.searchParams.set('mtl-tab', id);
+		form.action = actionUrl.toString();
+	}
 
 	selectedTab = id;
 

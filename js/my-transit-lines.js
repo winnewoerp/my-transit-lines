@@ -276,6 +276,8 @@ const map = new ol.Map({
 
 window.addEventListener('load', loadNewFeatures);
 
+document.addEventListener('DOMContentLoaded', loadDataScripts);
+
 $(document).ready(function(){
 	// Proposal contact form
 	if($('#proposal-author-contact-form').length) {
@@ -760,4 +762,17 @@ function getUsedCats(features = vectorSource.getFeatures()) {
 			result.push(Number.parseFloat(feature.get('category')));
 	}
 	return result;
+}
+
+function loadDataScripts() {
+	document.querySelectorAll('[data-mtl-data-script]').forEach((elem) => {
+		if (!(elem instanceof HTMLScriptElement) || elem.type != "application/json")
+			return;
+
+		const data = JSON.parse(elem.innerText);
+
+		for (let key in data) {
+			globalThis[key] = data[key];
+		}
+	});
 }

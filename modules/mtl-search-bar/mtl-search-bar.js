@@ -27,8 +27,6 @@ window.addEventListener('load', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-	loadDataScripts();
-
 	// Redirect old links
 	if (window.location.hash.includes('#!')) {
 		const new_query = window.location.hash.replace('#!','');
@@ -147,17 +145,4 @@ function submit_new_filter() {
 		history.pushState({},"",actionUrl.toString());
 		window.dispatchEvent(new Event('querychange'));
 	}
-}
-
-function loadDataScripts() {
-	document.querySelectorAll('[data-mtl-data-script]').forEach((elem) => {
-		if (!(elem instanceof HTMLScriptElement) || elem.type != "application/json")
-			return;
-
-		const data = JSON.parse(elem.innerText);
-
-		for (let key in data) {
-			globalThis[key] = data[key];
-		}
-	});
 }

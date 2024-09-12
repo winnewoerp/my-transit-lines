@@ -199,9 +199,13 @@ form#mtl-filter-form label {
 	line-height:1.2em;
 }
 
+#content #popup-content-draft-flag.draft-flag,
+#content .mtl-postlist-item .draft-flag,
 #content .mtl-post-tile .draft-flag {
 	padding:0 4px;
+
 	background:white;
+	border: 1px solid grey;
 	color:#666666 !important;
 	font-weight:bold;
 }

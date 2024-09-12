@@ -87,11 +87,12 @@ function get_proposal_data_json($post_id) {
 	$author = get_the_author_meta('display_name', get_post_field ('post_author', $post_id));
 	$title = get_the_title($post_id);
 	$date = get_the_date('d.m.Y', $post_id);
-	$link = get_permalink($post_id);
+	$link = get_permalink_or_edit($post_id);
 	$catid = get_the_category($post_id)[0]->term_id;
 	$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, 'mtl-features', true));
+	$status = get_post_status($post_id);
 
-	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'"}';
+	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'","status":"'.$status.'"}';
 }
 
 /**
@@ -111,4 +112,37 @@ function get_all_proposal_data_json($the_query) {
 	$the_query->rewind_posts();
 
 	return "[$proposalData]";
+}
+
+/**
+ * Returns the title of the post with a draft flag added if necessary
+ */
+function get_the_title_draft_flag($post_id = -1) {
+	if ($post_id == -1) {
+		global $post;
+		$post_id = $post->ID;
+	}
+
+	$post_title = get_the_title($post_id);
+
+	if (get_post_status($post_id) == 'draft' && get_post_type($post_id) == 'mtlproposal') {
+		return '<span class="draft-flag">'.esc_html__('Draft','my-transit-lines').'</span> '.$post_title;
+	}
+	return $post_title;
+}
+
+/**
+ * Returns the permalink for the post, or if a user is accessing his draft, an edit link
+ */
+function get_permalink_or_edit($post_id = -1) {
+	if ($post_id == -1) {
+		global $post;
+		$post_id = $post->ID;
+	}
+
+	if (get_post_status($post_id) == 'draft' && get_post_field('post_author', $post_id) == get_current_user_id()) {
+		return get_permalink(pll_get_post(get_option('mtl-option-name')['mtl-addpost-page'])).'?edit_proposal='.$post_id;
+	} else {
+		return get_permalink();
+	}
 }

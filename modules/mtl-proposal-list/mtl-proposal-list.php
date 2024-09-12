@@ -171,7 +171,7 @@ function proposal_tile() {
 			<div class="entry-thumbnail placeholder"></div>
 			<header>
 				<h1 class="entry-title">
-					<a href="'.get_permalink().'" rel="bookmark" title="'.get_the_title().'">'.get_the_title().'</a>
+					<a href="'.get_permalink_or_edit().'" rel="bookmark" title="'.get_the_title().'">'.get_the_title_draft_flag().'</a>
 				</h1>
 			</header>
 			<footer class="entry-footer">
@@ -239,14 +239,14 @@ function proposal_list_item() {
 
 	return '
 	<article class="mtl-postlist-item" style="background-color:'.$color.'">
-		<a href="'.get_permalink().'" title="'.get_the_title().'" rel="bookmark" class="mtl-list-map-link">
+		<a href="'.get_permalink_or_edit().'" title="'.get_the_title().'" rel="bookmark" class="mtl-list-map-link">
 			<div id="list-map'.$post->ID.'" class="mtl-list-map"></div>
 		</a>
 		<div id="list-content"'.$post->ID.'" class="mtl-list-content">
 			<header>
-				<a href="'.get_permalink().'" title="'.get_the_title().'" rel="bookmark" class="mtl-list-content-link"></a>
+				<a href="'.get_permalink_or_edit().'" title="'.get_the_title().'" rel="bookmark" class="mtl-list-content-link"></a>
 				<h1>'.
-					get_the_title().
+					get_the_title_draft_flag().
 				'</h1>
 			</header>
 			<div class="the_content">'.
@@ -272,6 +272,7 @@ function map_output() {
 		<a href="#" id="popup-closer" class="ol-popup-closer"></a>
 		<div id="popup-content" class="ol-popup-content">
 			<a id="popup-content-link" href="">
+			<span id="popup-content-draft-flag" class="draft-flag" style="display:none;">'.esc_html__('Draft','my-transit-lines').'</span>
 				<b id="popup-content-title"></b>
 			</a>
 			<br>

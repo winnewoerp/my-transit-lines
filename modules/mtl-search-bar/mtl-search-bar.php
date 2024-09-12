@@ -147,8 +147,6 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 		</form>
 	</div>'."\r\n";
 
-	$output .= get_paginate_links($query->max_num_pages);
-
     return $output;
 }
 

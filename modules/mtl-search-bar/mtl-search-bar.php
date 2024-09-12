@@ -61,7 +61,7 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 		];
 	}, get_searchable_categories()), 'mtl-catid', __('All transit modes','my-transit-lines'));
 
-	$output .= multi_selector_output($query->query['author__in'], array_map(function($user) {
+	$output .= multi_selector_output(get_query_users(), array_map(function($user) {
 		return [
 			'ID' => $user->ID,
 			'name' => $user->display_name,
@@ -70,7 +70,7 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 
 	// only show tag selector when enabled or for admins
 	if ($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) {
-		$output .= multi_selector_output($query->query['tag__in'], array_map(function($tag) {
+		$output .= multi_selector_output(get_query_tags(), array_map(function($tag) {
 			return [
 				'ID' => $tag->term_id,
 				'name' => $tag->name,

@@ -97,6 +97,7 @@ var showLabels = typeof showLabels === "undefined" ? true : showLabels;
 var lowOpacity = true;
 var mapColor = true;
 var fullscreen = false;
+var showSizes = false;
 
 class OptionsControl extends ol.control.Control {
 	constructor(opt_options) {
@@ -274,6 +275,8 @@ const map = new ol.Map({
 });
 
 window.addEventListener('load', loadNewFeatures);
+
+document.addEventListener('DOMContentLoaded', loadDataScripts);
 
 $(document).ready(function(){
 	// Proposal contact form
@@ -587,6 +590,22 @@ function toggleMapColors() {
 	else $('#mtl-map').addClass('grayscale-map');
 }
 
+// Toggle if the features' sizes are shown or not
+function toggleSizes() {
+	showSizes = !showSizes;
+
+	if (showSizes) {
+		for (var feature of vectorSource.getFeatures()) {
+			feature.set('size', getFeatureSize(feature));
+		}
+	} else {
+		for (var feature of vectorSource.getFeatures()) {
+			if (!selectedFeatures.getArray().includes(feature))
+				feature.unset('size');
+		}
+	}
+}
+
 /*
 * Decodes string to include , " '
 * Doesn't change p_string and returns the result
@@ -743,4 +762,17 @@ function getUsedCats(features = vectorSource.getFeatures()) {
 			result.push(Number.parseFloat(feature.get('category')));
 	}
 	return result;
+}
+
+function loadDataScripts() {
+	document.querySelectorAll('[data-mtl-data-script]').forEach((elem) => {
+		if (!(elem instanceof HTMLScriptElement) || elem.type != "application/json")
+			return;
+
+		const data = JSON.parse(elem.innerText);
+
+		for (let key in data) {
+			globalThis[key] = data[key];
+		}
+	});
 }

@@ -28,22 +28,25 @@
 	position: relative;
 	margin-bottom: 1em;
 	width: calc(100% + 20px);
+	min-width: fit-content;
 	left: -10px;
 
 	background-color: var(--primary-color);
 }
 
 .mtl-postlist {
+	width: 920px;
+
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
 	justify-content: center;
-	overflow-x: auto;
 }
 
 .mtl-postlist-item {
 	position: relative;
 	height: 250px;
+	width: calc(100% - 40px);
 	margin: 10px;
 	padding: 10px;
 
@@ -87,6 +90,8 @@
 }
 
 .mtl-list-content {
+	width: calc(100% - 200px);
+
 	display: flex;
 	flex-direction: column;
 }
@@ -124,8 +129,6 @@
 	padding: 10px;
 }
 
-.mtl-map-controls {
-	color: white;
-	accent-color: var(--secondary-color);
-	font-size: 1.2em;
+.mtl-tab .mtl-map-controls {
+	font-weight: bold;
 }

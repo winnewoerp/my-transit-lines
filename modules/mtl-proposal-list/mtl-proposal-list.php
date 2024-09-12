@@ -16,33 +16,66 @@ function mtl_proposal_list_output($atts) {
 	$mtl_options = get_option('mtl-option-name');
 
 	extract( shortcode_atts( [
-		'type' => 'mtlproposal',
+		'show_tabs' => 'tiles,list,map',
+		'hide_search_bar' => false,
+		'statusid_query' => 0,
+		'posts_per_page' => 23,
+		'proposal_ids' => '',
 	], $atts ) );
 
-	$the_query = get_query(4);
+	$show_tabs = explode(',', $show_tabs);
 
-	$selected_tab = get_selected_tab();
+	if ($statusid_query) {
+		$the_query = new WP_Query(array(
+			'posts_per_page' => $posts_per_page,
+			'post_type' => 'mtlproposal',
+			'tax_query' => array(array(
+				'taxonomy' => 'sorting-phase-status',
+				'terms' => $statusid_query,
+			)),
+		));
+	} else if ($proposal_ids) {
+		$the_query = new WP_Query(array(
+			'posts_per_page' => -1,
+			'post_type' => 'mtlproposal',
+			'post__in' => explode(',', $proposal_ids),
+		));
+	} else {
+		$the_query = get_query(4);
+	}
 
-	$output = mtl_search_bar_output($the_query);
+	$selected_tab = get_selected_tab($show_tabs);
+
+	$output = '';
+
+	if (!$hide_search_bar) {
+		$output .= mtl_search_bar_output($the_query);
+	}
 
 	wp_enqueue_script('mtl-proposal-list', get_template_directory_uri().'/modules/mtl-proposal-list/mtl-proposal-list.js', ['my-transit-lines'], wp_get_theme()->version);
 
 	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
 
-	// Start the tab switcher
-	$output .= '
-	<div id="mtl-tab-selector" class="mtl-tab-selector">
-		<button id="mtl-tab-selector-tiles" class="mtl-tab-selector-option'.($selected_tab == "tiles" ? '' : ' unselected').'">
-			<img src="'.get_template_directory_uri().'/images/tiles.svg" height="40" width="40" alt="'.__('tiles','my-transit-lines').'">
-		</button>
-		<button id="mtl-tab-selector-list" class="mtl-tab-selector-option'.($selected_tab == "list" ? '' : ' unselected').'">
-			<img src="'.get_template_directory_uri().'/images/list.svg" height="40" width="40" alt="'.__('list','my-transit-lines').'">
-		</button>
-		<button id="mtl-tab-selector-map" class="mtl-tab-selector-option'.($selected_tab == "map" ? '' : ' unselected').'">
-			<img src="'.get_template_directory_uri().'/images/map.svg" height="40" width="40" alt="'.__('map','my-transit-lines').'">
-		</button>
-	</div>
-	<div id="mtl-tab-box" class="mtl-tab-box">
+	if (count($show_tabs) > 1) {
+		// Start the tab switcher
+		$output .= '
+		<div id="mtl-tab-selector" class="mtl-tab-selector">'.
+			(in_array('tiles', $show_tabs) ?
+			'<button title="'.__('tiles','my-transit-lines').'" id="mtl-tab-selector-tiles" class="mtl-tab-selector-option'.($selected_tab == "tiles" ? '' : ' unselected').'">
+				<img src="'.get_template_directory_uri().'/images/tiles.svg" height="40" width="40" alt="'.__('tiles','my-transit-lines').'">
+			</button>' : '').
+			(in_array('list', $show_tabs) ?
+			'<button title="'.__('list','my-transit-lines').'" id="mtl-tab-selector-list" class="mtl-tab-selector-option'.($selected_tab == "list" ? '' : ' unselected').'">
+				<img src="'.get_template_directory_uri().'/images/list.svg" height="40" width="40" alt="'.__('list','my-transit-lines').'">
+			</button>' : '').
+			(in_array('map', $show_tabs) ?
+			'<button title="'.__('map','my-transit-lines').'" id="mtl-tab-selector-map" class="mtl-tab-selector-option'.($selected_tab == "map" ? '' : ' unselected').'">
+				<img src="'.get_template_directory_uri().'/images/map.svg" height="40" width="40" alt="'.__('map','my-transit-lines').'">
+			</button>' : '').
+		'</div>';
+	}
+
+	$output .= '<div id="mtl-tab-box" class="mtl-tab-box">
 		<div style="display:none" class="mtl-list-loader">'.$newProposalText.'</div>
 		<div style="display:none" class="mtl-list-loader bottom">'.$newProposalText.'</div>
 
@@ -59,26 +92,26 @@ function mtl_proposal_list_output($atts) {
 		mtl_localize_script(true).
 		'<script data-mtl-replace-with="#mtl-tile-list-data-script" data-mtl-data-script id="mtl-tile-list-data-script" type="application/json">
 			{"proposalList":'.get_all_proposal_data_json($the_query).'}
-		</script>
-
-		<div id="mtl-tab-tiles" class="mtl-tab">
+		</script>'.
+		
+		(in_array('tiles',$show_tabs) ? '<div id="mtl-tab-tiles" class="mtl-tab'.($selected_tab == "tiles" ? '' : ' unselected').'">
 			<div data-mtl-replace-with="#mtl-posttiles-list" id="mtl-posttiles-list" class="mtl-posttiles-list">'.
 				tiles_output($the_query).
 			'</div>
-		</div>
-		<div id="mtl-tab-list" class="mtl-tab">
+		</div>' : '').
+		(in_array('list',$show_tabs) ? '<div id="mtl-tab-list" class="mtl-tab'.($selected_tab == "list" ? '' : ' unselected').'">
 			<div data-mtl-replace-with="#mtl-postlist" id="mtl-postlist" class="mtl-postlist">'.
 				list_output($the_query).
 			'</div>
-		</div>
-		<div id="mtl-tab-map" class="mtl-tab">'.
+		</div>' : '').
+		(in_array('map',$show_tabs) ? '<div id="mtl-tab-map" class="mtl-tab'.($selected_tab == "map" ? '' : ' unselected').'">'.
 			map_output().
-		'</div>
-	</div>'.
+		'</div>' : '').
+	'</div>'.
 	get_paginate_links($the_query->max_num_pages).
-	'<p>
+	(count($show_tabs) > 1 ? '<p>
 		Uicons by <a href="https://www.flaticon.com/uicons">Flaticon</a>
-	</p>';
+	</p>' : '');
 
 	return $output;
 }
@@ -150,11 +183,9 @@ function proposal_tile() {
 						comments_popup_link( __( 'Leave a comment', 'my-transit-lines' ), __( '1 Comment', 'my-transit-lines' ), __( '% Comments', 'my-transit-lines' ) );
 					}).
 					'</strong>
-				</span>
-				<span class="edit-link">
-					<a class="post-edit-link" href="'.get_edit_post_link().'">'.__( 'Edit', 'my-transit-lines' ).'</a>
-				</span>
-			</footer>
+				</span>'.
+				get_edit_post_link_checked(' class="edit-link"').
+			'</footer>
 		</article>
 	</div>';
 }
@@ -227,80 +258,53 @@ function proposal_list_item() {
 					mtl_get_output(function() {
 						comments_popup_link( __( 'Leave a comment', 'my-transit-lines' ), __( '1 Comment', 'my-transit-lines' ), __( '% Comments', 'my-transit-lines' ) );
 					}).
-				'</strong>
-				<span>
-					 - <a class="post-edit-link" href="'.get_edit_post_link().'">'.__( 'Edit', 'my-transit-lines' ).'</a>
-				</span>
-			</footer>
+				'</strong>'.
+				get_edit_post_link_checked("", " - ").
+			'</footer>
 		</div>
 	</article>';
 }
 
 function map_output() {
-	return '
-	<div id="mtl-box">
-		<div id="mtl-map-box">
-			<div id="mtl-map"></div>
-		</div>
-		<div class="mtl-map-controls">
-			<p id="map-color-opacity">
-				<span id="mtl-colored-map-box">
-					<label for="mtl-colored-map">
-						<input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()"> '.
-						__('colored map','my-transit-lines').
-					'</label>
-				</span>
-				&nbsp;
-				<span id="mtl-opacity-low-box">
-					<label for="mtl-opacity-low">
-						<input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()"> '.
-						__('brightened map','my-transit-lines').
-					'</label>
-				</span>
-			</p>
-			<p id="zoomtofeatures" class="alignright" style="margin-top:-12px">
-				<a href="javascript:zoomToFeatures()">'.
-					__('Fit proposition to map','my-transit-lines').
-				'</a>
-			</p>
-			<p class="alignright">
-				<a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()">
-					<span class="fullscreen-closed">'.
-						__('Fullscreen view','my-transit-lines').
-					'</span>
-					<span class="fullscreen-open">'.
-						__('Close fullscreen view','my-transit-lines').
-					'</span>
-				</a>
-			</p>
-			<p class="alignright" id="mtl-toggle-labels">
-				<label>
-					<input type="checkbox" id="mtl-toggle-labels-link" onclick="toggleLabels()"> '.
-					__('Show labels','my-transit-lines').
-				'</label>
-			</p>
-		</div>
-		<div id="popup" class="ol-popup" style="display:none;">
-			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
-			<div id="popup-content" class="ol-popup-content">
-				<a id="popup-content-link" href="">
-					<b id="popup-content-title"></b>
-				</a>
-				<br>
-				<span>'.
-					__('By', 'my-transit-lines').
-					' <span id="popup-content-author"></span>'.
-					__('on', 'my-transit-lines').
-					' <span id="popup-content-date"></span>
-				</span>
-			</div>
+	return the_map_output().
+	'<div id="popup" class="ol-popup" style="display:none;">
+		<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+		<div id="popup-content" class="ol-popup-content">
+			<a id="popup-content-link" href="">
+				<b id="popup-content-title"></b>
+			</a>
+			<br>
+			<span>'.
+				__('By', 'my-transit-lines').
+				' <span id="popup-content-author"></span>'.
+				__('on', 'my-transit-lines').
+				' <span id="popup-content-date"></span>
+			</span>
 		</div>
 	</div>';
 }
 
-function get_selected_tab() {
+/**
+ * Returns the output link in a <span> container iff the user is an admin
+ */
+function get_edit_post_link_checked($container_attributes = "", $pre_link_text = "") {
+	global $post;
+
+	if (!current_user_can('administrator'))
+		return '';
+
+	return '
+	<span'.$container_attributes.'>
+		'.$pre_link_text.'<a class="post-edit-link" href="'.get_edit_post_link().'">'.__('Edit','my-transit-lines').'</a>
+	</span>';
+}
+
+/**
+ * Returns the tab selected by the user, or the first specified, shown tab
+ */
+function get_selected_tab($shown_tabs = ['tiles','list','map']) {
 	if (isset($_GET['mtl-tab']) && $_GET['mtl-tab'] != "")
 		return $_GET['mtl-tab'];
 
-	return 'tiles';
+	return $shown_tabs[0];
 }

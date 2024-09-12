@@ -2,8 +2,6 @@
  * (C) Jan Garloff
  */
 
-var showSizes = false;
-
 const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], multi: true, style: selectedStyleFunction });
 
 const selectedFeatures = selectInteraction.getFeatures();
@@ -22,19 +20,4 @@ function handleFeatureSelected(event) {
 function handleFeatureUnselected(event) {
 	if (!showSizes)
 		event.element.unset('size');
-}
-
-function toggleSizes() {
-	showSizes = !showSizes;
-
-	if (showSizes) {
-		for (var feature of vectorSource.getFeatures()) {
-			feature.set('size', getFeatureSize(feature));
-		}
-	} else {
-		for (var feature of vectorSource.getFeatures()) {
-			if (selectedFeatures.getArray().indexOf(feature) < 0)
-				feature.unset('size');
-		}
-	}
 }

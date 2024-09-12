@@ -1,7 +1,5 @@
 /* My Transit Line posttiles list */
 
-window.addEventListener('reload', loadNewFeatures);
-
 const container = document.getElementById('popup');
 const contentLink = document.getElementById('popup-content-link');
 const contentTitle = document.getElementById('popup-content-title');

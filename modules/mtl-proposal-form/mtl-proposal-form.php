@@ -355,7 +355,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
 			$output .= '<input type="hidden" name="delete_id" value="'.$editId.'" />'."\r\n";
-			if (!is_admin())
+			if (!is_admin() && !defined('REST_REQUEST'))
 				wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}

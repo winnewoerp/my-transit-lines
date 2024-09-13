@@ -17,6 +17,17 @@ function mtl_proposal_form_output( $atts ){
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 	$mtl_options3 = get_option('mtl-option-name3');
+				
+	// GeoJSON import
+	$import_hints = __('Please note: Only point and linestring features will be imported. Labels will be set if included as name property for the respective feature. The imported features will be appended to the existing features in your proposal. The coordinate system of the import file must be WGS84/EPSG:4326 (the standard projection of OpenStreetMap tools).','my-transit-lines');
+	if(trim($mtl_options3['mtl-geojson-import-hints'])) $import_hints = $mtl_options3['mtl-geojson-import-hints'];
+
+	extract( shortcode_atts( [
+		'center_lon' => $mtl_options['mtl-center-lon'],
+		'center_lat' => $mtl_options['mtl-center-lat'],
+		'standard_zoom' => $mtl_options['mtl-standard-zoom'],
+		'import_hints' => $import_hints,
+	], $atts ) );
 	
 	// get the posttype from url parameter or set to default
 	$postType = 'mtlproposal';
@@ -217,7 +228,7 @@ function mtl_proposal_form_output( $atts ){
 				if(str_contains($single_category->slug, 'other')) $output .= 'defaultCategory = "'.$single_category->cat_ID.'";';
 			}
 
-			$output .= ' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+			$output .= ' var centerLon = "'.$center_lon.'"; var centerLat = "'.$center_lat.'"; var standardZoom = '.$standard_zoom.'; </script>'."\r\n";
 
 			if(trim($mtl_options3['mtl-country-source']))
 				$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
@@ -273,12 +284,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
 				$output .= '</p>'."\r\n";
-				
-				// GeoJSON import
-				$import_hints = __('Please note: Only point and linestring features will be imported. Labels will be set if included as name property for the respective feature. The imported features will be appended to the existing features in your proposal. The coordinate system of the import file must be WGS84/EPSG:4326 (the standard projection of OpenStreetMap tools).','my-transit-lines');
-				if(trim($mtl_options3['mtl-geojson-import-hints'])) $import_hints = $mtl_options3['mtl-geojson-import-hints'];
-				
-				
+
 				$output .= '<p class="alignleft"><label for="mtl-import-geojson"><strong>'.__('Import GeoJSON file','my-transit-lines').'</strong><br>
 							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson" accept=".geojson,.json" multiple="true">
 							<script type="text/javascript"> document.querySelector("#mtl-import-geojson").addEventListener("change", function() { importJSONFiles(document.querySelector("#mtl-import-geojson")); }); </script>

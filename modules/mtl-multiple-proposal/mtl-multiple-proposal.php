@@ -43,6 +43,8 @@ function mtl_multiple_proposal_output( $atts ) {
 		$output .= mtl_search_bar_output($the_query);
 	}
 
+	$output .= get_paginate_links($the_query->max_num_pages);
+
 	// load the text translations
 	$output .= mtl_localize_script(true);
 	$output .= get_transport_mode_style_data();

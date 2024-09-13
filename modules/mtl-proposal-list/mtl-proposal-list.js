@@ -85,6 +85,7 @@ window.addEventListener('load', () => {
 
 const container = document.getElementById('popup');
 const contentLink = document.getElementById('popup-content-link');
+const contentDraftFlag = document.getElementById('popup-content-draft-flag');
 const contentTitle = document.getElementById('popup-content-title');
 const contentAuthor = document.getElementById('popup-content-author');
 const contentDate = document.getElementById('popup-content-date');
@@ -117,6 +118,7 @@ selectInteraction.on('select', function (evt) {
 
 	container.style.display = '';
 	contentLink.href = proposal.link;
+	contentDraftFlag.style.display = proposal.status == 'draft' ? 'inherit' : 'none';
 	contentTitle.textContent = proposal.title;
 	contentAuthor.textContent = proposal.author;
 	contentDate.textContent = proposal.date;

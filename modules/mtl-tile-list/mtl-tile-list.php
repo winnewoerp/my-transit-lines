@@ -35,6 +35,7 @@ function mtl_tile_list_output($atts) {
 	$the_query = get_query(4);
 
 	$output .= mtl_search_bar_output($the_query);
+	$output .= get_paginate_links($the_query->max_num_pages);
 		
 	// start the tile list
 	$output .= '<div data-mtl-replace-with="#mtl-posttiles-list" id="mtl-posttiles-list" class="mtl-posttiles-list">';

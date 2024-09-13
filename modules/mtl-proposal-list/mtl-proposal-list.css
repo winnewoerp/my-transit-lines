@@ -283,8 +283,12 @@
 	border-radius: 10px;
 }
 
-.mtl-list-content h1 {
-	margin-bottom: 5px !important;
+#content .mtl-list-content h1 {
+	margin-bottom: 5px;
+}
+
+#content .add-post h1 {
+	text-align: start;
 }
 
 .mtl-list-content>footer {

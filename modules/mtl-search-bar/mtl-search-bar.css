@@ -8,6 +8,33 @@
 	margin: .5em;
 }
 
+form#mtl-filter-form label {
+	padding-right: 0.5em;
+	padding-left: 0.25em;
+}
+
+#content #mtl-list-filter {
+	padding:6px 10px;
+	background:#dfdfdf;
+	margin-bottom:10px;
+	text-align:left;
+}
+#content #mtl-list-filter p {
+	font-size:80%;
+	margin:0;
+}
+
+#content #mtl-list-filter select {
+	border:1px solid #808080;
+	padding:2px;
+	margin:3px;
+	font-size:95%;
+}
+
+#content #mtl-list-filter option {
+	margin:0;
+}
+
 #mtl-filter-details>summary.closed {
 	position: relative;
 	top: .5em;
@@ -30,6 +57,11 @@
 
 #mtl-search-submit-closed.closed {
 	bottom: 1.8em;
+}
+
+#mtl-search-submit-open {
+	display: flex;
+	justify-content: space-between;
 }
 
 .vertical-center {

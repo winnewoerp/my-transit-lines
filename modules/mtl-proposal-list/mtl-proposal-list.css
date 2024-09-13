@@ -132,3 +132,64 @@
 .mtl-tab .mtl-map-controls {
 	font-weight: bold;
 }
+
+.ol-popup {
+	position: absolute;
+	padding: 15px;
+	bottom: 12px;
+	left: -50px;
+	width: max-content;
+	
+	background-color: white;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+	border: 1px solid #cccccc;
+	border-radius: 10px;
+}
+
+.ol-popup:after,
+.ol-popup:before {
+	height: 0;
+	width: 0;
+	position: absolute;
+	top: 100%;
+
+	border: solid transparent;
+	content: " ";
+	pointer-events: none;
+}
+
+.ol-popup:after {
+	left: 48px;
+	margin-left: -10px;
+
+	border-top-color: white;
+	border-width: 10px;
+}
+
+.ol-popup:before {
+	left: 48px;
+	margin-left: -11px;
+
+	border-top-color: #cccccc;
+	border-width: 11px;
+}
+
+.ol-popup-closer {
+	position: absolute;
+	top: 2px;
+	right: 8px;
+	margin-bottom: 2px;
+	margin-left: 8px;
+
+	text-decoration: none;
+}
+
+.ol-popup-closer:after {
+	content: "✖";
+}
+
+.ol-popup-content {
+	margin-right: 15px;
+
+	font-size: 0.8em;
+}

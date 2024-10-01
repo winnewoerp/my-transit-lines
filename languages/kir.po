@@ -1,0 +1,1811 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: My Transit Lines theme\n"
+"POT-Creation-Date: 2024-09-04 11:40+0200\n"
+"PO-Revision-Date: 2024-09-04 11:40+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ky\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
+"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: openlayers\n"
+"X-Poedit-SearchPathExcluded-1: webfonts\n"
+
+#: 404.php:15
+#, fuzzy
+#| msgid "Oops! That page can’t be found."
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Ой! Бул барак табылган жок."
+
+#: 404.php:19
+msgid ""
+"It looks like nothing was found at this location. Maybe try one of the links "
+"below or a search?"
+msgstr ""
+"Бул жерде эч нерсе табылган жок окшойт. Балким, төмөндөгү шилтемелердин "
+"бирин колдонуп же издеп көрүңүз?"
+
+#: archive.php:27
+#, php-format
+msgid "Author: %s"
+msgstr "Автор: %s"
+
+#: archive.php:30
+#, php-format
+msgid "Day: %s"
+msgstr "Күн: %s"
+
+#: archive.php:33
+#, php-format
+msgid "Month: %s"
+msgstr "Ай: %s"
+
+#: archive.php:33
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "Ф Y"
+
+#: archive.php:36
+#, php-format
+msgid "Year: %s"
+msgstr "Жыл: %s"
+
+#: archive.php:36
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#: archive.php:39
+msgid "Asides"
+msgstr "Четте калгандар"
+
+#: archive.php:42
+msgid "Galleries"
+msgstr "Галереялар"
+
+#: archive.php:45
+msgid "Images"
+msgstr "Сүрөттөр"
+
+#: archive.php:48
+msgid "Videos"
+msgstr "Видеолор"
+
+#: archive.php:51
+msgid "Quotes"
+msgstr "Цитаталар"
+
+#: archive.php:54
+msgid "Links"
+msgstr "Шилтемелер"
+
+#: archive.php:57
+msgid "Statuses"
+msgstr "Статустар"
+
+#: archive.php:60
+msgid "Audios"
+msgstr "Аудиолор"
+
+#: archive.php:63
+msgid "Chats"
+msgstr "Чаттар"
+
+#: archive.php:66
+msgid "Archives"
+msgstr "Архивдер"
+
+#: comments.php:28
+#, fuzzy, php-format
+#| msgctxt "comments title"
+#| msgid "One thought on “%2$s”"
+#| msgid_plural "%1$s thoughts on “%2$s”"
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "“%2$s” жөнүндө бир ой"
+msgstr[1] "“%2$s” жөнүндө %1$s ойлор"
+
+#: comments.php:35 comments.php:52
+msgid "Comment navigation"
+msgstr "Комментарийлердин навигациясы"
+
+#: comments.php:36 comments.php:53
+msgid "&larr; Older Comments"
+msgstr "&larr; Мурунку комментарийлер"
+
+#: comments.php:37 comments.php:54
+msgid "Newer Comments &rarr;"
+msgstr "Жаңы комментарийлер &rarr;"
+
+#: comments.php:64
+msgid "Comments are closed."
+msgstr "Комментарийлер жабык."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "Эч нерсе табылган жок"
+
+#: content-none.php:19
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+"Биринчи постуңузду жарыялоого даярсызбы? <a href=\"%1$s\">Бул жерде "
+"баштаңыз</a>."
+
+#: content-none.php:23
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+"Кечиресиз, бирок издөө шарттарыңызга эч нерсе дал келген жок. Башка ачкыч "
+"сөздөрдү колдонуп көрүңүз."
+
+#: content-none.php:28
+#, fuzzy
+#| msgid ""
+#| "It seems we can’t find what you’re looking for. Perhaps searching can "
+#| "help."
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr "Издегениңизди таба албай жаткандайбыз. Балким, издөө жардам берер."
+
+#: content-page.php:20 content-single.php:20
+msgid "Pages:"
+msgstr "Барактар:"
+
+#: content-page.php:26 content-single.php:26 content.php:43
+#: modules/mtl-proposal-list/mtl-proposal-list.php:155
+#: modules/mtl-proposal-list/mtl-proposal-list.php:232
+msgid "Edit"
+msgstr "Түзөтүү"
+
+#: content.php:25
+msgid "Draft"
+msgstr "Долбоор"
+
+#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:150
+#: modules/mtl-proposal-list/mtl-proposal-list.php:228
+msgid "Leave a comment"
+msgstr "Комментарий калтырыңыз"
+
+#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:150
+#: modules/mtl-proposal-list/mtl-proposal-list.php:228
+msgid "1 Comment"
+msgstr "1 комментарий"
+
+#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:150
+#: modules/mtl-proposal-list/mtl-proposal-list.php:228
+msgid "% Comments"
+msgstr "% Комментарий(лер)"
+
+#: functions.php:160
+msgid "Primary Menu"
+msgstr "Башкы меню"
+
+#: functions.php:161
+msgid "Secondary Menu"
+msgstr "Кошумча меню"
+
+#: functions.php:171
+msgid "Sidebar"
+msgstr "Боковая панель"
+
+#: functions.php:172
+msgid "Top Menu"
+msgstr "Жогорку меню"
+
+#: functions.php:173
+msgid "Footer"
+msgstr "Төмөнкү панель"
+
+#: functions.php:229
+msgid "Leave a comment for this post"
+msgstr "Ушул постко комментарий калтырыңыз"
+
+#: functions.php:255
+msgid "Public transit map"
+msgstr "Коомдук транспорт картасы"
+
+#: functions.php:256
+msgid ""
+"Map data <a href=\"http://www.openstreetmap.org\">OpenStreetMap</a> (© "
+"OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href=\"http://"
+"memomaps.de/\">MeMoMaps</a>)"
+msgstr ""
+"Карта маалыматтары <a href=\"http://www.openstreetmap.org\">OpenStreetMap</"
+"a> (© OpenStreetMap салым кошуучулары), Карта: CC-BY-SA лицензиясы (© <a "
+"href=\"http://memomaps.de/\">MeMoMaps</a> тарабынан)"
+
+#: functions.php:257
+msgid "OpenTopoMap"
+msgstr "OpenTopoMap"
+
+#: functions.php:258
+msgid ""
+"Map data: © <a href=\"https://openstreetmap.org/copyright\">OpenStreetMap</"
+"a> contributors, <a href=\"http://viewfinderpanoramas.org\">SRTM</a> | "
+"Style: © <a href=\"https://opentopomap.org\">OpenTopoMap</a> (<a "
+"href=\"https://creativecommons.org/licenses/by-sa/3.0/\">CC-BY-SA</a>)"
+msgstr ""
+"Карта маалыматтары: © <a href=\"https://openstreetmap.org/"
+"copyright\">OpenStreetMap</a> салым кошуучулары, <a href=\"http://"
+"viewfinderpanoramas.org\">SRTM</a> | Стиль: © <a href=\"https://opentopomap."
+"org\">OpenTopoMap</a> (<a href=\"https://creativecommons.org/licenses/by-"
+"sa/3.0/\">CC-BY-SA</a>)"
+
+#: functions.php:259
+msgid "Basemap (Germany)"
+msgstr ""
+
+#: functions.php:260
+msgid ""
+"© GeoBasis-DE / <a href=\"https://www.bkg.bund.de\">BKG</a>, <a "
+"href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
+msgstr ""
+
+#: functions.php:261
+msgid "OpenRailwayMap (standard)"
+msgstr "OpenRailwayMap (стандарт)"
+
+#: functions.php:262
+msgid ""
+"OpenRailwayMap Standard overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+"OpenRailwayMap Стандарттуу үстүнкү катмар стили: <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+
+#: functions.php:263
+msgid "OpenRailwayMap (maxspeed)"
+msgstr "OpenRailwayMap (жогорку ылдамдык)"
+
+#: functions.php:264
+msgid ""
+"OpenRailwayMap maxspeed overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+"OpenRailwayMap жогорку ылдамдык үстүнкү катмар стили: <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+
+#: functions.php:265
+msgid "OpenRailwayMap (signals)"
+msgstr "OpenRailwayMap (сигналдар)"
+
+#: functions.php:266
+msgid ""
+"OpenRailwayMap signals overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+"OpenRailwayMap сигналдар үстүнкү катмар стили: <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+
+#: functions.php:267
+msgid "OpenRailwayMap (electrification)"
+msgstr "OpenRailwayMap (электрлештирүү)"
+
+#: functions.php:268
+msgid ""
+"OpenRailwayMap electrification overlay style: <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+msgstr ""
+"OpenRailwayMap электрлештирүү үстүнкү катмар стили: <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
+"www.openrailwaymap.org/\">OpenRailwayMap</a>"
+
+#: functions.php:269
+msgid "OpenRailwayMap (gauge)"
+msgstr "OpenRailwayMap (чөйрө)"
+
+#: functions.php:270
+msgid ""
+"OpenRailwayMap gauge overlay style: <a href=\"http://creativecommons.org/"
+"licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
+"org/\">OpenRailwayMap</a>"
+msgstr ""
+"OpenRailwayMap чөйрө үстүнкү катмар стили: <a href=\"http://creativecommons."
+"org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www."
+"openrailwaymap.org/\">OpenRailwayMap</a>"
+
+#: functions.php:271
+msgid "Satellite images (ESRI)"
+msgstr "Спутник сүрөттөрү (ESRI)"
+
+#: functions.php:272
+#, fuzzy
+#| msgid ""
+#| "Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
+#| "Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+msgid ""
+"Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
+"Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+msgstr ""
+"Тилдер © Esri — Булак: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, "
+"Aerogrid, IGN, IGP, UPR-EGP жана GIS Колдонуучу Коому"
+
+#: functions.php:273
+msgid "OpenStreetMap standard (Mapnik)"
+msgstr "OpenStreetMap стандарт (Mapnik)"
+
+#: functions.php:274
+msgid ""
+"Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
+"2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk on "
+"Github</a>"
+msgstr ""
+"Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
+"2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk on "
+"Github</a>"
+
+#: functions.php:275
+msgid "Line proposal (vector data)"
+msgstr "Сызык сунушу (вектордук маалыматтар)"
+
+#: functions.php:276
+msgid "Build line"
+msgstr "Сызыкты куруу"
+
+#: functions.php:277
+msgid "Build stations"
+msgstr "Станцияларды куруу"
+
+#: functions.php:278
+msgid "Edit line/stations"
+msgstr "Сызыктарды/станцияларды түзөтүү"
+
+#: functions.php:279
+msgid "Select line/stations"
+msgstr "Сызыктарды/станцияларды тандоо"
+
+#: functions.php:280
+msgid "Move selected line/stations"
+msgstr "Тандалган сызыктарды/станцияларды жылдыруу"
+
+#: functions.php:281
+msgid "Delete selected line/stations"
+msgstr "Тандалган сызыктарды/станцияларды өчүрүү"
+
+#: functions.php:282
+msgid "Base layers"
+msgstr "Негизги катмарлар"
+
+#: functions.php:283
+msgid "Overlays"
+msgstr "Үстүнкү катмарлар"
+
+#: functions.php:284
+msgid "Please select another tool on the map to submit your proposal."
+msgstr "Сураныч, картадагы башка куралды тандаңыз, сунушуңузду киргизүү үчүн."
+
+#: functions.php:285
+msgid "None"
+msgstr "Жок"
+
+#: functions.php:286
+msgid "Snapping"
+msgstr "Капшыруу"
+
+#: functions.php:287
+msgid "Confirm that you want to leave? All unsaved data will be lost!"
+msgstr "Чыгууга макулсузбу? Бардык сакталбаган маалыматтар жоголот!"
+
+#: functions.php:288
+msgid "Add point"
+msgstr "Нүктө кошуу"
+
+#: functions.php:289
+msgid "Add line"
+msgstr "Сызык кошуу"
+
+#: functions.php:290
+msgid "Add polygon"
+msgstr "Полигон кошуу"
+
+#: functions.php:291
+msgid "Add circle"
+msgstr "Чөйрө кошуу"
+
+#: functions.php:292
+msgid "Edit features"
+msgstr "Өзгөчөлүктөрдү түзөтүү"
+
+#: functions.php:293
+msgid "Select features"
+msgstr "Өзгөчөлүктөрдү тандоо"
+
+#: functions.php:294
+msgid "Delete selected features"
+msgstr "Тандалган өзгөчөлүктөрдү өчүрүү"
+
+#: functions.php:295
+msgid "Navigate map"
+msgstr "Картада навигациялоо"
+
+#: functions.php:296
+msgid "Enable snapping"
+msgstr "Капшырууну иштетүү"
+
+#: functions.php:297
+msgid "Disable snapping"
+msgstr "Капшырууну өчүрүү"
+
+#: functions.php:298
+msgid "Length: "
+msgstr "Узундук: "
+
+#: functions.php:299
+msgid "Radius: "
+msgstr "Радиус: "
+
+#: functions.php:300
+msgid "Area: "
+msgstr "Аянт: "
+
+#: functions.php:301 modules/mtl-show-metadata/mtl-show-metadata.php:109
+#: modules/mtl-show-metadata/mtl-show-metadata.php:112
+#: modules/mtl-show-metadata/mtl-show-metadata.php:115
+#: modules/mtl-show-metadata/mtl-show-metadata.php:121
+#: modules/mtl-show-metadata/mtl-show-metadata.php:124
+#: modules/mtl-show-metadata/mtl-show-metadata.php:127
+#: modules/mtl-show-metadata/mtl-show-metadata.php:129
+#, fuzzy
+#| msgid "."
+msgctxt "decimal separator"
+msgid "."
+msgstr "."
+
+#: functions.php:302
+msgid "Show feature data"
+msgstr "Өзгөчөлүктөрдүн маалыматтарын көрсөтүү"
+
+#: functions.php:303 modules/mtl-show-metadata/mtl-show-metadata.php:109
+msgid "billion"
+msgstr ""
+
+#: functions.php:304 modules/mtl-show-metadata/mtl-show-metadata.php:112
+msgid "million"
+msgstr ""
+
+#: functions.php:305 modules/mtl-show-metadata/mtl-show-metadata.php:115
+msgid "thousand"
+msgstr ""
+
+#: functions.php:373
+#, php-format
+msgid ""
+"<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> by %2$s</span>"
+msgstr ""
+"<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> тарабынан "
+"%2$s</span>"
+
+#: header.php:49
+msgid "Topmenu"
+msgstr "Жогорку меню"
+
+#: header.php:50 header.php:66
+msgid "Skip to content"
+msgstr "Мазмунга өтүү"
+
+#: header.php:65
+msgid "Menu"
+msgstr "Меню"
+
+#: inc/extras.php:63
+#, php-format
+msgid "Page %s"
+msgstr "Барак %s"
+
+#: inc/template-tags.php:21
+msgid "Posts navigation"
+msgstr "Постторду навигациялоо"
+
+#: inc/template-tags.php:25
+msgid "<span class=\"meta-nav\">&larr;</span> Older posts"
+msgstr "<span class=\"meta-nav\">&larr;</span> Мурунку посттор"
+
+#: inc/template-tags.php:29
+msgid "Newer posts <span class=\"meta-nav\">&rarr;</span>"
+msgstr "Жаңы посттор <span class=\"meta-nav\">&rarr;</span>"
+
+#: inc/template-tags.php:52
+msgid "Post navigation"
+msgstr "Постту навигациялоо"
+
+#: inc/template-tags.php:55
+msgctxt "Previous post link"
+msgid "<span class=\"meta-nav\">&larr;</span>&nbsp;%title"
+msgstr "<span class=\"meta-nav\">&larr;</span>&nbsp;%title"
+
+#: inc/template-tags.php:56
+msgctxt "Next post link"
+msgid "%title&nbsp;<span class=\"meta-nav\">&rarr;</span>"
+msgstr "%title&nbsp;<span class=\"meta-nav\">&rarr;</span>"
+
+#: inc/template-tags.php:74
+#, php-format
+msgid ""
+"<span class=\"posted-on\">Posted on %1$s</span><span class=\"byline\"> by "
+"%2$s</span>"
+msgstr ""
+"<span class=\"posted-on\">Жарыяланган %1$s</span><span class=\"byline\"> "
+"тарабынан %2$s</span>"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:49
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:50
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:97
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:142
+msgid "Instructions"
+msgstr "Нускамалар"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:57
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:58
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:113
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:143
+msgid "General settings"
+msgstr "Жалпы жөндөөлөр"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:65
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:66
+msgid "Map and category settings"
+msgstr "Карта жана категория жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:98
+msgid "Page content under preparation for upcoming versions."
+msgstr "Баракчанын мазмуну келечектеги версиялар үчүн даярдалууда."
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:140
+msgid "Introduction"
+msgstr "Киришүү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:144
+msgid "Settings for map and categories"
+msgstr "Карта жана категориялар үчүн жөндөөлөр"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:162
+msgid "Settings"
+msgstr "Жөндөөлөр"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:192
+msgid "Logo Settings"
+msgstr "Логотип жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:193
+msgid "Load the main site logo"
+msgstr "Негизги сайттын логотибин жүктөө"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:194
+msgid "The currency for the website"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:195
+msgid "The currency symbol for the website"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:198
+msgid "Other settings"
+msgstr "Башка жөндөөлөр"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:199
+msgid "Number of allowed drafts"
+msgstr "Уруксат берилген долбоорлордун саны"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:200
+msgid "Show administrative subdivision selection"
+msgstr "Административдик бөлүнүштү тандоону көрсөтүү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:201
+msgid "Country areas file"
+msgstr "Өлкө аймактарынын файлы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
+msgid "State areas file"
+msgstr "Мамлекеттик аймактардын файлы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+msgid "District areas file"
+msgstr "Райондук аймактардын файлы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:206
+msgid "Map Settings"
+msgstr "Карта жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:207
+msgid "Map center longitude (decimal)"
+msgstr "Картанын борбордук узундугу (ондук)"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:208
+msgid "Map center latitude (decimal)"
+msgstr "Картанын борбордук кеңдиги (ондук)"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:212
+msgid "Standard zoom level for overview map"
+msgstr "Карта үчүн стандарттуу масштаб деңгээли"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:215
+msgid "Transit Categories Settings"
+msgstr "Транспорт категорияларынын жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#, fuzzy, php-format
+#| msgid "Use category <strong>%s</strong>"
+msgid "How to use category <strong>%s</strong>"
+msgstr "<strong>%s</strong> категориясын колдонуу"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+msgid "Use everywhere"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+msgid "Use only in map"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+msgid "Use only for searching"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+msgid "Don't use category"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:222
+#, php-format
+msgid "Color for category <strong>%s</strong>"
+msgstr "<strong>%s</strong> категориясы үчүн түс"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
+#, php-format
+msgid "Map Icon for category <strong>%s</strong>"
+msgstr "<strong>%s</strong> категориясы үчүн карта иконкасы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:224
+#, php-format
+msgid "Map icon (selected) for category <strong>%s</strong>"
+msgstr "<strong>%s</strong> категориясы үчүн карта иконкасы (тандалган)"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
+#, fuzzy, php-format
+#| msgid "Color for category <strong>%s</strong>"
+msgid "Costs per kilometer in million %ss for category <strong>%s</strong>"
+msgstr "<strong>%s</strong> категориясы үчүн түс"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
+#, fuzzy, php-format
+#| msgid "Map icon (selected) for category <strong>%s</strong>"
+msgid ""
+"Allow other categories (comma separated id-list) to be drawn for category "
+"<strong>%s</strong>"
+msgstr "<strong>%s</strong> категориясы үчүн карта иконкасы (тандалган)"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:230
+msgid "Page IDs Settings"
+msgstr "Баракчанын ID жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
+msgid "Page ID for page to add proposal"
+msgstr "Сунуш кошуу үчүн баракчанын ID"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
+msgid "Page ID for proposal list page"
+msgstr "Сунуштардын тизмеси үчүн баракчанын ID"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
+msgid "Page ID for proposal map page"
+msgstr "Сунуш картасы үчүн баракчанын ID"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:236
+msgid "General texts settings"
+msgstr "Жалпы тексттердин жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
+msgid "Title for intro of proposal contact form"
+msgstr "Сунуш байланыш формасынын киришүү аталышы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:238
+msgid "Intro text for proposal contact form"
+msgstr "Сунуш байланыш формасы үчүн киришүү тексти"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:239
+msgid "Contents of the metadata display"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:242
+msgid "ReCAPTCHA settings"
+msgstr "ReCAPTCHA жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:243
+msgid "ReCAPTCHA website key"
+msgstr "ReCAPTCHA вебсайт ачкычы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:244
+msgid "ReCAPTCHA secret key"
+msgstr "ReCAPTCHA купуя ачкычы"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:247
+msgid "GeoJSON import settings"
+msgstr "GeoJSON импорт жөндөөлөрү"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:248
+msgid "GeoJSON import hints"
+msgstr "GeoJSON импорт кеңештери"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:312
+msgid ""
+"Click on the map to set the marker to the default map center or input/paste "
+"the values to the fields below"
+msgstr ""
+"Маркерди картадагы стандарттуу борборго коюу үчүн картага басыңыз же төмөнкү "
+"талааларга маанилерди киргизиңиз/чаптаңыз"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:368
+msgid "Select Image"
+msgstr "Сүрөт тандоо"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:368
+msgid "image for this category"
+msgstr "Бул категория үчүн сүрөт"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:368
+msgid "Enter URL or upload image"
+msgstr "URL киргизүү же сүрөт жүктөө"
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:34
+#, php-format
+msgid "New comment on your post \"%2$s\""
+msgstr "Сиздин постуңузга жаңы комментарий \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:35
+#, php-format
+msgid "Author : %1$s"
+msgstr "Автор: %1$s"
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:36
+msgid "Comment: "
+msgstr "Комментарий: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:37
+msgid "You can see all comments on this post here: "
+msgstr "Бул посттун бардык комментарийлерин бул жерден көрө аласыз: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:38
+#, php-format
+msgid "[%1$s] Comment: \"%2$s\""
+msgstr "[%1$s] Комментарий: \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:40
+#, php-format
+msgid "New trackback on your post #%1$s \"%2$s\""
+msgstr "Сиздин постуңузга жаңы трекбэк #%1$s \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:41
+#: modules/mtl-comment-notification/mtl-comment-notification.php:47
+#, php-format
+msgid "Website: %1$s"
+msgstr "Веб-сайт: %1$s"
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:42
+#: modules/mtl-comment-notification/mtl-comment-notification.php:48
+msgid "Excerpt: "
+msgstr "Үзүндү: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:43
+msgid "You can see all trackbacks on this post here: "
+msgstr "Бул посттун бардык трекбэктерин бул жерден көрө аласыз: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:44
+#, php-format
+msgid "[%1$s] Trackback: \"%2$s\""
+msgstr "[%1$s] Трекбэк: \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:46
+#, php-format
+msgid "New pingback on your post #%1$s \"%2$s\""
+msgstr "Сиздин постуңузга жаңы пингбэк #%1$s \"%2$s\""
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:49
+msgid "You can see all pingbacks on this post here: "
+msgstr "Бул посттун бардык пингбэктерин бул жерден көрө аласыз: "
+
+#: modules/mtl-comment-notification/mtl-comment-notification.php:50
+#, php-format
+msgid "[%1$s] Pingback: \"%2$s\""
+msgstr "[%1$s] Пингбэк: \"%2$s\""
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:20
+msgid "Proposal"
+msgstr "Сунуш"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:21
+msgid "Proposals"
+msgstr "Сунуштар"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:31
+msgctxt "mtlproposal"
+msgid "Add New"
+msgstr "Жаңы кошуу"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:32
+#, php-format
+msgid "Add New %s"
+msgstr "Жаңы %s кошуу"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:33
+#, php-format
+msgid "New %s"
+msgstr "Жаңы %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:34
+#, php-format
+msgid "Edit %s"
+msgstr "Түзөтүү %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:35
+#, php-format
+msgid "View %s"
+msgstr "Көрүү %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:36
+#, php-format
+msgid "All %s"
+msgstr "Бардык %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:37
+#, php-format
+msgid "Search %s"
+msgstr "Издөө %s"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:38
+#, php-format
+msgid "Parent %s:"
+msgstr "Ата-эне %s:"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:39
+#, php-format
+msgid "No %s found."
+msgstr "Жок %s табылган жок."
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:40
+#, php-format
+msgid "No %s found in Trash."
+msgstr "%s табылган жок Таштандыда."
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:68
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:69
+msgid "Sorting Phase Status"
+msgstr "Сорттоо фазасынын статусу"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:70
+msgid "Search items"
+msgstr "Издөө элементтери"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:71
+msgid "All items"
+msgstr "Бардык элементтер"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:72
+msgid "Parent item"
+msgstr "Ата-эне элемент"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:73
+msgid "Parent item:"
+msgstr "Ата-эне элемент:"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:74
+msgid "Edit Sorting Phase Status"
+msgstr "Сорттоо фазасынын статусун түзөтүү"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:75
+msgid "Update Sorting Phase Status"
+msgstr "Сорттоо фазасынын статусун жаңылоо"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:76
+msgid "Add New Sorting Phase Status"
+msgstr "Жаңы сорттоо фазасынын статусун кошуу"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:77
+msgid "New Sorting Phase Status"
+msgstr "Жаңы сорттоо фазасынын статусу"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:78
+msgid "Sorting Phase Statuses"
+msgstr "Сорттоо фазасынын статусу"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:89
+msgid "Not Submitted"
+msgstr "Жиберилген жок"
+
+#: modules/mtl-download-geojson/mtl-download-geojson.php:40
+msgid "Download proposal map data as GeoJSON"
+msgstr "Сунуш карта маалыматтарын GeoJSON катары жүктөө"
+
+#: modules/mtl-login-register/mtl-login-register.php:21
+msgid "Login/Register"
+msgstr "Кирүү/Катталуу"
+
+#: modules/mtl-login-register/mtl-login-register.php:24
+msgid "Login"
+msgstr "Кирүү"
+
+#: modules/mtl-login-register/mtl-login-register.php:25
+msgid "Register"
+msgstr "Катталуу"
+
+#: modules/mtl-login-register/mtl-login-register.php:33
+msgid "Hello"
+msgstr "Салам"
+
+#: modules/mtl-login-register/mtl-login-register.php:35
+msgid "My proposals"
+msgstr "Менин сунуштарым"
+
+#: modules/mtl-login-register/mtl-login-register.php:36
+msgid "Logout"
+msgstr "Чыгуу"
+
+#: modules/mtl-login-register/mtl-login-register.php:38
+msgid "Change password"
+msgstr "Сырсөздү өзгөртүү"
+
+#: modules/mtl-login-register/mtl-login-register.php:49
+msgid "MTL Login/Register"
+msgstr "MTL Кирүү/Катталуу"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:28
+#: modules/mtl-show-metadata/mtl-show-metadata.php:32
+msgid "Metadata for this proposal"
+msgstr "Бул сунуш үчүн метадата"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:47
+msgid ""
+"Check this box if you want standard fields like category box or custom field "
+"section to overwrite changes within this meta box"
+msgstr ""
+"Бул кутучаны белгилеңиз, эгерде сиз категория кутучасы же бажы талаасы "
+"бөлүмү сыяктуу стандарттык талааларды бул мета кутучанын ичиндеги "
+"өзгөртүүлөрдү кайра жазууну кааласаңыз"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:63
+msgid ""
+"If necessary, change transportation mode for this proposal.<br /><span "
+"style=\"font-weight:normal\">Please change transport mode here and do not "
+"use the default WP category selector.</span>"
+msgstr ""
+"Керек болсо, бул сунуш үчүн транспорт режимин өзгөртүңүз.<br /><span "
+"style=\"font-weight:normal\">Транспорт режимин бул жерден өзгөртүңүз жана WP "
+"категория тандоочуну колдонбоңуз.</span>"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:75
+msgid "Map data of this proposal"
+msgstr "Бул сунуштун карта маалыматтары"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:78
+#: modules/mtl-proposal-form/mtl-proposal-form.php:263
+msgid "Station name (optional)"
+msgstr "Станциянын аты (милдеттүү эмес)"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:78
+#: modules/mtl-proposal-form/mtl-proposal-form.php:263
+msgid "Set new name"
+msgstr "Жаңы ат коюу"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:80
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:94
+#: modules/mtl-proposal-form/mtl-proposal-form.php:267
+#: modules/mtl-proposal-list/mtl-proposal-list.php:250
+#: modules/mtl-single-proposal/mtl-single-proposal.php:46
+msgid "colored map"
+msgstr "түстүү карта"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:80
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:94
+#: modules/mtl-proposal-form/mtl-proposal-form.php:267
+#: modules/mtl-proposal-list/mtl-proposal-list.php:257
+#: modules/mtl-single-proposal/mtl-single-proposal.php:46
+msgid "brightened map"
+msgstr "жарык карта"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:81
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:95
+#: modules/mtl-proposal-form/mtl-proposal-form.php:268
+#: modules/mtl-proposal-list/mtl-proposal-list.php:263
+#: modules/mtl-single-proposal/mtl-single-proposal.php:47
+msgid "Fit proposition to map"
+msgstr "Сунушту картага тууралоо"
+
+#: modules/mtl-metaboxes/mtl-metaboxes.php:82
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:97
+#: modules/mtl-proposal-form/mtl-proposal-form.php:270
+#: modules/mtl-proposal-list/mtl-proposal-list.php:279
+#: modules/mtl-single-proposal/mtl-single-proposal.php:49
+msgid "Show labels"
+msgstr "Белгилерди көрсөтүү"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:68
+#: modules/mtl-proposal-list/mtl-proposal-list.php:30
+#: modules/mtl-tile-list/mtl-tile-list.php:43
+msgid "Loading new set of proposals..."
+msgstr "Жаңы сунуштар жүктөлүүдө..."
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:78
+#: modules/mtl-proposal-list/mtl-proposal-list.php:291
+msgid "By"
+msgstr "Тарабынан"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:79
+#: modules/mtl-proposal-list/mtl-proposal-list.php:293
+msgid "on"
+msgstr "боюнча"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:96
+#: modules/mtl-proposal-form/mtl-proposal-form.php:269
+#: modules/mtl-proposal-list/mtl-proposal-list.php:269
+#: modules/mtl-single-proposal/mtl-single-proposal.php:48
+msgid "Fullscreen view"
+msgstr "Толук экран көрүнүшү"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:96
+#: modules/mtl-proposal-form/mtl-proposal-form.php:269
+#: modules/mtl-proposal-list/mtl-proposal-list.php:272
+#: modules/mtl-single-proposal/mtl-single-proposal.php:48
+msgid "Close fullscreen view"
+msgstr "Толук экран көрүнүшүн жабуу"
+
+#: modules/mtl-multiple-proposal/mtl-multiple-proposal.php:101
+msgid "Proposal list page"
+msgstr "Сунуштар тизмеси баракча"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:37
+#, php-format
+msgid ""
+"<strong>Important notice:</strong> You are about to write a proposal without "
+"being logged in. You won't be able to edit your proposal after publishing. "
+"Please <a href=\"%s\">login here</a> to have full access to your proposal "
+"after publishing it."
+msgstr ""
+"<strong>Маанилүү эскертүү:</strong> Сиз кирбей туруп сунуш жазганы жатасыз. "
+"Сунушуңузду жарыялагандан кийин түзөтө албайсыз. Сураныч, <a href=\"%s\">бул "
+"жерден кирүү</a> сунушуңузга толук жетүү үчүн жарыялагандан кийин."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:38
+msgid "Add a single proposal"
+msgstr "Бир сунуш кошуу"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:39
+msgid "New proposal"
+msgstr "Жаңы сунуш"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:40
+msgid "Updated proposal"
+msgstr "Жаңыртылган сунуш"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:41
+#, php-format
+msgid "A new proposal has been added to your site \"%s\"."
+msgstr "Сиздин сайтыңызга жаңы сунуш кошулду \"%s\"."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:42
+#, php-format
+msgid "A proposal has been updated at your site \"%s\"."
+msgstr "Сиздин сайтыңыздагы сунуш жаңыртылды \"%s\"."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:43
+msgid "View proposal"
+msgstr "Сунушту көрүү"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:44
+msgid "See your proposal here"
+msgstr "Сунушуңузду бул жерден көрүңүз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:45
+msgid "Edit proposal"
+msgstr "Сунушту түзөтүү"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:46
+msgid ""
+"The proposal has already been published. Please check if everything's "
+"alright with it."
+msgstr ""
+"Сунуш мурунтан эле жарыяланган. Сураныч, баары жайында экенин текшерип "
+"алыңыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:47
+msgid ""
+"Please have a look at the updated proposal to see if everything's alright "
+"with it."
+msgstr ""
+"Сураныч, жаңыртылган сунушту текшерип, баары жайында экенин текшерип алыңыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:48
+msgid "Thank you! Your proposal has been added successfully."
+msgstr "Рахмат! Сиздин сунуш ийгиликтүү кошулду."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:49
+msgid "Thank you! Your proposal has been updated successfully."
+msgstr "Рахмат! Сиздин сунуш ийгиликтүү жаңыртылды."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:50
+#, php-format
+msgid ""
+"Thank you! Your proposal has saved, but is not visible for the public. You "
+"can edit it again via the %1$s\"My proposals\" menu%2$s."
+msgstr ""
+"Рахмат! Сиздин сунуш сакталды, бирок коомчулукка көрүнбөйт. Сиз аны кайрадан "
+"%1$s\"Менин сунуштарым\" менюсу%2$s аркылуу түзөтө аласыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:51
+msgid "Your proposal couldn't be added."
+msgstr "Сиздин сунуш кошула алган жок."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:52
+msgid "Title of your proposal"
+msgstr "Сиздин сунуштун аталышы"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:53
+msgid "Description of your proposal"
+msgstr "Сиздин сунуштун сүрөттөлүшү"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:54
+msgid "Add your proposal"
+msgstr "Сиздин сунушту кошуу"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:55
+msgid "Update your proposal"
+msgstr "Сиздин сунушту жаңыртуу"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:56
+msgid "Save proposal as draft"
+msgstr "Сунушту долбоор катары сактоо"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:57
+msgid "Add new proposal"
+msgstr "Жаңы сунуш кошуу"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:148
+msgid "Author name"
+msgstr "Автордун аты"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:149
+msgid "Author e-mail"
+msgstr "Автордун электрондук почтасы"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:150
+msgid "Title"
+msgstr "Аталышы"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:151
+msgid "Description"
+msgstr "Сүрөттөлүш"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:174
+msgid "Please verify the following errors:"
+msgstr "Сураныч, төмөнкү каталарды текшериңиз:"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:176
+msgid "Please select a category"
+msgstr "Сураныч, категорияны тандаңыз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:177
+msgid "Please insert a title"
+msgstr "Сураныч, аталышын киргизиңиз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:178
+msgid "Please insert a description"
+msgstr "Сураныч, сүрөттөлүшүн киргизиңиз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:179
+msgid "Please insert location tags"
+msgstr "Сураныч, жайгашкан жердин тегдерин киргизиңиз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:181
+msgid "Please fill out/correct the data and press the send button again."
+msgstr ""
+"Сураныч, маалыматтарды толтуруңуз/түзөтүңүз жана кайрадан жиберүү баскычын "
+"басыңыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:236
+msgid "Please select a transportation mode"
+msgstr "Сураныч, транспорт режимин тандаңыз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:258
+msgid "Please select another tool<br /> to change the transport mode"
+msgstr "Сураныч, транспорт режимин өзгөртүү үчүн башка куралды тандаңыз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:259
+msgid "Please draw the line and/or the stations into the map"
+msgstr "Сураныч, картаны жана/же станцияларды картага сызыңыз"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:260
+msgid "Hints for the usage of the respective tool are shown below the map."
+msgstr "Тиешелүү куралды колдонуу боюнча кеңештер картада көрсөтүлөт."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:271
+msgid "Tool usage hints"
+msgstr "Куралдарды колдонуу боюнча кеңештер"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:272
+msgid ""
+"Please use the tools at the top left corner of the map.<br /> Use the point "
+"symbol (top) to draw the stations and the line symbol (second from top) to "
+"draw the line."
+msgstr ""
+"Сураныч, картадагы сол жактагы куралдарды колдонуңуз.<br /> Станцияларды "
+"чийүү үчүн чекит символун (жогору), линиясын чийүү үчүн линия символун "
+"(экинчиси) колдонуңуз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:273
+msgid ""
+"Click on the map to add stations.<br /> You can then add names to the "
+"station by using the select tool (third from bottom)."
+msgstr ""
+"Станцияларды кошуу үчүн картага чыкылдатыңыз.<br /> Андан кийин станцияга "
+"аттарды тандоо куралы (төмөндөн үчүнчү) аркылуу кошо аласыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:274
+msgid ""
+"Click on the map to add a line.<br /> Every click adds a new point to the "
+"line. Doubleclick to finish drawing the line."
+msgstr ""
+"Линияны кошуу үчүн картага чыкылдатыңыз.<br /> Ар бир чыкылдатуу линияга "
+"жаңы чекит кошот. Линияны чийүүнү бүтүрүү үчүн эки жолу чыкылдатыңыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:275
+msgid ""
+"Click on the map to add a polygon.<br /> Every click adds a new point to the "
+"polygon. Click the first point to finish drawing the polygon."
+msgstr ""
+"Көп бурчту кошуу үчүн картага чыкылдатыңыз.<br /> Ар бир чыкылдатуу көп "
+"бурчка жаңы чекит кошот. Көп бурчту чийүүнү бүтүрүү үчүн биринчи чекитти "
+"чыкылдатыңыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:276
+msgid ""
+"Click on the map to add a circle.<br /> <strong> Circles will not be saved! "
+"</strong> The first click sets the center, the second one sets the radius."
+msgstr ""
+"Тегерек кошуу үчүн картага чыкылдатыңыз.<br /> <strong> Тегерек сакталбайт! "
+"</strong> Биринчи чыкылдатуу борборду белгилейт, экинчиси радиусту белгилейт."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:277
+msgid ""
+"Click on features to edit them.<br /> You can move or modify the feature "
+"(move points, add points) with this tool."
+msgstr ""
+"Өзгөчөлүктөрдү түзөтүү үчүн чыкылдатыңыз.<br /> Сиз бул курал менен "
+"өзгөчөлүктү (чекиттерди жылдыруу, чекиттерди кошуу) жылдыра же өзгөртө "
+"аласыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:278
+msgid ""
+"Use the tool to select features.<br /> Select a feature to add a name. With "
+"the delete tool (second from bottom) you can delete a selected feature."
+msgstr ""
+"Өзгөчөлүктөрдү тандоо үчүн куралды колдонуңуз.<br /> Аты кошуу үчүн "
+"өзгөчөлүктү тандаңыз. Жок кылуу куралы менен (төмөндөн экинчиси) сиз "
+"тандалган өзгөчөлүктү жок кыла аласыз."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:279
+msgid ""
+"Use the selected tool to navigate the map.<br /> With this tool, no "
+"modification of the objects is possible."
+msgstr ""
+"Картада жүрүү үчүн тандалган куралды колдонуңуз.<br /> Бул курал менен "
+"объектилерди өзгөртүү мүмкүн эмес."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:284
+msgid ""
+"Please note: Only point and linestring features will be imported. Labels "
+"will be set if included as name property for the respective feature. The "
+"imported features will be appended to the existing features in your "
+"proposal. The coordinate system of the import file must be WGS84/EPSG:4326 "
+"(the standard projection of OpenStreetMap tools)."
+msgstr ""
+"Эскертүү: Импорттоо үчүн чекит жана сызык өзгөчөлүктөрү гана колдонулат. "
+"Белгилер тиешелүү өзгөчөлүк үчүн аталыш катары камтылган болсо, орнотулат. "
+"Импорттолгон өзгөчөлүктөр сиздин сунушуңуздагы бар өзгөчөлүктөргө кошулат. "
+"Импорт файлынын координаттар системасы WGS84/EPSG:4326 болушу керек "
+"(OpenStreetMap куралдарынын стандарттуу проекциясы)."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:288
+msgid "Import GeoJSON file"
+msgstr "GeoJSON файлын импорттоо"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:350
+msgid "Enable contact button for my finished proposals"
+msgstr "Менин бүткөн сунуштарым үчүн байланыш баскычын иштетүү"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:351
+msgid ""
+"This enables a contact button within your proposals linked to a contact form "
+"where interested people can contact you. On submit, an email with the form "
+"data is being sent to you (and in copy to the admin team). Your email "
+"address is not visible to the respective person until you reply to her/him. "
+"The button is not visible as long as your prposal is still in elaboration "
+"phase."
+msgstr ""
+"Бул байланыш формасына байланышкан сунуштарыңыздын ичиндеги байланыш "
+"баскычын иштетет, ал жерде кызыкдар адамдар сиз менен байланышса болот. "
+"Жөнөтүү учурунда формадагы маалыматтары бар электрондук кат сизге жөнөтүлөт "
+"(жана админ командага көчүрүү). Электрондук почта дарегиңиз тиешелүү адамга "
+"сиз ага жооп бергенге чейин көрүнбөйт. Сунушуңуз дагы эле иштеп чыгуу "
+"фазасында болсо, баскыч көрүнбөйт."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:351
+msgid ""
+"Important: This global option is being set for all of your finished "
+"proposals, not only for this one."
+msgstr ""
+"Маанилүү: Бул глобалдык параметр сиздин бардык аяктаган сунуштарыңыз үчүн "
+"орнотулган, бул гана эмес."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:359
+msgid "Delete this draft"
+msgstr "Бул долбоорду жок кылуу"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:360
+msgid "Cancel update"
+msgstr "Жаңыртууну жокко чыгаруу"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:380
+#, php-format
+msgid ""
+"You must be logged in to add a new proposal. If you already have an account "
+"at \"%1$s\" or want to login using Facebook, Google, OpenID or Twitter, you "
+"can <a href=\"%2$s\">login here</a>. Otherwise <a href=\"%3$s\">create your "
+"\"%1$s\" account here</a>."
+msgstr ""
+"Жаңы сунуш кошуу үчүн сиз кирген болушуңуз керек. Эгерде сизде мурунтан эле "
+"аккаунтуңуз бар болсо \"%1$s\" же Facebook, Google, OpenID же Twitter "
+"аркылуу киргиңиз келсе, сиз <a href=\"%2$s\">бул жерден кирсеңиз болот</a>. "
+"Болбосо <a href=\"%3$s\">жаратыңыз сиздин \"%1$s\" аккаунтуңуз бул жерде</a>."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:381
+#, php-format
+msgid "You must <a href=\"%2$s\">login here</a> to edit your proposal."
+msgstr ""
+"Сиз сунушуңузду түзөтүү үчүн <a href=\"%2$s\">бул жерден киришиңиз керек</a>."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:394
+msgid ""
+"You have reached your limit of drafts. Please publish or delete at least one "
+"of your drafts to start a new proposal. These are your current drafts:"
+msgstr ""
+"Сиз долбоорлордун чегине жеттиңиз. Жаңы сунушту баштоо үчүн сураныч, кеминде "
+"бир долбооруңузду жарыялагыла же жок кылыңыз. Бул сиздин учурдагы "
+"долбоорлоруңуз:"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:399
+#, php-format
+msgid ""
+"Are your sure you want to delete the draft of your proposal \"%s\"? There is "
+"no going back."
+msgstr "Сиз сунуш долбоорун жок кылууну каалайсызбы \"%s\"? Артка кайткан жок."
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:400
+msgid "Yes, definetily delete this draft"
+msgstr "Ооба, бул долбоорду жок кылгыла"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:401
+msgid "No, I do not want to delete the draft"
+msgstr "Жок, мен долбоорду жок кылууну каалабайм"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:411
+msgid "Draft successfully deleted!"
+msgstr "Долбоор ийгиликтүү жок кылынды!"
+
+#: modules/mtl-proposal-form/mtl-proposal-form.php:415
+msgid ""
+"Couldn't delete the proposal. Is it a draft and are you logged in and the "
+"author?"
+msgstr "Сунушту жок кыла алган жок. Бул долбоорбу жана сиз кирип, авторсузбу?"
+
+#: modules/mtl-proposal-list/mtl-proposal-list.php:36
+msgid "tiles"
+msgstr ""
+
+#: modules/mtl-proposal-list/mtl-proposal-list.php:39
+msgid "list"
+msgstr ""
+
+#: modules/mtl-proposal-list/mtl-proposal-list.php:42
+msgid "map"
+msgstr ""
+
+#: modules/mtl-proposal-list/mtl-proposal-list.php:115
+#: modules/mtl-proposal-list/mtl-proposal-list.php:191
+#: modules/mtl-tile-list/mtl-tile-list.php:58
+msgid "Add a new proposal with map and description"
+msgstr "Карта жана сүрөттөлүш менен жаңы сунуш кошуу"
+
+#: modules/mtl-proposal-list/mtl-proposal-list.php:119
+#: modules/mtl-proposal-list/mtl-proposal-list.php:193
+#: modules/mtl-tile-list/mtl-tile-list.php:58
+msgid "Contribute to the collection!"
+msgstr "Коллекцияга салым кошуңуз!"
+
+#: modules/mtl-proposal-list/mtl-proposal-list.php:221
+msgid "Read more"
+msgstr ""
+
+#: modules/mtl-search-bar/mtl-search-bar.php:41
+#, fuzzy
+#| msgid "Search %s"
+msgid "Search options"
+msgstr "Издөө %s"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:44
+#: modules/mtl-search-bar/mtl-search-bar.php:139
+msgid "Search:"
+msgstr "Издөө:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:47
+#: modules/mtl-search-bar/mtl-search-bar.php:142
+msgid "Filter/sort"
+msgstr "Фильтр/сорттоо"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:53
+#, fuzzy
+#| msgid "Select features"
+msgid "Select multiple values"
+msgstr "Өзгөчөлүктөрдү тандоо"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:55
+msgid "Filter:"
+msgstr "Фильтр:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:62
+msgid "All transit modes"
+msgstr "Бардык транзит режимдери"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:69
+msgid "All users (incl. unregistered)"
+msgstr "Бардык колдонуучулар (катталбагандарды кошкондо)"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:78
+msgid "All regions"
+msgstr "Бардык аймактар"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:85
+msgid "Show drafts"
+msgstr "Долбоорлорду көрсөтүү"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:94
+msgid "Sorting Phase Status:"
+msgstr "Сорттоо фазасынын статусу:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:96
+msgid "All statuses"
+msgstr "Бардык статусу"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:109
+msgid "Sort:"
+msgstr "Сорттоо:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:111
+msgid "Date"
+msgstr "Дата"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:112
+msgid "Number of comments"
+msgstr "Комментарийлердин саны"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:113
+msgid "Random"
+msgstr "Кокус"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:116
+msgid "Descendent"
+msgstr "Төмөндөөчү"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:117
+msgid "Ascendent"
+msgstr "Жогорулаган"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:125
+msgid "Amount:"
+msgstr "Саны:"
+
+#: modules/mtl-search-bar/mtl-search-bar.php:128
+msgid "all"
+msgstr "баары"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:45
+#, fuzzy
+#| msgid "Transport mode"
+msgid "Transit mode"
+msgstr "Транспорт режими"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:56
+msgid "Line length"
+msgstr "Линиянын узундугу"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:67
+msgid "Station count"
+msgstr ""
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:79
+#: modules/mtl-show-metadata/mtl-show-metadata.php:83
+#, fuzzy
+#| msgid "Average station distance"
+msgid "Average distance"
+msgstr "Орточо станция аралык"
+
+#: modules/mtl-show-metadata/mtl-show-metadata.php:90
+msgid "Costs"
+msgstr ""
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:50
+msgid "Show feature sizes"
+msgstr "Өзгөчөлүктөрдүн өлчөмдөрүн көрсөтүү"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:54
+msgid "Description of this proposal"
+msgstr "Бул сунуштун сүрөттөлүшү"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:84
+msgid "Captcha validation failed."
+msgstr "Captcha текшерүүсү ишке ашкан жок."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:99
+#, php-format
+msgid "Your proposal %s"
+msgstr "Сиздин сунуш %s"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:99
+msgid "Message via proposal contact form:"
+msgstr "Сунуш байланышы формасы аркылуу билдирүү:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:100
+#, php-format
+msgid "Dear %s!"
+msgstr "Урматтуу %s!"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:101
+#, php-format
+msgid ""
+"A message to you has been sent via the contact form of your proposal %s. "
+"Just reply to this email to get in touch with the respective person."
+msgstr ""
+"Сизге %s сунушуңуздун байланыш формасы аркылуу билдирүү жөнөтүлдү. Тиешелүү "
+"адам менен байланышуу үчүн бул электрондук катка жооп гана бериңиз."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:102
+#: modules/mtl-single-proposal/mtl-single-proposal.php:122
+msgid "Link to proposal:"
+msgstr "Сунушка шилтеме:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:104
+msgid "The following data has been submitted:"
+msgstr "Төмөнкү маалыматтар жөнөтүлдү:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:105
+msgid "Gender:"
+msgstr "Жынысы:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:106
+msgid "Title:"
+msgstr "Аталышы:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:107
+msgid "First name:"
+msgstr "Аты:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:108
+msgid "Last name:"
+msgstr "Фамилиясы:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:109
+msgid "Institution:"
+msgstr "Институция:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:110
+msgid "Email address:"
+msgstr "Электрондук почта дареги:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:111
+msgid "Phone number:"
+msgstr "Телефон номери:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:112
+msgid "Subject:"
+msgstr "Тема:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:113
+msgid "Message:"
+msgstr "Билдирүү:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:120
+#, php-format
+msgid "Proposal %s:"
+msgstr "Сунуш %s:"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:120
+msgid "Message via proposal contact form"
+msgstr "Сунуш байланышы формасы аркылуу билдирүү"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:121
+#, php-format
+msgid ""
+"A message to the author has been sent via the contact form of proposal %s."
+msgstr "%s сунушунун байланыш формасы аркылуу авторго билдирүү жөнөтүлдү."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:130
+msgid ""
+"Thank you! Your message has been sent to the author of this proposal. A "
+"notice without any of your data has been sent to the admin team for "
+"statistical reasons."
+msgstr ""
+"Рахмат! Сиздин билдирүүңүз бул сунуштун авторуна жөнөтүлдү. Сиздин "
+"маалыматтарыңызсыз эскертүү статистикалык себептерден улам админ командага "
+"жөнөтүлдү."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:137
+msgid ""
+"Thank you! Your message has been sent to the author of this proposal. A copy "
+"of your message has been sent to the admin team."
+msgstr ""
+"Рахмат! Сиздин билдирүүңүз бул сунуштун авторуна жөнөтүлдү. Сиздин "
+"билдирүүңүздүн көчүрмөсү админ командага жөнөтүлдү."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:147
+msgid "Contact the author of this proposal"
+msgstr "Бул сунуштун автору менен байланышыңыз"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:158
+msgid "Please select your gender (optional)"
+msgstr "Сураныч, жынысыңызды тандаңыз (милдеттүү эмес)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:160
+msgid "Please select an option"
+msgstr "Сураныч, бир параметрди тандаңыз"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:161
+msgid "Mrs."
+msgstr "Айым."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:162
+msgid "Mr."
+msgstr "Мырза."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:167
+msgid "Your title (optional)"
+msgstr "Сиздин аталышыңыз (милдеттүү эмес)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:172
+msgid "Your first name"
+msgstr "Сиздин аты-жөнүңүз"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:177
+msgid "Your last name"
+msgstr "Сиздин фамилияңыз"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:182
+msgid "Your institution (optional)"
+msgstr "Сиздин институцияңыз (милдеттүү эмес)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:187
+msgid "Your email address"
+msgstr "Сиздин электрондук почтаңыз"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:192
+msgid "Your phone number (optional)"
+msgstr "Сиздин телефон номериңиз (милдеттүү эмес)"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:197
+msgid "Subject of your message"
+msgstr "Сиздин билдирүүңүздүн темасы"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:202
+msgid "Your message"
+msgstr "Сиздин билдирүүңүз"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:207
+#, php-format
+msgid "I have read and accept the %1$sData privacy policy%2$s."
+msgstr "Мен окуп чыгып кабыл алам %1$sМаалыматтардын купуялуулук саясаты%2$s."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:210
+msgid ""
+"The admin team would like to be informed, too! So please check this box if "
+"you accept that a full copy of your data is being sent to the Linie Plus "
+"admin team in CC. If you do not accept this, the admin team will only be "
+"informed about the usage of the contact form for this proposal without any "
+"of your personal data."
+msgstr ""
+"Админ команда дагы маалым болгусу келет! Андыктан, эгерде сиздин "
+"маалыматтарыңыздын толук көчүрмөсү Linie Plus админ командасына CC аркылуу "
+"жөнөтүлсө, бул кутучаны текшериңиз. Эгер сиз муну кабыл албасаңыз, админ "
+"командага бул сунуш боюнча байланыш формасын колдонуу тууралуу сиздин жеке "
+"маалыматыңызсыз гана маалымдалат."
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:218
+msgid "Send message"
+msgstr "Билдирүү жөнөтүү"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:235
+msgid "Edit my proposal"
+msgstr "Менин сунушумду түзөтүү"
+
+#: modules/mtl-single-proposal/mtl-single-proposal.php:253
+#: modules/mtl-update-old-proposals/mtl-update-old-proposals.php:58
+msgid "All administrative subdivisons of this proposal:"
+msgstr "Бул сунуштун бардык административдик бөлүмдөрү:"
+
+#: modules/mtl-tile-list/mtl-tile-list.php:94
+msgid "Proposal map page"
+msgstr "Сунуш картасы бет"
+
+#: search.php:16
+#, php-format
+msgid "Search Results for: %s"
+msgstr "Издөө натыйжалары: %s"
+
+#~ msgid ""
+#~ "<strong>Note:</strong> You should start with the collecting phase and "
+#~ "switch to Rating phase after approx. 6 months."
+#~ msgstr ""
+#~ "<strong>Белги:</strong> Жыйноо баскычынан баштап, болжол менен 6 айдан "
+#~ "кийин рейтингге өтүшүңүз керек."
+
+#~ msgid "Please insert your name or nickname"
+#~ msgstr "Сураныч, аты-жөнүңүздү же лакап атыңызды киргизиңиз"
+
+#~ msgid "Please insert your e-mail address"
+#~ msgstr "Сураныч, электрондук почтаңызды киргизиңиз"
+
+#~ msgid "Please insert a valid e-mail address"
+#~ msgstr "Сураныч, жарактуу электрондук почтаңызды киргизиңиз"
+
+#~ msgid "Please check that you read our data privacy conditions"
+#~ msgstr ""
+#~ "Сураныч, маалыматтарыңызды коргоо шарттарын окугандыгыңызды текшериңиз"
+
+#~ msgid "You didn't enter the right captcha code"
+#~ msgstr "Сиз туура captcha кодун киргизген жоксуз"
+
+#~ msgid "Your personal data"
+#~ msgstr "Сиздин жеке маалыматтарыңыз"
+
+#~ msgid "Your name or nickname"
+#~ msgstr "Сиздин аты-жөнүңүз же лакап атыңыз"
+
+#~ msgid "Your e-mail address"
+#~ msgstr "Сиздин электрондук почтаңыз"
+
+#~ msgid "Please enter the captcha code (case-sensitive)"
+#~ msgstr "Сураныч, captcha кодун киргизиңиз (регистрге сезгич)"
+
+#, php-format
+#~ msgid ""
+#~ "I have read and accepted the <a href=\"%s\">data privacy statement</a>:"
+#~ msgstr ""
+#~ "Мен окуп чыктым жана кабыл алдым <a href=\"%s\">маалыматтардын "
+#~ "купуялуулук билдирүүсү</a>:"
+
+#~ msgid "Number of stations"
+#~ msgstr "Станциялардын саны"
+
+#~ msgid ""
+#~ "Attention: average station distance calculation is currently only correct "
+#~ "when there is one contiguous line with the first and the last station on "
+#~ "the respective end of line."
+#~ msgstr ""
+#~ "Көңүл буруңуз: орточо станция аралык эсептөө учурда биринчи жана акыркы "
+#~ "станциясы линиянын тиешелүү аягында жайгашкан бир үзгүлтүксүз сызык "
+#~ "болгондо гана туура."

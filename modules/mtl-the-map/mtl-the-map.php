@@ -39,7 +39,7 @@ function the_map_output() {
 				'</a>
 			</p>
 			<p class="alignright">
-				<a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()">
+				<a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()" data-mtl-toggle-fullscreen>
 					<span class="fullscreen-closed">'.
 						__('Fullscreen view','my-transit-lines').
 					'</span>

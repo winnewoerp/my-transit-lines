@@ -268,10 +268,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";
-				$output .= '<div style="position:relative;">';
 				$output .= the_map_output();
-				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><span class="set-name">'.__('Set new name', 'my-transit-lines').'</span></div>'."\r\n";
-				$output .= '</div>';
 				$output .= mtl_localize_script(true);
 				wp_enqueue_script('mtl-proposal-form', get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.js', array('my-transit-lines'), wp_get_theme()->version, true);
 				$output .= '<p class="alignleft"><strong>'.__('Tool usage hints','my-transit-lines').'</strong>: ';
@@ -420,6 +417,24 @@ function mtl_proposal_form_output( $atts ){
 	}
 }
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );
+
+function add_textinput_box($box) {
+	$split = strrpos($box, '</div>');
+
+	return substr($box, 0, $split).'
+		<div class="feature-textinput-box">
+			<label for="feature-textinput">'.
+				__('Station name (optional)','my-transit-lines').': '.
+				'<br>
+				<input type="text" name="feature-textinput" id="feature-textinput">
+			</label>
+			<span class="set-name">'.
+				__('Set new name', 'my-transit-lines').
+			'</span>
+		</div>
+	'.substr($box, $split);
+}
+add_filter('mtl-map-box', 'add_textinput_box');
 
 /**
  * Returns a WP_Query of all the drafts the current user has created

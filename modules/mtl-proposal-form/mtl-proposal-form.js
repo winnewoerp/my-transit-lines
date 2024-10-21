@@ -177,6 +177,13 @@ const interactionControl = new InteractionControl();
 map.addControl(interactionControl);
 
 window.addEventListener('DOMContentLoaded', addSaveEventListeners);
+window.addEventListener('DOMContentLoaded', () => {
+	document.getElementById('feature-textinput').addEventListener('keydown', e => {
+		if(e.key === "Enter") {
+			e.preventDefault();
+		}
+	});
+});
 
 dragBoxInteraction.on('boxend', handleBoxSelect);
 dragBoxInteraction.on('boxstart', function (event) {

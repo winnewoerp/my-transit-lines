@@ -13,11 +13,12 @@ function the_map_output() {
 	wp_enqueue_script('my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', [], wp_get_theme()->version);
 
 	return '
-	<div id="mtl-box">
-		<div id="mtl-map-box">
+	<div id="mtl-box">'.
+		apply_filters('mtl-map-box',
+		'<div id="mtl-map-box" data-mtl-toggle-fullscreen>
 			<div id="mtl-map"></div>
-		</div>
-		<div class="mtl-map-controls">
+		</div>').
+		'<div class="mtl-map-controls">
 			<p id="map-color-opacity">
 				<span id="mtl-colored-map-box">
 					<label for="mtl-colored-map">

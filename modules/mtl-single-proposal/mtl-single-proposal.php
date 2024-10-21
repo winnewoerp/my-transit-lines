@@ -77,8 +77,7 @@ function mtl_proposal_map($content) {
 					// send message
 					if(!$use_recaptcha || $responseData->success) {
 						//  mail data
-						$current_user = wp_get_current_user();
-						$to = $current_user->user_email;
+						$to = get_the_author_meta('user_email');
 						$headers = 'From: '.sanitize_text_field(wp_unslash($_POST['pacf-first-name'])).' '.sanitize_text_field(wp_unslash($_POST['pacf-last-name'])).' <'.sanitize_text_field(wp_unslash($_POST['pacf-email-address'])).'>' . "\r\n";
 						if($_POST['pacf-privacy-admin-mail']) {
 							$headers .= 'CC: Linie Plus Admin Team <'.get_bloginfo('admin_email').'>'."\r\n";

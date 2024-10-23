@@ -560,17 +560,13 @@ function toggleLabels() {
 function toggleFullscreen() {
 	fullscreen = !fullscreen;
 	if (fullscreen) {
-		$('#mtl-map-box').addClass('fullscreen');
-		$('#mtl-fullscreen-link').addClass('fullscreen');
-		$('#mtl-fullscreen-link').addClass('fullscreen');
-		$('#mtl-category-select').addClass('fullscreen');
-		$('#mtl-color-opacity').addClass('fullscreen');
-		$('#mtl-fullscreen-link .fullscreen-open').css('display', 'block');
-		$('#mtl-fullscreen-link .fullscreen-closed').css('display', 'none');
+		document.querySelectorAll('[data-mtl-toggle-fullscreen]').forEach(elem => {
+			elem.classList.add('fullscreen');
+		});
 	} else {
-		$('#mtl-box').find('.fullscreen').removeClass('fullscreen');
-		$('#mtl-fullscreen-link .fullscreen-open').css('display', 'none');
-		$('#mtl-fullscreen-link .fullscreen-closed').css('display', 'block');
+		document.querySelectorAll('[data-mtl-toggle-fullscreen].fullscreen').forEach(elem => {
+			elem.classList.remove('fullscreen')
+		});
 	}
 }
 

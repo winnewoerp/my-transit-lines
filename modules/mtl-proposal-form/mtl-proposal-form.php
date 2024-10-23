@@ -17,6 +17,17 @@ function mtl_proposal_form_output( $atts ){
 	// get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 	$mtl_options3 = get_option('mtl-option-name3');
+				
+	// GeoJSON import
+	$import_hints = __('Please note: Only point and linestring features will be imported. Labels will be set if included as name property for the respective feature. The imported features will be appended to the existing features in your proposal. The coordinate system of the import file must be WGS84/EPSG:4326 (the standard projection of OpenStreetMap tools).','my-transit-lines');
+	if(trim($mtl_options3['mtl-geojson-import-hints'])) $import_hints = $mtl_options3['mtl-geojson-import-hints'];
+
+	extract( shortcode_atts( [
+		'center_lon' => $mtl_options['mtl-center-lon'],
+		'center_lat' => $mtl_options['mtl-center-lat'],
+		'standard_zoom' => $mtl_options['mtl-standard-zoom'],
+		'import_hints' => $import_hints,
+	], $atts ) );
 	
 	// get the posttype from url parameter or set to default
 	$postType = 'mtlproposal';
@@ -217,7 +228,7 @@ function mtl_proposal_form_output( $atts ){
 				if(str_contains($single_category->slug, 'other')) $output .= 'defaultCategory = "'.$single_category->cat_ID.'";';
 			}
 
-			$output .= ' var centerLon = "'.$mtl_options['mtl-center-lon'].'"; var centerLat = "'.$mtl_options['mtl-center-lat'].'"; var standardZoom = '.$mtl_options['mtl-standard-zoom'].'; </script>'."\r\n";
+			$output .= ' var centerLon = "'.$center_lon.'"; var centerLat = "'.$center_lat.'"; var standardZoom = '.$standard_zoom.'; </script>'."\r\n";
 
 			if(trim($mtl_options3['mtl-country-source']))
 				$output .= '<script type="text/javascript"> var countrySource = \''.str_replace(array("\r", "\n"), "", file_get_contents($mtl_options3['mtl-country-source'])).'\';'."\r\n";
@@ -232,7 +243,7 @@ function mtl_proposal_form_output( $atts ){
 					$single_category = $active_categories[0];
 					$output .= '<input checked="checked" style="display:none;" class="cat-select" onclick="redraw()" type="radio" name="cat" value="'.$single_category->cat_ID.'" id="cat-'.$single_category->slug.'" />'."\r\n";
 				} else {
-					$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select"><span class="transport-mode-select">'."\r\n";
+					$output .= '<p class="alignleft"><strong>'.__('Please select a transportation mode','my-transit-lines').'</strong><br /><span id="mtl-category-select" data-mtl-toggle-fullscreen><span class="transport-mode-select">'."\r\n";
 
 					$checkedAlready = false;
 					// getting all categories for selected as transit mode categories, set the given category option to checked
@@ -257,10 +268,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '</span></span></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin"><strong>'.__('Please draw the line and/or the stations into the map','my-transit-lines').'</strong></p>'."\r\n";
 				$output .= '<p class="alignleft no-bottom-margin symbol-texts">'.__('Hints for the usage of the respective tool are shown below the map.','my-transit-lines').'</p>'."\r\n";
-				$output .= '<div style="position:relative;">';
 				$output .= the_map_output();
-				$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><span class="set-name">'.__('Set new name', 'my-transit-lines').'</span></div>'."\r\n";
-				$output .= '</div>';
 				$output .= mtl_localize_script(true);
 				wp_enqueue_script('mtl-proposal-form', get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.js', array('my-transit-lines'), wp_get_theme()->version, true);
 				$output .= '<p class="alignleft"><strong>'.__('Tool usage hints','my-transit-lines').'</strong>: ';
@@ -273,12 +281,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
 				$output .= '</p>'."\r\n";
-				
-				// GeoJSON import
-				$import_hints = __('Please note: Only point and linestring features will be imported. Labels will be set if included as name property for the respective feature. The imported features will be appended to the existing features in your proposal. The coordinate system of the import file must be WGS84/EPSG:4326 (the standard projection of OpenStreetMap tools).','my-transit-lines');
-				if(trim($mtl_options3['mtl-geojson-import-hints'])) $import_hints = $mtl_options3['mtl-geojson-import-hints'];
-				
-				
+
 				$output .= '<p class="alignleft"><label for="mtl-import-geojson"><strong>'.__('Import GeoJSON file','my-transit-lines').'</strong><br>
 							<input type="file" name="mtl-import-geojson" id="mtl-import-geojson" accept=".geojson,.json" multiple="true">
 							<script type="text/javascript"> document.querySelector("#mtl-import-geojson").addEventListener("change", function() { importJSONFiles(document.querySelector("#mtl-import-geojson")); }); </script>
@@ -355,7 +358,7 @@ function mtl_proposal_form_output( $atts ){
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
 			$output .= '<input type="hidden" name="delete_id" value="'.$editId.'" />'."\r\n";
-			if (!is_admin())
+			if (!is_admin() && !defined('REST_REQUEST'))
 				wp_nonce_field( 'new-post' );
 			$output .= '</form>'."\r\n";
 		}
@@ -414,6 +417,24 @@ function mtl_proposal_form_output( $atts ){
 	}
 }
 add_shortcode( 'mtl-proposal-form', 'mtl_proposal_form_output' );
+
+function add_textinput_box($box) {
+	$split = strrpos($box, '</div>');
+
+	return substr($box, 0, $split).'
+		<div class="feature-textinput-box">
+			<label for="feature-textinput">'.
+				__('Station name (optional)','my-transit-lines').': '.
+				'<br>
+				<input type="text" name="feature-textinput" id="feature-textinput">
+			</label>
+			<span class="set-name">'.
+				__('Set new name', 'my-transit-lines').
+			'</span>
+		</div>
+	'.substr($box, $split);
+}
+add_filter('mtl-map-box', 'add_textinput_box');
 
 /**
  * Returns a WP_Query of all the drafts the current user has created

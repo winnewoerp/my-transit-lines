@@ -271,14 +271,31 @@ function get_posts_per_page() {
  * @return array
  */
 function get_query_cats_children() {
-	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != '')
+	if(isset($_GET['mtl-catid']) && $_GET['mtl-catid'] != '') {
 		return array_merge(...array_map(function($catid) {
-			$ids = get_term_children($catid, 'category');
-			$ids[] = $catid;
-			return $ids;
+			return get_cat_children($catid);
 		}, explode(',', $_GET['mtl-catid'])));
+	}
 
 	return [];
+}
+
+/**
+ * Recursively returns an id array of all children of the specified category and the category itself
+ * 
+ * @return array
+ */
+function get_cat_children($catid) {
+	if (!isset(get_option('mtl-option-name')['mtl-also-search-for-cat'.$catid]))
+		return [$catid];
+
+	$also_search_for_cats = get_option('mtl-option-name')['mtl-also-search-for-cat'.$catid];
+	if ($also_search_for_cats == '')
+		return [$catid];
+
+	return array_merge([$catid], ...array_map(function($id) {
+		return get_cat_children($id);
+	}, explode(',', $also_search_for_cats)));
 }
 
 /**

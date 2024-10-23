@@ -4,7 +4,7 @@ Theme URI: https://stadtkreation.de/en/wordpress-themes-and-plugins/
 Author: Stadtkreation
 Author URI: https://stadtkreation.de/en/about-us/
 Description: "My Transit Lines" is a Wordpress theme developed for urban and regional public transit platforms. Follow the theme link to find out more. New additions since version 1.0: Rating tool added, minor bugs fixed, GeoJSON download added.
-Version: 2.8
+Version: 2.9.1
 Tested up to: 6.6.1
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -27,9 +27,7 @@ My Transit Lines is based on Underscores http://underscores.me/, (C) 2012-2014 A
 @import url('modules/mtl-the-map/mtl-the-map.css');
 @import url('modules/mtl-proposal-form/mtl-proposal-form.css');
 @import url('modules/mtl-single-proposal/mtl-single-proposal.css');
-@import url('modules/mtl-tile-list/mtl-tile-list.css');
 @import url('modules/mtl-show-metadata/mtl-show-metadata.css');
 @import url('modules/mtl-search-bar/mtl-search-bar.css');
 @import url('modules/mtl-proposal-list/mtl-proposal-list.css');
-@import url('modules/mtl-multiple-proposal/mtl-multiple-proposal.css');
 @import url('openlayers/ol.css');

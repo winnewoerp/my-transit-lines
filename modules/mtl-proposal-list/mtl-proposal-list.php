@@ -21,6 +21,9 @@ function mtl_proposal_list_output($atts) {
 		'statusid_query' => 0,
 		'posts_per_page' => 23,
 		'proposal_ids' => '',
+		'center_lon' => $mtl_options['mtl-center-lon'],
+		'center_lat' => $mtl_options['mtl-center-lat'],
+		'standard_zoom' => $mtl_options['mtl-standard-zoom'],
 	], $atts ) );
 
 	$show_tabs = explode(',', $show_tabs);
@@ -82,9 +85,9 @@ function mtl_proposal_list_output($atts) {
 
 		<script type="text/javascript">
 			var themeUrl = "'. get_template_directory_uri() .'";
-			var centerLon = "'.$mtl_options['mtl-center-lon'].'";
-			var centerLat = "'.$mtl_options['mtl-center-lat'].'";
-			var standardZoom = "'.$mtl_options['mtl-standard-zoom'].'";
+			var centerLon = "'.$center_lon.'";
+			var centerLat = "'.$center_lat.'";
+			var standardZoom = "'.$standard_zoom.'";
 			var multipleMode = true;
 			var editMode = false;
 			var showLabels = false;

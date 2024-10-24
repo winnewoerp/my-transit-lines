@@ -558,6 +558,11 @@ function toggleLabels() {
 
 // Toggle if the map is displayed in fullscreen or not
 function toggleFullscreen() {
+	if (document.getElementById('mtl-fullscreen-link') === document.activeElement)
+		document.activeElement.blur();
+
+	const prevExtent = view.calculateExtent();
+
 	fullscreen = !fullscreen;
 	if (fullscreen) {
 		document.querySelectorAll('[data-mtl-toggle-fullscreen]').forEach(elem => {
@@ -568,6 +573,10 @@ function toggleFullscreen() {
 			elem.classList.remove('fullscreen')
 		});
 	}
+
+	// Need to get the size manually because OpenLayers only updates the map size after this function and redraw() doesn't help
+	const mapContainer = document.getElementById('mtl-map');
+	view.fit(prevExtent, {size: [mapContainer.offsetWidth, mapContainer.offsetHeight]});
 }
 
 // Toggle if the map is brigthened (low opacity) or not (full opacity)

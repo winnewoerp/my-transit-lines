@@ -30,23 +30,21 @@ function show_tab(id, update_url = true) {
 	document.getElementById('mtl-tab-' + id).classList.remove('unselected');
 	document.getElementById('mtl-tab-selector-' + id).classList.remove('unselected');
 
-	const form = document.getElementById('mtl-filter-form');
-	if (form) {
-		const actionUrl = new URL(form.action);
-		actionUrl.searchParams.set('mtl-tab', id);
-		form.action = actionUrl.toString();
-	}
+	document.querySelectorAll('[data-mtl-set-tab]').forEach(elem => {
+		const attribute = elem instanceof HTMLFormElement ? 'action' : 'href';
+
+		const elemUrl = new URL(elem[attribute]);
+		elemUrl.searchParams.set('mtl-tab', id);
+		elem[attribute] = elemUrl.toString();
+	});
 
 	selectedTab = id;
 
 	if (update_url) {
-		const query = new URLSearchParams(window.location.search);
-		query.set('mtl-tab', id);
+		const siteUrl = new URL(window.location.toString());
+		siteUrl.searchParams.set('mtl-tab', id);
 
-		const new_url = new URL(window.location.toString());
-		new_url.search = query.toString();
-
-		history.pushState({}, "", new_url.toString());
+		history.pushState({}, "", siteUrl);
 		current_location = new URL(window.location);
 	}
 }

@@ -1,4 +1,5 @@
-.mtl-map-controls {
+.mtl-map-controls,
+.transport-mode-select {
 	accent-color: var(--secondary-color);
 }
 

@@ -19,7 +19,7 @@ function the_map_output() {
 			<div id="mtl-map"></div>
 		</div>').
 		'<div class="mtl-map-controls">
-			<p id="map-color-opacity">
+			<p id="map-color-opacity" data-mtl-toggle-fullscreen>
 				<span id="mtl-colored-map-box">
 					<label for="mtl-colored-map">
 						<input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()"> '.
@@ -34,8 +34,8 @@ function the_map_output() {
 					'</label>
 				</span>
 			</p>
-			<p id="zoomtofeatures" class="alignright" style="margin-top:-12px">
-				<a href="javascript:zoomToFeatures()">'.
+			<p id="zoomtofeatures" class="alignright">
+				<a href="javascript:zoomToFeatures()" data-mtl-toggle-fullscreen>'.
 					__('Fit proposition to map','my-transit-lines').
 				'</a>
 			</p>

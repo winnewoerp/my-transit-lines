@@ -5,3 +5,6 @@
 
 # wp-env files
 /.wp-env.json
+
+# auto-generated js files
+*/package-lock.json

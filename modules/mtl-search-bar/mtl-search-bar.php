@@ -34,7 +34,7 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 	// filter start
 	$output .= '
 	<div id="mtl-list-filter">
-		<form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'">
+		<form name="mtl-filter-form" id="mtl-filter-form" method="get" action="'.get_permalink().'" data-mtl-set-tab>
 			<details data-mtl-replace-with="#mtl-filter-details" id="mtl-filter-details" '.$open_details.'>
 				<summary data-mtl-toggle-class class="'.$open_class.'">
 					<span data-mtl-toggle-class id="mtl-search-submit-closed" class="'.$open_class.'">
@@ -201,6 +201,14 @@ function get_paginate_links($max_num_pages) {
 		'next_text' => ''
 	) ).'</div>');
 }
+
+/**
+ * Adds the data-mtl-set-tab attribute to pagination links
+ */
+function paginate_links_filter($output) {
+	return str_replace('<a', '<a data-mtl-set-tab', $output);
+}
+add_filter('paginate_links_output', 'paginate_links_filter');
 
 /**
  * Returns the WP_Query determined by the $_GET arguments

@@ -496,41 +496,38 @@ function mtl_filter_media_comment_status( $open, $post_id ) {
 }
 add_filter( 'comments_open', 'mtl_filter_media_comment_status', 10 , 2 );
 
+function filter_comment($content) {
+	return wp_kses_post($content);
+}
+add_filter( 'pre_comment_content', 'filter_comment' );
+
 function allowed_html_tags() {
 	return array(
 		'a' => array(
 			'href' => true,
 			'title' => true,
 			'style' => true,
-			'class' => true,
 		),
 		'blockquote' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'br' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'code' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'del' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'div' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'em' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'img' => array(
 			'style' => true,
-			'class' => true,
 			'src' => true,
 			'alt' => true,
 			'height' => true,
@@ -538,44 +535,44 @@ function allowed_html_tags() {
 		),
 		'li' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'ol' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'p' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'span' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'strong' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'table' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'td' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'th' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'tr' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'ul' => array(
 			'style' => true,
-			'class' => true,
 		),
 	);
 }
-add_filter( 'wp_kses_allowed_html', 'allowed_html_tags', 1 );
+add_filter( 'wp_kses_allowed_html', 'allowed_html_tags');
+
+function allowed_css_styles() {
+	return array(
+		'text-align',
+		'text-decoration',
+		'font-style',
+		'font-weight',
+	);
+}
+add_filter( 'safe_style_css', 'allowed_css_styles');

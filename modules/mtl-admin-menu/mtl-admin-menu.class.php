@@ -35,7 +35,7 @@ class MtlSettingsPage
 			'My Transit Lines', 
 			'manage_options', 
 			'mtl_settings_page', 
-			array( $this, 'mtl_submenu_page_intro' )
+			array( $this, 'mtl_menu_page' )
 		);
 	}
 
@@ -71,7 +71,7 @@ class MtlSettingsPage
 	}
 
 	/**
-	 * MTL Admin Page page callback
+	 * MTL Admin Settings main page callback
 	 */
 	public function mtl_menu_page()
 	{
@@ -80,6 +80,12 @@ class MtlSettingsPage
 		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
+			<h2><?php _e('Introduction','my-transit-lines'); ?></h2>
+			<ul>
+				<li><a href="?page=mtl-instructions"><?php _e('Instructions','my-transit-lines'); ?></a></li>
+				<li><a href="?page=mtl-general-settings"><?php _e('General settings','my-transit-lines'); ?></a></li>
+				<li><a href="?page=mtl-settings"><?php _e('Settings for map and categories','my-transit-lines'); ?></a></li>
+			</ul>
 		</div>
 		<?php
 	}
@@ -107,7 +113,9 @@ class MtlSettingsPage
 	{
 		if (!current_user_can('manage_options'))
 			return;
-		$this->options = get_option( 'mtl-option-name3' ); ?>
+		
+		$this->options = get_option( 'mtl-option-name3' );
+		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
 			<h2><?php _e('General settings','my-transit-lines'); ?></h2>
@@ -119,30 +127,10 @@ class MtlSettingsPage
 				settings_fields('mtl-settings-group-general3');
 				settings_fields('mtl-settings-group-general4');
 				settings_fields('mtl-settings-group-general5');
-				do_settings_sections('mtl-settings-general');
+				do_settings_sections('mtl-general-settings');
 				submit_button();
 			?>
 			</form>
-		</div>
-		<?php
-	}
-
-	/**
-	 * MTL Admin Settings intro subpage callback
-	 */
-	public function mtl_submenu_page_intro()
-	{
-		if (!current_user_can('manage_options'))
-			return;
-		?>
-		<div class="wrap">
-			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
-			<h2><?php _e('Introduction','my-transit-lines'); ?></h2>
-			<ul>
-				<li><a href="?page=mtl-instructions"><?php _e('Instructions','my-transit-lines'); ?></a></li>
-				<li><a href="?page=mtl-general-settings"><?php _e('General settings','my-transit-lines'); ?></a></li>
-				<li><a href="?page=mtl-settings"><?php _e('Settings for map and categories','my-transit-lines'); ?></a></li>
-			</ul>
 		</div>
 		<?php
 	}
@@ -154,7 +142,7 @@ class MtlSettingsPage
 	{
 		if (!current_user_can('manage_options'))
 			return;
-		// Set class property
+
 		$this->options = get_option( 'mtl-option-name' );
 		?>
 		<div class="wrap">
@@ -165,8 +153,9 @@ class MtlSettingsPage
 				// This prints out all hidden setting fields
 				settings_fields( 'mtl-settings-group-map1' );
 				settings_fields( 'mtl-settings-group-map2' );
+				settings_fields( 'mtl-settings-group-categories' );
 				do_settings_sections( 'mtl-settings' );
-				submit_button(); 
+				submit_button();
 			?>
 			</form>
 		</div>
@@ -189,18 +178,18 @@ class MtlSettingsPage
 		register_setting('mtl-addpost-page', 'mtl-option-name', array( $this, 'sanitize' ));
 
 		// settings section general
-		add_settings_section('mtl-settings-group-general', __('Logo Settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-main-logo', __('Load the main site logo','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general',array('field_name' => 'mtl-main-logo','type' => 'image','option_name'=>'mtl-option-name3'));
-		add_settings_field('mtl-currency-text', __('The currency for the website'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general',array('field_name' => 'mtl-currency-text','type' => 'text','option_name'=>'mtl-option-name3'));
-		add_settings_field('mtl-currency-symbol', __('The currency symbol for the website'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general',array('field_name' => 'mtl-currency-symbol','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_section('mtl-settings-group-general', __('Logo Settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
+		add_settings_field('mtl-main-logo', __('Load the main site logo','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general',array('field_name' => 'mtl-main-logo','type' => 'image','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-currency-text', __('The currency for the website'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general',array('field_name' => 'mtl-currency-text','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-currency-symbol', __('The currency symbol for the website'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general',array('field_name' => 'mtl-currency-symbol','type' => 'text','option_name'=>'mtl-option-name3'));
 
 		// settings section general 2
-		add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','type' => 'number','step' => '1', 'option_name'=>'mtl-option-name3'));
-		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection for','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'select','options'=>[['all',__('everyone','my-transit-lines')],['admin',__('only admins','my-transit-lines')],['none',__('no one','my-transit-lines')]],'option_name'=>'mtl-option-name3'));
-		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
-		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));
-		add_settings_field('mtl-district-source', __('District areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general', 'mtl-settings-group-general2', array('field_name' => 'mtl-district-source','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
+		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','type' => 'number','step' => '1', 'option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection for','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'select','options'=>[['all',__('everyone','my-transit-lines')],['admin',__('only admins','my-transit-lines')],['none',__('no one','my-transit-lines')]],'option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-district-source', __('District areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-district-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		
 		// settings section map1
 		add_settings_section('mtl-settings-group-map1', __('Map Settings','my-transit-lines'), array( $this, 'print_map_section_content1' ), 'mtl-settings');
@@ -237,19 +226,19 @@ class MtlSettingsPage
 		add_settings_field('mtl-postlist-page', __('Page ID for proposal list page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
 
 		// settings section general texts
-		add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-proposal-contact-form-title', __('Title for intro of proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-title','option_name'=>'mtl-option-name3','type' => 'text'));
-		add_settings_field('mtl-proposal-contact-form-intro', __('Intro text for proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-intro','option_name'=>'mtl-option-name3','type' => 'textarea'));
-		add_settings_field('mtl-proposal-metadata-contents', __('Contents of the metadata display','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-metadata-contents','option_name'=>'mtl-option-name3','type' => 'textarea'));
+		add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
+		add_settings_field('mtl-proposal-contact-form-title', __('Title for intro of proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-title','option_name'=>'mtl-option-name3','type' => 'text'));
+		add_settings_field('mtl-proposal-contact-form-intro', __('Intro text for proposal contact form','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-contact-form-intro','option_name'=>'mtl-option-name3','type' => 'textarea'));
+		add_settings_field('mtl-proposal-metadata-contents', __('Contents of the metadata display','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general3',array('field_name' => 'mtl-proposal-metadata-contents','option_name'=>'mtl-option-name3','type' => 'textarea'));
 
 		// settings section reCAPTCHA texts
-		add_settings_section('mtl-settings-group-general4', __('ReCAPTCHA settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-recaptcha-website-key', __('ReCAPTCHA website key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-website-key','option_name'=>'mtl-option-name3','type' => 'text'));
-		add_settings_field('mtl-recaptcha-secret-key', __('ReCAPTCHA secret key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-secret-key','option_name'=>'mtl-option-name3','type' => 'text'));
+		add_settings_section('mtl-settings-group-general4', __('ReCAPTCHA settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
+		add_settings_field('mtl-recaptcha-website-key', __('ReCAPTCHA website key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-website-key','option_name'=>'mtl-option-name3','type' => 'text'));
+		add_settings_field('mtl-recaptcha-secret-key', __('ReCAPTCHA secret key','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general4',array('field_name' => 'mtl-recaptcha-secret-key','option_name'=>'mtl-option-name3','type' => 'text'));
 		
 		// settings section import texts
-		add_settings_section('mtl-settings-group-general5', __('GeoJSON import settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');
-		add_settings_field('mtl-geojson-import-hints', __('GeoJSON import hints','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings-general','mtl-settings-group-general5',array('field_name' => 'mtl-geojson-import-hints','option_name'=>'mtl-option-name3','type' => 'textarea'));
+		add_settings_section('mtl-settings-group-general5', __('GeoJSON import settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
+		add_settings_field('mtl-geojson-import-hints', __('GeoJSON import hints','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general5',array('field_name' => 'mtl-geojson-import-hints','option_name'=>'mtl-option-name3','type' => 'textarea'));
 	}
 
 	/**
@@ -337,23 +326,23 @@ class MtlSettingsPage
 		// option_name
 		$option_name = '';
 		if(isset($args['option_name'])) $option_name = $args['option_name'];
-		
+
 		// field_name
 		$field_name = '';
 		if(isset($args['field_name'])) $field_name = $args['field_name'];
-		
+
 		// type
 		$type = '';
 		if(isset($args['type'])) $type = $args['type'];
-		
+
 		// separator
 		$separator = false;
 		if(isset($args['separator'])) $separator = $args['separator'];
-		
+
 		// class
 		$class = '';
 		if(isset($args['class'])) $class = $args['class'];
-		
+
 		// options
 		$options = [''];
 		if(isset($args['options'])) $options = $args['options'];
@@ -361,27 +350,27 @@ class MtlSettingsPage
 		// step size for number input
 		$step = '';
 		if(isset($args['step'])) $step = $args['step'];
-		
+
 		// name for the input
 		$name = $option_name.($field_name ? '['.$field_name.']' : '');
 
 		// field output by type
 		if($type == 'text' || $type == 'hidden' || $type == 'number') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$name.'" value="%s" step="'.$step.'" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
-		
+
 		if($type == 'textarea') printf( '<textarea'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$name.'">%s</textarea>', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
-		
+
 		if($type == 'colorpicker')  printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="text" id="'.$field_name.'" name="'.$name.'" value="%s" class="mtl-color-picker-field" data-default-color="#000000" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
-		
+
 		if($type == 'image') printf( '<input class="upload_image '.$class.'" type="text" size="36" name="'.$name.'" value="%s" /><input class="upload_image_button" class="button" type="button" value="'.__('Select Image','my-transit-lines').'" />'.($this->options[$field_name] ? ' &nbsp; <span style="height:30px;overflow:visible;display:inline-block"><img src="'.esc_attr( $this->options[$field_name]).'" style="vertical-align:top;margin-top:-3px;max-height:60px" alt="'.__('image for this category','my-transit-lines').'" /></span>' : '').'<br />'.__('Enter URL or upload image','my-transit-lines'),  isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : 'http://');
-		
+
 		if($type == 'checkbox') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" name="'.$name.'" '.( $this->options[$field_name] == true ? 'checked="checked"' : '').' />');
-		
+
 		if($type == 'select') {
 			$options_output = '';
 			foreach($options as $option) $options_output .= '<option'.($this->options[$field_name] == $option[0] ? ' selected="selected"' : '').' value="'.$option[0].'">'.$option[1].'</option>';
 			printf( '<select'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$name.'" />'.$options_output.'</select>');
 		}
-		
+
 		if($separator == true) echo '<hr />';
 	}
 }

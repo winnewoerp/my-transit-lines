@@ -10,11 +10,6 @@
 
 class MtlSettingsPage
 {
-	/**
-	 * Holds the values to be used in the fields callbacks
-	 */
-	private $options;
-
 	public function __construct()
 	{
 		/* add menu page */
@@ -114,7 +109,6 @@ class MtlSettingsPage
 		if (!current_user_can('manage_options'))
 			return;
 		
-		$this->options = get_option( 'mtl-option-name3' );
 		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -143,7 +137,6 @@ class MtlSettingsPage
 		if (!current_user_can('manage_options'))
 			return;
 
-		$this->options = get_option( 'mtl-option-name' );
 		?>
 		<div class="wrap">
 			<h1 class="mtl-admin-page-title"><span class="logo"></span> <?php echo wp_get_theme(); ?></h1>
@@ -323,13 +316,24 @@ class MtlSettingsPage
 	 */
 	public function mtl_field_callback(array $args)
 	{
-		// option_name
-		$option_name = '';
-		if(isset($args['option_name'])) $option_name = $args['option_name'];
+		if(!isset($args['option_name']))
+			return;
+
+		$option_name = $args['option_name'];
 
 		// field_name
 		$field_name = '';
 		if(isset($args['field_name'])) $field_name = $args['field_name'];
+
+		// value
+		$option = get_option($option_name);
+		if($field_name) {
+			$has_value = isset($option[$field_name]);
+			if($has_value) $value = $option[$field_name];
+		}else {
+			$has_value = ($option !== false);
+			$value = $option;
+		}
 
 		// type
 		$type = '';
@@ -343,8 +347,8 @@ class MtlSettingsPage
 		$class = '';
 		if(isset($args['class'])) $class = $args['class'];
 
-		// options
-		$options = [''];
+		// options for the select input
+		$options = [];
 		if(isset($args['options'])) $options = $args['options'];
 
 		// step size for number input
@@ -355,23 +359,23 @@ class MtlSettingsPage
 		$name = $option_name.($field_name ? '['.$field_name.']' : '');
 
 		// field output by type
-		if($type == 'text' || $type == 'hidden' || $type == 'number') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$name.'" value="%s" step="'.$step.'" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
+		if($type == 'text' || $type == 'hidden' || $type == 'number') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" id="'.$field_name.'" name="'.$name.'" value="%s" step="'.$step.'" />', $has_value ? esc_attr($value) : '');
 
-		if($type == 'textarea') printf( '<textarea'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$name.'">%s</textarea>', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
+		if($type == 'textarea') printf( '<textarea'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$name.'">%s</textarea>', $has_value ? esc_attr($value) : '');
 
-		if($type == 'colorpicker')  printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="text" id="'.$field_name.'" name="'.$name.'" value="%s" class="mtl-color-picker-field" data-default-color="#000000" />', isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : '');
+		if($type == 'colorpicker')  printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="text" id="'.$field_name.'" name="'.$name.'" value="%s" class="mtl-color-picker-field" data-default-color="#000000" />', $has_value ? esc_attr($value) : '');
 
-		if($type == 'image') printf( '<input class="upload_image '.$class.'" type="text" size="36" name="'.$name.'" value="%s" /><input class="upload_image_button" class="button" type="button" value="'.__('Select Image','my-transit-lines').'" />'.($this->options[$field_name] ? ' &nbsp; <span style="height:30px;overflow:visible;display:inline-block"><img src="'.esc_attr( $this->options[$field_name]).'" style="vertical-align:top;margin-top:-3px;max-height:60px" alt="'.__('image for this category','my-transit-lines').'" /></span>' : '').'<br />'.__('Enter URL or upload image','my-transit-lines'),  isset( $this->options[$field_name] ) ? esc_attr( $this->options[$field_name]) : 'http://');
+		if($type == 'image') printf( '<input class="upload_image '.$class.'" type="text" size="36" name="'.$name.'" value="%s" /><input class="upload_image_button" class="button" type="button" value="'.__('Select Image','my-transit-lines').'" />'.($has_value && $value ? ' &nbsp; <span style="height:30px;overflow:visible;display:inline-block"><img src="'.esc_attr($value).'" style="vertical-align:top;margin-top:-3px;max-height:60px" alt="'.__('image for this category','my-transit-lines').'" /></span>' : '').'<br />'.__('Enter URL or upload image','my-transit-lines'), $has_value ? esc_attr($value) : 'http://');
 
-		if($type == 'checkbox') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" name="'.$name.'" '.( $this->options[$field_name] == true ? 'checked="checked"' : '').' />');
+		if($type == 'checkbox') printf( '<input'.($class != '' ? ' class="'.$class.'"' : '').' type="'.$type.'" name="'.$name.'" '.( $has_value && $value == true ? 'checked' : '').' />');
 
 		if($type == 'select') {
 			$options_output = '';
-			foreach($options as $option) $options_output .= '<option'.($this->options[$field_name] == $option[0] ? ' selected="selected"' : '').' value="'.$option[0].'">'.$option[1].'</option>';
+			foreach($options as $option) $options_output .= '<option'.($has_value && $value == $option[0] ? ' selected' : '').' value="'.$option[0].'">'.$option[1].'</option>';
 			printf( '<select'.($class != '' ? ' class="'.$class.'"' : '').' id="'.$field_name.'" name="'.$name.'" />'.$options_output.'</select>');
 		}
 
-		if($separator == true) echo '<hr />';
+		if($separator) echo '<hr />';
 	}
 }
 

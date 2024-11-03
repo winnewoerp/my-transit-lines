@@ -146,3 +146,17 @@ function get_permalink_or_edit($post_id = -1) {
 		return get_permalink();
 	}
 }
+
+/**
+ * Returns true iff the current user should be able to see districts
+ */
+function districts_enabled() {
+	switch (get_option('mtl-option-name3')['mtl-show-districts']) {
+		case 'all':
+			return true;
+		case 'admin':
+			return current_user_can('administrator');
+		default:
+			return false;
+	}
+}

@@ -69,7 +69,7 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
 	}, get_users('oderby=display_name')), 'mtl-userid', __('All users (incl. unregistered)','my-transit-lines'));
 
 	// only show tag selector when enabled or for admins
-	if ($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) {
+	if (districts_enabled()) {
 		$output .= multi_selector_output(get_query_tags(), array_map(function($tag) {
 			return [
 				'ID' => $tag->term_id,

@@ -34,7 +34,7 @@ function mtl_show_metadata_output($atts) {
 	$output .= str_replace($search, $replace, $a['format_string']);
 	$output .= '</div>'."\r\n";
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-show-metadata/mtl-show-metadata.js?ver='.wp_get_theme()->version.'"></script>'."\r\n";
-	if($mtl_options3['mtl-show-districts'] || current_user_can('administrator')) $output .= mtl_taglist();
+	if(districts_enabled()) $output .= mtl_taglist();
 
 	return $output;
 }

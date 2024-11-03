@@ -227,10 +227,14 @@ class MtlSettingsPage
 			add_settings_field('mtl-also-search-for-cat'.$catid, sprintf(__('Also search for these categories (comma separated id-list) when searching for category <strong>%s</strong>', 'my-transit-lines'),$catname), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-categories', array('field_name' => 'mtl-also-search-for-cat'.$catid,'type' => 'text','option_name'=>'mtl-option-name','separator'=>true));
 		}
 		
+		$all_pages = array_map(function($page) {
+			return [$page->ID, $page->post_title];
+		}, get_pages());
+
 		// settings section page IDs
 		add_settings_section('mtl-settings-group-pageids', __('Page IDs Settings','my-transit-lines'), array( $this, 'print_pageids_section_content' ), 'mtl-settings');
-		add_settings_field('mtl-addpost-page', __('Page ID for page to add proposal','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-addpost-page','type' => 'text','option_name'=>'mtl-option-name'));
-		add_settings_field('mtl-postlist-page', __('Page ID for proposal list page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'text','option_name'=>'mtl-option-name'));
+		add_settings_field('mtl-addpost-page', __('Page ID for page to add proposal','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-addpost-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
+		add_settings_field('mtl-postlist-page', __('Page ID for proposal list page','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
 
 		// settings section general texts
 		add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-settings-general');

@@ -204,9 +204,7 @@ add_action( 'init', 'mtl_session_start' );
 function mtl_get_output($function) {
 	ob_start();
 	$function();
-	$output = ob_get_contents();
-	ob_end_clean();
-	return $output;
+	return ob_get_clean();
 }
 
 /**
@@ -312,20 +310,6 @@ function mtl_localize_script($getVar = false) {
 	else echo $localizeScript;
 }
 
-/**
- * add custom post type mtlproposal to search query
- */
-if (!function_exists('my_theme_filter')) {
-    function my_theme_filter( $query ){
-
-    if ( $query->is_main_query() )
-        if ( $query->get( 'tag' ) OR is_search() )
-            $query->set( 'post_type', array( 'mtlproposal' ) );
-
-    return $query;
-}}
-add_filter( 'pre_get_posts', 'my_theme_filter' );
-
 function add_tax_to_pll( $taxonomies, $is_settings ) {
 	// removes categories from being translated by Polylang
 	unset( $taxonomies['category'] );
@@ -394,14 +378,13 @@ function mtl_switch_user_args($query_args) {
  * add tinyMCE editor to comment form
  */
 function gk_comment_form( $fields ) {
-    ob_start();
-	$settings = array( 'media_buttons' => false,  'textarea_name' => 'comment','teeny'=>true,'tinymce' => array( 'height' => 200 ));
-    wp_editor( '', 'comment', $settings);
-    $fields['comment_field'] = ob_get_clean();
+	$fields['comment_field'] = mtl_get_output(function() {
+		$settings = array( 'media_buttons' => false, 'textarea_name' => 'comment', 'teeny'=>true, 'tinymce' => array( 'height' => 200 ));
+		wp_editor('', 'comment', $settings);
+	});
     return $fields;
 }
 add_filter( 'comment_form_defaults', 'gk_comment_form' );
-
 
 // new fix for comment reply visual editor bug
 // @source: https://wordpress.org/support/topic/reply-to-comments-no-longer-works-2/
@@ -496,41 +479,38 @@ function mtl_filter_media_comment_status( $open, $post_id ) {
 }
 add_filter( 'comments_open', 'mtl_filter_media_comment_status', 10 , 2 );
 
+function filter_comment($content) {
+	return wp_kses_post($content);
+}
+add_filter( 'pre_comment_content', 'filter_comment' );
+
 function allowed_html_tags() {
 	return array(
 		'a' => array(
 			'href' => true,
 			'title' => true,
 			'style' => true,
-			'class' => true,
 		),
 		'blockquote' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'br' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'code' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'del' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'div' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'em' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'img' => array(
 			'style' => true,
-			'class' => true,
 			'src' => true,
 			'alt' => true,
 			'height' => true,
@@ -538,44 +518,44 @@ function allowed_html_tags() {
 		),
 		'li' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'ol' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'p' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'span' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'strong' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'table' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'td' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'th' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'tr' => array(
 			'style' => true,
-			'class' => true,
 		),
 		'ul' => array(
 			'style' => true,
-			'class' => true,
 		),
 	);
 }
-add_filter( 'wp_kses_allowed_html', 'allowed_html_tags', 1 );
+add_filter( 'wp_kses_allowed_html', 'allowed_html_tags');
+
+function allowed_css_styles() {
+	return array(
+		'text-align',
+		'text-decoration',
+		'font-style',
+		'font-weight',
+	);
+}
+add_filter( 'safe_style_css', 'allowed_css_styles');

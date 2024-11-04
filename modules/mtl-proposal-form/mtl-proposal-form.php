@@ -98,7 +98,7 @@ function mtl_proposal_form_output( $atts ){
 				$post = array(
 					'ID' => $editId,
 					'post_title'	=> esc_html($_POST['title']),
-					'post_content'	=> $_POST['description'],
+					'post_content'	=> wp_kses_post($_POST['description']),
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
 					'post_type'		=> $this_posttype,

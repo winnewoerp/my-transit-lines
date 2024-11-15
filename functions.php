@@ -56,7 +56,9 @@ function my_transit_lines_setup() {
 	 * If you're building a theme based on My Transit Lines, use a find and replace
 	 * to change 'my-transit-lines' to the name of your theme in all the template files
 	 */
-	load_theme_textdomain( 'my-transit-lines', get_template_directory() . '/languages' );
+	// load_theme_textdomain( 'my-transit-lines', get_template_directory() . '/languages' ); // up to WP 6.7. this worked
+	// the following line is a workaround so far, not working for WP < 6.7
+	load_textdomain( 'my-transit-lines', get_template_directory() . '/languages/' . determine_locale() . '.mo' );
 
 	// Add default posts and comments RSS feed links to head.
 	add_theme_support( 'automatic-feed-links' );

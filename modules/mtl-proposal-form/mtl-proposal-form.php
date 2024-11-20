@@ -128,12 +128,23 @@ function mtl_proposal_form_output( $atts ){
 					else $realip = getenv('REMOTE_ADDR');
 				}
 
-				// update/add all other needed post meta
 				update_post_meta($current_post_id, 'mtl-author-ip', $realip);
-				update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
-				update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
-				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
-				update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
+
+				if (has_meta_changed($current_post_id)) {
+					$meta_revision = intval(get_post_meta($current_post_id, 'mtl-meta-revision', true) ?: 0);
+
+					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-count-stations', get_post_meta($current_post_id, 'mtl-count-stations', true));
+					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-line-length', get_post_meta($current_post_id, 'mtl-line-length', true));
+					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-features', get_post_meta($current_post_id, 'mtl-features', true));
+					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-costs', get_post_meta($current_post_id, 'mtl-costs', true));
+
+					// update/add all other needed post meta
+					update_post_meta($current_post_id, 'mtl-meta-revision', $meta_revision + 1);
+					update_post_meta($current_post_id, 'mtl-count-stations', $_POST['mtl-count-stations']);
+					update_post_meta($current_post_id, 'mtl-line-length', $_POST['mtl-line-length']);
+					update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
+					update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
+				}
 
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
@@ -516,6 +527,16 @@ function get_id() {
  */
 function is_form_allowed() {
 	return is_user_logged_in() && (is_edit() || get_more_drafts_allowed());
+}
+
+/**
+ * Returns true iff a meta field value in $_POST has changed in regards to the currently saved values
+ */
+function has_meta_changed($post_id) {
+	return trim($_POST['mtl-costs']) != trim(addslashes(get_post_meta( $post_id, 'mtl-costs', true )))
+		|| trim($_POST['mtl-features']) != trim(addslashes(get_post_meta( $post_id, 'mtl-features', true )))
+		|| trim($_POST['mtl-line-length']) != trim(addslashes(get_post_meta( $post_id, 'mtl-line-length', true )))
+		|| trim($_POST['mtl-count-stations']) != trim(addslashes(get_post_meta( $post_id, 'mtl-count-stations', true)));
 }
 
  /**

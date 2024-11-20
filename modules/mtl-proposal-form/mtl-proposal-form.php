@@ -135,9 +135,6 @@ function mtl_proposal_form_output( $atts ){
 				update_post_meta($current_post_id, 'mtl-features', $_POST['mtl-features']);
 				update_post_meta($current_post_id, 'mtl-costs', $_POST['mtl-costs']);
 
-				delete_post_meta($current_post_id, 'mtl-feature-data');
-				delete_post_meta($current_post_id, 'mtl-feature-labels-data');
-				
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
 				
 				// enable/disable contact button for current user

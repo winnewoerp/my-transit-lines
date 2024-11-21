@@ -30,7 +30,7 @@ function mtl_proposal_map($content) {
 	<script type="text/javascript">
 		var editMode = false;
 		var themeUrl = "'.get_template_directory_uri().'";
-		var proposalList = ['.get_proposal_data_json($post->ID).']
+		var proposalList = ['.get_proposal_data_json($post->ID, $_GET['r'] ?? -1).']
 	</script>'.
 	get_transport_mode_style_data().
 	mtl_localize_script(true).

@@ -238,9 +238,10 @@ function mtl_add_revision_switcher(string $map_box) {
 	$revisions_list = '';
 	for ($i = 0; $i < $revisions_count; $i++) {
 		$date = get_post_meta($post->ID, '_'.$i.'mtl-date', true);
+		$date = $date ? ' '.sprintf(_x('on %s','date','my-transit-lines'), $date) : '';
 		
 		$revisions_list .= '
-		<option value="'.$i.'" label="'.$i.($date ? ' '.sprintf(_x('on %s','date','my-transit-lines'), $date) : '').'"></option>';
+		<option value="'.$i.'" label="'.$i.$date.'"></option>';
 	}
 
 	return '
@@ -261,6 +262,15 @@ function mtl_add_revision_switcher(string $map_box) {
 	'.$map_box;
 }
 add_filter( 'mtl-map-box', 'mtl_add_revision_switcher' );
+
+function mtl_proposal_data() {
+	if (!current_user_can( 'administrator' ))
+		wp_die();
+	
+	echo get_proposal_data_json($_POST['post_id'] ?? -1, $_POST['revision'] ?? -1);
+	wp_die();
+}
+add_action( 'wp_ajax_mtl_proposal_data', 'mtl_proposal_data' );
 
 /**
  * get the taglist for districts/municipalities

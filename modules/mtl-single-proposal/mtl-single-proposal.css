@@ -89,3 +89,37 @@ li.comment {
 	border-radius:3px;
 	padding:5px 10px;
 }
+
+aside.mtl-revision-switcher {
+	--revision-switcher-width: calc((100vw - 980px) / 2);
+
+	position: absolute;
+	right: calc(50% - 470px - var(--revision-switcher-width));
+	top:0px;
+	bottom:0px;
+	width: var(--revision-switcher-width);
+	overflow: auto;
+}
+
+.mtl-revision-range-wrapper {
+	position: relative;
+}
+
+#mtl-revision-switcher input[type="range"] {
+	writing-mode: vertical-lr;
+	padding: 0;
+	box-sizing: initial;
+	border: none;
+
+	height: 550px;
+}
+
+.mtl-revision-switcher datalist {
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: space-between;
+
+	position: absolute;
+	margin-left: 5px;
+	height: calc(100% - 5px);
+}

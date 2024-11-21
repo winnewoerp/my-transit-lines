@@ -226,6 +226,42 @@ function mtl_proposal_map($content) {
 }
 add_filter( 'the_content', 'mtl_proposal_map' );
 
+function mtl_add_revision_switcher(string $map_box) {
+	global $post;
+
+	if (get_post_type( $post ) !== 'mtlproposal' || !current_user_can( 'administrator' )) {
+		return $map_box;
+	}
+
+	$revisions_count = intval(get_post_meta($post->ID, 'mtl-meta-revision', true) ?: 0);
+
+	$revisions_list = '';
+	for ($i = 0; $i < $revisions_count; $i++) {
+		$date = get_post_meta($post->ID, '_'.$i.'mtl-date', true);
+		
+		$revisions_list .= '
+		<option value="'.$i.'" label="'.$i.($date ? ' '.sprintf(_x('on %s','date','my-transit-lines'), $date) : '').'"></option>';
+	}
+
+	return '
+	<aside class="mtl-revision-switcher" id="mtl-revision-switcher">
+		<details>
+			<summary>'.
+				__('Revision','my-transit-lines').
+			'</summary>
+			<div class="mtl-revision-range-wrapper">
+				<input type="range" step="1" min="0" max="'.$revisions_count.'" list="mtl-revisions-datalist" value="'.$revisions_count.'">
+				<datalist id="mtl-revisions-datalist">'.
+					$revisions_list.
+					'<option value="'.$revisions_count.'" label="Current"></option>
+				</datalist>
+			</div>
+		</details>
+	</aside>
+	'.$map_box;
+}
+add_filter( 'mtl-map-box', 'mtl_add_revision_switcher' );
+
 /**
  * get the taglist for districts/municipalities
  */

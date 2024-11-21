@@ -131,6 +131,7 @@ function mtl_post_save($post_id) {
 			$meta_revision = intval(get_post_meta($post_id, 'mtl-meta-revision', true) ?: 0);
 
 			update_post_meta($post_id, 'mtl-meta-revision', $meta_revision + 1);
+			update_post_meta($post_id, '_'.$meta_revision.'mtl-date', wp_date('Y-m-d H:i', current_datetime()->getTimestamp()));
 
 			foreach($save_custom_fields as $save_custom_field) {
 				update_post_meta($post_id,'_'.$meta_revision.$save_custom_field,$_POST[$save_custom_field]);

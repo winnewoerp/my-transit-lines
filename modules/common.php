@@ -87,6 +87,7 @@ function get_proposal_data_json($post_id, $revision = -1) {
 
 	if (!is_numeric($revision) || $revision < 0 || $revision >= get_post_meta( $post_id, 'mtl-meta-revision', true ) || !current_user_can('administrator')) {
 		$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, 'mtl-features', true));
+		$revision = 'current';
 	} else {
 		$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, '_'.$revision.'mtl-features', true));
 	}
@@ -98,7 +99,7 @@ function get_proposal_data_json($post_id, $revision = -1) {
 	$catid = get_the_category($post_id)[0]->term_id;
 	$status = get_post_status($post_id);
 
-	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'","status":"'.$status.'"}';
+	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'","status":"'.$status.'","revision":"'.$revision.'"}';
 }
 
 /**

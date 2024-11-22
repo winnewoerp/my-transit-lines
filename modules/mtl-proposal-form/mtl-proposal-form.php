@@ -106,9 +106,8 @@ function mtl_proposal_form_output( $atts ){
 
 				$post['tags_input'] = explode(',', $_POST['mtl-tags']);
 				
+				$current_date = wp_date('Y-m-d H:i', current_datetime()->getTimestamp());
 				if($old_status == 'draft') {
-					$local_time  = current_datetime();
-					$current_date = wp_date('Y-m-d H:i',$local_time->getTimestamp());
 					$post['post_date'] = $current_date;
 				}
 								
@@ -137,6 +136,7 @@ function mtl_proposal_form_output( $atts ){
 					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-line-length', get_post_meta($current_post_id, 'mtl-line-length', true));
 					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-features', get_post_meta($current_post_id, 'mtl-features', true));
 					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-costs', get_post_meta($current_post_id, 'mtl-costs', true));
+					update_post_meta($current_post_id, '_'.$meta_revision.'mtl-date', $current_date);
 
 					// update/add all other needed post meta
 					update_post_meta($current_post_id, 'mtl-meta-revision', $meta_revision + 1);

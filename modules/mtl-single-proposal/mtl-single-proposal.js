@@ -21,3 +21,28 @@ function handleFeatureUnselected(event) {
 	if (!showSizes)
 		event.element.unset('size');
 }
+
+const loaded_revisions = {[proposalList[0].revision]: proposalList[0]};
+document.getElementById('mtl-revision-input').addEventListener('change', function(e) {
+	const load_revision = e.target.value === e.target.max ? "current" : e.target.value;
+
+	if (!Object.keys(loaded_revisions).includes(load_revision)) {
+		fetch(wp.ajax.settings.url, {
+			method: 'post',
+			body: new URLSearchParams({
+				action: 'mtl_proposal_data',
+				post_id: Object.values(loaded_revisions)[0].id,
+				revision: load_revision,
+			}),
+		}).then(response => {
+			response.json().then(json => {
+				loaded_revisions[load_revision] = json;
+				proposalList[0] = loaded_revisions[load_revision];
+				loadNewFeatures();
+			});
+		});
+	} else {
+		proposalList[0] = loaded_revisions[load_revision];
+		loadNewFeatures();
+	}
+});

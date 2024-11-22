@@ -36,6 +36,9 @@ document.getElementById('mtl-revision-input').addEventListener('change', functio
 			}),
 		}).then(response => {
 			response.json().then(json => {
+				if (document.getElementById('mtl-revision-input').value !== load_revision)
+					return;
+
 				loaded_revisions[load_revision] = json;
 				proposalList[0] = loaded_revisions[load_revision];
 				loadNewFeatures();

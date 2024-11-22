@@ -244,6 +244,10 @@ function mtl_add_revision_switcher(string $map_box) {
 		<option value="'.$i.'" label="'.$i.$date.'"></option>';
 	}
 
+	$revision = $_GET['r'] ?? $revisions_count;
+	if (!is_numeric($revision) || $revision < 0 || $revision > $revisions_count)
+		$revision = $revisions_count;
+
 	return '
 	<aside class="mtl-revision-switcher" id="mtl-revision-switcher">
 		<details>
@@ -251,10 +255,10 @@ function mtl_add_revision_switcher(string $map_box) {
 				__('Revision','my-transit-lines').
 			'</summary>
 			<div class="mtl-revision-range-wrapper">
-				<input type="range" step="1" min="0" max="'.$revisions_count.'" list="mtl-revisions-datalist" value="'.$revisions_count.'">
+				<input id="mtl-revision-input" type="range" step="1" min="0" max="'.$revisions_count.'" list="mtl-revisions-datalist" value="'.$revision.'">
 				<datalist id="mtl-revisions-datalist">'.
 					$revisions_list.
-					'<option value="'.$revisions_count.'" label="Current"></option>
+					'<option value="'.$revisions_count.'" label="'.__('Current','my-transit-lines').'"></option>
 				</datalist>
 			</div>
 		</details>

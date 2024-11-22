@@ -24,28 +24,42 @@ function handleFeatureUnselected(event) {
 
 const loaded_revisions = {[proposalList[0].revision]: proposalList[0]};
 document.getElementById('mtl-revision-input').addEventListener('change', function(e) {
-	const load_revision = e.target.value === e.target.max ? "current" : e.target.value;
+	const revision = e.target.value === e.target.max ? "current" : e.target.value;
 
-	if (!Object.keys(loaded_revisions).includes(load_revision)) {
+	if (!Object.keys(loaded_revisions).includes(revision)) {
 		fetch(wp.ajax.settings.url, {
 			method: 'post',
 			body: new URLSearchParams({
 				action: 'mtl_proposal_data',
 				post_id: Object.values(loaded_revisions)[0].id,
-				revision: load_revision,
+				revision: revision,
 			}),
 		}).then(response => {
 			response.json().then(json => {
-				if (document.getElementById('mtl-revision-input').value !== load_revision)
+				loaded_revisions[revision] = json;
+
+				if (document.getElementById('mtl-revision-input').value !== revision)
 					return;
 
-				loaded_revisions[load_revision] = json;
-				proposalList[0] = loaded_revisions[load_revision];
-				loadNewFeatures();
+				load_revision(revision);
 			});
 		});
 	} else {
-		proposalList[0] = loaded_revisions[load_revision];
-		loadNewFeatures();
+		load_revision(revision);
 	}
 });
+
+/**
+ * @param {string} revision_key which revision to load. This needs to be already fetched from the server
+ */
+function load_revision(revision_key) {
+	let new_url = new URL(window.location);
+	let new_search = new URLSearchParams(new_url.search);
+	new_search.set('r', revision_key);
+	new_url.search = new_search;
+
+	history.replaceState(null, "", new_url);
+
+	proposalList[0] = loaded_revisions[revision_key];
+	loadNewFeatures();
+}

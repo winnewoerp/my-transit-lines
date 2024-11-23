@@ -78,7 +78,20 @@ function load_revision(revision_key) {
 
 add_event_listeners();
 function add_event_listeners() {
-	document.querySelectorAll('.nav-links a[data-mtl-no-reload]').forEach(link => link.addEventListener('click', e => {
+	document.querySelectorAll('a:not([data-mtl-no-reload])').forEach(link => {
+		const link_url = new URL(link);
+
+		if (link_url.host === window.location.host || 'extern.'+link_url.host === window.location.host) {
+			const link_path = link_url.pathname.substring(1).split('/');
+			const location_path = window.location.pathname.substring(1).split('/');
+
+			if (link_path.length > 0 && location_path.length > 0 && link_path[0] === location_path[0]) {
+				link.dataset.mtlNoReload = "";
+			}
+		}
+	});
+
+	document.querySelectorAll('a[data-mtl-no-reload]').forEach(link => link.addEventListener('click', e => {
 		load_proposal(e.target.href);
 
 		history.pushState(null, "", link);

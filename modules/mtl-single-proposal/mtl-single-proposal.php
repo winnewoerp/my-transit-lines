@@ -27,10 +27,12 @@ function mtl_proposal_map($content) {
 	wp_enqueue_script('mtl-single-proposal', get_template_directory_uri() . '/modules/mtl-single-proposal/mtl-single-proposal.js', array('my-transit-lines'), wp_get_theme()->version, true);
 
 	$output = '
+	<script id="mtl-proposal-list-script" data-mtl-replace-with="#mtl-proposal-list-script" data-mtl-data-script type="application/json">
+		{"proposalList": ['.get_proposal_data_json($post->ID, $_GET['r'] ?? -1).']}
+	</script>
 	<script type="text/javascript">
 		var editMode = false;
 		var themeUrl = "'.get_template_directory_uri().'";
-		var proposalList = ['.get_proposal_data_json($post->ID, $_GET['r'] ?? -1).']
 	</script>'.
 	get_transport_mode_style_data().
 	mtl_localize_script(true).

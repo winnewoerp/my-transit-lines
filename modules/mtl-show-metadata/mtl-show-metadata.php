@@ -30,7 +30,7 @@ function mtl_show_metadata_output($atts) {
 
 	// output the meta data
 	$output = '<h2>'.__('Metadata for this proposal','my-transit-lines').'</h2>'."\r\n";
-	$output .= '<div class="mtl-metadata" id="mtl-metadata">';
+	$output .= '<div class="mtl-metadata" id="mtl-metadata" data-mtl-replace-with="#mtl-metadata">';
 	$output .= str_replace($search, $replace, $a['format_string']);
 	$output .= '</div>'."\r\n";
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-show-metadata/mtl-show-metadata.js?ver='.wp_get_theme()->version.'"></script>'."\r\n";

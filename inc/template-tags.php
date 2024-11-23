@@ -44,17 +44,19 @@ function my_transit_lines_post_nav() {
 	$previous = ( is_attachment() ) ? get_post( get_post()->post_parent ) : get_adjacent_post( false, '', true );
 	$next     = get_adjacent_post( false, '', false );
 
-	if ( ! $next && ! $previous ) {
+	if ( !$next && !$previous ) {
 		return;
 	}
 	?>
-	<nav class="navigation post-navigation" role="navigation">
+	<nav data-mtl-replace-with="nav.navigation.post-navigation" class="navigation post-navigation" role="navigation">
 		<h1 class="screen-reader-text"><?php _e( 'Post navigation', 'my-transit-lines' ); ?></h1>
 		<div class="nav-links">
-			<?php
-				previous_post_link( '<div class="nav-previous">%link</div>', _x( '<span class="meta-nav">&larr;</span>&nbsp;%title', 'Previous post link', 'my-transit-lines' ) );
-				next_post_link(     '<div class="nav-next">%link</div>',     _x( '%title&nbsp;<span class="meta-nav">&rarr;</span>', 'Next post link',     'my-transit-lines' ) );
-			?>
+			<?php if ($previous) {
+				?><div class="nav-previous"><a data-mtl-no-reload rel="prev" href="<?php echo get_permalink( $previous ) ?>"><span class="meta-nav">&larr;</span>&nbsp;<?php echo get_the_title( $previous ) ?></a></div><?php
+			}
+			if ($next) {
+				?><div class="nav-next"><a data-mtl-no-reload rel="prev" href="<?php echo get_permalink( $next ) ?>"><?php echo get_the_title( $next ) ?>&nbsp;<span class="meta-nav">&rarr;</span></a></div><?php
+			}?>
 		</div><!-- .nav-links -->
 	</nav><!-- .navigation -->
 	<?php

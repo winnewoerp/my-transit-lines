@@ -507,7 +507,7 @@ button {
 
 /* Porposal contact form */
 
-#content .proposal-author-contact-form {
+#content .proposal-author-contact-form:has(*) {
 	border:1px solid #808080;
 	background:#f0f0f0;
 	padding:10px;

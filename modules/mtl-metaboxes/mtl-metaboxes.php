@@ -96,12 +96,16 @@ function mtl_post_class_meta_box($post) {
 	$output .= '<input type="hidden" id="mtl-features" value="'.$mtl_features.'" name="mtl-features" />'."\r\n";
 	
 	// hidden input field for station count
-	$mtl_count_stations =  get_post_meta($post->ID,'mtl-count-stations',true);
+	$mtl_count_stations = get_post_meta($post->ID,'mtl-count-stations',true);
 	$output .= '<input type="hidden" id="mtl-count-stations" value="'.$mtl_count_stations.'"  name="mtl-count-stations" />'."\r\n";
 	
 	// hidden input field for line length
-	$mtl_line_length =  get_post_meta($post->ID,'mtl-line-length',true);
+	$mtl_line_length = get_post_meta($post->ID,'mtl-line-length',true);
 	$output .= '<input type="hidden" id="mtl-line-length" value="'.$mtl_line_length.'"  name="mtl-line-length" />'."\r\n";
+
+	// hidden input field for costs
+	$mtl_costs = get_post_meta($post->ID,'mtl-costs',true);
+	$output .= '<input type="hidden" id="mtl-costs" value="'.$mtl_costs.'"  name="mtl-costs" />'."\r\n";
 	
 	echo $output;
 }
@@ -122,8 +126,18 @@ function mtl_post_save($post_id) {
 	
 	// saving custom fields
 	if(!isset($_POST['mtl-manual-proposal-data']) || $_POST['mtl-manual-proposal-data'] != 'on') {
-		$save_custom_fields = array('mtl-features','mtl-count-stations','mtl-line-length');
-		foreach($save_custom_fields as $save_custom_field) if($_POST[$save_custom_field] != get_post_meta($post_id,$save_custom_field,true)) update_post_meta($post_id,$save_custom_field,$_POST[$save_custom_field]);
+		$save_custom_fields = array('mtl-features','mtl-count-stations','mtl-line-length','mtl-costs');
+		if (has_meta_changed($post_id)) {
+			$meta_revision = intval(get_post_meta($post_id, 'mtl-meta-revision', true) ?: 0);
+
+			update_post_meta($post_id, 'mtl-meta-revision', $meta_revision + 1);
+			update_post_meta($post_id, '_'.$meta_revision.'mtl-date', wp_date('Y-m-d H:i', current_datetime()->getTimestamp()));
+
+			foreach($save_custom_fields as $save_custom_field) {
+				update_post_meta($post_id,'_'.$meta_revision.$save_custom_field,$_POST[$save_custom_field]);
+				update_post_meta($post_id,$save_custom_field,$_POST[$save_custom_field]);
+			}
+		}
 		
 		if($_POST['cat']) {
 			remove_action( 'save_post', 'mtl_post_save' ); // remove save action to avoid infinite loop
@@ -135,8 +149,6 @@ function mtl_post_save($post_id) {
 			add_action( 'save_post', 'mtl_post_save' ); // re-add save action
 		}
 	}
-	
-	
 }
 add_action('save_post','mtl_post_save');
 

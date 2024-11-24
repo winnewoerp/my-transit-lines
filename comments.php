@@ -18,7 +18,7 @@ if ( post_password_required() ) {
 }
 ?>
 
-<div id="comments" class="comments-area">
+<div data-mtl-replace-with="#comments" id="comments" class="comments-area">
 
 	<?php // You can start editing here -- including this comment! ?>
 

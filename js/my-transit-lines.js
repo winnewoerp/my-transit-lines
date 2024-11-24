@@ -774,10 +774,14 @@ function loadDataScripts() {
 		if (!(elem instanceof HTMLScriptElement) || elem.type != "application/json")
 			return;
 
-		const data = JSON.parse(elem.innerText);
+		try {
+			const data = JSON.parse(elem.innerText.trim());
 
-		for (let key in data) {
-			globalThis[key] = data[key];
+			for (let key in data) {
+				globalThis[key] = data[key];
+			}
+		} catch (e) {
+			console.error(e, elem.innerText.trim());
 		}
 	});
 }

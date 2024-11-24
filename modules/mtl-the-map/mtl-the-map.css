@@ -3,6 +3,7 @@
 	accent-color: var(--secondary-color);
 }
 
+#mtl-box,
 #mtl-map-box {
 	position:relative;
 }

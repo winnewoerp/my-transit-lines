@@ -78,21 +78,28 @@ function get_searchable_categories() {
 /**
  * Returns a JSON string with all the relevant data of the specified proposal
  * @param int $post_id the id of the proposal
+ * @param int $revision the meta revision of the proposal
  * @return string the JSON data or the empty string if the given post_id was invalid
  */
-function get_proposal_data_json($post_id) {
+function get_proposal_data_json($post_id, $revision = -1) {
 	if (!is_numeric($post_id) || !get_post_status($post_id))
 		return '';
+
+	if (!is_numeric($revision) || $revision < 0 || $revision >= get_post_meta( $post_id, 'mtl-meta-revision', true ) || !current_user_can('administrator')) {
+		$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, 'mtl-features', true));
+		$revision = 'current';
+	} else {
+		$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, '_'.$revision.'mtl-features', true));
+	}
 
 	$author = get_the_author_meta('display_name', get_post_field ('post_author', $post_id));
 	$title = get_the_title($post_id);
 	$date = get_the_date('d.m.Y', $post_id);
 	$link = get_permalink_or_edit($post_id);
 	$catid = get_the_category($post_id)[0]->term_id;
-	$features = str_replace(["\n", "\r", "\\"], "", get_post_meta($post_id, 'mtl-features', true));
 	$status = get_post_status($post_id);
 
-	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'","status":"'.$status.'"}';
+	return '{"id":'.$post_id.',"author":"'.$author.'","title":"'.$title.'","date":"'.$date.'","link":"'.$link.'","category":'.$catid.',"features":"'.$features.'","status":"'.$status.'","revision":"'.$revision.'"}';
 }
 
 /**

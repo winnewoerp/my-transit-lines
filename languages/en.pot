@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-11-22 01:22+0100\n"
+"POT-Creation-Date: 2024-11-24 17:13+0100\n"
 "PO-Revision-Date: 2024-07-03 16:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
@@ -478,222 +478,224 @@ msgstr ""
 msgid "Post navigation"
 msgstr ""
 
-#: inc/template-tags.php:55
-msgctxt "Previous post link"
-msgid "<span class=\"meta-nav\">&larr;</span>&nbsp;%title"
-msgstr ""
-
-#: inc/template-tags.php:56
-msgctxt "Next post link"
-msgid "%title&nbsp;<span class=\"meta-nav\">&rarr;</span>"
-msgstr ""
-
-#: inc/template-tags.php:74
+#: inc/template-tags.php:76
 #, php-format
 msgid ""
 "<span class=\"posted-on\">Posted on %1$s</span><span class=\"byline\"> by "
 "%2$s</span>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:49
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:50
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:97
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:142
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:44
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:45
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:80
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:98
 msgid "Instructions"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:57
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:58
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:113
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:143
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:52
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:53
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:81
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:115
 msgid "General settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:65
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:66
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:60
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:61
 msgid "Map and category settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:98
-msgid "Page content under preparation for upcoming versions."
-msgstr ""
-
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:140
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:78
 msgid "Introduction"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:144
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:82
 msgid "Settings for map and categories"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:162
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:99
+msgid "Page content under preparation for upcoming versions."
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:143
 msgid "Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:192
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:174
 msgid "Logo Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:193
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:175
 msgid "Load the main site logo"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:194
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:176
 msgid "The currency for the website"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:195
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:177
 msgid "The currency symbol for the website"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:198
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:180
 msgid "Other settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:199
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:181
 msgid "Number of allowed drafts"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:200
-msgid "Show administrative subdivision selection"
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+msgid "Show administrative subdivision selection for"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:201
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+msgid "everyone"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+msgid "only admins"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+msgid "no one"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:183
 msgid "Country areas file"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:184
 msgid "State areas file"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:185
 msgid "District areas file"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:206
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:188
 msgid "Map Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:207
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:189
 msgid "Map center longitude (decimal)"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:208
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:190
 msgid "Map center latitude (decimal)"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:212
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:194
 msgid "Standard zoom level for overview map"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:215
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:197
 msgid "Transit Categories Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
 #, php-format
 msgid "How to use category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
 msgid "Use everywhere"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
 msgid "Use only in map"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
 msgid "Use only for searching"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:202
 msgid "Don't use category"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:222
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:204
 #, php-format
 msgid "Color for category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:205
 #, php-format
 msgid "Map Icon for category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:224
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:206
 #, php-format
 msgid "Map icon (selected) for category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:207
 #, php-format
 msgid "Costs per kilometer in million %ss for category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:208
 #, php-format
 msgid ""
 "Allow other categories (comma separated id-list) to be drawn for category "
 "<strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:227
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:209
 #, php-format
 msgid ""
 "Also search for these categories (comma separated id-list) when searching "
 "for category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
-msgid "Page IDs Settings"
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:217
+msgid "Page Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
-msgid "Page ID for page to add proposal"
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:218
+msgid "Page to add proposal"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
-msgid "Page ID for proposal list page"
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:219
+msgid "Page for proposal list"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:236
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:222
 msgid "General texts settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
 msgid "Title for intro of proposal contact form"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:238
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:224
 msgid "Intro text for proposal contact form"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:239
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
 msgid "Contents of the metadata display"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:242
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:228
 msgid "ReCAPTCHA settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:243
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:229
 msgid "ReCAPTCHA website key"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:244
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:230
 msgid "ReCAPTCHA secret key"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:247
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
 msgid "GeoJSON import settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:248
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:234
 msgid "GeoJSON import hints"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:312
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:298
 msgid ""
 "Click on the map to set the marker to the default map center or input/paste "
 "the values to the fields below"
@@ -1393,166 +1395,166 @@ msgstr ""
 msgid "Costs"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:39
+#: modules/mtl-single-proposal/mtl-single-proposal.php:41
 msgid "Description of this proposal"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:71
+#: modules/mtl-single-proposal/mtl-single-proposal.php:75
 msgid "Captcha validation failed."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:85
+#: modules/mtl-single-proposal/mtl-single-proposal.php:89
 #, php-format
 msgid "Your proposal %s"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:85
+#: modules/mtl-single-proposal/mtl-single-proposal.php:89
 msgid "Message via proposal contact form:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:86
+#: modules/mtl-single-proposal/mtl-single-proposal.php:90
 #, php-format
 msgid "Dear %s!"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:87
+#: modules/mtl-single-proposal/mtl-single-proposal.php:91
 #, php-format
 msgid ""
 "A message to you has been sent via the contact form of your proposal %s. "
 "Just reply to this email to get in touch with the respective person."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:88
-#: modules/mtl-single-proposal/mtl-single-proposal.php:108
+#: modules/mtl-single-proposal/mtl-single-proposal.php:92
+#: modules/mtl-single-proposal/mtl-single-proposal.php:112
 msgid "Link to proposal:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:90
+#: modules/mtl-single-proposal/mtl-single-proposal.php:94
 msgid "The following data has been submitted:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:91
+#: modules/mtl-single-proposal/mtl-single-proposal.php:95
 msgid "Gender:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:92
+#: modules/mtl-single-proposal/mtl-single-proposal.php:96
 msgid "Title:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:93
+#: modules/mtl-single-proposal/mtl-single-proposal.php:97
 msgid "First name:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:94
+#: modules/mtl-single-proposal/mtl-single-proposal.php:98
 msgid "Last name:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:95
+#: modules/mtl-single-proposal/mtl-single-proposal.php:99
 msgid "Institution:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:96
+#: modules/mtl-single-proposal/mtl-single-proposal.php:100
 msgid "Email address:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:97
+#: modules/mtl-single-proposal/mtl-single-proposal.php:101
 msgid "Phone number:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:98
+#: modules/mtl-single-proposal/mtl-single-proposal.php:102
 msgid "Subject:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:99
+#: modules/mtl-single-proposal/mtl-single-proposal.php:103
 msgid "Message:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:106
+#: modules/mtl-single-proposal/mtl-single-proposal.php:110
 #, php-format
 msgid "Proposal %s:"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:106
+#: modules/mtl-single-proposal/mtl-single-proposal.php:110
 msgid "Message via proposal contact form"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:107
+#: modules/mtl-single-proposal/mtl-single-proposal.php:111
 #, php-format
 msgid ""
 "A message to the author has been sent via the contact form of proposal %s."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:116
+#: modules/mtl-single-proposal/mtl-single-proposal.php:120
 msgid ""
 "Thank you! Your message has been sent to the author of this proposal. A "
 "notice without any of your data has been sent to the admin team for "
 "statistical reasons."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:123
+#: modules/mtl-single-proposal/mtl-single-proposal.php:127
 msgid ""
 "Thank you! Your message has been sent to the author of this proposal. A copy "
 "of your message has been sent to the admin team."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:133
+#: modules/mtl-single-proposal/mtl-single-proposal.php:137
 msgid "Contact the author of this proposal"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:144
+#: modules/mtl-single-proposal/mtl-single-proposal.php:148
 msgid "Please select your gender (optional)"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:146
+#: modules/mtl-single-proposal/mtl-single-proposal.php:150
 msgid "Please select an option"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:147
+#: modules/mtl-single-proposal/mtl-single-proposal.php:151
 msgid "Mrs."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:148
+#: modules/mtl-single-proposal/mtl-single-proposal.php:152
 msgid "Mr."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:153
+#: modules/mtl-single-proposal/mtl-single-proposal.php:157
 msgid "Your title (optional)"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:158
+#: modules/mtl-single-proposal/mtl-single-proposal.php:162
 msgid "Your first name"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:163
+#: modules/mtl-single-proposal/mtl-single-proposal.php:167
 msgid "Your last name"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:168
+#: modules/mtl-single-proposal/mtl-single-proposal.php:172
 msgid "Your institution (optional)"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:173
+#: modules/mtl-single-proposal/mtl-single-proposal.php:177
 msgid "Your email address"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:178
+#: modules/mtl-single-proposal/mtl-single-proposal.php:182
 msgid "Your phone number (optional)"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:183
+#: modules/mtl-single-proposal/mtl-single-proposal.php:187
 msgid "Subject of your message"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:188
+#: modules/mtl-single-proposal/mtl-single-proposal.php:192
 msgid "Your message"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:193
+#: modules/mtl-single-proposal/mtl-single-proposal.php:197
 #, php-format
 msgid "I have read and accept the %1$sData privacy policy%2$s."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:196
+#: modules/mtl-single-proposal/mtl-single-proposal.php:200
 msgid ""
 "The admin team would like to be informed, too! So please check this box if "
 "you accept that a full copy of your data is being sent to the Linie Plus "
@@ -1561,29 +1563,29 @@ msgid ""
 "of your personal data."
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:204
+#: modules/mtl-single-proposal/mtl-single-proposal.php:208
 msgid "Send message"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:221
+#: modules/mtl-single-proposal/mtl-single-proposal.php:225
 msgid "Edit my proposal"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:241
+#: modules/mtl-single-proposal/mtl-single-proposal.php:246
 #, php-format
 msgctxt "date"
 msgid "on %s"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:255
+#: modules/mtl-single-proposal/mtl-single-proposal.php:260
 msgid "Revision"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:261
+#: modules/mtl-single-proposal/mtl-single-proposal.php:266
 msgid "Current"
 msgstr ""
 
-#: modules/mtl-single-proposal/mtl-single-proposal.php:289
+#: modules/mtl-single-proposal/mtl-single-proposal.php:294
 #: modules/mtl-update-old-proposals/mtl-update-old-proposals.php:58
 msgid "All administrative subdivisons of this proposal:"
 msgstr ""

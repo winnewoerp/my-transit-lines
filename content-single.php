@@ -5,7 +5,7 @@
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-	<header class="entry-header">
+	<header class="entry-header" data-mtl-replace-with="header.entry-header">
 		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
 
 		<div class="entry-meta">
@@ -23,5 +23,5 @@
 		?>
 	</div><!-- .entry-content -->
 
-	<?php edit_post_link( __( 'Edit', 'my-transit-lines' ), '<span class="edit-link">', '</span>' ); ?>
+	<?php edit_post_link( __( 'Edit', 'my-transit-lines' ), '<span class="edit-link" data-mtl-replace-with="span.edit-link">', '</span>' ); ?>
 </article><!-- #post-## -->

@@ -85,7 +85,7 @@ function add_event_listeners() {
 			const link_path = link_url.pathname.substring(1).split('/');
 			const location_path = window.location.pathname.substring(1).split('/');
 
-			if (link_path.length > 0 && location_path.length > 0 && link_path[0] === location_path[0]) {
+			if (link_url.pathname !== window.location.pathname && link_path.length > 0 && location_path.length > 0 && link_path[0] === location_path[0]) {
 				link.dataset.mtlNoReload = "";
 
 				if (link_url.host.startsWith('extern.')) {

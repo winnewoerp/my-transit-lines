@@ -76,7 +76,7 @@ function load_revision(revision_key) {
 	loadNewFeatures();
 }
 
-add_event_listeners();
+window.addEventListener('load', add_event_listeners);
 function add_event_listeners() {
 	document.querySelectorAll('a:not([data-mtl-no-reload])').forEach(link => {
 		const link_url = new URL(link);
@@ -111,6 +111,11 @@ function add_event_listeners() {
 
 		e.preventDefault();
 	}));
+
+	// We cannot filter the admin bar in the backend, so this fix will have to do
+	if (document.getElementById('wpadminbar')) {
+		document.querySelector('#wp-admin-bar-edit a').dataset.mtlReplaceWith = "#wp-admin-bar-edit a";
+	}
 }
 
 function load_proposal(link) {
@@ -126,6 +131,7 @@ function load_proposal(link) {
 		loadNewFeatures();
 		add_revision_control();
 		document.title = proposalList[0].title + ' | LiniePlus';
+		window.scroll(0, 0);
 	}));
 }
 

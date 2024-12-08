@@ -60,6 +60,7 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
 		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
+		$mtl_string['failure-notice']['mtlproposal']['update'] = __( 'Your proposal couldn\'t be updated.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
 		$mtl_string['form-submit']['mtlproposal']['add'] = __( 'Add your proposal', 'my-transit-lines' );
@@ -214,14 +215,18 @@ function mtl_proposal_form_output( $atts ){
 			// start mtl editor map
 			$output .= "\r";
 			$mtl_features = '';
+			$proposal_data = '';
 			if($editId && !$err) {
 				$mtl_features = get_post_meta($editId, 'mtl-features', true);
+				$proposal_data = get_proposal_data_json($editId);
 			}
 			elseif($err && $_POST['mtl-features']) {
 				$mtl_features = $_POST['mtl-features'];
+				$proposal_data = '{features:"'.$mtl_features.'",category:"'.$_POST['cat'].'",id:0}';
 			}
 
-			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($editId).']</script>'."\r\n";
+
+			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.$proposal_data.']</script>'."\r\n";
 			$active_categories = get_active_categories();
 
 			// get the current category

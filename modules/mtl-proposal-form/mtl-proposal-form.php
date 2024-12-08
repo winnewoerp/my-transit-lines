@@ -86,7 +86,6 @@ function mtl_proposal_form_output( $atts ){
 			}
 			
 			if (!isset($_POST['description']) || strlen(trim($_POST['description']))<=2) $err['description']=true;
-			if($err) $_POST['errorcheck'] = true;
 
 			if(!isset($_POST['submit-save-only'])) {
 				$status = 'publish';
@@ -96,10 +95,21 @@ function mtl_proposal_form_output( $atts ){
 				// Add the content of the form to $post as an array
 				if($editId) $this_posttype = get_post_type($editId);
 				else $this_posttype = $postType;
+
+				$url = parse_url( get_site_url(), PHP_URL_HOST );
+
+				$remove_links = array_map(function($elem) use ($url) {
+					return trim($elem).$url;
+				}, array_filter((explode(',', $mtl_options3['mtl-remove-link-prefix']) ?: []), function($elem) {
+					return $elem !== "";
+				}));
+
 				$post = array(
 					'ID' => $editId,
 					'post_title'	=> esc_html($_POST['title']),
-					'post_content'	=> wp_kses_post($_POST['description']),
+					'post_content'	=> str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url],
+											str_ireplace($remove_links, $url,
+												wp_kses_post($_POST['description']))),
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
 					'post_type'		=> $this_posttype,

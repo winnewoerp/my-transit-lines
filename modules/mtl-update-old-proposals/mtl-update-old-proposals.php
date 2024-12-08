@@ -13,7 +13,6 @@
  * shortcode [mtl-tag-adding]
  */
 function mtl_tag_adding_output() {
-
 	$mtl_options3 = get_option('mtl-option-name3');
 
 	if (current_user_can('administrator') && isset($_POST['mtl-id']) && isset($_POST['tags']) && get_post_type($_POST['mtl-id']) == 'mtlproposal' && !get_the_tags($_POST['mtl-id'])) {
@@ -183,3 +182,62 @@ function mtl_remove_WKT_output() {
 	return $output;
 }
 add_shortcode( 'mtl-remove-wkt', 'mtl_remove_WKT_output' );
+
+/**
+ * shortcode [mtl-update-links]
+ */
+function mtl_update_links_output($atts) {
+	if (!current_user_can('administrator')) {
+		return "";
+	}
+
+	extract( shortcode_atts( [
+		'add_https' => true,
+		'remove_prefix' => '',
+	], $atts ) );
+
+	if (!$add_https && !$remove_prefix) {
+		return "<p>Can't udpate anything</p>";
+	}
+
+	$url = parse_url( get_site_url(), PHP_URL_HOST );
+
+	$args = array(
+		'post_type' => 'mtlproposal',
+		'posts_per_page' => -1,
+		'post_status' => 'any',
+		's' => $url,
+	);
+	$the_query = new WP_Query($args);
+	
+	$add_count = 0;
+	$count = 0;
+
+	while ($the_query->have_posts()) {
+		$the_query->the_post();
+		global $post;
+
+		$content = get_the_content(null, false, $post);
+
+		if ($remove_prefix) {
+			$content = str_ireplace($remove_prefix.$url, $url, $content, $add_count);
+			$count += $add_count;
+		}
+
+		if ($add_https) {
+			$content = str_ireplace([" ".$url, "http://".$url, "<p>".$url], "https://".$url, $content, $add_count);
+			$count += $add_count;
+			$content = str_ireplace("\"".$url, "\"https://".$url, $content, $add_count);
+			$count += $add_count;
+		}
+
+		wp_update_post([
+			'ID' => $post->ID,
+			'post_content' => $content,
+		]);
+	}
+	wp_reset_postdata();
+
+	return "<p>Updated $count links</p>";
+}
+add_shortcode( 'mtl-update-links', 'mtl_update_links_output' );

@@ -60,6 +60,7 @@ function mtl_proposal_form_output( $atts ){
 		$mtl_string['success-notice']['mtlproposal']['update'] = __( 'Thank you! Your proposal has been updated successfully.', 'my-transit-lines' );
 		$mtl_string['success-save-only-notice']['mtlproposal'] = sprintf(__( 'Thank you! Your proposal has saved, but is not visible for the public. You can edit it again via the %1$s"My proposals" menu%2$s.', 'my-transit-lines' ),'<a href="'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'?mtl-userid='.get_current_user_id().'&show-drafts=true">','</a>');
 		$mtl_string['failure-notice']['mtlproposal']['add'] = __( 'Your proposal couldn\'t be added.', 'my-transit-lines' );
+		$mtl_string['failure-notice']['mtlproposal']['update'] = __( 'Your proposal couldn\'t be updated.', 'my-transit-lines' );
 		$mtl_string['form-title']['mtlproposal'] = __( 'Title of your proposal', 'my-transit-lines' );
 		$mtl_string['form-description']['mtlproposal'] = __( 'Description of your proposal', 'my-transit-lines' );
 		$mtl_string['form-submit']['mtlproposal']['add'] = __( 'Add your proposal', 'my-transit-lines' );
@@ -85,7 +86,6 @@ function mtl_proposal_form_output( $atts ){
 			}
 			
 			if (!isset($_POST['description']) || strlen(trim($_POST['description']))<=2) $err['description']=true;
-			if($err) $_POST['errorcheck'] = true;
 
 			if(!isset($_POST['submit-save-only'])) {
 				$status = 'publish';
@@ -95,10 +95,21 @@ function mtl_proposal_form_output( $atts ){
 				// Add the content of the form to $post as an array
 				if($editId) $this_posttype = get_post_type($editId);
 				else $this_posttype = $postType;
+
+				$url = parse_url( get_site_url(), PHP_URL_HOST );
+
+				$remove_links = array_map(function($elem) use ($url) {
+					return trim($elem).$url;
+				}, array_filter((explode(',', $mtl_options3['mtl-remove-link-prefix']) ?: []), function($elem) {
+					return $elem !== "";
+				}));
+
 				$post = array(
 					'ID' => $editId,
 					'post_title'	=> esc_html($_POST['title']),
-					'post_content'	=> wp_kses_post($_POST['description']),
+					'post_content'	=> str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url],
+											str_ireplace($remove_links, $url,
+												wp_kses_post($_POST['description']))),
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
 					'post_type'		=> $this_posttype,
@@ -214,14 +225,18 @@ function mtl_proposal_form_output( $atts ){
 			// start mtl editor map
 			$output .= "\r";
 			$mtl_features = '';
+			$proposal_data = '';
 			if($editId && !$err) {
 				$mtl_features = get_post_meta($editId, 'mtl-features', true);
+				$proposal_data = get_proposal_data_json($editId);
 			}
 			elseif($err && $_POST['mtl-features']) {
 				$mtl_features = $_POST['mtl-features'];
+				$proposal_data = '{features:"'.$mtl_features.'",category:"'.$_POST['cat'].'",id:0}';
 			}
 
-			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.get_proposal_data_json($editId).']</script>'."\r\n";
+
+			$output .= '<script type="text/javascript">var editMode = true; var themeUrl = "'.get_template_directory_uri().'"; var proposalList = ['.$proposal_data.']</script>'."\r\n";
 			$active_categories = get_active_categories();
 
 			// get the current category

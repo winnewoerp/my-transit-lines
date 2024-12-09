@@ -76,30 +76,17 @@ function load_revision(revision_key) {
 	loadNewFeatures();
 }
 
-add_event_listeners();
+window.addEventListener('load', add_event_listeners);
 function add_event_listeners() {
 	document.querySelectorAll('a:not([data-mtl-no-reload])').forEach(link => {
 		const link_url = new URL(link);
 
-		if (link_url.host === window.location.host || link_url.host === 'extern.'+window.location.host) {
+		if (link_url.host === window.location.host) {
 			const link_path = link_url.pathname.substring(1).split('/');
 			const location_path = window.location.pathname.substring(1).split('/');
 
 			if (link_url.pathname !== window.location.pathname && link_path.length > 0 && location_path.length > 0 && link_path[0] === location_path[0]) {
 				link.dataset.mtlNoReload = "";
-
-				if (link_url.host.startsWith('extern.')) {
-					link_url.host = link_url.host.substring('extern.'.length);
-					link.href = link_url.toString();
-				}
-
-				if (!link.href.startsWith('https://')) {
-					if (link.href.startsWith('http://')) {
-						link.href = link.href.replace('http://', 'https://');
-					} else {
-						link.href = 'https://' + link.href;
-					}
-				}
 			}
 		}
 	});
@@ -111,6 +98,11 @@ function add_event_listeners() {
 
 		e.preventDefault();
 	}));
+
+	// We cannot filter the admin bar in the backend, so this fix will have to do
+	if (document.getElementById('wpadminbar')) {
+		document.querySelector('#wp-admin-bar-edit a').dataset.mtlReplaceWith = "#wp-admin-bar-edit a";
+	}
 }
 
 function load_proposal(link) {
@@ -126,6 +118,7 @@ function load_proposal(link) {
 		loadNewFeatures();
 		add_revision_control();
 		document.title = proposalList[0].title + ' | LiniePlus';
+		window.scroll(0, 0);
 	}));
 }
 

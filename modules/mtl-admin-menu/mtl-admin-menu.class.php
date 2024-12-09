@@ -183,6 +183,7 @@ class MtlSettingsPage
 		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-district-source', __('District areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-district-source','type' => 'text','option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-remove-link-prefix', __('Remove link prefixes (comma-separated list)', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-remove-link-prefix','type' => 'text','option_name'=>'mtl-option-name3'));
 		
 		// settings section map1
 		add_settings_section('mtl-settings-group-map1', __('Map Settings','my-transit-lines'), array( $this, 'print_map_section_content1' ), 'mtl-settings');
@@ -252,6 +253,7 @@ class MtlSettingsPage
 		if( isset( $input['mtl-country-source'] ) ) $new_input['mtl-country-source'] = $input['mtl-country-source'];
 		if( isset( $input['mtl-state-source'] ) ) $new_input['mtl-state-source'] = $input['mtl-state-source'];
 		if( isset( $input['mtl-district-source'] ) ) $new_input['mtl-district-source'] = $input['mtl-district-source'];
+		if( isset( $input['mtl-remove-link-prefix'] ) ) $new_input['mtl-remove-link-prefix'] = $input['mtl-remove-link-prefix'];
 		
 		if( isset( $input['mtl-proposal-contact-form-title'] ) ) $new_input['mtl-proposal-contact-form-title'] = $input['mtl-proposal-contact-form-title'];
 		if( isset( $input['mtl-proposal-contact-form-intro'] ) ) $new_input['mtl-proposal-contact-form-intro'] = $input['mtl-proposal-contact-form-intro'];

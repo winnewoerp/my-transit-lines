@@ -167,3 +167,26 @@ function districts_enabled() {
 			return false;
 	}
 }
+
+define("CUSTOM_TRIM_DEFAULT_REMOVE", [" ", "\n", "\r", "\t", "\v", "\x00"]);
+/**
+ * Returns the given haystack with all instances of $needles removed from the start and end.
+ * If any needle is the prefix of any other needle this might not work correctly.
+ */
+function custom_trim(string $haystack, array $needles = CUSTOM_TRIM_DEFAULT_REMOVE): string {
+	$changed = true;
+	while ($changed) {
+		$changed = false;
+		foreach ($needles as $needle) {
+			if (str_starts_with($haystack, $needle)) {
+				$haystack = substr($haystack, strlen($needle));
+				$changed = true;
+			}
+			if (str_ends_with($haystack, $needle)) {
+				$haystack = substr($haystack, 0, -strlen($needle));
+				$changed = true;
+			}
+		}
+	}
+	return $haystack;
+}

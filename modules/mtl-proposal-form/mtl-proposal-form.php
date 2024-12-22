@@ -104,12 +104,15 @@ function mtl_proposal_form_output( $atts ){
 					return $elem !== "";
 				}));
 
+				$post_content = wp_kses_post($_POST['description']);
+				$post_content = str_ireplace($remove_links, $url, $post_content);
+				$post_content = str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url], $post_content);
+				$post_content = custom_trim($post_content, array_merge(CUSTOM_TRIM_DEFAULT_REMOVE, ["&nbsp;", "<p></p>", "<p>&nbsp;</p>"]));
+
 				$post = array(
 					'ID' => $editId,
 					'post_title'	=> esc_html($_POST['title']),
-					'post_content'	=> str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url],
-											str_ireplace($remove_links, $url,
-												wp_kses_post($_POST['description']))),
+					'post_content'	=> $post_content,
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
 					'post_type'		=> $this_posttype,
@@ -579,7 +582,7 @@ add_shortcode( 'hide-if-not-editmode', 'hide_if_not_editmode_output' );
  /**
  * shortcode [hide-if-not-logged-in]
  */
- function hide_if_not_logged_in( $atts, $content ){
+function hide_if_not_logged_in( $atts, $content ){
 	if(is_user_logged_in()) return do_shortcode($content);
 }
 add_shortcode( 'hide-if-not-logged-in', 'hide_if_not_logged_in' );

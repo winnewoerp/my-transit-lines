@@ -121,11 +121,11 @@ div.success-message-block {
 	margin-bottom:0;
 }
 
-#mtl-post-form  #submit-box {
+#mtl-post-form #submit-box {
 	position:relative;
 }
 
-#mtl-post-form  #submit-box .submit-hint {
+#mtl-post-form #submit-box .submit-hint {
 	display:block;
 	position:absolute;
 	top:0;
@@ -134,25 +134,25 @@ div.success-message-block {
 	font-weight:bold;
 }
 
-#mtl-post-form  #submit-box #submit-save-only {
+#mtl-post-form #submit-box #submit-save-only {
 	padding:2px 28px;
 	background:white;
 	color:#00aeef;
 	border:2px solid #00aeef;
 }
 
-#mtl-post-form  .delete-draft {
+#mtl-post-form .delete-draft {
 	padding:2px 28px;
 	background:white;
 	color:red;
 	border:2px solid red;
 }
 
-#mtl-post-form  .proposals-select-box {
+#mtl-post-form .proposals-select-box {
 	margin:0 -10px;
 }
 
-#mtl-post-form  .proposal-select-box {
+#mtl-post-form .proposal-select-box {
 	width:210px;
 	margin:10px;
 	display:inline-block;
@@ -160,13 +160,13 @@ div.success-message-block {
 	opacity:.7;
 }
 
-#mtl-post-form  .proposal-select-box.selected {
+#mtl-post-form .proposal-select-box.selected {
 	opacity:1;
 	border:4px solid black;
 	width:202px;
 }
 
-#mtl-post-form  .proposal-select-box p {
+#mtl-post-form .proposal-select-box p {
 	padding:8px;
 	margin:0;
 	color:#dfdfdf;
@@ -177,28 +177,27 @@ div.success-message-block {
 	overflow:hidden;
 }
 
-#mtl-post-form  .proposal-select-box.selected p {
+#mtl-post-form .proposal-select-box.selected p {
 	color:white;
 	padding:4px;
 }
 
-#mtl-post-form  .proposal-select-box p strong.proposaltitle {
+#mtl-post-form .proposal-select-box p strong.proposaltitle {
 	display:inline-block;
 	max-height:52px;
 	overflow:hidden;
 }
 
-#mtl-post-form  .proposal-select-box p input[type="checkbox"] {
+#mtl-post-form .proposal-select-box p input[type="checkbox"] {
 	display:none;
 }
 
-#mtl-post-form  .proposal-select-box label {
+#mtl-post-form .proposal-select-box label {
 	display:inline-block;
 	height:80px;
 	overflow:hidden;
 	color:inherit;
 }
-
 
 #content p.important-notice {
 	padding:3px 5px;

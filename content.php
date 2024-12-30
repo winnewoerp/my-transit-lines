@@ -22,7 +22,7 @@ if($post->post_status=='draft' && $post->post_author == get_current_user_id()) $
 	<div class="entry-thumbnail placeholder"></div>
 	<?php } ?>
 	<header class="entry-header">
-		<h1 class="entry-title"><a href="<?php echo $post_link; ?>" title="<?php echo the_title(); ?>" rel="bookmark"><?php if('mtlproposal' == get_post_type() && $post->post_status == 'draft') echo '<span class="draft-flag">'.esc_html__('Draft','my-transit-lines').'</span> '; the_title(); ?></a></h1>
+		<h1 class="entry-title"><a href="<?php echo $post_link; ?>" title="<?php echo the_title(); ?>" rel="bookmark"><?php echo get_the_title_flags(); ?></a></h1>
 
 		<?php if ( 'post' == get_post_type() || 'mtlproposal' == get_post_type()) : ?>
 		<div class="entry-meta">

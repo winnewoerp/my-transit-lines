@@ -296,11 +296,6 @@ body.single #content .entry-content {
 	font-size:inherit;
 }
 
-#content h1 span { 
-	font-weight:200;
-	font-size:inherit;
-}
-
 #content .important {
 	font-size:110%;
 	color:var(--primary-color);

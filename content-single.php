@@ -6,7 +6,7 @@
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<header class="entry-header" data-mtl-replace-with="header.entry-header">
-		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
+		<h1 class="entry-title"><?php echo get_the_title_flags(); ?></h1>
 
 		<div class="entry-meta">
 			<?php my_transit_lines_posted_on(); ?>

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-12-08 17:07+0100\n"
+"POT-Creation-Date: 2024-12-30 16:42+0100\n"
 "PO-Revision-Date: 2024-07-03 16:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
@@ -151,13 +151,8 @@ msgid "Pages:"
 msgstr ""
 
 #: content-page.php:26 content-single.php:26 content.php:43
-#: modules/mtl-proposal-list/mtl-proposal-list.php:303
+#: modules/mtl-proposal-list/mtl-proposal-list.php:304
 msgid "Edit"
-msgstr ""
-
-#: content.php:25 modules/common.php:136
-#: modules/mtl-proposal-list/mtl-proposal-list.php:278
-msgid "Draft"
 msgstr ""
 
 #: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:187
@@ -485,6 +480,15 @@ msgid ""
 "%2$s</span>"
 msgstr ""
 
+#: modules/common.php:136 modules/mtl-proposal-list/mtl-proposal-list.php:278
+msgid "Draft"
+msgstr ""
+
+#: modules/common.php:139 modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+#: modules/mtl-proposal-list/mtl-proposal-list.php:279
+msgid "Pending"
+msgstr ""
+
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:44
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:45
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:80
@@ -545,175 +549,183 @@ msgid "Number of allowed drafts"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
-msgid "Show administrative subdivision selection for"
+msgid "Where to place newly published proposals"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
-msgid "everyone"
-msgstr ""
-
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
-msgid "only admins"
-msgstr ""
-
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:182
-msgid "no one"
+msgid "Published"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:183
-msgid "Country areas file"
+msgid "Show administrative subdivision selection for"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:183
+msgid "everyone"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:183
+msgid "only admins"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:183
+msgid "no one"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:184
-msgid "State areas file"
+msgid "Country areas file"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:185
-msgid "District areas file"
+msgid "State areas file"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:186
+msgid "District areas file"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:187
 msgid "Remove link prefixes (comma-separated list)"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:189
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:190
 msgid "Map Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:190
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:191
 msgid "Map center longitude (decimal)"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:191
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:192
 msgid "Map center latitude (decimal)"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:195
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:196
 msgid "Standard zoom level for overview map"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:198
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:199
 msgid "Transit Categories Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:204
 #, php-format
 msgid "How to use category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:204
 msgid "Use everywhere"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:204
 msgid "Use only in map"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:204
 msgid "Use only for searching"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:203
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:204
 msgid "Don't use category"
-msgstr ""
-
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:205
-#, php-format
-msgid "Color for category <strong>%s</strong>"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:206
 #, php-format
-msgid "Map Icon for category <strong>%s</strong>"
+msgid "Color for category <strong>%s</strong>"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:207
 #, php-format
-msgid "Map icon (selected) for category <strong>%s</strong>"
+msgid "Map Icon for category <strong>%s</strong>"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:208
 #, php-format
-msgid "Costs per kilometer in million %ss for category <strong>%s</strong>"
+msgid "Map icon (selected) for category <strong>%s</strong>"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:209
+#, php-format
+msgid "Costs per kilometer in million %ss for category <strong>%s</strong>"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:210
 #, php-format
 msgid ""
 "Allow other categories (comma separated id-list) to be drawn for category "
 "<strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:210
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:211
 #, php-format
 msgid ""
 "Also search for these categories (comma separated id-list) when searching "
 "for category <strong>%s</strong>"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:218
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:219
 msgid "Page Settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:219
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
 msgid "Page to add proposal"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:220
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:221
 msgid "Page for proposal list"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:224
 msgid "General texts settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:224
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
 msgid "Title for intro of proposal contact form"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
 msgid "Intro text for proposal contact form"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:227
 msgid "Contents of the metadata display"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:229
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:230
 msgid "ReCAPTCHA settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:230
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
 msgid "ReCAPTCHA website key"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
 msgid "ReCAPTCHA secret key"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:234
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:235
 msgid "GeoJSON import settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:235
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:236
 msgid "GeoJSON import hints"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:300
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:303
 msgid ""
 "Click on the map to set the marker to the default map center or input/paste "
 "the values to the fields below"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:370
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:373
 msgid "Select Image"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:370
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:373
 msgid "image for this category"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:370
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:373
 msgid "Enter URL or upload image"
 msgstr ""
 
@@ -941,12 +953,12 @@ msgid "Map data of this proposal"
 msgstr ""
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:78
-#: modules/mtl-proposal-form/mtl-proposal-form.php:450
+#: modules/mtl-proposal-form/mtl-proposal-form.php:452
 msgid "Station name (optional)"
 msgstr ""
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:78
-#: modules/mtl-proposal-form/mtl-proposal-form.php:455
+#: modules/mtl-proposal-form/mtl-proposal-form.php:457
 msgid "Set new name"
 msgstr ""
 
@@ -1081,120 +1093,120 @@ msgstr ""
 msgid "Add new proposal"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:178
+#: modules/mtl-proposal-form/mtl-proposal-form.php:181
 msgid "Author name"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:179
+#: modules/mtl-proposal-form/mtl-proposal-form.php:182
 msgid "Author e-mail"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:180
+#: modules/mtl-proposal-form/mtl-proposal-form.php:183
 msgid "Title"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:181
+#: modules/mtl-proposal-form/mtl-proposal-form.php:184
 msgid "Description"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:204
+#: modules/mtl-proposal-form/mtl-proposal-form.php:207
 msgid "Please verify the following errors:"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:206
+#: modules/mtl-proposal-form/mtl-proposal-form.php:209
 msgid "Please select a category"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:207
+#: modules/mtl-proposal-form/mtl-proposal-form.php:210
 msgid "Please insert a title"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:208
+#: modules/mtl-proposal-form/mtl-proposal-form.php:211
 msgid "Please insert a description"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:209
+#: modules/mtl-proposal-form/mtl-proposal-form.php:212
 msgid "Please insert location tags"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:211
+#: modules/mtl-proposal-form/mtl-proposal-form.php:214
 msgid "Please fill out/correct the data and press the send button again."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:269
+#: modules/mtl-proposal-form/mtl-proposal-form.php:272
 msgid "Please select a transportation mode"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:292
+#: modules/mtl-proposal-form/mtl-proposal-form.php:295
 msgid "Please draw the line and/or the stations into the map"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:293
+#: modules/mtl-proposal-form/mtl-proposal-form.php:296
 msgid "Hints for the usage of the respective tool are shown below the map."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:297
+#: modules/mtl-proposal-form/mtl-proposal-form.php:300
 msgid "Tool usage hints"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:298
+#: modules/mtl-proposal-form/mtl-proposal-form.php:301
 msgid ""
 "Please use the tools at the top left corner of the map.<br /> Use the point "
 "symbol (top) to draw the stations and the line symbol (second from top) to "
 "draw the line."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:299
+#: modules/mtl-proposal-form/mtl-proposal-form.php:302
 msgid ""
 "Click on the map to add stations.<br /> You can then add names to the "
 "station by using the select tool (third from bottom)."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:300
+#: modules/mtl-proposal-form/mtl-proposal-form.php:303
 msgid ""
 "Click on the map to add a line.<br /> Every click adds a new point to the "
 "line. Doubleclick to finish drawing the line."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:301
+#: modules/mtl-proposal-form/mtl-proposal-form.php:304
 msgid ""
 "Click on the map to add a polygon.<br /> Every click adds a new point to the "
 "polygon. Click the first point to finish drawing the polygon."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:302
+#: modules/mtl-proposal-form/mtl-proposal-form.php:305
 msgid ""
 "Click on the map to add a circle.<br /> The first click sets the center, the "
 "second one sets the radius."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:303
+#: modules/mtl-proposal-form/mtl-proposal-form.php:306
 msgid ""
 "Click on features to edit them.<br /> You can move or modify the feature "
 "(move points, add points) with this tool."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:304
+#: modules/mtl-proposal-form/mtl-proposal-form.php:307
 msgid ""
 "Use the tool to select features.<br /> Select a feature to add a name. With "
 "the delete tool (second from bottom) you can delete a selected feature."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:305
+#: modules/mtl-proposal-form/mtl-proposal-form.php:308
 msgid ""
 "Use the selected tool to navigate the map.<br /> With this tool, no "
 "modification of the objects is possible."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:308
+#: modules/mtl-proposal-form/mtl-proposal-form.php:311
 msgid "Import GeoJSON file"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:370
+#: modules/mtl-proposal-form/mtl-proposal-form.php:373
 msgid "Enable contact button for my finished proposals"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:371
+#: modules/mtl-proposal-form/mtl-proposal-form.php:374
 msgid ""
 "This enables a contact button within your proposals linked to a contact form "
 "where interested people can contact you. On submit, an email with the form "
@@ -1204,21 +1216,21 @@ msgid ""
 "phase."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:371
+#: modules/mtl-proposal-form/mtl-proposal-form.php:374
 msgid ""
 "Important: This global option is being set for all of your finished "
 "proposals, not only for this one."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:379
+#: modules/mtl-proposal-form/mtl-proposal-form.php:383
 msgid "Delete this draft"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:380
+#: modules/mtl-proposal-form/mtl-proposal-form.php:384
 msgid "Cancel update"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:400
+#: modules/mtl-proposal-form/mtl-proposal-form.php:402
 #, php-format
 msgid ""
 "You must be logged in to add a new proposal. If you already have an account "
@@ -1227,37 +1239,37 @@ msgid ""
 "\"%1$s\" account here</a>."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:401
+#: modules/mtl-proposal-form/mtl-proposal-form.php:403
 #, php-format
 msgid "You must <a href=\"%2$s\">login here</a> to edit your proposal."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:414
+#: modules/mtl-proposal-form/mtl-proposal-form.php:416
 msgid ""
 "You have reached your limit of drafts. Please publish or delete at least one "
 "of your drafts to start a new proposal. These are your current drafts:"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:419
+#: modules/mtl-proposal-form/mtl-proposal-form.php:421
 #, php-format
 msgid ""
 "Are your sure you want to delete the draft of your proposal \"%s\"? There is "
 "no going back."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:420
+#: modules/mtl-proposal-form/mtl-proposal-form.php:422
 msgid "Yes, definetily delete this draft"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:421
+#: modules/mtl-proposal-form/mtl-proposal-form.php:423
 msgid "No, I do not want to delete the draft"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:431
+#: modules/mtl-proposal-form/mtl-proposal-form.php:433
 msgid "Draft successfully deleted!"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:435
+#: modules/mtl-proposal-form/mtl-proposal-form.php:437
 msgid ""
 "Couldn't delete the proposal. Is it a draft and are you logged in and the "
 "author?"
@@ -1296,11 +1308,11 @@ msgstr ""
 msgid "Read more"
 msgstr ""
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:283
+#: modules/mtl-proposal-list/mtl-proposal-list.php:284
 msgid "By"
 msgstr ""
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:285
+#: modules/mtl-proposal-list/mtl-proposal-list.php:286
 msgid "on"
 msgstr ""
 

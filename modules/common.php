@@ -122,10 +122,10 @@ function get_all_proposal_data_json($the_query) {
 }
 
 /**
- * Returns the title of the post with a draft flag added if necessary
+ * Returns the title of the post with a draft/pending flag added if necessary
  */
-function get_the_title_draft_flag($post_id = -1) {
-	if ($post_id == -1) {
+function get_the_title_flags($post_id = -1) {
+	if ($post_id === -1) {
 		global $post;
 		$post_id = $post->ID;
 	}
@@ -133,7 +133,10 @@ function get_the_title_draft_flag($post_id = -1) {
 	$post_title = get_the_title($post_id);
 
 	if (get_post_status($post_id) == 'draft' && get_post_type($post_id) == 'mtlproposal') {
-		return '<span class="draft-flag">'.esc_html__('Draft','my-transit-lines').'</span> '.$post_title;
+		return '<span class="flag">'.esc_html__('Draft','my-transit-lines').'</span> '.$post_title;
+	}
+	if (get_post_status($post_id) == 'pending' && get_post_type($post_id) == 'mtlproposal') {
+		return '<span class="flag">'.esc_html__('Pending','my-transit-lines').'</span> '.$post_title;
 	}
 	return $post_title;
 }
@@ -147,7 +150,7 @@ function get_permalink_or_edit($post_id = -1) {
 		$post_id = $post->ID;
 	}
 
-	if (get_post_status($post_id) == 'draft' && get_post_field('post_author', $post_id) == get_current_user_id()) {
+	if (in_array(get_post_status($post_id), ['draft', 'pending'], true) && get_post_field('post_author', $post_id) == get_current_user_id()) {
 		return get_permalink(pll_get_post(get_option('mtl-option-name')['mtl-addpost-page'])).'?edit_proposal='.$post_id;
 	} else {
 		return get_permalink();

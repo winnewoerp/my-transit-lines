@@ -51,7 +51,7 @@ function mtl_posttype_init() {
 			'capability_type'    => 'post',
 			'has_archive'        => true,
 			'hierarchical'       => false,
-			'menu_position'      => 5,
+			'menu_position'      => 6,
 			'taxonomies' 		 => array('category','post_tag'),
 			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions'  )
 		);
@@ -59,6 +59,83 @@ function mtl_posttype_init() {
 		register_post_type( $mtl_posttype['name'], $args );
 		add_post_type_support( $mtl_posttype['name'],  array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions' ) );
 	}
+}
+
+add_action( 'admin_menu', 'mtl_proposal_add_moderate_count' );
+function mtl_proposal_add_moderate_count() {
+	global $menu;
+
+	foreach ($menu as $key => $value) {
+		if (($value[0] ?? '') === __('Proposals', 'my-transit-lines')) {
+			$awaiting_mod      = new WP_Query([
+				'post_type' => 'mtlproposal',
+				'post_status' => 'pending',
+			]);
+			$awaiting_mod      = $awaiting_mod->post_count;
+			$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
+			/* translators: %s: Number of proposals. */
+			$awaiting_mod_text = sprintf( _n( '%s Proposal in moderation', '%s Proposals in moderation', $awaiting_mod, 'my-transit-lines' ), $awaiting_mod_i18n );
+			
+			$menu[$key][0] .= '<span class="awaiting-mod count-' . absint( $awaiting_mod ) . '"><span class="pending-count" aria-hidden="true">' . $awaiting_mod_i18n . '</span><span class="proposals-in-moderation-text screen-reader-text">' . $awaiting_mod_text . '</span></span>';
+		}
+	}
+}
+
+add_action( 'admin_bar_menu', 'wp_admin_bar_proposals_menu', 65 );
+function wp_admin_bar_proposals_menu( $wp_admin_bar ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+
+	$awaiting_mod      = new WP_Query([
+		'post_type' => 'mtlproposal',
+		'post_status' => 'pending',
+	]);
+	$awaiting_mod      = $awaiting_mod->post_count;
+	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
+	/* translators: %s: Number of proposals. */
+	$awaiting_mod_text = sprintf( _n( '%s Proposal in moderation', '%s Proposals in moderation', $awaiting_mod, 'my-transit-lines' ), $awaiting_mod_i18n );
+
+	$icon   = '<span class="ab-icon" aria-hidden="true"></span>';
+	$title  = '<span class="ab-label awaiting-mod pending-count count-' . $awaiting_mod . '" aria-hidden="true">' . $awaiting_mod_i18n . '</span>';
+	$title .= '<span class="screen-reader-text comments-in-moderation-text">' . $awaiting_mod_text . '</span>';
+
+	$wp_admin_bar->add_node(
+		array(
+			'id'    => 'proposals',
+			'title' => $icon . $title,
+			'href'  => admin_url( 'edit.php?post_type=mtlproposal' ),
+		)
+	);
+}
+
+add_filter( 'post_class', 'mtl_add_proposal_post_class', 10, 3);
+function mtl_add_proposal_post_class($classes, $css_classes, $post_id) {
+	if ( get_post_type( $post_id ) === 'mtlproposal' ) {
+		if ( get_post_status( $post_id ) === 'pending') {
+			$classes[] = 'unapproved';
+		}
+	}
+	
+	return $classes;
+}
+
+add_filter( 'admin_title', 'mtl_admin_title_proposals', 10, 2 );
+function mtl_admin_title_proposals($admin_title, $title) {
+	$awaiting_mod      = new WP_Query([
+		'post_type' => 'mtlproposal',
+		'post_status' => 'pending',
+	]);
+	$awaiting_mod      = $awaiting_mod->post_count;
+	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
+	
+	if (is_admin() && $awaiting_mod > 0 && str_ends_with( parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), 'edit.php' ) && isset($_GET['post_type']) && $_GET['post_type'] === 'mtlproposal') {
+		$title_parts = explode('&lsaquo;', $admin_title, 2);
+		$title_parts[0] .= '(' . $awaiting_mod_i18n . ') ';
+		$admin_title = implode('&lsaquo;', $title_parts);
+	}
+
+	return $admin_title;
 }
 
 // create a taxonomy to distinguish if 
@@ -90,5 +167,3 @@ function create_sorting_phase_status_taxonomy() {
 		));
 	restore_previous_locale();
 }
-
-?>

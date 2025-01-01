@@ -46,3 +46,17 @@
 	border-top-color: #000000;
 	border-bottom-color: #444444;
 }
+
+#wpadminbar #wp-admin-bar-proposals .ab-icon:before {
+	content: "\f109";
+	top: 3px;
+}
+
+#the-list .unapproved th.check-column {
+	border-left: 4px solid #d63638;
+}
+
+#the-list .unapproved th,
+#the-list .unapproved td {
+	background-color: #fcf9e8;
+}

@@ -26,6 +26,9 @@ const loaded_revisions = {};
 window.addEventListener('load', add_revision_control);
 
 function add_revision_control() {
+	if (!document.getElementById('mtl-revision-input'))
+		return;
+
 	set_loaded_revisions();
 
 	document.getElementById('mtl-revision-input').addEventListener('change', function(e) {

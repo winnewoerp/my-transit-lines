@@ -39,7 +39,7 @@ function the_map_output() {
 					__('Fit proposition to map','my-transit-lines').
 				'</a>
 			</p>
-			<p class="alignright">
+			<p id="toggle-fullscreen" class="alignright">
 				<a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()" data-mtl-toggle-fullscreen>
 					<span class="fullscreen-closed">'.
 						__('Fullscreen view','my-transit-lines').

@@ -235,6 +235,7 @@ nav.top-navigation  div{
 #content {
 	max-width:900px;
 	min-width:300px;
+	overflow: hidden;
 	margin:0 auto;
 	text-align:left;
 }

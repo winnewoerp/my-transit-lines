@@ -13,7 +13,7 @@
 	font-style: normal;
 }
 
-.menu-top.toplevel_page_mtl_settings_page  .dashicons-before:before,
+.menu-top.toplevel_page_mtl_settings_page .dashicons-before:before,
 .mtl-admin-page-title .logo:before {
 	font-family: 'icomoon';
 	content: "\e600";

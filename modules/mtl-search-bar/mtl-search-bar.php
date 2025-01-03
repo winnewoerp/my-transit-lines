@@ -349,9 +349,14 @@ function get_search_term() {
  */
 function get_status() {
 	$status = array('publish');
-    if(show_drafts()) {
+
+	$show_drafts = show_drafts();
+    if($show_drafts) {
         $status[] = 'draft';
     }
+	if($show_drafts || current_user_can( 'administrator' )) {
+		$status[] = 'pending';
+	}
 	
 	return $status;
 }

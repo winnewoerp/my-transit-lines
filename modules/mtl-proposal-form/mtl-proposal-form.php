@@ -76,19 +76,19 @@ function mtl_proposal_form_output( $atts ){
 		$output .= '<div id="mtl-post-form">'."\r\n";
 		
 		$edit_post = get_post($editId);
-		$old_status = $edit_post->post_status;
+		$old_status = $editId ? $edit_post->post_status : 'draft';
 		
 		$status = 'draft';
 		if( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $action )) {
-			if (!isset($_POST['title']) || strlen(trim($_POST['title']))<=2) $err['title']=true;
+			if (!isset($_POST['title']) || strlen(trim($_POST['title'])) < 3) $err['title'] = true;
 			if ($postType == 'mtlproposal') {
-				if(!isset($_POST['cat'])) $err['cat']=true;
+				if(!isset($_POST['cat'])) $err['cat'] = true;
 			}
 			
-			if (!isset($_POST['description']) || strlen(trim($_POST['description']))<=2) $err['description']=true;
+			if (!isset($_POST['description']) || strlen(trim($_POST['description'])) < 3) $err['description'] = true;
 
-			if(!isset($_POST['submit-save-only'])) {
-				$status = 'publish';
+			if (!isset($_POST['submit-save-only'])) {
+				$status = ($old_status === 'publish' || !isset($mtl_options3['mtl-publish-status'])) ? 'publish' : $mtl_options3['mtl-publish-status'];
 			}
 			
 			if(!$err) {
@@ -104,12 +104,15 @@ function mtl_proposal_form_output( $atts ){
 					return $elem !== "";
 				}));
 
+				$post_content = wp_kses_post($_POST['description']);
+				$post_content = str_ireplace($remove_links, $url, $post_content);
+				$post_content = str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url], $post_content);
+				$post_content = custom_trim($post_content, array_merge(CUSTOM_TRIM_DEFAULT_REMOVE, ["&nbsp;", "<p></p>", "<p>&nbsp;</p>"]));
+
 				$post = array(
 					'ID' => $editId,
 					'post_title'	=> esc_html($_POST['title']),
-					'post_content'	=> str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url],
-											str_ireplace($remove_links, $url,
-												wp_kses_post($_POST['description']))),
+					'post_content'	=> $post_content,
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,
 					'post_type'		=> $this_posttype,
@@ -118,7 +121,7 @@ function mtl_proposal_form_output( $atts ){
 				$post['tags_input'] = explode(',', $_POST['mtl-tags']);
 				
 				$current_date = wp_date('Y-m-d H:i', current_datetime()->getTimestamp());
-				if($old_status == 'draft') {
+				if(in_array($old_status, ['draft', 'pending'], true)) {
 					$post['post_date'] = $current_date;
 				}
 								
@@ -373,10 +376,11 @@ function mtl_proposal_form_output( $atts ){
 			// send post
 			$submit_editType = $editType;
 			$edit_post = get_post($editId);
-			if($edit_post->post_status == 'draft') $submit_editType = 'add';
+			$not_published = in_array($edit_post->post_status, ['draft', 'pending'], true);
+			if($not_published) $submit_editType = 'add';
 			
-			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status == 'draft' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
-			if($editId && $edit_post->post_status == 'draft') $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
+			$output .= '<p id="submit-box">&#160;<br />'.(!$editId || $edit_post->post_status === 'draft' ? '<input type="submit" class="save-only" value="'.$mtl_string['form-submit-save-only'][$postType].'" tabindex="6" id="submit-save-only" name="submit-save-only" /> ' : '').'<input type="submit" value="'.$mtl_string['form-submit'][$postType][$submit_editType].'" tabindex="6" id="submit" name="submit" /></p>'."\r\n";
+			if($editId && $not_published) $output .= '<p><input type="submit" class="delete-draft" value="'.esc_html__('Delete this draft','my-transit-lines').'" tabindex="7" id="delete-draft" name="delete-draft" /></p>'."\r\n";
 			if($editType=='update') $output .= '<a href="'.get_permalink($editId).'">'.__('Cancel update','my-transit-lines').'</a>';
 			$output .= '<input type="hidden" name="action" value="post" />'."\r\n";
 			$output .= '<input type="hidden" name="form_token" value="'.$form_token.'" />'."\r\n";
@@ -390,8 +394,6 @@ function mtl_proposal_form_output( $atts ){
 		$output .= '</div>'."\r\n";
 		$output .= '<br>';
 		if(isset($editId) && $editId) $output .= '<script type="text/javascript"> setTitle("'.$mtl_string['edit-text'][$postType].'"); </script>';
-		
-		$output .= '<script type="text/javascript"> var suggestUrl = "'.get_bloginfo('wpurl').'/wp-admin/admin-ajax.php?action=ajax-tag-search&amp;tax=mtl-tag"; </script>';
 		
 		return $output;
 	}
@@ -425,7 +427,7 @@ function mtl_proposal_form_output( $atts ){
 			elseif(isset($_POST['really-delete-draft'])) {
 				$delete_id = intval($_POST['deleteid']);
 				$delete_post = get_post($delete_id);
-				if($delete_post->post_status == 'draft' && wp_get_current_user()->ID == $delete_post->post_author) {
+				if(in_array($delete_post->post_status, ['draft', 'pending'], true) && wp_get_current_user()->ID == $delete_post->post_author) {
 					wp_delete_post($delete_id);
 					$output = '<div class="success-message-block">'."\r\n";
 					$output .= '<strong>'.esc_html__('Draft successfully deleted!','my-transit-lines').'</strong><br />'."\r\n";
@@ -465,13 +467,13 @@ add_filter('mtl-map-box', 'add_textinput_box');
  * @return WP_Query
  */
 function get_drafts_query() {
-	$drafts_query_string = array(
+	$drafts_query_args = array(
 		'posts_per_page' => -1,
 		'post_type' => 'mtlproposal',
 		'author' => get_current_user_id(),
 		'post_status' => 'draft',
 	);
-	return new WP_Query($drafts_query_string);
+	return new WP_Query($drafts_query_args);
 }
 
 /**
@@ -579,7 +581,7 @@ add_shortcode( 'hide-if-not-editmode', 'hide_if_not_editmode_output' );
  /**
  * shortcode [hide-if-not-logged-in]
  */
- function hide_if_not_logged_in( $atts, $content ){
+function hide_if_not_logged_in( $atts, $content ){
 	if(is_user_logged_in()) return do_shortcode($content);
 }
 add_shortcode( 'hide-if-not-logged-in', 'hide_if_not_logged_in' );

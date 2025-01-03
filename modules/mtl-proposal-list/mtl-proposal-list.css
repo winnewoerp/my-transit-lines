@@ -82,9 +82,11 @@
 	color:white;
 }
 
-#content #popup-content-draft-flag.draft-flag,
-#content .mtl-postlist-item .draft-flag,
-#content .mtl-post-tile .draft-flag {
+#content #popup-content-pending-flag.flag,
+#content #popup-content-draft-flag.flag,
+#content .mtl-postlist-item .flag,
+#content .mtl-post-tile .flag,
+#content h1 .flag {
 	padding:0 4px;
 
 	background:white;

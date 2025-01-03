@@ -11,7 +11,7 @@
 /**
  * create mtl-proposal post type for main entries
  */
-add_action( 'init', 'mtl_posttype_init' );
+add_action( 'init', 'mtl_posttype_init', 0 );
 function mtl_posttype_init() {
 	$mtl_posttypes = array(
 		array(
@@ -51,7 +51,7 @@ function mtl_posttype_init() {
 			'capability_type'    => 'post',
 			'has_archive'        => true,
 			'hierarchical'       => false,
-			'menu_position'      => 5,
+			'menu_position'      => 6,
 			'taxonomies' 		 => array('category','post_tag'),
 			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'custom-fields', 'revisions'  )
 		);
@@ -61,8 +61,147 @@ function mtl_posttype_init() {
 	}
 }
 
+add_action( 'admin_menu', 'mtl_proposal_add_moderate_count' );
+function mtl_proposal_add_moderate_count() {
+	global $menu;
+
+	foreach ($menu as $key => $value) {
+		if (($value[0] ?? '') === __('Proposals', 'my-transit-lines')) {
+			$awaiting_mod      = new WP_Query([
+				'post_type' => 'mtlproposal',
+				'post_status' => 'pending',
+			]);
+			$awaiting_mod      = $awaiting_mod->post_count;
+			$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
+			/* translators: %s: Number of proposals. */
+			$awaiting_mod_text = sprintf( _n( '%s Proposal in moderation', '%s Proposals in moderation', $awaiting_mod, 'my-transit-lines' ), $awaiting_mod_i18n );
+			
+			$menu[$key][0] .= '<span class="awaiting-mod count-' . absint( $awaiting_mod ) . '"><span class="pending-count" aria-hidden="true">' . $awaiting_mod_i18n . '</span><span class="proposals-in-moderation-text screen-reader-text">' . $awaiting_mod_text . '</span></span>';
+		}
+	}
+}
+
+add_action( 'admin_bar_menu', 'wp_admin_bar_proposals_menu', 65 );
+function wp_admin_bar_proposals_menu( $wp_admin_bar ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+
+	$awaiting_mod      = new WP_Query([
+		'post_type' => 'mtlproposal',
+		'post_status' => 'pending',
+	]);
+	$awaiting_mod      = $awaiting_mod->post_count;
+	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
+	/* translators: %s: Number of proposals. */
+	$awaiting_mod_text = sprintf( _n( '%s Proposal in moderation', '%s Proposals in moderation', $awaiting_mod, 'my-transit-lines' ), $awaiting_mod_i18n );
+
+	$icon   = '<span class="ab-icon" aria-hidden="true"></span>';
+	$title  = '<span class="ab-label awaiting-mod pending-count count-' . $awaiting_mod . '" aria-hidden="true">' . $awaiting_mod_i18n . '</span>';
+	$title .= '<span class="screen-reader-text comments-in-moderation-text">' . $awaiting_mod_text . '</span>';
+
+	$wp_admin_bar->add_node(
+		array(
+			'id'    => 'proposals',
+			'title' => $icon . $title,
+			'href'  => admin_url( 'edit.php?post_type=mtlproposal' ),
+		)
+	);
+}
+
+add_filter( 'post_class', 'mtl_add_proposal_post_class', 10, 3);
+function mtl_add_proposal_post_class($classes, $css_classes, $post_id) {
+	if ( get_post_type( $post_id ) === 'mtlproposal' ) {
+		if ( get_post_status( $post_id ) === 'pending') {
+			$classes[] = 'unapproved';
+		}
+	}
+	
+	return $classes;
+}
+
+add_filter( 'admin_title', 'mtl_admin_title_proposals', 10, 2 );
+function mtl_admin_title_proposals($admin_title, $title) {
+	$awaiting_mod      = new WP_Query([
+		'post_type' => 'mtlproposal',
+		'post_status' => 'pending',
+	]);
+	$awaiting_mod      = $awaiting_mod->post_count;
+	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
+	
+	if (
+		is_admin() &&
+		$awaiting_mod > 0 &&
+		str_ends_with( parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), 'edit.php' ) &&
+		isset($_GET['post_type']) &&
+		$_GET['post_type'] === 'mtlproposal'
+	) {
+		$title_parts = explode('&lsaquo;', $admin_title, 2);
+		$title_parts[0] .= '(' . $awaiting_mod_i18n . ') ';
+		$admin_title = implode('&lsaquo;', $title_parts);
+	}
+
+	return $admin_title;
+}
+
+$is_getting_comment_link = false;
+add_filter( 'get_post_status', 'mtl_allow_comments_on_pending', 10, 2 );
+function mtl_allow_comments_on_pending($status, $post) {
+	global $is_getting_comment_link;
+
+	if (
+		$status === 'pending' &&
+		$post->post_type === 'mtlproposal' &&
+		str_ends_with( parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), 'wp-comments-post.php' ) &&
+		!$is_getting_comment_link &&
+		(
+			current_user_can( 'administrator' ) ||
+			get_current_user_id() === intval($post->post_author)
+		)
+	) {
+		$status = 'publish';
+	}
+
+	$is_getting_comment_link = false;
+
+	return $status;
+}
+
+add_action('set_comment_cookies', 'mtl_set_getting_comment_link', 10, 3);
+function mtl_set_getting_comment_link($comment, $user, $cookies_consent) {
+	global $is_getting_comment_link;
+	$is_getting_comment_link = true;
+}
+
+add_filter( 'user_has_cap', 'mtl_allow_own_post_edit', 10, 4 );
+function mtl_allow_own_post_edit( $allcaps, $caps_needed, $args, $user ) {
+	if (
+		$args[0] !== 'edit_post' ||
+		(isset( $allcaps['edit_posts'] ) && $allcaps['edit_posts'])
+	) {
+		return $allcaps;
+	}
+
+	$post = get_post( $args[2] );
+
+	if (
+		!$post ||
+		intval($post->post_author) !== $user->ID ||
+		$post->post_type !== 'mtlproposal' ||
+		$post->post_status !== 'pending'
+	) {
+		return $allcaps;
+	}
+
+	foreach ( $caps_needed as $cap ) {
+		$allcaps[$cap] = true;
+	}
+
+	return $allcaps;
+}
+
 // create a taxonomy to distinguish if 
-add_action( 'init', 'create_sorting_phase_status_taxonomy', 0);
+add_action( 'init', 'create_sorting_phase_status_taxonomy', 0 );
 function create_sorting_phase_status_taxonomy() {
 	$labels = array(
 		'name' => __( 'Sorting Phase Status', 'my-transit-lines' ),
@@ -76,19 +215,18 @@ function create_sorting_phase_status_taxonomy() {
 		'add_new_item' => __( 'Add New Sorting Phase Status','my-transit-lines' ),
 		'new_item_name' => __( 'New Sorting Phase Status','my-transit-lines' ),
 		'menu_name' => __( 'Sorting Phase Statuses' ),
-		);
+	);
 
-	switch_to_locale(get_site_locale());
+	switch_to_locale( get_site_locale() );
 	// Now register the taxonomy
-	register_taxonomy('sorting-phase-status',array('mtlproposal'), array(
+	register_taxonomy( 'sorting-phase-status', array('mtlproposal'), array(
 		'hierarchical' => true,
 		'labels' => $labels,
 		'show_ui' => true,
 		'show_admin_column' => true,
 		'rewrite' => array('slug'),
 		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
-		));
+		)
+	);
 	restore_previous_locale();
 }
-
-?>

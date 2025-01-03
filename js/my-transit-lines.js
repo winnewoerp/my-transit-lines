@@ -576,6 +576,7 @@ function toggleFullscreen() {
 
 	// Need to get the size manually because OpenLayers only updates the map size after this function and redraw() doesn't help
 	const mapContainer = document.getElementById('mtl-map');
+	mapContainer.scrollIntoView({behaviour: 'instant', block: 'center', inline: 'center'});
 	view.fit(prevExtent, {size: [mapContainer.offsetWidth, mapContainer.offsetHeight]});
 }
 

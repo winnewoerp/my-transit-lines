@@ -174,7 +174,7 @@ function proposal_tile() {
 			<div class="entry-thumbnail placeholder"></div>
 			<header>
 				<h1 class="entry-title">
-					<a href="'.get_permalink_or_edit().'" rel="bookmark" title="'.get_the_title().'">'.get_the_title_draft_flag().'</a>
+					<a href="'.get_permalink_or_edit().'" rel="bookmark" title="'.get_the_title().'">'.get_the_title_flags().'</a>
 				</h1>
 			</header>
 			<footer class="entry-footer">
@@ -249,7 +249,7 @@ function proposal_list_item() {
 			<header>
 				<a href="'.get_permalink_or_edit().'" title="'.get_the_title().'" rel="bookmark" class="mtl-list-content-link"></a>
 				<h1>'.
-					get_the_title_draft_flag().
+					get_the_title_flags().
 				'</h1>
 			</header>
 			<div class="the_content">'.
@@ -275,7 +275,8 @@ function map_output() {
 		<a href="#" id="popup-closer" class="ol-popup-closer"></a>
 		<div id="popup-content" class="ol-popup-content">
 			<a id="popup-content-link" href="">
-			<span id="popup-content-draft-flag" class="draft-flag" style="display:none;">'.esc_html__('Draft','my-transit-lines').'</span>
+				<span id="popup-content-draft-flag" class="flag" style="display:none;">'.esc_html__('Draft','my-transit-lines').'</span>
+				<span id="popup-content-pending-flag" class="flag" style="display:none;">'.esc_html__('Pending','my-transit-lines').'</span>
 				<b id="popup-content-title"></b>
 			</a>
 			<br>

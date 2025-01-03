@@ -235,6 +235,7 @@ nav.top-navigation  div{
 #content {
 	max-width:900px;
 	min-width:300px;
+	overflow: hidden;
 	margin:0 auto;
 	text-align:left;
 }
@@ -293,11 +294,6 @@ body.single #content .entry-content {
 
 #content h1 .colored {
 	font-weight:bold;
-	font-size:inherit;
-}
-
-#content h1 span { 
-	font-weight:200;
 	font-size:inherit;
 }
 

@@ -482,7 +482,7 @@ function mtl_filter_media_comment_status( $open, $post_id ) {
 add_filter( 'comments_open', 'mtl_filter_media_comment_status', 10 , 2 );
 
 function filter_comment($content) {
-	return wp_kses_post($content);
+	return custom_trim(wp_kses_post($content), array_merge(CUSTOM_TRIM_DEFAULT_REMOVE, ["&nbsp;", "<p></p>", "<p>&nbsp;</p>"]));
 }
 add_filter( 'pre_comment_content', 'filter_comment' );
 

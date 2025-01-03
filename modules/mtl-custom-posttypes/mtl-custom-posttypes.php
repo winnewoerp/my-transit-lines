@@ -129,13 +129,75 @@ function mtl_admin_title_proposals($admin_title, $title) {
 	$awaiting_mod      = $awaiting_mod->post_count;
 	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
 	
-	if (is_admin() && $awaiting_mod > 0 && str_ends_with( parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), 'edit.php' ) && isset($_GET['post_type']) && $_GET['post_type'] === 'mtlproposal') {
+	if (
+		is_admin() &&
+		$awaiting_mod > 0 &&
+		str_ends_with( parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), 'edit.php' ) &&
+		isset($_GET['post_type']) &&
+		$_GET['post_type'] === 'mtlproposal'
+	) {
 		$title_parts = explode('&lsaquo;', $admin_title, 2);
 		$title_parts[0] .= '(' . $awaiting_mod_i18n . ') ';
 		$admin_title = implode('&lsaquo;', $title_parts);
 	}
 
 	return $admin_title;
+}
+
+$is_getting_comment_link = false;
+add_filter( 'get_post_status', 'mtl_allow_comments_on_pending', 10, 2 );
+function mtl_allow_comments_on_pending($status, $post) {
+	global $is_getting_comment_link;
+
+	if (
+		$status === 'pending' &&
+		$post->post_type === 'mtlproposal' &&
+		str_ends_with( parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), 'wp-comments-post.php' ) &&
+		!$is_getting_comment_link &&
+		(
+			current_user_can( 'administrator' ) ||
+			get_current_user_id() === intval($post->post_author)
+		)
+	) {
+		$status = 'publish';
+	}
+
+	$is_getting_comment_link = false;
+
+	return $status;
+}
+
+add_action('set_comment_cookies', 'mtl_set_getting_comment_link', 10, 3);
+function mtl_set_getting_comment_link($comment, $user, $cookies_consent) {
+	global $is_getting_comment_link;
+	$is_getting_comment_link = true;
+}
+
+add_filter( 'user_has_cap', 'mtl_allow_own_post_edit', 10, 4 );
+function mtl_allow_own_post_edit( $allcaps, $caps_needed, $args, $user ) {
+	if (
+		$args[0] !== 'edit_post' ||
+		(isset( $allcaps['edit_posts'] ) && $allcaps['edit_posts'])
+	) {
+		return $allcaps;
+	}
+
+	$post = get_post( $args[2] );
+
+	if (
+		!$post ||
+		intval($post->post_author) !== $user->ID ||
+		$post->post_type !== 'mtlproposal' ||
+		$post->post_status !== 'pending'
+	) {
+		return $allcaps;
+	}
+
+	foreach ( $caps_needed as $cap ) {
+		$allcaps[$cap] = true;
+	}
+
+	return $allcaps;
 }
 
 // create a taxonomy to distinguish if 

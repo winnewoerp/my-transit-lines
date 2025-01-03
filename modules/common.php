@@ -150,7 +150,7 @@ function get_permalink_or_edit($post_id = -1) {
 		$post_id = $post->ID;
 	}
 
-	if (in_array(get_post_status($post_id), ['draft', 'pending'], true) && get_post_field('post_author', $post_id) == get_current_user_id()) {
+	if (get_post_status($post_id) === 'draft' && get_post_field('post_author', $post_id) == get_current_user_id()) {
 		return get_permalink(pll_get_post(get_option('mtl-option-name')['mtl-addpost-page'])).'?edit_proposal='.$post_id;
 	} else {
 		return get_permalink();

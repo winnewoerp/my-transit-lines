@@ -231,13 +231,15 @@ nav.top-navigation  div{
 	display:inline;
 }
 
-
 #content {
 	max-width:900px;
 	min-width:300px;
-	overflow: hidden;
 	margin:0 auto;
 	text-align:left;
+}
+
+#content:not(:has(#mtl-tab-box)) {
+	overflow: hidden;
 }
 
 body.single #content .entry-content {

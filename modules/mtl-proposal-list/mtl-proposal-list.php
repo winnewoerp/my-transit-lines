@@ -56,8 +56,6 @@ function mtl_proposal_list_output($atts) {
 	}
 	$output .= get_paginate_links($the_query->max_num_pages);
 
-	wp_enqueue_script('mtl-proposal-list', get_template_directory_uri().'/modules/mtl-proposal-list/mtl-proposal-list.js', ['my-transit-lines'], wp_get_theme()->version);
-
 	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
 
 	if (count($show_tabs) > 1) {

@@ -3,6 +3,9 @@ let current_location = new URL(window.location);
 window.addEventListener('load', addSearchBarOpenListener);
 
 function addSearchBarOpenListener() {
+	if (!document.getElementById('mtl-list-filter'))
+		return;
+
 	document.getElementById('mtl-filter-details').addEventListener('toggle', (e) => {
 		const dest = document.getElementById(e.target.open ? 'mtl-search-submit-open' : 'mtl-search-submit-closed');
 		dest.append(...document.querySelectorAll('.mtl-search-submit'));
@@ -19,6 +22,9 @@ function addSearchBarOpenListener() {
 }
 
 window.addEventListener('load', () => {
+	if (!document.getElementById('mtl-list-filter'))
+		return;
+
 	document.getElementById('mtl-filter-multiple').addEventListener('change', (e) => {
 		document.querySelectorAll('select.allowsMultiple').forEach((select) => {
 			select.multiple = e.target.checked || select.selectedOptions.length > 1;
@@ -27,6 +33,9 @@ window.addEventListener('load', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+	if (!document.getElementById('mtl-list-filter'))
+		return;
+
 	// Redirect old links
 	if (window.location.hash.includes('#!')) {
 		const new_query = window.location.hash.replace('#!','');

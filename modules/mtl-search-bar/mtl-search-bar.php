@@ -26,8 +26,6 @@ function mtl_search_bar_output($query = null, $additional_html = '') {
     // get the mtl options
 	$mtl_options3 = get_option('mtl-option-name3');
 
-	wp_enqueue_script('mtl-search-bar', get_template_directory_uri().'/modules/mtl-search-bar/mtl-search-bar.js', array(), wp_get_theme()->version);
-
 	$open_class = get_search_bar_open() ? "open" : "closed";
 	$open_details = get_search_bar_open() ? "open" : "";
 

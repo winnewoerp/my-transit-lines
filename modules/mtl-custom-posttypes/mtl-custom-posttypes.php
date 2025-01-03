@@ -11,7 +11,7 @@
 /**
  * create mtl-proposal post type for main entries
  */
-add_action( 'init', 'mtl_posttype_init' );
+add_action( 'init', 'mtl_posttype_init', 0 );
 function mtl_posttype_init() {
 	$mtl_posttypes = array(
 		array(
@@ -201,7 +201,7 @@ function mtl_allow_own_post_edit( $allcaps, $caps_needed, $args, $user ) {
 }
 
 // create a taxonomy to distinguish if 
-add_action( 'init', 'create_sorting_phase_status_taxonomy', 0);
+add_action( 'init', 'create_sorting_phase_status_taxonomy', 0 );
 function create_sorting_phase_status_taxonomy() {
 	$labels = array(
 		'name' => __( 'Sorting Phase Status', 'my-transit-lines' ),
@@ -215,17 +215,18 @@ function create_sorting_phase_status_taxonomy() {
 		'add_new_item' => __( 'Add New Sorting Phase Status','my-transit-lines' ),
 		'new_item_name' => __( 'New Sorting Phase Status','my-transit-lines' ),
 		'menu_name' => __( 'Sorting Phase Statuses' ),
-		);
+	);
 
-	switch_to_locale(get_site_locale());
+	switch_to_locale( get_site_locale() );
 	// Now register the taxonomy
-	register_taxonomy('sorting-phase-status',array('mtlproposal'), array(
+	register_taxonomy( 'sorting-phase-status', array('mtlproposal'), array(
 		'hierarchical' => true,
 		'labels' => $labels,
 		'show_ui' => true,
 		'show_admin_column' => true,
 		'rewrite' => array('slug'),
 		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
-		));
+		)
+	);
 	restore_previous_locale();
 }

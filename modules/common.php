@@ -8,6 +8,17 @@
  
 /* created by Jan Garloff, 2024-06-25 */
 
+// Implement own array_any if using PHP < 8.4
+if ( !function_exists('array_any') ) {
+	function array_any( $array, $callback ) {
+		foreach ($array as $key => $value) {
+			if ($callback($value, $key))
+				return true;
+		}
+		return false;
+	}
+}
+
 const STYLE_DATA_KEYS = array(
 	['mtl-color-cat', 'color'],
 	['mtl-image-cat', 'image'],

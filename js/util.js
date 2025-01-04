@@ -12,6 +12,12 @@ function setTitle(newTitle) {
 }
 
 /**
+ * Awaiting this will take the specified delay of time.
+ * @param {number} ms time in milliseconds
+ */
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+/**
  * Format the number with its unit prefix
  * @param {Number} number The number to format
  * @param {Boolearn} word_prefix Whether to use words instead of unit prefixes

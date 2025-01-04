@@ -46,6 +46,8 @@ function mtl_posttype_init() {
 			'publicly_queryable' => true,
 			'show_ui'            => true,
 			'show_in_menu'       => true,
+			'show_in_rest'		 => true,
+			'rest_base'			 => 'proposals',
 			'query_var'          => true,
 			'rewrite'            => array( 'slug' => $mtl_posttype['slug'] ),
 			'capability_type'    => 'post',

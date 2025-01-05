@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2024-12-30 16:42+0100\n"
-"PO-Revision-Date: 2024-12-30 16:43+0100\n"
+"POT-Creation-Date: 2025-01-05 03:31+0100\n"
+"PO-Revision-Date: 2025-01-05 03:47+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -144,54 +144,54 @@ msgid "Pages:"
 msgstr "Seiten:"
 
 #: content-page.php:26 content-single.php:26 content.php:43
-#: modules/mtl-proposal-list/mtl-proposal-list.php:304
+#: modules/mtl-proposal-list/mtl-proposal-list.php:344
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:187
-#: modules/mtl-proposal-list/mtl-proposal-list.php:263
+#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:227
+#: modules/mtl-proposal-list/mtl-proposal-list.php:303
 msgid "Leave a comment"
 msgstr "Einen Kommentar verfassen"
 
-#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:187
-#: modules/mtl-proposal-list/mtl-proposal-list.php:263
+#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:227
+#: modules/mtl-proposal-list/mtl-proposal-list.php:303
 msgid "1 Comment"
 msgstr "1 Kommentar"
 
-#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:187
-#: modules/mtl-proposal-list/mtl-proposal-list.php:263
+#: content.php:40 modules/mtl-proposal-list/mtl-proposal-list.php:227
+#: modules/mtl-proposal-list/mtl-proposal-list.php:303
 msgid "% Comments"
 msgstr "% Kommentare"
 
-#: functions.php:161
+#: functions.php:166
 msgid "Primary Menu"
 msgstr "Hauptmenü"
 
-#: functions.php:162
+#: functions.php:167
 msgid "Secondary Menu"
 msgstr "Sekundäres Menü"
 
-#: functions.php:172
+#: functions.php:177
 msgid "Sidebar"
 msgstr "Seitenleiste"
 
-#: functions.php:173
+#: functions.php:178
 msgid "Top Menu"
 msgstr "Topmenü"
 
-#: functions.php:174
+#: functions.php:179
 msgid "Footer"
 msgstr "Fußzeile"
 
-#: functions.php:228
+#: functions.php:233
 msgid "Leave a comment for this post"
 msgstr "Einen Kommentar zu diesem Beitrag verfassen"
 
-#: functions.php:254
+#: functions.php:259
 msgid "Public transit map"
 msgstr "ÖPNV-Karte"
 
-#: functions.php:255
+#: functions.php:260
 msgid ""
 "Map data <a href=\"http://www.openstreetmap.org\">OpenStreetMap</a> (© "
 "OpenStreetMap contributors), Map: CC-BY-SA license (© by <a href=\"http://"
@@ -201,11 +201,11 @@ msgstr ""
 "OpenStreetMap-Mitwirkende), Karte: CC-BY-SA-Lizenz (© <a href=\"http://"
 "memomaps.de/\">MeMoMaps</a>)"
 
-#: functions.php:256
+#: functions.php:261
 msgid "OpenTopoMap"
 msgstr "OpenTopoMap"
 
-#: functions.php:257
+#: functions.php:262
 msgid ""
 "Map data: © <a href=\"https://openstreetmap.org/copyright\">OpenStreetMap</"
 "a> contributors, <a href=\"http://viewfinderpanoramas.org\">SRTM</a> | "
@@ -218,11 +218,11 @@ msgstr ""
 "opentopomap.org\">OpenTopoMap</a> (<a href=\"https://creativecommons.org/"
 "licenses/by-sa/3.0/\">CC-BY-SA</a>)"
 
-#: functions.php:258
+#: functions.php:263
 msgid "Basemap (Germany)"
 msgstr "Basemap (Deutschland)"
 
-#: functions.php:259
+#: functions.php:264
 msgid ""
 "© GeoBasis-DE / <a href=\"https://www.bkg.bund.de\">BKG</a>, <a "
 "href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
@@ -230,11 +230,11 @@ msgstr ""
 "© GeoBasis-DE / <a href=\"https://www.bkg.bund.de\">BKG</a>, <a "
 "href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
 
-#: functions.php:260
+#: functions.php:265
 msgid "OpenRailwayMap (standard)"
 msgstr "OpenRailwayMap (Standard)"
 
-#: functions.php:261
+#: functions.php:266
 msgid ""
 "OpenRailwayMap Standard overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -244,11 +244,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-#: functions.php:262
+#: functions.php:267
 msgid "OpenRailwayMap (maxspeed)"
 msgstr "OpenRailwayMap (Höchstgeschw.)"
 
-#: functions.php:263
+#: functions.php:268
 msgid ""
 "OpenRailwayMap maxspeed overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -258,11 +258,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-#: functions.php:264
+#: functions.php:269
 msgid "OpenRailwayMap (signals)"
 msgstr "OpenRailwayMap (Signale)"
 
-#: functions.php:265
+#: functions.php:270
 msgid ""
 "OpenRailwayMap signals overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -272,11 +272,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-#: functions.php:266
+#: functions.php:271
 msgid "OpenRailwayMap (electrification)"
 msgstr "OpenRailwayMap (Elektrifizierung)"
 
-#: functions.php:267
+#: functions.php:272
 msgid ""
 "OpenRailwayMap electrification overlay style: <a href=\"http://"
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
@@ -286,11 +286,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-#: functions.php:268
+#: functions.php:273
 msgid "OpenRailwayMap (gauge)"
 msgstr "OpenRailwayMap (Spurbreite)"
 
-#: functions.php:269
+#: functions.php:274
 msgid ""
 "OpenRailwayMap gauge overlay style: <a href=\"http://creativecommons.org/"
 "licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://www.openrailwaymap."
@@ -300,11 +300,11 @@ msgstr ""
 "creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA 2.0</a> <a href=\"http://"
 "www.openrailwaymap.org/\">OpenRailwayMap</a>"
 
-#: functions.php:270
+#: functions.php:275
 msgid "Satellite images (ESRI)"
 msgstr "Satellitenbilder (ESRI)"
 
-#: functions.php:271
+#: functions.php:276
 msgid ""
 "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, "
 "Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
@@ -313,11 +313,11 @@ msgstr ""
 "GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP und die GIS-Nutzer-"
 "Gemeinschaft"
 
-#: functions.php:272
+#: functions.php:277
 msgid "OpenStreetMap standard (Mapnik)"
 msgstr "OpenStreetMap-Standard (Mapnik)"
 
-#: functions.php:273
+#: functions.php:278
 msgid ""
 "Silk Icons: <a href=\"http://creativecommons.org/licenses/by/2.5/\">CC-BY "
 "2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk on "
@@ -327,115 +327,115 @@ msgstr ""
 "2.5</a> <a href=\"https://github.com/legacy-icons/famfamfam-silk/\">Silk auf "
 "Github</a>"
 
-#: functions.php:274
+#: functions.php:279
 msgid "Line proposal (vector data)"
 msgstr "Streckenvorschlag (Vektordaten)"
 
-#: functions.php:275
+#: functions.php:280
 msgid "Build line"
 msgstr "Strecke bauen"
 
-#: functions.php:276
+#: functions.php:281
 msgid "Build stations"
 msgstr "Haltestellen bauen"
 
-#: functions.php:277
+#: functions.php:282
 msgid "Edit line/stations"
 msgstr "Strecke/Haltestellen bearbeiten"
 
-#: functions.php:278
+#: functions.php:283
 msgid "Select line/stations"
 msgstr "Strecke/Haltestelle auswählen"
 
-#: functions.php:279
+#: functions.php:284
 msgid "Move selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle verschieben"
 
-#: functions.php:280
+#: functions.php:285
 msgid "Delete selected line/stations"
 msgstr "Ausgewählte Strecke/Haltestelle löschen"
 
-#: functions.php:281
+#: functions.php:286
 msgid "Base layers"
 msgstr "Basis-Kartenebenen"
 
-#: functions.php:282
+#: functions.php:287
 msgid "Overlays"
 msgstr "Überlagerungen"
 
-#: functions.php:283
+#: functions.php:288
 msgid "Please select another tool on the map to submit your proposal."
 msgstr ""
 "Bitte wähle ein anderes Werkzeug oben rechts auf der Karte, um deinen "
 "Vorschlag absenden zu können."
 
-#: functions.php:284
+#: functions.php:289
 msgid "None"
 msgstr "Keine"
 
-#: functions.php:285
+#: functions.php:290
 msgid "Snapping"
 msgstr "Snapping"
 
-#: functions.php:286
+#: functions.php:291
 msgid "Confirm that you want to leave? All unsaved data will be lost!"
 msgstr ""
 "Willst du die Seite wirklich verlassen? Nicht gespeicherte Daten werden "
 "gelöscht!"
 
-#: functions.php:287
+#: functions.php:292
 msgid "Add point"
 msgstr "Station hinzufügen"
 
-#: functions.php:288
+#: functions.php:293
 msgid "Add line"
 msgstr "Strecke hinzufügen"
 
-#: functions.php:289
+#: functions.php:294
 msgid "Add polygon"
 msgstr "Fläche hinzufügen"
 
-#: functions.php:290
+#: functions.php:295
 msgid "Add circle"
 msgstr "Kreis hinzufügen"
 
-#: functions.php:291
+#: functions.php:296
 msgid "Edit features"
 msgstr "Objekte bearbeiten"
 
-#: functions.php:292
+#: functions.php:297
 msgid "Select features"
 msgstr "Objekte auswählen"
 
-#: functions.php:293
+#: functions.php:298
 msgid "Delete selected features"
 msgstr "Ausgewählte Objekte löschen"
 
-#: functions.php:294
+#: functions.php:299
 msgid "Navigate map"
 msgstr "Navigation"
 
-#: functions.php:295
+#: functions.php:300
 msgid "Enable snapping"
 msgstr "Snapping einschalten"
 
-#: functions.php:296
+#: functions.php:301
 msgid "Disable snapping"
 msgstr "Snapping ausschalten"
 
-#: functions.php:297
+#: functions.php:302
 msgid "Length: "
 msgstr "Länge: "
 
-#: functions.php:298
+#: functions.php:303
 msgid "Radius: "
 msgstr "Radius: "
 
-#: functions.php:299
+#: functions.php:304
 msgid "Area: "
 msgstr "Fläche: "
 
-#: functions.php:300 modules/mtl-show-metadata/mtl-show-metadata.php:109
+#: functions.php:305 modules/mtl-show-metadata/mtl-show-metadata.php:109
 #: modules/mtl-show-metadata/mtl-show-metadata.php:112
 #: modules/mtl-show-metadata/mtl-show-metadata.php:115
 #: modules/mtl-show-metadata/mtl-show-metadata.php:121
@@ -446,23 +446,23 @@ msgctxt "decimal separator"
 msgid "."
 msgstr ","
 
-#: functions.php:301
+#: functions.php:306
 msgid "Show feature data"
 msgstr "Kartenobjekte anzeigen"
 
-#: functions.php:302 modules/mtl-show-metadata/mtl-show-metadata.php:109
+#: functions.php:307 modules/mtl-show-metadata/mtl-show-metadata.php:109
 msgid "billion"
 msgstr "Milliarden"
 
-#: functions.php:303 modules/mtl-show-metadata/mtl-show-metadata.php:112
+#: functions.php:308 modules/mtl-show-metadata/mtl-show-metadata.php:112
 msgid "million"
 msgstr "Millionen"
 
-#: functions.php:304 modules/mtl-show-metadata/mtl-show-metadata.php:115
+#: functions.php:309 modules/mtl-show-metadata/mtl-show-metadata.php:115
 msgid "thousand"
 msgstr "tausend"
 
-#: functions.php:358
+#: functions.php:363
 #, php-format
 msgid ""
 "<span class=\"posted-on\">%1$s</span>, <span class=\"byline\"> by %2$s</span>"
@@ -512,12 +512,12 @@ msgstr ""
 "<span class=\"posted-on\">Verfasst am %1$s</span><span class=\"byline\"> von "
 "%2$s</span>"
 
-#: modules/common.php:136 modules/mtl-proposal-list/mtl-proposal-list.php:278
+#: modules/common.php:147 modules/mtl-proposal-list/mtl-proposal-list.php:318
 msgid "Draft"
 msgstr "Entwurf"
 
-#: modules/common.php:139 modules/mtl-admin-menu/mtl-admin-menu.class.php:182
-#: modules/mtl-proposal-list/mtl-proposal-list.php:279
+#: modules/common.php:150 modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+#: modules/mtl-proposal-list/mtl-proposal-list.php:319
 msgid "Pending"
 msgstr "Ausstehend"
 
@@ -835,6 +835,7 @@ msgid "Proposal"
 msgstr "Vorschlag"
 
 #: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:21
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:71
 msgid "Proposals"
 msgstr "Vorschläge"
 
@@ -888,48 +889,56 @@ msgstr "%s nicht gefunden."
 msgid "No %s found in Trash."
 msgstr "%s nicht im Papierkorb vorhanden."
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:68
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:69
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:79
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:99
+#, php-format
+msgid "%s Proposal in moderation"
+msgid_plural "%s Proposals in moderation"
+msgstr[0] "%s Vorschlag wartet auf Moderation"
+msgstr[1] "%s Vorschläge warten auf Moderation"
+
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:209
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:210
 msgid "Sorting Phase Status"
 msgstr "Sortierphasenstatus"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:70
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:211
 msgid "Search items"
 msgstr "Elemente durchsuchen"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:71
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:212
 msgid "All items"
 msgstr "Alle Elemente"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:72
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:213
 msgid "Parent item"
 msgstr "Übergeordnetes Element"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:73
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:214
 msgid "Parent item:"
 msgstr "Übergeordnetes Element:"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:74
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:215
 msgid "Edit Sorting Phase Status"
 msgstr "Sortierphasenstatus bearbeiten"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:75
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:216
 msgid "Update Sorting Phase Status"
 msgstr "Sortierphasenstatus aktualisieren"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:76
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:217
 msgid "Add New Sorting Phase Status"
 msgstr "Sortierphasenstatus hinzufügen"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:77
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:218
 msgid "New Sorting Phase Status"
 msgstr "Neuer Sortierphasenstatus"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:78
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:219
 msgid "Sorting Phase Statuses"
 msgstr "Sortierphasenstatus"
 
-#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:89
+#: modules/mtl-custom-posttypes/mtl-custom-posttypes.php:230
 msgid "Not Submitted"
 msgstr "Nicht eingereicht"
 
@@ -1388,122 +1397,122 @@ msgstr ""
 "Der Vorschlag konnte nicht gelöscht werden. Ist es ein Entwurf und bist du "
 "angemeldet und der Autor?"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:61
+#: modules/mtl-proposal-list/mtl-proposal-list.php:69
 msgid "Loading new set of proposals..."
 msgstr "Neue Vorschlagsauswahl wird geladen..."
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:68
-#: modules/mtl-proposal-list/mtl-proposal-list.php:69
+#: modules/mtl-proposal-list/mtl-proposal-list.php:76
+#: modules/mtl-proposal-list/mtl-proposal-list.php:77
 msgid "tiles"
 msgstr "Kacheln"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:72
-#: modules/mtl-proposal-list/mtl-proposal-list.php:73
+#: modules/mtl-proposal-list/mtl-proposal-list.php:80
+#: modules/mtl-proposal-list/mtl-proposal-list.php:81
 msgid "list"
 msgstr "Liste"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:76
-#: modules/mtl-proposal-list/mtl-proposal-list.php:77
+#: modules/mtl-proposal-list/mtl-proposal-list.php:84
+#: modules/mtl-proposal-list/mtl-proposal-list.php:85
 msgid "map"
 msgstr "Karte"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:152
-#: modules/mtl-proposal-list/mtl-proposal-list.php:226
+#: modules/mtl-proposal-list/mtl-proposal-list.php:192
+#: modules/mtl-proposal-list/mtl-proposal-list.php:266
 msgid "Add a new proposal with map and description"
 msgstr "Ergänze deinen eigenen Streckenvorschlag"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:156
-#: modules/mtl-proposal-list/mtl-proposal-list.php:228
+#: modules/mtl-proposal-list/mtl-proposal-list.php:196
+#: modules/mtl-proposal-list/mtl-proposal-list.php:268
 msgid "Contribute to the collection!"
 msgstr "Erweitere die Sammlung!"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:256
+#: modules/mtl-proposal-list/mtl-proposal-list.php:296
 msgid "Read more"
 msgstr "Mehr lesen"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:284
+#: modules/mtl-proposal-list/mtl-proposal-list.php:324
 msgid "By"
 msgstr "Von"
 
-#: modules/mtl-proposal-list/mtl-proposal-list.php:286
+#: modules/mtl-proposal-list/mtl-proposal-list.php:326
 msgid "on"
 msgstr "am"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:41
+#: modules/mtl-search-bar/mtl-search-bar.php:39
 msgid "Search options"
 msgstr "Suchoptionen"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:44
-#: modules/mtl-search-bar/mtl-search-bar.php:139
+#: modules/mtl-search-bar/mtl-search-bar.php:42
+#: modules/mtl-search-bar/mtl-search-bar.php:137
 msgid "Search:"
 msgstr "Suchen:"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:47
-#: modules/mtl-search-bar/mtl-search-bar.php:142
+#: modules/mtl-search-bar/mtl-search-bar.php:45
+#: modules/mtl-search-bar/mtl-search-bar.php:140
 msgid "Filter/sort"
 msgstr "Filtern/sortieren"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:53
+#: modules/mtl-search-bar/mtl-search-bar.php:51
 msgid "Select multiple values"
 msgstr "Mehrere Möglichkeiten auswählen"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:55
+#: modules/mtl-search-bar/mtl-search-bar.php:53
 msgid "Filter:"
 msgstr "Filtern:"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:62
+#: modules/mtl-search-bar/mtl-search-bar.php:60
 msgid "All transit modes"
 msgstr "Alle Verkehrsmittel"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:69
+#: modules/mtl-search-bar/mtl-search-bar.php:67
 msgid "All users (incl. unregistered)"
 msgstr "Alle Benutzer (inkl. unregistrierte)"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:78
+#: modules/mtl-search-bar/mtl-search-bar.php:76
 msgid "All regions"
 msgstr "Alle Gebiete"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:85
+#: modules/mtl-search-bar/mtl-search-bar.php:83
 msgid "Show drafts"
 msgstr "Entwürfe anzeigen"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:94
+#: modules/mtl-search-bar/mtl-search-bar.php:92
 msgid "Sorting Phase Status:"
 msgstr "Sortierphasenstatus:"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:96
+#: modules/mtl-search-bar/mtl-search-bar.php:94
 msgid "All statuses"
 msgstr "Alle Status"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:109
+#: modules/mtl-search-bar/mtl-search-bar.php:107
 msgid "Sort:"
 msgstr "Sortieren:"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:111
+#: modules/mtl-search-bar/mtl-search-bar.php:109
 msgid "Date"
 msgstr "Datum"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:112
+#: modules/mtl-search-bar/mtl-search-bar.php:110
 msgid "Number of comments"
 msgstr "Anzahl Kommentare"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:113
+#: modules/mtl-search-bar/mtl-search-bar.php:111
 msgid "Random"
 msgstr "Zufall"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:116
+#: modules/mtl-search-bar/mtl-search-bar.php:114
 msgid "Descendent"
 msgstr "Absteigend"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:117
+#: modules/mtl-search-bar/mtl-search-bar.php:115
 msgid "Ascendent"
 msgstr "Aufsteigend"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:125
+#: modules/mtl-search-bar/mtl-search-bar.php:123
 msgid "Amount:"
 msgstr "Anzahl:"
 
-#: modules/mtl-search-bar/mtl-search-bar.php:128
+#: modules/mtl-search-bar/mtl-search-bar.php:126
 msgid "all"
 msgstr "Alle"
 
@@ -1739,6 +1748,256 @@ msgstr "Aktuell"
 msgid "All administrative subdivisons of this proposal:"
 msgstr "Alle Gebietseinheiten dieses Vorschlags:"
 
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:87
+msgid "Your name or username"
+msgstr "Dein Name oder Nutzername"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:94
+msgid "Your email address (for questions and feedback)"
+msgstr "Deine E-Mail Adresse (für Rückfragen und Feedback)"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:101
+msgid "Name of the proposal"
+msgstr "Name des Vorschlags"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:110
+msgid "Link to the proposal"
+msgstr "URL des Vorschlags"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:120
+msgid "Does the proposal have good justification?"
+msgstr "Ist der Vorschlag gut begründet?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:122
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:131
+msgid "Somewhat"
+msgstr "Naja"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:123
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:132
+msgid "Yes"
+msgstr "Ja"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:124
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:133
+msgid "No"
+msgstr "Nein"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:129
+msgid "Are the map contents drawn well?"
+msgstr "Sind die Inhalte in der Karte gut gezeichnet?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:138
+msgid "Why should we present this proposal?"
+msgstr "Warum sollten wir diesen Vorschlag präsentieren?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:148
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:330
+msgid "What is the current transit service?"
+msgstr "Wie sieht das heutige Angebot aus?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:155
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:332
+msgid "Who profits from the proposal and by how much?"
+msgstr "Wer profitiert von dem Vorschlag und wie viel?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:162
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:334
+msgid "Which troubles or negative impacts could there be?"
+msgstr "Welche Schwierigkeiten oder Nachteile könnte es geben?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:169
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:336
+msgid "What alternatives are there, and why are they not as good?"
+msgstr "Welche Alternativen gibt es und warum sind diese weniger vorteilhaft?"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:175
+msgid "Submit to the sorting phase"
+msgstr "Vorschlag einreichen"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:245
+msgid "Form submission returned the following errors:"
+msgstr "Bitte beachte die folgenden Fehlermeldungen:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:254
+msgid "You need to submit your name and email."
+msgstr "Du musst deinen Namen und deine Email eingeben."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:257
+msgid "You need to submit a name, or if you're logged in your username."
+msgstr ""
+"Du musst einen Namen, oder wenn du eingeloggt bist deinen Nutzernamen "
+"eingeben."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:260
+msgid "You need to submit an email, or if you're logged in your user's email."
+msgstr ""
+"Du musst eine Email-Adresse, oder wenn du eingeloggt bist die registrierte "
+"Email-Adresse eingeben."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:263
+msgid "You need to be logged in to submit this form."
+msgstr "Du musst eingeloggt sein um dieses Formular einzureichen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:270
+msgid "You need to submit an existing proposal."
+msgstr "Du musst einen existierenden Vorschlag einreichen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:273
+msgid "You need to submit a published proposal."
+msgstr "Du musst einen veröffentlichten Vorschlag einreichen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:276
+#, php-format
+msgid "You need to submit a proposal that's at least %s days old."
+msgstr "Du musst einen Vorschlag einreichen, der mindestens %s Tage alt ist."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:279
+msgid "You need to submit a proposal from an unlocked region."
+msgstr "Du musst einen Vorschlag aus einer freigeschalteten Region einreichen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:282
+msgid ""
+"You need to submit a proposal that wasn't submitted to the sorting phase "
+"already."
+msgstr ""
+"Du musst einen Vorschlag einreichen, der nicht bereits einmal eingereicht "
+"wurde."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:285
+msgid "You need to submit whether the proposal has good justification."
+msgstr "Du musst einreichen, ob der Vorschlag gut begründet ist."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:288
+msgid "You need to submit whether the proposal is well drawn."
+msgstr "Du musst einreichen ob der Vorschlag gut gezeichnet ist."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:291
+msgid "You need to submit your own justification for the proposal."
+msgstr "Du musst deine eigene Begründung für den Vorschlag einreichen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:294
+msgid "You need to submit what the service without the proposal is like."
+msgstr "Du musst einreichen, wie das Angebot ohne den Vorschlag aussieht."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:297
+msgid "You need to submit who profits from the proposal."
+msgstr "Du musst einreichen wer von dem Vorschlag wie viel profitiert."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:300
+msgid "You need to submit the troubles the proposal creates."
+msgstr ""
+"Du musst eingeben welche Schwierigkeiten und Probleme der Vorschlag mit sich "
+"zieht."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:303
+msgid "You need to submit alternatives to the proposal."
+msgstr "Du musst Alternativen zu dem Vorschlag einreichen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:306
+msgid "An unknown error occured!"
+msgstr "Ein unbekannter Fehler ist aufgetreten!"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:324
+#, php-format
+msgid "Sorting phase submission for \"%s\""
+msgstr "Sortierphasenantrag für „%s”"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:325
+#, php-format
+msgid "%s via sorting phase form"
+msgstr "%s via Auswahlformular"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:327
+#, php-format
+msgid "Hello %s!"
+msgstr "Hallo %s!"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:328
+#, php-format
+msgid ""
+"You requested the proposal \"%1$s\" (%2$s) to be presented specially on our "
+"website %3$s (%4$s). You justified this as follows:"
+msgstr ""
+"Du hast auf %3$s (%4$s) in einem Formular beantragt, dass der Vorschlag "
+"„%1$s” (%2$s) auf unserer Seite gesondert präsentiert werden soll. Das hast "
+"du folgendermaßen begründet:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:338
+msgid ""
+"We will examine the proposal and decide whether it matches our criteria."
+msgstr ""
+"Wir werden uns den Vorschlag anschauen und darüber beraten, ob er unseren "
+"Kriterien entspricht."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:339
+#, php-format
+msgid ""
+"Thank you for your support to make %s and maybe public transit in the future "
+"a bit better."
+msgstr ""
+"Vielen Dank für deine Mithilfe, %s und vielleicht später den Öffentlichen "
+"Personenverkehr ein Stück besser zu machen."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:340
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:359
+#, php-format
+msgid "This mail was sent by a form from %1$s (%2$s)."
+msgstr "Diese E-Mail wurde von einem Kontaktformular von %1$s (%2$s) gesendet."
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:342
+#, php-format
+msgid "By: %1$s <%2$s>"
+msgstr "Von %1$s <%2$s>"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:343
+#, php-format
+msgid "Proposal: %s"
+msgstr "Vorschlag %s"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:344
+#, php-format
+msgid "URL: %s"
+msgstr "URL: %s"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:345
+msgid "Submitted justification:"
+msgstr "Begründung:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:347
+msgid "Current service:"
+msgstr "Heutiges Angebot:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:349
+msgid "Profits:"
+msgstr "Nutznießer:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:351
+msgid "Troubles:"
+msgstr "Schwierigkeiten:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:353
+msgid "Alternatives:"
+msgstr "Alternativen:"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:356
+#, php-format
+msgid "Good justification: %s"
+msgstr "Gut begründet: %s"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:357
+#, php-format
+msgid "Good drawing: %s"
+msgstr "Gut gezeichnet: %s"
+
+#: modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php:367
+msgid ""
+"Thank your for your submission. The data was submitted correctly and you "
+"should receive a confirmation email shortly."
+msgstr ""
+"Vielen Dank für deinen Vorschlag. Deine Daten wurden übermittelt und du "
+"solltest in Kürze eine Bestätigungsmail bekommen."
+
 #: modules/mtl-the-map/mtl-the-map.php:45
 msgid "Fullscreen view"
 msgstr "Vollbildansicht"
@@ -1862,9 +2121,6 @@ msgstr "Suchergebnisse für: %s"
 
 #~ msgid "Your personal data"
 #~ msgstr "Deine persönlichen daten"
-
-#~ msgid "Your name or nickname"
-#~ msgstr "Dein Name oder Spitzname"
 
 #~ msgid "Your e-mail address"
 #~ msgstr "Deine E-Mail-Adresse"
@@ -2092,9 +2348,6 @@ msgstr "Suchergebnisse für: %s"
 #~ msgid "View the proposal here:"
 #~ msgstr "Sieh dir den Vorschlag hier an:"
 
-#~ msgid "Rating of this proposal"
-#~ msgstr "Bewertung dieses Vorschlags"
-
 #~ msgid "user rating"
 #~ msgstr "Benutzerbewertung"
 
@@ -2143,12 +2396,6 @@ msgstr "Suchergebnisse für: %s"
 #~ msgid "Cancel rating"
 #~ msgstr "Bewertung abbrechen"
 
-#~ msgid "You already rated this proposal."
-#~ msgstr "Du hast diesen Vorschlag bereits bewertet."
-
-#~ msgid "Log in to rate this proposal"
-#~ msgstr "Melde dich an und bewerte diesen Vorschlag"
-
 #~ msgid "Editor's rating motivation"
 #~ msgstr "Begründung der Bewertung durch die Redaktion"
 
@@ -2195,9 +2442,6 @@ msgstr "Suchergebnisse für: %s"
 
 #~ msgid "Submit rating"
 #~ msgstr "Bewertung absenden"
-
-#~ msgid "You already rated this proposal"
-#~ msgstr "Du hast diesen Vorschlag bereits bewertet"
 
 #~ msgid "Rating"
 #~ msgstr "Bewertung"
@@ -2258,18 +2502,12 @@ msgstr "Suchergebnisse für: %s"
 #~ "Gehe zur Bearbeitungs-Ansicht deines Vorschlags und lies die "
 #~ "redaktionellen Hinweise, um zu wissen, warum:"
 
-#~ msgid "Proposal rating activation"
-#~ msgstr "Vorschlag zur Bewertung freigeschaltet"
-
 #, php-format
 #~ msgid ""
 #~ "The editing team of \"%1$s\" activated voting for your proposal \"%2$s\"."
 #~ msgstr ""
 #~ "Das Redaktionsteam von \"%1$s\" hat die Bewertungsmöglichkeit für deinen "
 #~ "Vorschlag \"%2$s\" freigeschaltet."
-
-#~ msgid "Good luck for the voting phase!"
-#~ msgstr "Viel Glück für die Bewertungsphase!"
 
 #~ msgid "Editors hints updated for a proposal"
 #~ msgstr "Redaktionelle Hinweise aktualisiert für einen Vorschlag"
@@ -2677,9 +2915,6 @@ msgstr "Suchergebnisse für: %s"
 #~ msgid "Updated %s"
 #~ msgstr "Aktualisierter %s"
 
-#~ msgid "An error occured."
-#~ msgstr "Es ist ein Fehler aufgetreten."
-
 #~ msgid ""
 #~ "Maybe you have tried to re-send your %s by clicking the reload button of "
 #~ "your browser. Please use the button at the bottom of the form to send "
@@ -2691,9 +2926,6 @@ msgstr "Suchergebnisse für: %s"
 
 #~ msgid "This %s has been sent before."
 #~ msgstr "Dieser %s wurde zuvor bereits abgesendet."
-
-#~ msgid "%1$s your %2$s"
-#~ msgstr "Deinen %2$s %1$s "
 
 #~ msgid "Please select what type of line you want to build"
 #~ msgstr "Wähle hier das Verkehrsmittel für deinen Vorschlag"
@@ -2732,9 +2964,6 @@ msgstr "Suchergebnisse für: %s"
 
 #~ msgid "View External"
 #~ msgstr "Externen ansehen"
-
-#~ msgid "All Externals"
-#~ msgstr "Alle Externen"
 
 #~ msgid "Search Externals"
 #~ msgstr "Externe suchen"

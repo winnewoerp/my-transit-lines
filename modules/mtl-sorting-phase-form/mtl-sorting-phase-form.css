@@ -1,0 +1,53 @@
+#sorting-phase-submission label:has(>input[type="radio"]) {
+	margin-left: 1em;
+}
+
+#sorting-phase-submission input[type="radio"]+span::before {
+	content: " ";
+}
+
+#sorting-phase-submission input:is([type="text"], [type="email"], [type="url"]):read-only {
+	background-color: #a9a9a9;
+	color: #333333;
+}
+
+#sorting-phase-submission input:user-invalid,
+#sorting-phase-submission #proposal-title-input:user-valid:has(+#proposal-id-input:invalid),
+#sorting-phase-submission textarea:user-invalid {
+	border-color: red;
+	background-color: #eecccc;
+}
+
+#sorting-phase-submission #url-input-wrapper {
+	position: relative;
+}
+
+#sorting-phase-submission #url-input-wrapper input:has(+a:not([href=""])) {
+	outline: none;
+	text-decoration: none;
+	color: var(--secondary-color);
+}
+
+#sorting-phase-submission #url-input-wrapper input:has(+a:not([href=""])):is(:hover, :focus, :active) {
+	color: black;
+}
+
+#sorting-phase-submission #url-input-wrapper a:not([href=""]) {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+ul#sorting-phase-form-errors {
+	background: #ffeeee;
+	border: 2px solid red;
+	padding: 4px 8px;
+	margin-bottom: 12px;
+	margin-left: 0px;
+}
+
+ul#sorting-phase-form-errors li {
+	margin-left: 15px;
+}

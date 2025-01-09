@@ -12,6 +12,16 @@
  * shortcode [mtl-proposal-list]
  */
 function mtl_proposal_list_output($atts) {
+	// use transient caching when requesting the list without parameters
+	if (!$_GET && !$atts && !current_user_can( 'administrator' )) {
+		$output = get_transient( 'mtl-proposal-list-cached' );
+
+		if ($output)
+			return $output;
+		
+		unset( $output );
+	}
+
     // get the mtl options
 	$mtl_options = get_option('mtl-option-name');
 
@@ -55,8 +65,6 @@ function mtl_proposal_list_output($atts) {
 		$output .= mtl_search_bar_output($the_query);
 	}
 	$output .= get_paginate_links($the_query->max_num_pages);
-
-	wp_enqueue_script('mtl-proposal-list', get_template_directory_uri().'/modules/mtl-proposal-list/mtl-proposal-list.js', ['my-transit-lines'], wp_get_theme()->version);
 
 	$newProposalText = __('Loading new set of proposals...','my-transit-lines');
 
@@ -117,9 +125,41 @@ function mtl_proposal_list_output($atts) {
 		Uicons by <a href="https://www.flaticon.com/uicons">Flaticon</a>
 	</p>' : '');
 
+	// Cache proposal list when requesting the list without parameters
+	if (!$_GET && !$atts && !current_user_can( 'administrator' )) {
+		set_transient( 'mtl-proposal-list-cached', $output, 60 * 60 );
+	}
+
 	return $output;
 }
 add_shortcode( 'mtl-proposal-list', 'mtl_proposal_list_output' );
+
+function mtl_save_post_remove_cache($post_id, $post) {
+	if ($post->post_status === 'publish' && $post->post_type === 'mtlproposal') {
+		delete_transient( 'mtl-proposal-list-cached' );
+	}
+}
+add_action('save_post_mtlproposal', 'mtl_save_post_remove_cache', 10, 2);
+add_action('delete_post', 'mtl_save_post_remove_cache', 10, 2);
+
+function mtl_save_comment_remove_cache($comment_id, $comment) {
+	$post = get_post($comment->comment_post_ID);
+
+	if ($post && $post->post_status === 'publish' && $post->post_type === 'mtlproposal' && $comment->comment_approved === '1') {
+		delete_transient( 'mtl-proposal-list-cached' );
+	}
+}
+add_action('wp_insert_comment', 'mtl_save_comment_remove_cache', 10, 2);
+add_action('delete_comment', 'mtl_save_comment_remove_cache', 10, 2);
+
+function mtl_publish_comment_remove_cache($new_status, $old_status, $comment) {
+	$post = get_post($comment->comment_post_ID);
+
+	if ($post && $post->post_status === 'publish' && $post->post_type === 'mtlproposal' && $comment->comment_approved === '1') {
+		delete_transient( 'mtl-proposal-list-cached' );
+	}
+}
+add_action('transition_comment_status', 'mtl_publish_comment_remove_cache', 10, 3);
 
 function tiles_output($the_query) {
 	$tiles = add_proposal_tile();

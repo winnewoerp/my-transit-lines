@@ -32,6 +32,7 @@ include( get_template_directory() . '/modules/mtl-download-geojson/mtl-download-
 include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-update-old-proposals.php'); // automatic updating for old proposals
 include( get_template_directory() . '/modules/mtl-show-metadata/mtl-show-metadata.php'); // metadata box for proposals
 include( get_template_directory() . '/modules/mtl-proposal-list/mtl-proposal-list.php'); // proposal list with multiple tabs
+include( get_template_directory() . '/modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php'); // sorting phase form
 
 /**
  * Set the content width based on the theme's design and stylesheet.
@@ -148,9 +149,13 @@ function my_transit_lines_scripts() {
 	}
 
 	wp_enqueue_script( 'mtl-util', get_template_directory_uri() . '/js/util.js', array(), wp_get_theme()->version);
+	wp_enqueue_script( 'mtl-sorting-phase-form', get_template_directory_uri() . '/modules/mtl-sorting-phase-form/mtl-sorting-phase-form.js', [], wp_get_theme()->version, [ 'strategy' => 'defer', 'in_footer' => true ] );
 
 	wp_register_script( 'openlayers', get_template_directory_uri() . '/openlayers/dist/ol.js', array(), wp_get_theme()->version, true);
 	wp_register_script( 'my-transit-lines', get_template_directory_uri() . '/js/my-transit-lines.js', array('openlayers', 'mtl-util', 'wp-util'), wp_get_theme()->version, true);
+
+	wp_enqueue_script( 'mtl-search-bar', get_template_directory_uri() . '/modules/mtl-search-bar/mtl-search-bar.js', array(), wp_get_theme()->version, ['strategy' => 'defer']);
+	wp_enqueue_script( 'mtl-proposal-list', get_template_directory_uri() . '/modules/mtl-proposal-list/mtl-proposal-list.js', ['my-transit-lines'], wp_get_theme()->version, ['strategy' => 'defer', 'in_footer' => true]);
 }
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 

@@ -88,7 +88,7 @@ function mtl_proposal_form_output( $atts ){
 			if (!isset($_POST['description']) || strlen(trim($_POST['description'])) < 3) $err['description'] = true;
 
 			if (!isset($_POST['submit-save-only'])) {
-				$status = ($old_status === 'publish' || !isset($mtl_options3['mtl-publish-status'])) ? 'publish' : $mtl_options3['mtl-publish-status'];
+				$status = ($old_status === 'publish' || !isset($mtl_options3['mtl-publish-status'])) ? 'publish' : ( $old_status === 'pending' ? 'pending' : $mtl_options3['mtl-publish-status'] );
 			}
 			
 			if(!$err) {

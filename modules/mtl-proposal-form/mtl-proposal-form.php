@@ -133,7 +133,7 @@ function mtl_proposal_form_output( $atts ){
 				$post['tags_input'] = explode(',', $_POST['mtl-tags']);
 				
 				$current_date = wp_date('Y-m-d H:i', current_datetime()->getTimestamp());
-				if(in_array($old_status, ['draft', 'pending'], true)) {
+				if ( in_array( $old_status, ['draft', 'pending'], true ) && $status === 'publish' ) {
 					$post['post_date'] = $current_date;
 				}
 								

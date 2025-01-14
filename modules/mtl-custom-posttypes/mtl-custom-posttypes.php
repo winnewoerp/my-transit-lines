@@ -72,6 +72,7 @@ function mtl_proposal_add_moderate_count() {
 			$awaiting_mod      = new WP_Query([
 				'post_type' => 'mtlproposal',
 				'post_status' => 'pending',
+				'posts_per_page' => -1,
 			]);
 			$awaiting_mod      = $awaiting_mod->post_count;
 			$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
@@ -92,6 +93,7 @@ function wp_admin_bar_proposals_menu( $wp_admin_bar ) {
 	$awaiting_mod      = new WP_Query([
 		'post_type' => 'mtlproposal',
 		'post_status' => 'pending',
+		'posts_per_page' => -1,
 	]);
 	$awaiting_mod      = $awaiting_mod->post_count;
 	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );
@@ -127,6 +129,7 @@ function mtl_admin_title_proposals($admin_title, $title) {
 	$awaiting_mod      = new WP_Query([
 		'post_type' => 'mtlproposal',
 		'post_status' => 'pending',
+		'posts_per_page' => -1,
 	]);
 	$awaiting_mod      = $awaiting_mod->post_count;
 	$awaiting_mod_i18n = number_format_i18n( $awaiting_mod );

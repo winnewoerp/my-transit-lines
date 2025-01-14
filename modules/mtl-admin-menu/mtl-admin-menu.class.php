@@ -180,6 +180,7 @@ class MtlSettingsPage
 		add_settings_section('mtl-settings-group-general2', __('Other settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
 		add_settings_field('mtl-allowed-drafts', __('Number of allowed drafts','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general2',array('field_name' => 'mtl-allowed-drafts','type' => 'number','step' => '1', 'option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-publish-status', __('Where to place newly published proposals','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general2',array('field_name' => 'mtl-publish-status','type' => 'select','options'=>[['publish',__('Published','my-transit-lines')],['pending',__('Pending','my-transit-lines')]],'option_name'=>'mtl-option-name3'));
+		add_settings_field('mtl-always-publish-minimum', __('Always publish if the author has at least this many proposals (default 0: never publish)','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general2',array('field_name' => 'mtl-always-publish-minimum','type' => 'number','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-show-districts', __('Show administrative subdivision selection for','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings','mtl-settings-group-general2',array('field_name' => 'mtl-show-districts','type' => 'select','options'=>[['all',__('everyone','my-transit-lines')],['admin',__('only admins','my-transit-lines')],['none',__('no one','my-transit-lines')]],'option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-country-source', __('Country areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-country-source','type' => 'text','option_name'=>'mtl-option-name3'));
 		add_settings_field('mtl-state-source', __('State areas file', 'my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-general-settings', 'mtl-settings-group-general2', array('field_name' => 'mtl-state-source','type' => 'text','option_name'=>'mtl-option-name3'));
@@ -250,6 +251,8 @@ class MtlSettingsPage
 		if( isset( $input['mtl-allowed-drafts']) ) $new_input['mtl-allowed-drafts'] = $input['mtl-allowed-drafts'];
 		if( isset( $input['mtl-publish-status']) ) $new_input['mtl-publish-status'] = $input['mtl-publish-status'];
 		else $new_input['mtl-publish-status'] = 'publish';
+		if( isset( $input['mtl-always-publish-minimum']) ) $new_input['mtl-always-publish-minimum'] = intval( $input['mtl-always-publish-minimum'] );
+		else $new_input['mtl-always-publish-minimum'] = 0;
 
 		if( isset( $input['mtl-show-districts'] ) ) $new_input['mtl-show-districts'] = $input['mtl-show-districts'];
 		else $new_input['mtl-show-districts'] = false;
@@ -335,7 +338,7 @@ class MtlSettingsPage
 		if($field_name) {
 			$has_value = isset($option[$field_name]);
 			if($has_value) $value = $option[$field_name];
-		}else {
+		} else {
 			$has_value = ($option !== false);
 			$value = $option;
 		}

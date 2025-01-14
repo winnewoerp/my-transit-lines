@@ -88,7 +88,19 @@ function mtl_proposal_form_output( $atts ){
 			if (!isset($_POST['description']) || strlen(trim($_POST['description'])) < 3) $err['description'] = true;
 
 			if (!isset($_POST['submit-save-only'])) {
-				$status = ($old_status === 'publish' || !isset($mtl_options3['mtl-publish-status'])) ? 'publish' : ( $old_status === 'pending' ? 'pending' : $mtl_options3['mtl-publish-status'] );
+				if ( isset( $mtl_options3['mtl-publish-status'] ) ) {
+					$status = $mtl_options3['mtl-publish-status'];
+				}
+
+				if ($old_status === 'publish') {
+					$status = 'publish';
+				} else if ($old_status === 'pending') {
+					$status = 'pending';
+				}
+
+				if ( !empty( $mtl_options3['mtl-always-publish-minimum'] ) && get_publish_query()->post_count >= $mtl_options3['mtl-always-publish-minimum'] && !get_user_meta( get_current_user_id(), 'mtl-dont-publish', true ) ) {
+					$status = 'publish';
+				}
 			}
 			
 			if(!$err) {
@@ -466,6 +478,21 @@ function get_drafts_query() {
 }
 
 /**
+ * Returns a WP_Query of all the published proposals the current user has created
+ *
+ * @return WP_Query
+ */
+function get_publish_query() {
+	$publish_query_args = array(
+		'posts_per_page' => -1,
+		'post_type' => 'mtlproposal',
+		'author' => get_current_user_id(),
+		'post_status' => 'publish',
+	);
+	return new WP_Query($publish_query_args);
+}
+
+/**
  * Returns the editId for the proposal to edit. Might be the id of a proposal or an empty string for a new proposal
  *
  * @return int|string
@@ -574,5 +601,3 @@ function hide_if_not_logged_in( $atts, $content ){
 	if(is_user_logged_in()) return do_shortcode($content);
 }
 add_shortcode( 'hide-if-not-logged-in', 'hide_if_not_logged_in' );
-
-?>

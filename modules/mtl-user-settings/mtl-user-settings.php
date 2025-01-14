@@ -52,12 +52,103 @@ function mtl_custom_user_settings_update( $user_id ) {
     }
  
     // create/update user meta for the $user_id
-    return update_user_meta(
-        $user_id,
-        'mtl-dont-publish',
-        isset( $_POST['mtl-dont-publish'] )
-    );
+    return update_user_meta( $user_id, 'mtl-dont-publish', isset( $_POST['mtl-dont-publish'] ) );
 }
 add_action( 'personal_options_update', 'mtl_custom_user_settings_update' );
 add_action( 'edit_user_profile_update', 'mtl_custom_user_settings_update' );
 
+/**
+ * [mtl-user-settings] shortcode
+ */
+function mtl_user_settings_output( $atts ) {
+	if ( !is_user_logged_in() ) {
+		return 
+		'<p>'.
+			__('You need to be logged in to access your personal settings!','my-transit-lines').
+		'</p>';
+	}
+
+	$submit_message = '';
+	if ( !empty( $_POST ) ) {
+		$result = mtl_user_settings_post( $atts );
+
+		$submit_message = 
+		'<ul id="user-settings-form-success">
+			<li>'.
+				__('Your changes were saved successfully!','my-transit-lines').
+			'</li>
+		</ul>';
+	}
+
+	global $user_login;
+
+	return $submit_message.
+	'<form id="mtl-user-settings-form" method="post" action="">
+		<input type="hidden" value=0 name="mtl-arbitrary-payload">
+		<h2>'.
+			__('Profile settings','my-transit-lines').
+		'</h2>
+		<table class="form-table" role="presentation"><tbody>
+			<tr>
+				<th scope="row">'.
+					__('Profile name','my-transit-lines').
+				'</th>
+				<td>
+					<p>'.
+						$user_login.
+						' <small>'.
+							__('Your username cannot be changed.','my-transit-lines').
+						'</small>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">'.
+					__('Profile picture','my-transit-lines').
+				'</th>
+				<td>'.
+					get_avatar( get_current_user_id() ).
+					'<p>
+						<a href="https://gravatar.com">'.
+							__('You can change your profile picture using Gravatar', 'my-transit-lines').
+						'</a>
+					</p>
+				</td>
+			</tr>
+		</tbody></table>
+		<h2>'.
+			__('Contact settings','my-transit-lines').
+		'</h2>
+		<table class="form-table" role="presentation"><tbody>
+			<tr>
+				<th scope="row">'.
+					__('Contact button','my-transit-lines').
+				'</th>
+				<td>
+					<label for="enable-contact-button">
+						<input type="checkbox" id="enable-contact-button" '.(get_user_meta( get_current_user_id(), 'enable-contact-button', true ) ? 'checked' : '').' name="enable-contact-button"> '.
+						esc_html__('Enable contact button for my finished proposals','my-transit-lines').
+					'</label>
+					<br>
+					<small>'.
+						esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him.','my-transit-lines').
+					'</small>
+				</td>
+			</tr>
+		</tbody></table>
+
+		<p class="aligncenter">
+			<input type="submit" value="'.__('Save changes','my-transit-lines').'">
+		</p>
+	</form>';
+}
+add_shortcode( 'mtl-user-settings', 'mtl_user_settings_output' );
+
+/**
+ * Updates the user meta according to the $_POST and $atts variables
+ * 
+ * Returns an associative array of which updates were successful or not, in the form of meta_key => bool
+ */
+function mtl_user_settings_post( $atts ) {
+	update_user_meta( get_current_user_id(), 'enable-contact-button', isset( $_POST['enable-contact-button'] ) );
+}

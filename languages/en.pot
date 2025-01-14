@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2025-01-14 21:28+0100\n"
+"POT-Creation-Date: 2025-01-15 00:06+0100\n"
 "PO-Revision-Date: 2024-07-03 16:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
@@ -480,11 +480,11 @@ msgid ""
 "%2$s</span>"
 msgstr ""
 
-#: modules/common.php:147 modules/mtl-proposal-list/mtl-proposal-list.php:318
+#: modules/common.php:158 modules/mtl-proposal-list/mtl-proposal-list.php:318
 msgid "Draft"
 msgstr ""
 
-#: modules/common.php:150 modules/mtl-admin-menu/mtl-admin-menu.class.php:182
+#: modules/common.php:161 modules/mtl-admin-menu/mtl-admin-menu.class.php:182
 #: modules/mtl-proposal-list/mtl-proposal-list.php:319
 msgid "Pending"
 msgstr ""
@@ -968,12 +968,12 @@ msgid "Map data of this proposal"
 msgstr ""
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:78
-#: modules/mtl-proposal-form/mtl-proposal-form.php:453
+#: modules/mtl-proposal-form/mtl-proposal-form.php:447
 msgid "Station name (optional)"
 msgstr ""
 
 #: modules/mtl-metaboxes/mtl-metaboxes.php:78
-#: modules/mtl-proposal-form/mtl-proposal-form.php:458
+#: modules/mtl-proposal-form/mtl-proposal-form.php:452
 msgid "Set new name"
 msgstr ""
 
@@ -1108,144 +1108,124 @@ msgstr ""
 msgid "Add new proposal"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:192
+#: modules/mtl-proposal-form/mtl-proposal-form.php:189
 msgid "Author name"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:193
+#: modules/mtl-proposal-form/mtl-proposal-form.php:190
 msgid "Author e-mail"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:194
+#: modules/mtl-proposal-form/mtl-proposal-form.php:191
 msgid "Title"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:195
+#: modules/mtl-proposal-form/mtl-proposal-form.php:192
 msgid "Description"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:218
+#: modules/mtl-proposal-form/mtl-proposal-form.php:215
 msgid "Please verify the following errors:"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:220
+#: modules/mtl-proposal-form/mtl-proposal-form.php:217
 msgid "Please select a category"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:221
+#: modules/mtl-proposal-form/mtl-proposal-form.php:218
 msgid "Please insert a title"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:222
+#: modules/mtl-proposal-form/mtl-proposal-form.php:219
 msgid "Please insert a description"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:223
+#: modules/mtl-proposal-form/mtl-proposal-form.php:220
 msgid "Please insert location tags"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:225
+#: modules/mtl-proposal-form/mtl-proposal-form.php:222
 msgid "Please fill out/correct the data and press the send button again."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:283
+#: modules/mtl-proposal-form/mtl-proposal-form.php:280
 msgid "Please select a transportation mode"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:306
+#: modules/mtl-proposal-form/mtl-proposal-form.php:303
 msgid "Please draw the line and/or the stations into the map"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:307
+#: modules/mtl-proposal-form/mtl-proposal-form.php:304
 msgid "Hints for the usage of the respective tool are shown below the map."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:311
+#: modules/mtl-proposal-form/mtl-proposal-form.php:308
 msgid "Tool usage hints"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:312
+#: modules/mtl-proposal-form/mtl-proposal-form.php:309
 msgid ""
 "Please use the tools at the top left corner of the map.<br /> Use the point "
 "symbol (top) to draw the stations and the line symbol (second from top) to "
 "draw the line."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:313
+#: modules/mtl-proposal-form/mtl-proposal-form.php:310
 msgid ""
 "Click on the map to add stations.<br /> You can then add names to the "
 "station by using the select tool (third from bottom)."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:314
+#: modules/mtl-proposal-form/mtl-proposal-form.php:311
 msgid ""
 "Click on the map to add a line.<br /> Every click adds a new point to the "
 "line. Doubleclick to finish drawing the line."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:315
+#: modules/mtl-proposal-form/mtl-proposal-form.php:312
 msgid ""
 "Click on the map to add a polygon.<br /> Every click adds a new point to the "
 "polygon. Click the first point to finish drawing the polygon."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:316
+#: modules/mtl-proposal-form/mtl-proposal-form.php:313
 msgid ""
 "Click on the map to add a circle.<br /> The first click sets the center, the "
 "second one sets the radius."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:317
+#: modules/mtl-proposal-form/mtl-proposal-form.php:314
 msgid ""
 "Click on features to edit them.<br /> You can move or modify the feature "
 "(move points, add points) with this tool."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:318
+#: modules/mtl-proposal-form/mtl-proposal-form.php:315
 msgid ""
 "Use the tool to select features.<br /> Select a feature to add a name. With "
 "the delete tool (second from bottom) you can delete a selected feature."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:319
+#: modules/mtl-proposal-form/mtl-proposal-form.php:316
 msgid ""
 "Use the selected tool to navigate the map.<br /> With this tool, no "
 "modification of the objects is possible."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:322
+#: modules/mtl-proposal-form/mtl-proposal-form.php:319
 msgid "Import GeoJSON file"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:374
-msgid "Enable contact button for my finished proposals"
-msgstr ""
-
-#: modules/mtl-proposal-form/mtl-proposal-form.php:375
-msgid ""
-"This enables a contact button within your proposals linked to a contact form "
-"where interested people can contact you. On submit, an email with the form "
-"data is being sent to you (and in copy to the admin team). Your email "
-"address is not visible to the respective person until you reply to her/him. "
-"The button is not visible as long as your prposal is still in elaboration "
-"phase."
-msgstr ""
-
-#: modules/mtl-proposal-form/mtl-proposal-form.php:375
-msgid ""
-"Important: This global option is being set for all of your finished "
-"proposals, not only for this one."
-msgstr ""
-
-#: modules/mtl-proposal-form/mtl-proposal-form.php:384
+#: modules/mtl-proposal-form/mtl-proposal-form.php:378
 msgid "Delete this draft"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:385
+#: modules/mtl-proposal-form/mtl-proposal-form.php:379
 msgid "Cancel update"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:403
+#: modules/mtl-proposal-form/mtl-proposal-form.php:397
 #, php-format
 msgid ""
 "You must be logged in to add a new proposal. If you already have an account "
@@ -1254,37 +1234,37 @@ msgid ""
 "\"%1$s\" account here</a>."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:404
+#: modules/mtl-proposal-form/mtl-proposal-form.php:398
 #, php-format
 msgid "You must <a href=\"%2$s\">login here</a> to edit your proposal."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:417
+#: modules/mtl-proposal-form/mtl-proposal-form.php:411
 msgid ""
 "You have reached your limit of drafts. Please publish or delete at least one "
 "of your drafts to start a new proposal. These are your current drafts:"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:422
+#: modules/mtl-proposal-form/mtl-proposal-form.php:416
 #, php-format
 msgid ""
 "Are your sure you want to delete the draft of your proposal \"%s\"? There is "
 "no going back."
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:423
+#: modules/mtl-proposal-form/mtl-proposal-form.php:417
 msgid "Yes, definetily delete this draft"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:424
+#: modules/mtl-proposal-form/mtl-proposal-form.php:418
 msgid "No, I do not want to delete the draft"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:434
+#: modules/mtl-proposal-form/mtl-proposal-form.php:428
 msgid "Draft successfully deleted!"
 msgstr ""
 
-#: modules/mtl-proposal-form/mtl-proposal-form.php:438
+#: modules/mtl-proposal-form/mtl-proposal-form.php:432
 msgid ""
 "Couldn't delete the proposal. Is it a draft and are you logged in and the "
 "author?"
@@ -1880,6 +1860,58 @@ msgstr ""
 
 #: modules/mtl-user-settings/mtl-user-settings.php:31
 msgid "Never publish the posts of this user immediately"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:67
+msgid "You need to be logged in to access your personal settings!"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:78
+msgid "Your changes were saved successfully!"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:89
+msgid "Profile settings"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:94
+msgid "Profile name"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:100
+msgid "Your username cannot be changed."
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:107
+msgid "Profile picture"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:113
+msgid "You can change your profile picture using Gravatar"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:120
+msgid "Contact settings"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:125
+msgid "Contact button"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:130
+msgid "Enable contact button for my finished proposals"
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:134
+msgid ""
+"This enables a contact button within your proposals linked to a contact form "
+"where interested people can contact you. On submit, an email with the form "
+"data is being sent to you (and in copy to the admin team). Your email "
+"address is not visible to the respective person until you reply to her/him."
+msgstr ""
+
+#: modules/mtl-user-settings/mtl-user-settings.php:141
+msgid "Save changes"
 msgstr ""
 
 #: search.php:16

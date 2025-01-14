@@ -563,15 +563,20 @@ button {
 /* END Footer */
 
 .clear {
-	clear:both;
+	clear: both;
 }
 
 .alignright,
 .rightalign {
-	text-align:right;
+	text-align: right;
 }
 
 .alignleft,
 .leftalign {
-	text-align:left;
+	text-align: left;
+}
+
+.aligncenter,
+.centeralign {
+	text-align: center;
 }

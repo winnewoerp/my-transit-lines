@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2025-01-15 00:06+0100\n"
-"PO-Revision-Date: 2025-01-15 00:09+0100\n"
+"POT-Creation-Date: 2025-01-17 14:25+0100\n"
+"PO-Revision-Date: 2025-01-17 14:26+0100\n"
 "Last-Translator: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
 "Language: de_DE\n"
@@ -553,6 +553,7 @@ msgid "Page content under preparation for upcoming versions."
 msgstr "Seiteninhalt in Vorbereitung für zukünftige Theme-Versionen."
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:143
+#: modules/mtl-login-register/mtl-login-register.php:36
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -720,43 +721,47 @@ msgstr "Seite für die Vorschlagserstellung"
 msgid "Page for proposal list"
 msgstr "Seite der Liste der Streckenvorschläge"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
+msgid "Page for user settings"
+msgstr "Seite der Nutzereinstellungen"
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
 msgid "General texts settings"
 msgstr "Generelle Texteinstellungen"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:227
 msgid "Title for intro of proposal contact form"
 msgstr "Titel für die Einleitung zum Vorschlags-Kontaktformular"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:227
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:228
 msgid "Intro text for proposal contact form"
 msgstr "Einleitungstext zum Vorschlags-Kontaktformular"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:228
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:229
 msgid "Contents of the metadata display"
 msgstr "Inhalt der Metadatenanzeige"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
 msgid "ReCAPTCHA settings"
 msgstr "ReCAPTCHA-Einstellungen"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
 msgid "ReCAPTCHA website key"
 msgstr "ReCAPTCHA-Websiteschlüssel"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:234
 msgid "ReCAPTCHA secret key"
 msgstr "ReCAPTCHA-Geheimschlüssel"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:236
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
 msgid "GeoJSON import settings"
 msgstr "GeoJSON-Importeinstellungen"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:238
 msgid "GeoJSON import hints"
 msgstr "GeoJSON-Importhinweise"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:306
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:308
 msgid ""
 "Click on the map to set the marker to the default map center or input/paste "
 "the values to the fields below"
@@ -764,15 +769,15 @@ msgstr ""
 "Klicke auf die Karte, um die Standard-Kartenposition festzulegen, oder gib "
 "die Werte in den Feldern darunter ein"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:376
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:378
 msgid "Select Image"
 msgstr "Bild auswählen"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:376
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:378
 msgid "image for this category"
 msgstr "Bild für diese Kategorie"
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:376
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:378
 msgid "Enter URL or upload image"
 msgstr "URL eingeben oder Bild auswählen"
 
@@ -974,15 +979,15 @@ msgstr "Guten Tag"
 msgid "My proposals"
 msgstr "Meine Vorschläge"
 
-#: modules/mtl-login-register/mtl-login-register.php:36
+#: modules/mtl-login-register/mtl-login-register.php:37
 msgid "Logout"
 msgstr "Abmelden"
 
-#: modules/mtl-login-register/mtl-login-register.php:38
+#: modules/mtl-login-register/mtl-login-register.php:39
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: modules/mtl-login-register/mtl-login-register.php:49
+#: modules/mtl-login-register/mtl-login-register.php:50
 msgid "MTL Login/Register"
 msgstr "MTL Login/Register"
 

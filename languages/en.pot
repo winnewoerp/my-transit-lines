@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: My Transit Lines theme\n"
-"POT-Creation-Date: 2025-01-15 00:06+0100\n"
+"POT-Creation-Date: 2025-01-17 14:25+0100\n"
 "PO-Revision-Date: 2024-07-03 16:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: Johannes Bouchain <joschi@stadtkreation.de>\n"
@@ -521,6 +521,7 @@ msgid "Page content under preparation for upcoming versions."
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:143
+#: modules/mtl-login-register/mtl-login-register.php:36
 msgid "Settings"
 msgstr ""
 
@@ -681,57 +682,61 @@ msgstr ""
 msgid "Page for proposal list"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:225
-msgid "General texts settings"
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:223
+msgid "Page for user settings"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:226
-msgid "Title for intro of proposal contact form"
+msgid "General texts settings"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:227
-msgid "Intro text for proposal contact form"
+msgid "Title for intro of proposal contact form"
 msgstr ""
 
 #: modules/mtl-admin-menu/mtl-admin-menu.class.php:228
+msgid "Intro text for proposal contact form"
+msgstr ""
+
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:229
 msgid "Contents of the metadata display"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:231
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
 msgid "ReCAPTCHA settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:232
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
 msgid "ReCAPTCHA website key"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:233
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:234
 msgid "ReCAPTCHA secret key"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:236
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
 msgid "GeoJSON import settings"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:237
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:238
 msgid "GeoJSON import hints"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:306
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:308
 msgid ""
 "Click on the map to set the marker to the default map center or input/paste "
 "the values to the fields below"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:376
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:378
 msgid "Select Image"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:376
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:378
 msgid "image for this category"
 msgstr ""
 
-#: modules/mtl-admin-menu/mtl-admin-menu.class.php:376
+#: modules/mtl-admin-menu/mtl-admin-menu.class.php:378
 msgid "Enter URL or upload image"
 msgstr ""
 
@@ -933,15 +938,15 @@ msgstr ""
 msgid "My proposals"
 msgstr ""
 
-#: modules/mtl-login-register/mtl-login-register.php:36
+#: modules/mtl-login-register/mtl-login-register.php:37
 msgid "Logout"
 msgstr ""
 
-#: modules/mtl-login-register/mtl-login-register.php:38
+#: modules/mtl-login-register/mtl-login-register.php:39
 msgid "Change password"
 msgstr ""
 
-#: modules/mtl-login-register/mtl-login-register.php:49
+#: modules/mtl-login-register/mtl-login-register.php:50
 msgid "MTL Login/Register"
 msgstr ""
 

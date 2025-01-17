@@ -1,0 +1,24 @@
+#mtl-user-settings-form th {
+	width: 200px;
+}
+
+ul#user-settings-form-errors {
+	background: #ffeeee;
+	border: 2px solid red;
+	padding: 4px 8px;
+	margin-bottom: 12px;
+	margin-left: 0px;
+}
+
+ul#user-settings-form-success li,
+ul#user-settings-form-errors li {
+	margin-left: 15px;
+}
+
+ul#user-settings-form-success {
+	background: #eeffee;
+	border: 2px solid lightgreen;
+	padding: 4px 8px;
+	margin-bottom: 12px;
+	margin-left: 0px;
+}

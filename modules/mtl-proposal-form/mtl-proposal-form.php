@@ -88,7 +88,19 @@ function mtl_proposal_form_output( $atts ){
 			if (!isset($_POST['description']) || strlen(trim($_POST['description'])) < 3) $err['description'] = true;
 
 			if (!isset($_POST['submit-save-only'])) {
-				$status = ($old_status === 'publish' || !isset($mtl_options3['mtl-publish-status'])) ? 'publish' : ( $old_status === 'pending' ? 'pending' : $mtl_options3['mtl-publish-status'] );
+				if ( isset( $mtl_options3['mtl-publish-status'] ) ) {
+					$status = $mtl_options3['mtl-publish-status'];
+				}
+
+				if ($old_status === 'publish') {
+					$status = 'publish';
+				} else if ($old_status === 'pending') {
+					$status = 'pending';
+				}
+
+				if ( !empty( $mtl_options3['mtl-always-publish-minimum'] ) && get_publish_query()->post_count >= $mtl_options3['mtl-always-publish-minimum'] && !get_user_meta( get_current_user_id(), 'mtl-dont-publish', true ) ) {
+					$status = 'publish';
+				}
 			}
 			
 			if(!$err) {
@@ -121,7 +133,7 @@ function mtl_proposal_form_output( $atts ){
 				$post['tags_input'] = explode(',', $_POST['mtl-tags']);
 				
 				$current_date = wp_date('Y-m-d H:i', current_datetime()->getTimestamp());
-				if(in_array($old_status, ['draft', 'pending'], true)) {
+				if ( in_array( $old_status, ['draft', 'pending'], true ) && $status === 'publish' ) {
 					$post['post_date'] = $current_date;
 				}
 								
@@ -161,10 +173,6 @@ function mtl_proposal_form_output( $atts ){
 				}
 
 				do_action('wp_insert_post', $current_post_id, get_post($current_post_id), true);
-				
-				// enable/disable contact button for current user
-				$userid = get_current_user_id();
-				update_user_meta($userid,'enable-contact-button',$_POST['enable-contact-button']);
 				
 				// preparing user info for mail notification			
 				$current_user = wp_get_current_user();
@@ -359,19 +367,6 @@ function mtl_proposal_form_output( $atts ){
 			$output .= mtl_get_output(function() use ($current_description, $settings) {
 				wp_editor($current_description, 'description', $settings);
 			});
-			
-			$userid = get_current_user_id();
-			$enable_checked = false;
-			if(get_user_meta($userid,'enable-contact-button',true)) $enable_checked = true;
-			if(isset($_POST['enable-contact-button'])) {
-				if($_POST['enable-contact-button']) $enable_checked = true;
-				else $enable_checked = false;
-			}
-			else {
-				if('POST' == $_SERVER['REQUEST_METHOD']) $enable_checked = false;
-			}
-			$output .= '<p class="alignleft">&nbsp;<br /><label for="enable-contact-button"><input type="checkbox" id="enable-contact-button" '.($enable_checked ? 'checked="checked"' : '').'name="enable-contact-button" /> <strong>'.esc_html__('Enable contact button for my finished proposals','my-transit-lines').'</strong></label>
-			<small>'.esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him. The button is not visible as long as your prposal is still in elaboration phase.','my-transit-lines').' <strong>'.esc_html__('Important: This global option is being set for all of your finished proposals, not only for this one.','my-transit-lines').'<strong></small></p>'."\r\n";
 
 			// send post
 			$submit_editType = $editType;
@@ -474,6 +469,21 @@ function get_drafts_query() {
 		'post_status' => 'draft',
 	);
 	return new WP_Query($drafts_query_args);
+}
+
+/**
+ * Returns a WP_Query of all the published proposals the current user has created
+ *
+ * @return WP_Query
+ */
+function get_publish_query() {
+	$publish_query_args = array(
+		'posts_per_page' => -1,
+		'post_type' => 'mtlproposal',
+		'author' => get_current_user_id(),
+		'post_status' => 'publish',
+	);
+	return new WP_Query($publish_query_args);
 }
 
 /**
@@ -585,5 +595,3 @@ function hide_if_not_logged_in( $atts, $content ){
 	if(is_user_logged_in()) return do_shortcode($content);
 }
 add_shortcode( 'hide-if-not-logged-in', 'hide_if_not_logged_in' );
-
-?>

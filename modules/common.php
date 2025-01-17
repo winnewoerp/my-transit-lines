@@ -19,6 +19,17 @@ if ( !function_exists('array_any') ) {
 	}
 }
 
+// Implement own array_all if using PHP < 8.4
+if ( !function_exists('array_all') ) {
+	function array_all( $array, $callback ) {
+		foreach ($array as $key => $value) {
+			if (!$callback($value, $key))
+				return false;
+		}
+		return true;
+	}
+}
+
 const STYLE_DATA_KEYS = array(
 	['mtl-color-cat', 'color'],
 	['mtl-image-cat', 'image'],

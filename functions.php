@@ -33,6 +33,7 @@ include( get_template_directory() . '/modules/mtl-update-old-proposals/mtl-updat
 include( get_template_directory() . '/modules/mtl-show-metadata/mtl-show-metadata.php'); // metadata box for proposals
 include( get_template_directory() . '/modules/mtl-proposal-list/mtl-proposal-list.php'); // proposal list with multiple tabs
 include( get_template_directory() . '/modules/mtl-sorting-phase-form/mtl-sorting-phase-form.php'); // sorting phase form
+include( get_template_directory() . '/modules/mtl-user-settings/mtl-user-settings.php'); // user settings
 
 /**
  * Set the content width based on the theme's design and stylesheet.

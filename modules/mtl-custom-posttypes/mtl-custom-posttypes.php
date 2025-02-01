@@ -229,6 +229,7 @@ function create_sorting_phase_status_taxonomy() {
 		'labels' => $labels,
 		'show_ui' => true,
 		'show_admin_column' => true,
+		'show_in_rest' => true,
 		'rewrite' => array('slug'),
 		'default_term' => array('name' => __( 'Not Submitted','my-transit-lines'), 'slug' => 'not-submitted'),
 		)

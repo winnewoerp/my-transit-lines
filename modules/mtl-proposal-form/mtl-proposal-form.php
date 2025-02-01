@@ -84,8 +84,15 @@ function mtl_proposal_form_output( $atts ){
 			if ($postType == 'mtlproposal') {
 				if(!isset($_POST['cat'])) $err['cat'] = true;
 			}
+
+			if (isset($_POST['description'])) {
+				$post_content = wp_kses_post($_POST['description']);
+				$post_content = str_ireplace($remove_links, $url, $post_content);
+				$post_content = str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url], $post_content);
+				$post_content = custom_trim($post_content, array_merge(CUSTOM_TRIM_DEFAULT_REMOVE, ["&nbsp;", "<p></p>", "<p>&nbsp;</p>"]));
+			}
 			
-			if (!isset($_POST['description']) || strlen(trim($_POST['description'])) < 3) $err['description'] = true;
+			if (!isset($post_content) || strlen($post_content) < 3) $err['description'] = true;
 
 			if (!isset($_POST['submit-save-only'])) {
 				if ( isset( $mtl_options3['mtl-publish-status'] ) ) {
@@ -115,11 +122,6 @@ function mtl_proposal_form_output( $atts ){
 				}, array_filter((explode(',', $mtl_options3['mtl-remove-link-prefix']) ?: []), function($elem) {
 					return $elem !== "";
 				}));
-
-				$post_content = wp_kses_post($_POST['description']);
-				$post_content = str_ireplace($remove_links, $url, $post_content);
-				$post_content = str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url], $post_content);
-				$post_content = custom_trim($post_content, array_merge(CUSTOM_TRIM_DEFAULT_REMOVE, ["&nbsp;", "<p></p>", "<p>&nbsp;</p>"]));
 
 				$post = array(
 					'ID' => $editId,

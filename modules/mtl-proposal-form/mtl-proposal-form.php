@@ -86,6 +86,14 @@ function mtl_proposal_form_output( $atts ){
 			}
 
 			if (isset($_POST['description'])) {
+				$url = parse_url( get_site_url(), PHP_URL_HOST );
+
+				$remove_links = array_map(function($elem) use ($url) {
+					return trim($elem).$url;
+				}, array_filter((explode(',', $mtl_options3['mtl-remove-link-prefix']) ?: []), function($elem) {
+					return $elem !== "";
+				}));
+
 				$post_content = wp_kses_post($_POST['description']);
 				$post_content = str_ireplace($remove_links, $url, $post_content);
 				$post_content = str_ireplace(["\"".$url, " ".$url, "http://".$url, "<p>".$url], ["\"https://".$url, " https://".$url, "https://".$url, "<p>https://".$url], $post_content);
@@ -115,17 +123,9 @@ function mtl_proposal_form_output( $atts ){
 				if($editId) $this_posttype = get_post_type($editId);
 				else $this_posttype = $postType;
 
-				$url = parse_url( get_site_url(), PHP_URL_HOST );
-
-				$remove_links = array_map(function($elem) use ($url) {
-					return trim($elem).$url;
-				}, array_filter((explode(',', $mtl_options3['mtl-remove-link-prefix']) ?: []), function($elem) {
-					return $elem !== "";
-				}));
-
 				$post = array(
 					'ID' => $editId,
-					'post_title'	=> esc_html($_POST['title']),
+					'post_title'	=> esc_html(addslashes($_POST['title'])),
 					'post_content'	=> $post_content,
 					'post_category'	=> array($_POST['cat']),
 					'post_status'	=> $status,

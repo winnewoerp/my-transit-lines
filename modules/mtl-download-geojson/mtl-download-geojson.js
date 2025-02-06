@@ -12,8 +12,12 @@ function getGeoJSON() {
 	return JSON.stringify(featuresDataObject);
 }
 
-window.addEventListener('load', function() {
-	document.getElementById('mtl-geojson-download').onclick = function() {
+document.getElementById('mtl-geojson-download').onclick = function(event) {
+	try {
 		this.href = 'data:text/json;charset=utf-8,'+encodeURIComponent(getGeoJSON());
-	};
-});
+	} catch (e) {
+		console.log(e);
+		alert("Something has gone wrong while generating the GeoJSON. Please contact the administrator of the Website!");
+		event.preventDefault();
+	}
+};

@@ -6,7 +6,7 @@
  * @param {Array<import('../../style/flat.js').Rule>} rules The rules.
  * @return {import('../../style/Style.js').StyleFunction} A style function.
  */
-export function rulesToStyleFunction(rules: Array<import('../../style/flat.js').Rule>): import('../../style/Style.js').StyleFunction;
+export function rulesToStyleFunction(rules: Array<import("../../style/flat.js").Rule>): import("../../style/Style.js").StyleFunction;
 /**
  * This function adapts a style evaluator to the existing style function interface.
  * After we have deprecated the style function, we can use the compiled rules directly
@@ -15,7 +15,7 @@ export function rulesToStyleFunction(rules: Array<import('../../style/flat.js').
  * @param {Array<import('../../style/flat.js').FlatStyle>} flatStyles The flat styles.
  * @return {import('../../style/Style.js').StyleFunction} A style function.
  */
-export function flatStylesToStyleFunction(flatStyles: Array<import('../../style/flat.js').FlatStyle>): import('../../style/Style.js').StyleFunction;
+export function flatStylesToStyleFunction(flatStyles: Array<import("../../style/flat.js").FlatStyle>): import("../../style/Style.js").StyleFunction;
 /**
  * @typedef {function(EvaluationContext):Array<Style>} RuleSetEvaluator
  */
@@ -29,9 +29,9 @@ export function flatStylesToStyleFunction(flatStyles: Array<import('../../style/
  * @param {ParsingContext} context The parsing context.
  * @return {RuleSetEvaluator} The evaluator function.
  */
-export function buildRuleSet(rules: Array<import('../../style/flat.js').Rule>, context: ParsingContext): RuleSetEvaluator;
+export function buildRuleSet(rules: Array<import("../../style/flat.js").Rule>, context: ParsingContext): RuleSetEvaluator;
 /**
- * @typedef {function(EvaluationContext):Style} StyleEvaluator
+ * @typedef {function(EvaluationContext):Style|null} StyleEvaluator
  */
 /**
  * @param {FlatStyle} flatStyle A flat style literal.
@@ -57,9 +57,9 @@ export type CompiledRule = {
      */
     styles: Array<StyleEvaluator>;
 };
-export type StyleEvaluator = (arg0: EvaluationContext) => Style;
-export type FillEvaluator = (arg0: EvaluationContext) => Fill;
-export type StrokeEvaluator = (arg0: EvaluationContext) => Stroke;
+export type StyleEvaluator = (arg0: EvaluationContext) => Style | null;
+export type FillEvaluator = (arg0: EvaluationContext) => Fill | null;
+export type StrokeEvaluator = (arg0: EvaluationContext) => Stroke | null;
 export type TextEvaluator = (arg0: EvaluationContext) => Text;
 export type ImageEvaluator = (arg0: EvaluationContext) => import("../../style/Image.js").default;
 import Style from '../../style/Style.js';

@@ -5,45 +5,29 @@ export default JSONFeature;
  * instantiated in apps.
  * Base class for JSON feature formats.
  *
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("../Feature.js").default]
+ * @extends {FeatureFormat<FeatureType>}
  * @abstract
  */
-declare class JSONFeature extends FeatureFormat {
-    /**
-     * Read a feature.  Only works for a single feature. Use `readFeatures` to
-     * read a feature collection.
-     *
-     * @param {ArrayBuffer|Document|Element|Object|string} source Source.
-     * @param {import("./Feature.js").ReadOptions} [options] Read options.
-     * @return {import("../Feature.js").default} Feature.
-     * @api
-     */
-    readFeature(source: ArrayBuffer | Document | Element | any | string, options?: import("./Feature.js").ReadOptions | undefined): import("../Feature.js").default;
-    /**
-     * Read all features.  Works with both a single feature and a feature
-     * collection.
-     *
-     * @param {ArrayBuffer|Document|Element|Object|string} source Source.
-     * @param {import("./Feature.js").ReadOptions} [options] Read options.
-     * @return {Array<import("../Feature.js").default>} Features.
-     * @api
-     */
-    readFeatures(source: ArrayBuffer | Document | Element | any | string, options?: import("./Feature.js").ReadOptions | undefined): Array<import("../Feature.js").default>;
+declare class JSONFeature<FeatureType extends import("../Feature.js").FeatureLike = import("../Feature.js").default<import("../geom/Geometry.js").default, {
+    [x: string]: any;
+}>> extends FeatureFormat<FeatureType> {
     /**
      * @abstract
      * @param {Object} object Object.
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
      * @protected
-     * @return {import("../Feature.js").default} Feature.
+     * @return {FeatureType|Array<FeatureType>} Feature.
      */
-    protected readFeatureFromObject(object: any, options?: import("./Feature.js").ReadOptions | undefined): import("../Feature.js").default;
+    protected readFeatureFromObject(object: any, options?: import("./Feature.js").ReadOptions): FeatureType | Array<FeatureType>;
     /**
      * @abstract
      * @param {Object} object Object.
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
      * @protected
-     * @return {Array<import("../Feature.js").default>} Features.
+     * @return {Array<FeatureType>} Features.
      */
-    protected readFeaturesFromObject(object: any, options?: import("./Feature.js").ReadOptions | undefined): Array<import("../Feature.js").default>;
+    protected readFeaturesFromObject(object: any, options?: import("./Feature.js").ReadOptions): Array<FeatureType>;
     /**
      * @abstract
      * @param {Object} object Object.
@@ -51,15 +35,16 @@ declare class JSONFeature extends FeatureFormat {
      * @protected
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    protected readGeometryFromObject(object: any, options?: import("./Feature.js").ReadOptions | undefined): import("../geom/Geometry.js").default;
+    protected readGeometryFromObject(object: any, options?: import("./Feature.js").ReadOptions): import("../geom/Geometry.js").default;
     /**
      * Read the projection.
      *
      * @param {ArrayBuffer|Document|Element|Object|string} source Source.
      * @return {import("../proj/Projection.js").default} Projection.
      * @api
+     * @override
      */
-    readProjection(source: ArrayBuffer | Document | Element | any | string): import("../proj/Projection.js").default;
+    override readProjection(source: ArrayBuffer | Document | Element | any | string): import("../proj/Projection.js").default;
     /**
      * @abstract
      * @param {Object} object Object.
@@ -74,15 +59,16 @@ declare class JSONFeature extends FeatureFormat {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {string} Encoded feature.
      * @api
+     * @override
      */
-    writeFeature(feature: import("../Feature.js").default, options?: import("./Feature.js").WriteOptions | undefined): string;
+    override writeFeature(feature: import("../Feature.js").default, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @abstract
      * @param {import("../Feature.js").default} feature Feature.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {Object} Object.
      */
-    writeFeatureObject(feature: import("../Feature.js").default, options?: import("./Feature.js").WriteOptions | undefined): any;
+    writeFeatureObject(feature: import("../Feature.js").default, options?: import("./Feature.js").WriteOptions): any;
     /**
      * Encode an array of features as string.
      *
@@ -90,15 +76,16 @@ declare class JSONFeature extends FeatureFormat {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {string} Encoded features.
      * @api
+     * @override
      */
-    writeFeatures(features: Array<import("../Feature.js").default>, options?: import("./Feature.js").WriteOptions | undefined): string;
+    override writeFeatures(features: Array<import("../Feature.js").default>, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @abstract
      * @param {Array<import("../Feature.js").default>} features Features.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {Object} Object.
      */
-    writeFeaturesObject(features: Array<import("../Feature.js").default>, options?: import("./Feature.js").WriteOptions | undefined): any;
+    writeFeaturesObject(features: Array<import("../Feature.js").default>, options?: import("./Feature.js").WriteOptions): any;
     /**
      * Encode a geometry as string.
      *
@@ -106,15 +93,16 @@ declare class JSONFeature extends FeatureFormat {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {string} Encoded geometry.
      * @api
+     * @override
      */
-    writeGeometry(geometry: import("../geom/Geometry.js").default, options?: import("./Feature.js").WriteOptions | undefined): string;
+    override writeGeometry(geometry: import("../geom/Geometry.js").default, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @abstract
      * @param {import("../geom/Geometry.js").default} geometry Geometry.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {Object} Object.
      */
-    writeGeometryObject(geometry: import("../geom/Geometry.js").default, options?: import("./Feature.js").WriteOptions | undefined): any;
+    writeGeometryObject(geometry: import("../geom/Geometry.js").default, options?: import("./Feature.js").WriteOptions): any;
 }
 import FeatureFormat from './Feature.js';
 //# sourceMappingURL=JSONFeature.d.ts.map

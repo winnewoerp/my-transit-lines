@@ -7,18 +7,19 @@ export default GeometryCollection;
  */
 declare class GeometryCollection extends Geometry {
     /**
-     * @param {Array<Geometry>} [geometries] Geometries.
+     * @param {Array<Geometry>} geometries Geometries.
      */
-    constructor(geometries?: Geometry[] | undefined);
+    constructor(geometries: Array<Geometry>);
     /**
      * @private
      * @type {Array<Geometry>}
      */
     private geometries_;
     /**
+     * @private
      * @type {Array<import("../events.js").EventsKey>}
      */
-    changeEventsKeys_: Array<import("../events.js").EventsKey>;
+    private changeEventsKeys_;
     /**
      * @private
      */
@@ -31,8 +32,9 @@ declare class GeometryCollection extends Geometry {
      * Make a complete copy of the geometry.
      * @return {!GeometryCollection} Clone.
      * @api
+     * @override
      */
-    clone(): GeometryCollection;
+    override clone(): GeometryCollection;
     /**
      * Return the geometries that make up this geometry collection.
      * @return {Array<Geometry>} Geometries.
@@ -51,8 +53,9 @@ declare class GeometryCollection extends Geometry {
      * Create a simplified version of this geometry using the Douglas Peucker algorithm.
      * @param {number} squaredTolerance Squared tolerance.
      * @return {GeometryCollection} Simplified GeometryCollection.
+     * @override
      */
-    getSimplifiedGeometry(squaredTolerance: number): GeometryCollection;
+    override getSimplifiedGeometry(squaredTolerance: number): GeometryCollection;
     /**
      * @return {boolean} Is empty.
      */

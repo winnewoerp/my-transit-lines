@@ -27,6 +27,7 @@ export function calculateSourceExtentResolution(sourceProj: import("./proj/Proje
 /**
  * @typedef {Object} ImageExtent
  * @property {import("./extent.js").Extent} extent Extent.
+ * @property {import("./extent.js").Extent} [clipExtent] Clip extent.
  * @property {import('./DataTile.js').ImageLike} image Image.
  */
 /**
@@ -44,21 +45,27 @@ export function calculateSourceExtentResolution(sourceProj: import("./proj/Proje
  * @param {number} gutter Gutter of the sources.
  * @param {boolean} [renderEdges] Render reprojection edges.
  * @param {boolean} [interpolate] Use linear interpolation when resampling.
- * @return {HTMLCanvasElement} Canvas with reprojected data.
+ * @param {boolean} [drawSingle] Draw single source images directly without stitchContext.
+ * @param {boolean} [clipExtent] Clip stitchContext to sourceExtent.
+ * @return {HTMLCanvasElement|OffscreenCanvas} Canvas with reprojected data.
  */
-export function render(width: number, height: number, pixelRatio: number, sourceResolution: number, sourceExtent: import("./extent.js").Extent, targetResolution: number, targetExtent: import("./extent.js").Extent, triangulation: import("./reproj/Triangulation.js").default, sources: Array<ImageExtent>, gutter: number, renderEdges?: boolean | undefined, interpolate?: boolean | undefined): HTMLCanvasElement;
+export function render(width: number, height: number, pixelRatio: number, sourceResolution: number, sourceExtent: import("./extent.js").Extent, targetResolution: number, targetExtent: import("./extent.js").Extent, triangulation: import("./reproj/Triangulation.js").default, sources: Array<ImageExtent>, gutter: number, renderEdges?: boolean, interpolate?: boolean, drawSingle?: boolean, clipExtent?: boolean): HTMLCanvasElement | OffscreenCanvas;
 /**
- * @type {Array<HTMLCanvasElement>}
+ * @type {Array<HTMLCanvasElement|OffscreenCanvas>}
  */
-export const canvasPool: Array<HTMLCanvasElement>;
+export const canvasPool: Array<HTMLCanvasElement | OffscreenCanvas>;
 export type ImageExtent = {
     /**
      * Extent.
      */
     extent: import("./extent.js").Extent;
     /**
+     * Clip extent.
+     */
+    clipExtent?: import("./extent.js").Extent | undefined;
+    /**
      * Image.
      */
-    image: import('./DataTile.js').ImageLike;
+    image: import("./DataTile.js").ImageLike;
 };
 //# sourceMappingURL=reproj.d.ts.map

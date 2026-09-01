@@ -16,7 +16,7 @@ function mtl_flextiles_init()
 	wp_enqueue_style('flextiles', get_template_directory_uri() . '/modules/mtl-flextiles/flextiles.css',array());
 	wp_enqueue_script('flextiles-js',  get_template_directory_uri() . '/modules/mtl-flextiles/flextiles.js',array( 'jquery' ) );
 }
-add_action('init', 'mtl_flextiles_init');
+add_action('wp_enqueue_scripts', 'mtl_flextiles_init');
 
  /**
  * shortcode [mtl-flextiles]

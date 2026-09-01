@@ -2,48 +2,19 @@
  * @module ol/source/Raster
  */
 import Disposable from '../Disposable.js';
+import ImageCanvas from '../ImageCanvas.js';
+import TileQueue from '../TileQueue.js';
+import {createCanvasContext2D} from '../dom.js';
 import Event from '../events/Event.js';
 import EventType from '../events/EventType.js';
-import ImageCanvas from '../ImageCanvas.js';
+import {equals, getCenter, getHeight, getWidth} from '../extent.js';
 import ImageLayer from '../layer/Image.js';
+import TileLayer from '../layer/Tile.js';
+import {create as createTransform} from '../transform.js';
+import {getUid} from '../util.js';
 import ImageSource from './Image.js';
 import Source from './Source.js';
-import TileLayer from '../layer/Tile.js';
-import TileQueue from '../TileQueue.js';
 import TileSource from './Tile.js';
-import {createCanvasContext2D} from '../dom.js';
-import {create as createTransform} from '../transform.js';
-import {equals, getCenter, getHeight, getWidth} from '../extent.js';
-import {getUid} from '../util.js';
-
-let hasImageData = true;
-try {
-  new ImageData(10, 10);
-} catch (_) {
-  hasImageData = false;
-}
-
-/** @type {CanvasRenderingContext2D} */
-let context;
-
-/**
- * @param {Uint8ClampedArray} data Image data.
- * @param {number} width Number of columns.
- * @param {number} height Number of rows.
- * @return {ImageData} Image data.
- */
-export function newImageData(data, width, height) {
-  if (hasImageData) {
-    return new ImageData(data, width, height);
-  }
-
-  if (!context) {
-    context = document.createElement('canvas').getContext('2d');
-  }
-  const imageData = context.createImageData(width, height);
-  imageData.data.set(data);
-  return imageData;
-}
 
 /**
  * @typedef {Object} MinionData
@@ -64,20 +35,6 @@ export function newImageData(data, width, height) {
  * buffer.
  */
 function createMinion(operation) {
-  let workerHasImageData = true;
-  try {
-    new ImageData(10, 10);
-  } catch (_) {
-    workerHasImageData = false;
-  }
-
-  function newWorkerImageData(data, width, height) {
-    if (workerHasImageData) {
-      return new ImageData(data, width, height);
-    }
-    return {data: data, width: width, height: height};
-  }
-
   return function (data) {
     // bracket notation for minification support
     const buffers = data['buffers'];
@@ -92,10 +49,10 @@ function createMinion(operation) {
     if (imageOps) {
       const images = new Array(numBuffers);
       for (let b = 0; b < numBuffers; ++b) {
-        images[b] = newWorkerImageData(
+        images[b] = new ImageData(
           new Uint8ClampedArray(buffers[b]),
           width,
-          height
+          height,
         );
       }
       const output = operation(images, meta).data;
@@ -151,8 +108,9 @@ function createWorker(config, onMessage) {
   const worker = new Worker(
     typeof Blob === 'undefined'
       ? 'data:text/javascript;base64,' +
+        //@ts-expect-error
         Buffer.from(lines.join('\n'), 'binary').toString('base64')
-      : URL.createObjectURL(new Blob(lines, {type: 'text/javascript'}))
+      : URL.createObjectURL(new Blob(lines, {type: 'text/javascript'})),
   );
   worker.addEventListener('message', onMessage);
   return worker;
@@ -218,11 +176,15 @@ export class Processor extends Disposable {
   constructor(config) {
     super();
 
-    this._imageOps = !!config.imageOps;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this.imageOps_ = !!config.imageOps;
     let threads;
     if (config.threads === 0) {
       threads = 0;
-    } else if (this._imageOps) {
+    } else if (this.imageOps_) {
       threads = 1;
     } else {
       threads = config.threads || 1;
@@ -234,36 +196,48 @@ export class Processor extends Disposable {
     const workers = new Array(threads);
     if (threads) {
       for (let i = 0; i < threads; ++i) {
-        workers[i] = createWorker(config, this._onWorkerMessage.bind(this, i));
+        workers[i] = createWorker(config, this.onWorkerMessage_.bind(this, i));
       }
     } else {
       workers[0] = createFauxWorker(
         config,
-        this._onWorkerMessage.bind(this, 0)
+        this.onWorkerMessage_.bind(this, 0),
       );
     }
-    this._workers = workers;
+    /**
+     * @type {Array<Worker>}
+     * @private
+     */
+    this.workers_ = workers;
 
     /**
      * @type {Array<Job>}
      * @private
      */
-    this._queue = [];
+    this.queue_ = [];
 
-    this._maxQueueLength = config.queue || Infinity;
-    this._running = 0;
+    /**
+     * @type {number}
+     * @private
+     */
+    this.maxQueueLength_ = config.queue || Infinity;
+    /**
+     * @type {number}
+     * @private
+     */
+    this.running_ = 0;
 
     /**
      * @type {Object<number, any>}
      * @private
      */
-    this._dataLookup = {};
+    this.dataLookup_ = {};
 
     /**
-     * @type {Job}
+     * @type {Job|null}
      * @private
      */
-    this._job = null;
+    this.job_ = null;
   }
 
   /**
@@ -276,52 +250,52 @@ export class Processor extends Disposable {
    *     generated by operations.  The third is the user data object.
    */
   process(inputs, meta, callback) {
-    this._enqueue({
+    this.enqueue_({
       inputs: inputs,
       meta: meta,
       callback: callback,
     });
-    this._dispatch();
+    this.dispatch_();
   }
 
   /**
    * Add a job to the queue.
    * @param {Job} job The job.
    */
-  _enqueue(job) {
-    this._queue.push(job);
-    while (this._queue.length > this._maxQueueLength) {
-      this._queue.shift().callback(null, null);
+  enqueue_(job) {
+    this.queue_.push(job);
+    while (this.queue_.length > this.maxQueueLength_) {
+      this.queue_.shift().callback(null, null);
     }
   }
 
   /**
    * Dispatch a job.
    */
-  _dispatch() {
-    if (this._running || this._queue.length === 0) {
+  dispatch_() {
+    if (this.running_ || this.queue_.length === 0) {
       return;
     }
 
-    const job = this._queue.shift();
-    this._job = job;
+    const job = this.queue_.shift();
+    this.job_ = job;
     const width = job.inputs[0].width;
     const height = job.inputs[0].height;
     const buffers = job.inputs.map(function (input) {
       return input.data.buffer;
     });
-    const threads = this._workers.length;
-    this._running = threads;
+    const threads = this.workers_.length;
+    this.running_ = threads;
     if (threads === 1) {
-      this._workers[0].postMessage(
+      this.workers_[0].postMessage(
         {
           buffers: buffers,
           meta: job.meta,
-          imageOps: this._imageOps,
+          imageOps: this.imageOps_,
           width: width,
           height: height,
         },
-        buffers
+        buffers,
       );
       return;
     }
@@ -334,15 +308,15 @@ export class Processor extends Disposable {
       for (let j = 0, jj = buffers.length; j < jj; ++j) {
         slices.push(buffers[j].slice(offset, offset + segmentLength));
       }
-      this._workers[i].postMessage(
+      this.workers_[i].postMessage(
         {
           buffers: slices,
           meta: job.meta,
-          imageOps: this._imageOps,
+          imageOps: this.imageOps_,
           width: width,
           height: height,
         },
-        slices
+        slices,
       );
     }
   }
@@ -352,14 +326,14 @@ export class Processor extends Disposable {
    * @param {number} index The worker index.
    * @param {MessageEvent} event The message event.
    */
-  _onWorkerMessage(index, event) {
+  onWorkerMessage_(index, event) {
     if (this.disposed) {
       return;
     }
-    this._dataLookup[index] = event.data;
-    --this._running;
-    if (this._running === 0) {
-      this._resolveJob();
+    this.dataLookup_[index] = event.data;
+    --this.running_;
+    if (this.running_ === 0) {
+      this.resolveJob_();
     }
   }
 
@@ -367,43 +341,44 @@ export class Processor extends Disposable {
    * Resolve a job.  If there are no more worker threads, the processor callback
    * will be called.
    */
-  _resolveJob() {
-    const job = this._job;
-    const threads = this._workers.length;
+  resolveJob_() {
+    const job = this.job_;
+    const threads = this.workers_.length;
     let data, meta;
     if (threads === 1) {
-      data = new Uint8ClampedArray(this._dataLookup[0]['buffer']);
-      meta = this._dataLookup[0]['meta'];
+      data = new Uint8ClampedArray(this.dataLookup_[0]['buffer']);
+      meta = this.dataLookup_[0]['meta'];
     } else {
       const length = job.inputs[0].data.length;
       data = new Uint8ClampedArray(length);
       meta = new Array(threads);
       const segmentLength = 4 * Math.ceil(length / 4 / threads);
       for (let i = 0; i < threads; ++i) {
-        const buffer = this._dataLookup[i]['buffer'];
+        const buffer = this.dataLookup_[i]['buffer'];
         const offset = i * segmentLength;
         data.set(new Uint8ClampedArray(buffer), offset);
-        meta[i] = this._dataLookup[i]['meta'];
+        meta[i] = this.dataLookup_[i]['meta'];
       }
     }
-    this._job = null;
-    this._dataLookup = {};
+    this.job_ = null;
+    this.dataLookup_ = {};
     job.callback(
       null,
-      newImageData(data, job.inputs[0].width, job.inputs[0].height),
-      meta
+      new ImageData(data, job.inputs[0].width, job.inputs[0].height),
+      meta,
     );
-    this._dispatch();
+    this.dispatch_();
   }
 
   /**
    * Terminate all workers associated with the processor.
+   * @override
    */
   disposeInternal() {
-    for (let i = 0; i < this._workers.length; ++i) {
-      this._workers[i].terminate();
+    for (let i = 0; i < this.workers_.length; ++i) {
+      this.workers_[i].terminate();
     }
-    this._workers.length = 0;
+    this.workers_.length = 0;
   }
 }
 
@@ -499,7 +474,7 @@ export class RasterSourceEvent extends Event {
 /**
  * @typedef {Object} Options
  * @property {Array<import("./Source.js").default|import("../layer/Layer.js").default>} sources Input
- * sources or layers.  For vector data, use an VectorImage layer.
+ * sources or layers.
  * @property {Operation} [operation] Raster operation.
  * The operation will be called with data from input sources
  * and the output will be assigned to the raster source.
@@ -521,11 +496,11 @@ export class RasterSourceEvent extends Event {
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("./Image.js").ImageSourceEventTypes, import("./Image.js").ImageSourceEvent, Return> &
- *   import("../Observable").OnSignature<RasterSourceEventTypes, RasterSourceEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<import("./Image.js").ImageSourceEventTypes, import("./Image.js").ImageSourceEvent, Return> &
+ *   import("../Observable.js").OnSignature<RasterSourceEventTypes, RasterSourceEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types
  *     |RasterSourceEventTypes, Return>} RasterSourceOnSignature
  */
 
@@ -548,12 +523,12 @@ class RasterSource extends ImageSource {
     });
 
     /***
-     * @type {RasterSourceOnSignature<import("../events").EventsKey>}
+     * @type {RasterSourceOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {RasterSourceOnSignature<import("../events").EventsKey>}
+     * @type {RasterSourceOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 
@@ -592,7 +567,10 @@ class RasterSource extends ImageSource {
       this.layers_[i].addEventListener(EventType.CHANGE, changed);
     }
 
-    /** @type {boolean} */
+    /**
+     * @private
+     * @type {boolean}
+     */
     this.useResolutions_ = options.resolutions !== null;
 
     /**
@@ -620,6 +598,7 @@ class RasterSource extends ImageSource {
     /**
      * The most recently rendered revision.
      * @type {number}
+     * @private
      */
     this.renderedRevision_;
 
@@ -630,7 +609,7 @@ class RasterSource extends ImageSource {
     this.frameState_ = {
       animate: false,
       coordinateToPixelTransform: createTransform(),
-      declutterTree: null,
+      declutter: null,
       extent: null,
       index: 0,
       layerIndex: 0,
@@ -652,13 +631,10 @@ class RasterSource extends ImageSource {
     };
 
     this.setAttributions(function (frameState) {
+      /** @type {Array<string>} */
       const attributions = [];
-      for (
-        let index = 0, iMax = options.sources.length;
-        index < iMax;
-        ++index
-      ) {
-        const sourceOrLayer = options.sources[index];
+      for (let i = 0, iMax = options.sources.length; i < iMax; ++i) {
+        const sourceOrLayer = options.sources[i];
         const source =
           sourceOrLayer instanceof Source
             ? sourceOrLayer
@@ -666,13 +642,14 @@ class RasterSource extends ImageSource {
         if (!source) {
           continue;
         }
-        const attributionGetter = source.getAttributions();
-        if (typeof attributionGetter === 'function') {
-          const sourceAttribution = attributionGetter(frameState);
-          attributions.push.apply(attributions, sourceAttribution);
+        const sourceAttributions = source.getAttributions()?.(frameState);
+        if (typeof sourceAttributions === 'string') {
+          attributions.push(sourceAttributions);
+        } else if (sourceAttributions !== undefined) {
+          attributions.push(...sourceAttributions);
         }
       }
-      return attributions.length !== 0 ? attributions : null;
+      return attributions;
     });
 
     if (options.operation !== undefined) {
@@ -762,6 +739,7 @@ class RasterSource extends ImageSource {
    * @param {number} pixelRatio Pixel ratio.
    * @param {import("../proj/Projection.js").default} projection Projection.
    * @return {import("../ImageCanvas.js").default} Single image.
+   * @override
    */
   getImage(extent, resolution, pixelRatio, projection) {
     if (!this.allSourcesReady_()) {
@@ -821,12 +799,12 @@ class RasterSource extends ImageSource {
 
     const data = {};
     this.dispatchEvent(
-      new RasterSourceEvent(RasterEventType.BEFOREOPERATIONS, frameState, data)
+      new RasterSourceEvent(RasterEventType.BEFOREOPERATIONS, frameState, data),
     );
     this.processor_.process(
       imageDatas,
       data,
-      this.onWorkerComplete_.bind(this, frameState)
+      this.onWorkerComplete_.bind(this, frameState),
     );
   }
 
@@ -855,7 +833,10 @@ class RasterSource extends ImageSource {
 
     let context;
     if (this.renderedImageCanvas_) {
-      context = this.renderedImageCanvas_.getImage().getContext('2d');
+      context =
+        /** @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} */ (
+          this.renderedImageCanvas_.getImage().getContext('2d')
+        );
     } else {
       const width = Math.round(getWidth(extent) / resolution);
       const height = Math.round(getHeight(extent) / resolution);
@@ -864,7 +845,7 @@ class RasterSource extends ImageSource {
         extent,
         resolution,
         1,
-        context.canvas
+        context.canvas,
       );
     }
     context.putImageData(output, 0, 0);
@@ -877,13 +858,14 @@ class RasterSource extends ImageSource {
     this.renderedRevision_ = this.getRevision();
 
     this.dispatchEvent(
-      new RasterSourceEvent(RasterEventType.AFTEROPERATIONS, frameState, data)
+      new RasterSourceEvent(RasterEventType.AFTEROPERATIONS, frameState, data),
     );
   }
 
   /**
-   * @param {import("../proj/Projection").default} [projection] Projection.
+   * @param {import("../proj/Projection.js").default} [projection] Projection.
    * @return {Array<number>|null} Resolutions.
+   * @override
    */
   getResolutions(projection) {
     if (!this.useResolutions_) {
@@ -902,6 +884,9 @@ class RasterSource extends ImageSource {
     return resolutions;
   }
 
+  /**
+   * @override
+   */
   disposeInternal() {
     if (this.processor_) {
       this.processor_.dispose();
@@ -919,7 +904,7 @@ RasterSource.prototype.dispose;
 
 /**
  * A reusable canvas context.
- * @type {CanvasRenderingContext2D}
+ * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
  * @private
  */
 let sharedContext = null;

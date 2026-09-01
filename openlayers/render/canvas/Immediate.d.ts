@@ -10,7 +10,7 @@ export default CanvasImmediateRenderer;
  */
 declare class CanvasImmediateRenderer extends VectorContext {
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../../extent.js").Extent} extent Extent.
      * @param {import("../../transform.js").Transform} transform Transform.
@@ -18,10 +18,10 @@ declare class CanvasImmediateRenderer extends VectorContext {
      * @param {number} [squaredTolerance] Optional squared tolerance for simplification.
      * @param {import("../../proj.js").TransformFunction} [userTransform] Transform from user to view projection.
      */
-    constructor(context: CanvasRenderingContext2D, pixelRatio: number, extent: import("../../extent.js").Extent, transform: import("../../transform.js").Transform, viewRotation: number, squaredTolerance?: number | undefined, userTransform?: import("../../proj.js").TransformFunction | undefined);
+    constructor(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, pixelRatio: number, extent: import("../../extent.js").Extent, transform: import("../../transform.js").Transform, viewRotation: number, squaredTolerance?: number, userTransform?: import("../../proj.js").TransformFunction);
     /**
      * @private
-     * @type {CanvasRenderingContext2D}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
      */
     private context_;
     /**
@@ -216,6 +216,7 @@ declare class CanvasImmediateRenderer extends VectorContext {
      * @param {number} end End.
      * @param {number} stride Stride.
      * @param {boolean} close Close.
+     * @param {number} [strokeOffset] Stroke Offset.
      * @private
      * @return {number} end End.
      */
@@ -225,6 +226,7 @@ declare class CanvasImmediateRenderer extends VectorContext {
      * @param {number} offset Offset.
      * @param {Array<number>} ends Ends.
      * @param {number} stride Stride.
+     * @param {number} [strokeOffset] Stroke Offset.
      * @private
      * @return {number} End.
      */
@@ -235,8 +237,9 @@ declare class CanvasImmediateRenderer extends VectorContext {
      *
      * @param {import("../../geom/Circle.js").default} geometry Circle geometry.
      * @api
+     * @override
      */
-    drawCircle(geometry: import("../../geom/Circle.js").default): void;
+    override drawCircle(geometry: import("../../geom/Circle.js").default): void;
     /**
      * @param {import("../../transform.js").Transform} transform Transform.
      */
@@ -247,56 +250,76 @@ declare class CanvasImmediateRenderer extends VectorContext {
      *
      * @param {import("../../geom/Geometry.js").default|import("../Feature.js").default} geometry The geometry to render.
      * @api
+     * @override
      */
-    drawGeometry(geometry: import("../../geom/Geometry.js").default | import("../Feature.js").default): void;
+    override drawGeometry(geometry: import("../../geom/Geometry.js").default | import("../Feature.js").default): void;
+    /**
+     * Render a feature into the canvas.  Note that any `zIndex` on the provided
+     * style will be ignored - features are rendered immediately in the order that
+     * this method is called.  If you need `zIndex` support, you should be using an
+     * {@link module:ol/layer/Vector~VectorLayer} instead.
+     *
+     * @param {import("../../Feature.js").default} feature Feature.
+     * @param {import("../../style/Style.js").default} style Style.
+     * @api
+     * @override
+     */
+    override drawFeature(feature: import("../../Feature.js").default, style: import("../../style/Style.js").default): void;
     /**
      * Render a GeometryCollection to the canvas.  Rendering is immediate and
      * uses the current styles appropriate for each geometry in the collection.
      *
      * @param {import("../../geom/GeometryCollection.js").default} geometry Geometry collection.
+     * @override
      */
-    drawGeometryCollection(geometry: import("../../geom/GeometryCollection.js").default): void;
+    override drawGeometryCollection(geometry: import("../../geom/GeometryCollection.js").default): void;
     /**
      * Render a Point geometry into the canvas.  Rendering is immediate and uses
      * the current style.
      *
      * @param {import("../../geom/Point.js").default|import("../Feature.js").default} geometry Point geometry.
+     * @override
      */
-    drawPoint(geometry: import("../../geom/Point.js").default | import("../Feature.js").default): void;
+    override drawPoint(geometry: import("../../geom/Point.js").default | import("../Feature.js").default): void;
     /**
      * Render a MultiPoint geometry  into the canvas.  Rendering is immediate and
      * uses the current style.
      *
      * @param {import("../../geom/MultiPoint.js").default|import("../Feature.js").default} geometry MultiPoint geometry.
+     * @override
      */
-    drawMultiPoint(geometry: import("../../geom/MultiPoint.js").default | import("../Feature.js").default): void;
+    override drawMultiPoint(geometry: import("../../geom/MultiPoint.js").default | import("../Feature.js").default): void;
     /**
      * Render a LineString into the canvas.  Rendering is immediate and uses
      * the current style.
      *
      * @param {import("../../geom/LineString.js").default|import("../Feature.js").default} geometry LineString geometry.
+     * @override
      */
-    drawLineString(geometry: import("../../geom/LineString.js").default | import("../Feature.js").default): void;
+    override drawLineString(geometry: import("../../geom/LineString.js").default | import("../Feature.js").default): void;
     /**
      * Render a MultiLineString geometry into the canvas.  Rendering is immediate
      * and uses the current style.
      *
      * @param {import("../../geom/MultiLineString.js").default|import("../Feature.js").default} geometry MultiLineString geometry.
+     * @override
      */
-    drawMultiLineString(geometry: import("../../geom/MultiLineString.js").default | import("../Feature.js").default): void;
+    override drawMultiLineString(geometry: import("../../geom/MultiLineString.js").default | import("../Feature.js").default): void;
     /**
      * Render a Polygon geometry into the canvas.  Rendering is immediate and uses
      * the current style.
      *
      * @param {import("../../geom/Polygon.js").default|import("../Feature.js").default} geometry Polygon geometry.
+     * @override
      */
-    drawPolygon(geometry: import("../../geom/Polygon.js").default | import("../Feature.js").default): void;
+    override drawPolygon(geometry: import("../../geom/Polygon.js").default | import("../Feature.js").default): void;
     /**
      * Render MultiPolygon geometry into the canvas.  Rendering is immediate and
      * uses the current style.
      * @param {import("../../geom/MultiPolygon.js").default} geometry MultiPolygon geometry.
+     * @override
      */
-    drawMultiPolygon(geometry: import("../../geom/MultiPolygon.js").default): void;
+    override drawMultiPolygon(geometry: import("../../geom/MultiPolygon.js").default): void;
     /**
      * @param {import("../canvas.js").FillState} fillState Fill state.
      * @private
@@ -317,15 +340,17 @@ declare class CanvasImmediateRenderer extends VectorContext {
      * the image style.
      *
      * @param {import("../../style/Image.js").default} imageStyle Image style.
+     * @override
      */
-    setImageStyle(imageStyle: import("../../style/Image.js").default): void;
+    override setImageStyle(imageStyle: import("../../style/Image.js").default): void;
     /**
      * Set the text style for subsequent draw operations.  Pass null to
      * remove the text style.
      *
      * @param {import("../../style/Text.js").default} textStyle Text style.
+     * @override
      */
-    setTextStyle(textStyle: import("../../style/Text.js").default): void;
+    override setTextStyle(textStyle: import("../../style/Text.js").default): void;
 }
 import VectorContext from '../VectorContext.js';
 //# sourceMappingURL=Immediate.d.ts.map

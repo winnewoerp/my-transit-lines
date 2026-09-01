@@ -1,7 +1,7 @@
 /**
  * @module ol/format/WMSCapabilities
  */
-import XML from './XML.js';
+import {compareVersions} from '../string.js';
 import {
   makeArrayPusher,
   makeObjectPropertyPusher,
@@ -9,6 +9,8 @@ import {
   makeStructureNS,
   pushParseAndPop,
 } from '../xml.js';
+import XML from './XML.js';
+import {readHref} from './xlink.js';
 import {
   readBooleanString,
   readDecimal,
@@ -17,13 +19,20 @@ import {
   readPositiveInteger,
   readString,
 } from './xsd.js';
-import {readHref} from './xlink.js';
 
 /**
  * @const
  * @type {Array<null|string>}
  */
-const NAMESPACE_URIS = [null, 'http://www.opengis.net/wms'];
+const NAMESPACE_URIS = [
+  null,
+  'http://www.opengis.net/wms',
+  'http://www.opengis.net/sld',
+];
+
+function isV13(objectStack) {
+  return compareVersions(objectStack[0].version, '1.3') >= 0;
+}
 
 /**
  * @const
@@ -44,7 +53,16 @@ const CAPABILITY_PARSERS = makeStructureNS(NAMESPACE_URIS, {
   'Request': makeObjectPropertySetter(readRequest),
   'Exception': makeObjectPropertySetter(readException),
   'Layer': makeObjectPropertySetter(readCapabilityLayer),
+  'UserDefinedSymbolization': makeObjectPropertySetter(
+    readUserDefinedSymbolization,
+  ),
 });
+
+/**
+ * @typedef {Object} RootObject
+ * @property {string} version Version
+ * @property {boolean} v13 Whether version is 1.3 or higher
+ */
 
 /**
  * @classdesc
@@ -64,7 +82,8 @@ class WMSCapabilities extends XML {
 
   /**
    * @param {Element} node Node.
-   * @return {Object} Object
+   * @return {Object|null} Object
+   * @override
    */
   readFromNode(node) {
     this.version = node.getAttribute('version').trim();
@@ -74,18 +93,13 @@ class WMSCapabilities extends XML {
       },
       PARSERS,
       node,
-      []
+      [],
     );
     return wmsCapabilityObject ? wmsCapabilityObject : null;
   }
 }
 
-/**
- * @const
- * @type {Object<string, Object<string, import("../xml.js").Parser>>}
- */
-// @ts-ignore
-const SERVICE_PARSERS = makeStructureNS(NAMESPACE_URIS, {
+const COMMON_SERVICE_PARSERS = {
   'Name': makeObjectPropertySetter(readString),
   'Title': makeObjectPropertySetter(readString),
   'Abstract': makeObjectPropertySetter(readString),
@@ -94,6 +108,22 @@ const SERVICE_PARSERS = makeStructureNS(NAMESPACE_URIS, {
   'ContactInformation': makeObjectPropertySetter(readContactInformation),
   'Fees': makeObjectPropertySetter(readString),
   'AccessConstraints': makeObjectPropertySetter(readString),
+};
+
+/**
+ * @const
+ * @type {Object<string, Object<string, import("../xml.js").Parser>>}
+ */
+// @ts-ignore
+const SERVICE_PARSERS = makeStructureNS(NAMESPACE_URIS, COMMON_SERVICE_PARSERS);
+
+/**
+ * @const
+ * @type {Object<string, Object<string, import("../xml.js").Parser>>}
+ */
+// @ts-ignore
+const SERVICE_PARSERS_V13 = makeStructureNS(NAMESPACE_URIS, {
+  ...COMMON_SERVICE_PARSERS,
   'LayerLimit': makeObjectPropertySetter(readPositiveInteger),
   'MaxWidth': makeObjectPropertySetter(readPositiveInteger),
   'MaxHeight': makeObjectPropertySetter(readPositiveInteger),
@@ -146,20 +176,11 @@ const EXCEPTION_PARSERS = makeStructureNS(NAMESPACE_URIS, {
   'Format': makeArrayPusher(readString),
 });
 
-/**
- * @const
- * @type {Object<string, Object<string, import("../xml.js").Parser>>}
- */
-// @ts-ignore
-const LAYER_PARSERS = makeStructureNS(NAMESPACE_URIS, {
+const COMMON_LAYER_PARSERS = {
   'Name': makeObjectPropertySetter(readString),
   'Title': makeObjectPropertySetter(readString),
   'Abstract': makeObjectPropertySetter(readString),
   'KeywordList': makeObjectPropertySetter(readKeywordList),
-  'CRS': makeObjectPropertyPusher(readString),
-  'EX_GeographicBoundingBox': makeObjectPropertySetter(
-    readEXGeographicBoundingBox
-  ),
   'BoundingBox': makeObjectPropertyPusher(readBoundingBox),
   'Dimension': makeObjectPropertyPusher(readDimension),
   'Attribution': makeObjectPropertySetter(readAttribution),
@@ -169,6 +190,36 @@ const LAYER_PARSERS = makeStructureNS(NAMESPACE_URIS, {
   'DataURL': makeObjectPropertyPusher(readFormatOnlineresource),
   'FeatureListURL': makeObjectPropertyPusher(readFormatOnlineresource),
   'Style': makeObjectPropertyPusher(readStyle),
+  'Layer': makeObjectPropertyPusher(readLayer),
+};
+
+/**
+ * @const
+ * @type {Object<string, Object<string, import("../xml.js").Parser>>}
+ */
+// @ts-ignore
+const LAYER_PARSERS = makeStructureNS(NAMESPACE_URIS, {
+  ...COMMON_LAYER_PARSERS,
+  'SRS': makeObjectPropertyPusher(readString),
+  'Extent': makeObjectPropertySetter(readExtent),
+  'ScaleHint': makeObjectPropertyPusher(readScaleHint),
+  'LatLonBoundingBox': makeObjectPropertySetter((node, objectStack) =>
+    readBoundingBox(node, objectStack, false),
+  ),
+  'Layer': makeObjectPropertyPusher(readLayer),
+});
+
+/**
+ * @const
+ * @type {Object<string, Object<string, import("../xml.js").Parser>>}
+ */
+// @ts-ignore
+const LAYER_PARSERS_V13 = makeStructureNS(NAMESPACE_URIS, {
+  ...COMMON_LAYER_PARSERS,
+  'CRS': makeObjectPropertyPusher(readString),
+  'EX_GeographicBoundingBox': makeObjectPropertySetter(
+    readEXGeographicBoundingBox,
+  ),
   'MinScaleDenominator': makeObjectPropertySetter(readDecimal),
   'MaxScaleDenominator': makeObjectPropertySetter(readDecimal),
   'Layer': makeObjectPropertyPusher(readLayer),
@@ -206,6 +257,8 @@ const REQUEST_PARSERS = makeStructureNS(NAMESPACE_URIS, {
   'GetCapabilities': makeObjectPropertySetter(readOperationType),
   'GetMap': makeObjectPropertySetter(readOperationType),
   'GetFeatureInfo': makeObjectPropertySetter(readOperationType),
+  'DescribeLayer': makeObjectPropertySetter(readOperationType),
+  'GetLegendGraphic': makeObjectPropertySetter(readOperationType),
 });
 
 /**
@@ -279,12 +332,26 @@ function readAttribution(node, objectStack) {
   return pushParseAndPop({}, ATTRIBUTION_PARSERS, node, objectStack);
 }
 
+function readUserDefinedSymbolization(node, objectStack) {
+  return {
+    'SupportSLD': !!readBooleanString(node.getAttribute('SupportSLD')),
+    'UserLayer': !!readBooleanString(node.getAttribute('UserLayer')),
+    'UserStyle': !!readBooleanString(node.getAttribute('UserStyle')),
+    'RemoteWFS': !!readBooleanString(node.getAttribute('RemoteWFS')),
+    'InlineFeatureData': !!readBooleanString(
+      node.getAttribute('InlineFeatureData'),
+    ),
+    'RemoteWCS': !!readBooleanString(node.getAttribute('RemoteWCS')),
+  };
+}
+
 /**
  * @param {Element} node Node.
  * @param {Array<*>} objectStack Object stack.
+ * @param {boolean} withCrs Whether to include the CRS attribute.
  * @return {Object} Bounding box object.
  */
-function readBoundingBox(node, objectStack) {
+function readBoundingBox(node, objectStack, withCrs = true) {
   const extent = [
     readDecimalString(node.getAttribute('minx')),
     readDecimalString(node.getAttribute('miny')),
@@ -297,11 +364,22 @@ function readBoundingBox(node, objectStack) {
     readDecimalString(node.getAttribute('resy')),
   ];
 
-  return {
-    'crs': node.getAttribute('CRS'),
-    'extent': extent,
-    'res': resolutions,
+  const result = {
+    extent,
+    res: resolutions,
   };
+  if (!withCrs) {
+    return result;
+  }
+
+  /** @type {RootObject} */
+  if (isV13(objectStack)) {
+    result.crs = node.getAttribute('CRS');
+  } else {
+    result.srs = node.getAttribute('SRS');
+  }
+
+  return result;
 }
 
 /**
@@ -314,7 +392,7 @@ function readEXGeographicBoundingBox(node, objectStack) {
     {},
     EX_GEOGRAPHIC_BOUNDING_BOX_PARSERS,
     node,
-    objectStack
+    objectStack,
   );
   if (!geographicBoundingBox) {
     return undefined;
@@ -352,6 +430,7 @@ function readEXGeographicBoundingBox(node, objectStack) {
  * @param {Array<*>} objectStack Object stack.
  * @return {Object|undefined} Capability object.
  */
+//ts-ignore
 function readCapability(node, objectStack) {
   return pushParseAndPop({}, CAPABILITY_PARSERS, node, objectStack);
 }
@@ -362,7 +441,12 @@ function readCapability(node, objectStack) {
  * @return {Object|undefined} Service object.
  */
 function readService(node, objectStack) {
-  return pushParseAndPop({}, SERVICE_PARSERS, node, objectStack);
+  return pushParseAndPop(
+    {},
+    isV13(objectStack) ? SERVICE_PARSERS_V13 : SERVICE_PARSERS,
+    node,
+    objectStack,
+  );
 }
 
 /**
@@ -407,7 +491,12 @@ function readException(node, objectStack) {
  * @return {Object|undefined} Layer object.
  */
 function readCapabilityLayer(node, objectStack) {
-  const layerObject = pushParseAndPop({}, LAYER_PARSERS, node, objectStack);
+  const layerObject = pushParseAndPop(
+    {},
+    isV13(objectStack) ? LAYER_PARSERS_V13 : LAYER_PARSERS,
+    node,
+    objectStack,
+  );
 
   if (layerObject['Layer'] === undefined) {
     return Object.assign(layerObject, readLayer(node, objectStack));
@@ -422,11 +511,18 @@ function readCapabilityLayer(node, objectStack) {
  * @return {Object|undefined} Layer object.
  */
 function readLayer(node, objectStack) {
+  const v13 = isV13(objectStack);
+
   const parentLayerObject = /**  @type {!Object<string,*>} */ (
     objectStack[objectStack.length - 1]
   );
 
-  const layerObject = pushParseAndPop({}, LAYER_PARSERS, node, objectStack);
+  const layerObject = pushParseAndPop(
+    {},
+    v13 ? LAYER_PARSERS_V13 : LAYER_PARSERS,
+    node,
+    objectStack,
+  );
 
   if (!layerObject) {
     return undefined;
@@ -468,7 +564,12 @@ function readLayer(node, objectStack) {
   layerObject['fixedHeight'] = fixedHeight;
 
   // See 7.2.4.8
-  const addKeys = ['Style', 'CRS', 'AuthorityURL'];
+  const addKeys = ['Style', 'AuthorityURL'];
+  if (v13) {
+    addKeys.push('CRS');
+  } else {
+    addKeys.push('SRS', 'Dimension');
+  }
   addKeys.forEach(function (key) {
     if (key in parentLayerObject) {
       const childValue = layerObject[key] || [];
@@ -476,14 +577,17 @@ function readLayer(node, objectStack) {
     }
   });
 
-  const replaceKeys = [
-    'EX_GeographicBoundingBox',
-    'BoundingBox',
-    'Dimension',
-    'Attribution',
-    'MinScaleDenominator',
-    'MaxScaleDenominator',
-  ];
+  const replaceKeys = ['BoundingBox', 'Attribution'];
+  if (v13) {
+    replaceKeys.push(
+      'Dimension',
+      'EX_GeographicBoundingBox',
+      'MinScaleDenominator',
+      'MaxScaleDenominator',
+    );
+  } else {
+    replaceKeys.push('LatLonBoundingBox', 'ScaleHint', 'Extent');
+  }
   replaceKeys.forEach(function (key) {
     if (!(key in layerObject)) {
       const parentValue = parentLayerObject[key];
@@ -504,13 +608,43 @@ function readDimension(node, objectStack) {
     'name': node.getAttribute('name'),
     'units': node.getAttribute('units'),
     'unitSymbol': node.getAttribute('unitSymbol'),
-    'default': node.getAttribute('default'),
-    'multipleValues': readBooleanString(node.getAttribute('multipleValues')),
-    'nearestValue': readBooleanString(node.getAttribute('nearestValue')),
-    'current': readBooleanString(node.getAttribute('current')),
-    'values': readString(node),
   };
+
+  if (isV13(objectStack)) {
+    Object.assign(dimensionObject, {
+      'default': node.getAttribute('default'),
+      'multipleValues': readBooleanString(node.getAttribute('multipleValues')),
+      'nearestValue': readBooleanString(node.getAttribute('nearestValue')),
+      'current': readBooleanString(node.getAttribute('current')),
+      'values': readString(node),
+    });
+  }
   return dimensionObject;
+}
+
+/**
+ * @param {Element} node Node.
+ * @param {Array<*>} objectStack Object stack.
+ * @return {Object} Extent object.
+ */
+function readExtent(node, objectStack) {
+  return {
+    'name': node.getAttribute('name'),
+    'default': node.getAttribute('default'),
+    'nearestValue': readBooleanString(node.getAttribute('nearestValue')),
+  };
+}
+
+/**
+ * @param {Element} node Node.
+ * @param {Array<*>} objectStack Object stack.
+ * @return {Object} ScaleHint object.
+ */
+function readScaleHint(node, objectStack) {
+  return {
+    'min': readDecimalString(node.getAttribute('min')),
+    'max': readDecimalString(node.getAttribute('max')),
+  };
 }
 
 /**

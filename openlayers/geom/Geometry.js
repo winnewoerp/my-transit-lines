@@ -2,19 +2,19 @@
  * @module ol/geom/Geometry
  */
 import BaseObject from '../Object.js';
-import {abstract} from '../util.js';
-import {
-  compose as composeTransform,
-  create as createTransform,
-} from '../transform.js';
 import {
   createEmpty,
   createOrUpdateEmpty,
   getHeight,
   returnOrUpdate,
 } from '../extent.js';
-import {get as getProjection, getTransform} from '../proj.js';
 import {memoizeOne} from '../functions.js';
+import {get as getProjection, getTransform} from '../proj.js';
+import {
+  compose as composeTransform,
+  create as createTransform,
+} from '../transform.js';
+import {abstract} from '../util.js';
 import {transform2D} from './flat/transform.js';
 
 /**
@@ -34,6 +34,9 @@ import {transform2D} from './flat/transform.js';
  * @type {import("../transform.js").Transform}
  */
 const tmpTransform = createTransform();
+
+/** @type {import('../coordinate.js').Coordinate} */
+const tmpPoint = [NaN, NaN];
 
 /**
  * @classdesc
@@ -83,18 +86,16 @@ class Geometry extends BaseObject {
      * @param {import("../proj.js").TransformFunction} [transform] Optional transform function.
      * @return {Geometry} Simplified geometry.
      */
-    this.simplifyTransformedInternal = memoizeOne(function (
-      revision,
-      squaredTolerance,
-      transform
-    ) {
-      if (!transform) {
-        return this.getSimplifiedGeometry(squaredTolerance);
-      }
-      const clone = this.clone();
-      clone.applyTransform(transform);
-      return clone.getSimplifiedGeometry(squaredTolerance);
-    });
+    this.simplifyTransformedInternal = memoizeOne(
+      (revision, squaredTolerance, transform) => {
+        if (!transform) {
+          return this.getSimplifiedGeometry(squaredTolerance);
+        }
+        const clone = this.clone();
+        clone.applyTransform(transform);
+        return clone.getSimplifiedGeometry(squaredTolerance);
+      },
+    );
   }
 
   /**
@@ -108,7 +109,7 @@ class Geometry extends BaseObject {
     return this.simplifyTransformedInternal(
       this.getRevision(),
       squaredTolerance,
-      transform
+      transform,
     );
   }
 
@@ -139,8 +140,7 @@ class Geometry extends BaseObject {
    * @return {boolean} Contains (x, y).
    */
   containsXY(x, y) {
-    const coord = this.getClosestPoint([x, y]);
-    return coord[0] === x && coord[1] === y;
+    return this.closestPointXY(x, y, tmpPoint, Number.MIN_VALUE) === 0;
   }
 
   /**
@@ -301,7 +301,7 @@ class Geometry extends BaseObject {
    *     string identifier or a {@link module:ol/proj/Projection~Projection} object.
    * @param {import("../proj.js").ProjectionLike} destination The desired projection.  Can be a
    *     string identifier or a {@link module:ol/proj/Projection~Projection} object.
-   * @return {Geometry} This geometry.  Note that original geometry is
+   * @return {this} This geometry.  Note that original geometry is
    *     modified in place.
    * @api
    */
@@ -322,21 +322,21 @@ class Geometry extends BaseObject {
               -scale,
               0,
               0,
-              0
+              0,
             );
-            transform2D(
+            const transformed = transform2D(
               inCoordinates,
               0,
               inCoordinates.length,
               stride,
               tmpTransform,
-              outCoordinates
-            );
-            return getTransform(sourceProj, destination)(
-              inCoordinates,
               outCoordinates,
-              stride
             );
+            const projTransform = getTransform(sourceProj, destination);
+            if (projTransform) {
+              return projTransform(transformed, transformed, stride);
+            }
+            return transformed;
           }
         : getTransform(sourceProj, destination);
     this.applyTransform(transformFn);

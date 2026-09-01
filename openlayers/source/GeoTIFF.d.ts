@@ -5,7 +5,12 @@ export type SourceInfo = {
      */
     url?: string | undefined;
     /**
-     * List of any overview URLs, only applies if the url parameter is given.
+     * Custom loader function for URL based sources.
+     * Called with the URL, request headers, and an abort signal. Expected to resolve with a `Response`.
+     */
+    loader?: ((arg0: string, arg1: HeadersInit, arg2: AbortSignal) => Promise<Response>) | undefined;
+    /**
+     * List of any overview URLs, only applies if the url parameter is given and no loader is specified.
      */
     overviews?: string[] | undefined;
     /**
@@ -13,26 +18,31 @@ export type SourceInfo = {
      */
     blob?: Blob | undefined;
     /**
-     * The minimum source data value.  Rendered values are scaled from 0 to 1 based on
-     * the configured min and max.  If not provided and raster statistics are available, those will be used instead.
-     * If neither are available, the minimum for the data type will be used.  To disable this behavior, set
-     * the `normalize` option to `false` in the constructor.
+     * The minimum source data value.  Rendered values are
+     * scaled from 0 to 1 based on the configured min and max.  If not provided and raster statistics are available,
+     * those will be used instead.  If neither are available, the minimum for the data type will be used.  To disable
+     * this behavior, set the `normalize` option to `false` in the constructor.  If an array is provided, values
+     * correspond to the bands in the file (not the `bands` option).  Array values can be left `undefined` to trigger
+     * the default behavior.
      */
-    min?: number | undefined;
+    min?: number | (number | undefined)[] | undefined;
     /**
-     * The maximum source data value.  Rendered values are scaled from 0 to 1 based on
-     * the configured min and max.  If not provided and raster statistics are available, those will be used instead.
-     * If neither are available, the maximum for the data type will be used.  To disable this behavior, set
-     * the `normalize` option to `false` in the constructor.
+     * The maximum source data value.  Rendered values are
+     * scaled from 0 to 1 based on the configured min and max.  If not provided and raster statistics are available,
+     * those will be used instead.  If neither are available, the maximum for the data type will be used.  To disable
+     * this behavior, set the `normalize` option to `false` in the constructor.  If an array is provided, values
+     * correspond to the bands in the file (not the `bands` option).  Array values can be left `undefined` to to trigger
+     * the default behavior.
      */
-    max?: number | undefined;
+    max?: number | (number | undefined)[] | undefined;
     /**
-     * Values to discard (overriding any nodata values in the metadata).
-     * When provided, an additional alpha band will be added to the data.  Often the GeoTIFF metadata
+     * Values to discard (overriding any nodata values in the
+     * metadata).  When provided, an additional alpha band will be added to the data.  Often the GeoTIFF metadata
      * will include information about nodata values, so you should only need to set this property if
-     * you find that it is not already extracted from the metadata.
+     * you find that it is not already extracted from the metadata.  If an array is provided, values correspond to
+     * the bands in the file (not the `bands` option).  Array values can be left `undefined` to trigger the default behavior.
      */
-    nodata?: number | undefined;
+    nodata?: number | (number | undefined)[] | undefined;
     /**
      * Band numbers to be read from (where the first band is `1`). If not provided, all bands will
      * be read. For example, if a GeoTIFF has blue (1), green (2), red (3), and near-infrared (4) bands, and you only need the
@@ -74,8 +84,6 @@ export type GeoKeys = {
      */
     ProjectedCSTypeGeoKey: number;
 };
-export type GeoTIFF = import("geotiff").GeoTIFF;
-export type MultiGeoTIFF = import("geotiff").MultiGeoTIFF;
 export type GDALMetadata = {
     /**
      * The minimum value (as a string).
@@ -86,7 +94,6 @@ export type GDALMetadata = {
      */
     STATISTICS_MAXIMUM: string;
 };
-export type GeoTIFFImage = import("geotiff").GeoTIFFImage;
 export type GeoTIFFSourceOptions = {
     /**
      * Whether to force the usage of the browsers XMLHttpRequest API.
@@ -124,6 +131,10 @@ export type GeoTIFFSourceOptions = {
 };
 export type Options = {
     /**
+     * Attributions.
+     */
+    attributions?: import("./Source.js").AttributionLike | undefined;
+    /**
      * List of information about GeoTIFF sources.
      * Multiple sources can be combined when their resolution sets are equal after applying a scale.
      * The list of sources defines a mapping between input bands as they are read from each GeoTIFF and
@@ -153,14 +164,15 @@ export type Options = {
      */
     normalize?: boolean | undefined;
     /**
-     * Whether the layer is opaque.
-     */
-    opaque?: boolean | undefined;
-    /**
      * Source projection.  If not provided, the GeoTIFF metadata
      * will be read for projection information.
      */
     projection?: import("../proj.js").ProjectionLike;
+    /**
+     * Whether to attempt to load missing projection definitions.
+     * Uses the pre-configured projection lookup function, which can be customized with {@link module :ol/proj/proj4.setProjectionCodeLookup}.
+     */
+    loadMissingProjection?: boolean | undefined;
     /**
      * Duration of the opacity transition for rendering.
      * To disable the opacity transition, pass `transition: 0`.
@@ -191,6 +203,7 @@ export type Options = {
  */
 /**
  * @typedef {Object} Options
+ * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {Array<SourceInfo>} sources List of information about GeoTIFF sources.
  * Multiple sources can be combined when their resolution sets are equal after applying a scale.
  * The list of sources defines a mapping between input bands as they are read from each GeoTIFF and
@@ -208,9 +221,10 @@ export type Options = {
  * 0 and 1 with scaling factors based on the raster statistics or `min` and `max` properties of each source.
  * If instead you want to work with the raw values in a style expression, set this to `false`.  Setting this option
  * to `false` will make it so any `min` and `max` properties on sources are ignored.
- * @property {boolean} [opaque=false] Whether the layer is opaque.
  * @property {import("../proj.js").ProjectionLike} [projection] Source projection.  If not provided, the GeoTIFF metadata
  * will be read for projection information.
+ * @property {boolean} [loadMissingProjection=false] Whether to attempt to load missing projection definitions.
+ * Uses the pre-configured projection lookup function, which can be customized with {@link module:ol/proj/proj4.setProjectionCodeLookup}.
  * @property {number} [transition=250] Duration of the opacity transition for rendering.
  * To disable the opacity transition, pass `transition: 0`.
  * @property {boolean} [wrapX=false] Render tiles beyond the tile grid extent.
@@ -225,7 +239,7 @@ export type Options = {
  *
  * @api
  */
-declare class GeoTIFFSource extends DataTile {
+declare class GeoTIFFSource extends DataTile<import("../DataTile.js").default> {
     /**
      * @param {Options} options Data tile options.
      */
@@ -287,8 +301,14 @@ declare class GeoTIFFSource extends DataTile {
     private error_;
     /**
      * @type {true|false|'auto'}
+     * @private
      */
-    convertToRGB_: true | false | 'auto';
+    private convertToRGB_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private loadMissingProjection_;
     /**
      * @return {Error} A source loading error. When the source state is `error`, use this function
      * to get more information about the error. To debug a faulty configuration, you may want to use
@@ -311,7 +331,14 @@ declare class GeoTIFFSource extends DataTile {
      * @param {Array<Array<GeoTIFFImage>>} sources Each source is a list of images
      * from a single GeoTIFF.
      */
-    determineProjection(sources: Array<Array<GeoTIFFImage>>): void;
+    determineProjection(sources: Array<Array<GeoTIFFImage>>): Promise<void>;
+    /**
+     * Determine any transform matrix for the images in this GeoTIFF.
+     *
+     * @param {Array<Array<GeoTIFFImage>>} sources Each source is a list of images
+     * from a single GeoTIFF.
+     */
+    determineTransformMatrix(sources: Array<Array<GeoTIFFImage>>): void;
     /**
      * Configure the tile grid based on images within the source GeoTIFFs.  Each GeoTIFF
      * must have the same internal tiled structure.
@@ -324,6 +351,7 @@ declare class GeoTIFFSource extends DataTile {
      * @param {number} z The z tile index.
      * @param {number} x The x tile index.
      * @param {number} y The y tile index.
+     * @param {import('./DataTile.js').LoaderOptions} options The loader options.
      * @return {Promise} The composed tile data.
      * @private
      */
@@ -337,4 +365,5 @@ declare class GeoTIFFSource extends DataTile {
     private composeTile_;
 }
 import DataTile from './DataTile.js';
+import type { GeoTIFFImage } from 'geotiff';
 //# sourceMappingURL=GeoTIFF.d.ts.map

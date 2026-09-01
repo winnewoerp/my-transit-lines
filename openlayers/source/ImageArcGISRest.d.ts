@@ -11,6 +11,10 @@ export type Options = {
      */
     crossOrigin?: string | null | undefined;
     /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
      * Use the `ol/Map#pixelRatio` value when requesting the image from
      * the remote server.
      */
@@ -64,6 +68,7 @@ export type Options = {
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting the image from
  * the remote server.
  * @property {import("../Image.js").LoadFunction} [imageLoadFunction] Optional function to load an image given
@@ -102,12 +107,17 @@ declare class ImageArcGISRest extends ImageSource {
     /**
      * @param {Options} [options] Image ArcGIS Rest Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {?string}
      */
     private crossOrigin_;
+    /**
+     * @private
+     * @type {ReferrerPolicy}
+     */
+    private referrerPolicy_;
     /**
      * @private
      * @type {boolean}
@@ -130,11 +140,6 @@ declare class ImageArcGISRest extends ImageSource {
     private params_;
     /**
      * @private
-     * @type {import("../Image.js").default}
-     */
-    private image_;
-    /**
-     * @private
      * @type {import("../size.js").Size}
      */
     private imageSize_;
@@ -148,6 +153,11 @@ declare class ImageArcGISRest extends ImageSource {
      * @type {number}
      */
     private ratio_;
+    /**
+     * @private
+     * @type {import("../proj/Projection.js").default}
+     */
+    private loaderProjection_;
     /**
      * Get the user-provided params, i.e. those passed to the constructor through
      * the "params" option, and possibly updated using the updateParams method.
@@ -179,6 +189,12 @@ declare class ImageArcGISRest extends ImageSource {
      * @api
      */
     setUrl(url: string | undefined): void;
+    /**
+     * Set the user-provided params.
+     * @param {Object} params Params.
+     * @api
+     */
+    setParams(params: any): void;
     /**
      * Update the user-provided params.
      * @param {Object} params Params.

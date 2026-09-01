@@ -1,22 +1,23 @@
 /**
  * @module ol/layer/WebGLTile
  */
-import BaseTileLayer from './BaseTile.js';
+import {ColorType, NumberType} from '../expr/expression.js';
+import {
+  PALETTE_TEXTURE_ARRAY,
+  getStringNumberEquivalent,
+  newCompilationContext,
+  uniformNameForVariable,
+} from '../expr/gpu.js';
 import LayerProperty from '../layer/Property.js';
+import {expressionToGlsl} from '../render/webgl/compileUtil.js';
 import WebGLTileLayerRenderer, {
   Attributes,
   Uniforms,
 } from '../renderer/webgl/TileLayer.js';
-import {
-  PALETTE_TEXTURE_ARRAY,
-  ValueTypes,
-  expressionToGlsl,
-  getStringNumberEquivalent,
-  uniformNameForVariable,
-} from '../style/expressions.js';
+import BaseTileLayer from './BaseTile.js';
 
 /**
- * @typedef {import("../source/DataTile.js").default|import("../source/TileImage.js").default} SourceType
+ * @typedef {import("../source/DataTile.js").default<import("../DataTile.js").default|import("../ImageTile.js").default>} SourceType
  */
 
 /**
@@ -25,18 +26,18 @@ import {
  *
  * @property {Object<string, (string|number)>} [variables] Style variables.  Each variable must hold a number or string.  These
  * variables can be used in the `color`, `brightness`, `contrast`, `exposure`, `saturation` and `gamma`
- * {@link import("../style/expressions.js").ExpressionValue expressions}, using the `['var', 'varName']` operator.
+ * {@link import("../expr/expression.js").ExpressionValue expressions}, using the `['var', 'varName']` operator.
  * To update style variables, use the {@link import("./WebGLTile.js").default#updateStyleVariables} method.
- * @property {import("../style/expressions.js").ExpressionValue} [color] An expression applied to color values.
- * @property {import("../style/expressions.js").ExpressionValue} [brightness=0] Value used to decrease or increase
+ * @property {import("../expr/expression.js").ExpressionValue} [color] An expression applied to color values.
+ * @property {import("../expr/expression.js").ExpressionValue} [brightness=0] Value used to decrease or increase
  * the layer brightness.  Values range from -1 to 1.
- * @property {import("../style/expressions.js").ExpressionValue} [contrast=0] Value used to decrease or increase
+ * @property {import("../expr/expression.js").ExpressionValue} [contrast=0] Value used to decrease or increase
  * the layer contrast.  Values range from -1 to 1.
- * @property {import("../style/expressions.js").ExpressionValue} [exposure=0] Value used to decrease or increase
+ * @property {import("../expr/expression.js").ExpressionValue} [exposure=0] Value used to decrease or increase
  * the layer exposure.  Values range from -1 to 1.
- * @property {import("../style/expressions.js").ExpressionValue} [saturation=0] Value used to decrease or increase
+ * @property {import("../expr/expression.js").ExpressionValue} [saturation=0] Value used to decrease or increase
  * the layer saturation.  Values range from -1 to 1.
- * @property {import("../style/expressions.js").ExpressionValue} [gamma=1] Apply a gamma correction to the layer.
+ * @property {import("../expr/expression.js").ExpressionValue} [gamma=1] Apply a gamma correction to the layer.
  * Values range from 0 to infinity.
  */
 
@@ -72,9 +73,10 @@ import {
  * this layer in its layers collection, and the layer will be rendered on top. This is useful for
  * temporary layers. The standard way to add a layer to a map and have it managed by the map is to
  * use {@link module:ol/Map~Map#addLayer}.
- * @property {boolean} [useInterimTilesOnError=true] Use interim tiles on error.
+ * @property {boolean} [useInterimTilesOnError=true] Deprecated.  Use interim tiles on error.
  * @property {number} [cacheSize=512] The internal texture cache size.  This needs to be large enough to render
  * two zoom levels worth of tiles.
+ * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  */
 
 /**
@@ -88,79 +90,62 @@ import {
 /**
  * @param {Style} style The layer style.
  * @param {number} [bandCount] The number of bands.
+ * @param {number} [nodataBandIndex] The 1-based band index for the nodata alpha band.
  * @return {ParsedStyle} Shaders and uniforms generated from the style.
  */
-function parseStyle(style, bandCount) {
+function parseStyle(style, bandCount, nodataBandIndex) {
   const vertexShader = `
     attribute vec2 ${Attributes.TEXTURE_COORD};
     uniform mat4 ${Uniforms.TILE_TRANSFORM};
     uniform float ${Uniforms.TEXTURE_PIXEL_WIDTH};
     uniform float ${Uniforms.TEXTURE_PIXEL_HEIGHT};
     uniform float ${Uniforms.TEXTURE_RESOLUTION};
-    uniform float ${Uniforms.TEXTURE_ORIGIN_X};
-    uniform float ${Uniforms.TEXTURE_ORIGIN_Y};
     uniform float ${Uniforms.DEPTH};
 
     varying vec2 v_textureCoord;
-    varying vec2 v_mapCoord;
+    varying vec2 v_localMapCoord;
 
     void main() {
       v_textureCoord = ${Attributes.TEXTURE_COORD};
-      v_mapCoord = vec2(
-        ${Uniforms.TEXTURE_ORIGIN_X} + ${Uniforms.TEXTURE_RESOLUTION} * ${Uniforms.TEXTURE_PIXEL_WIDTH} * v_textureCoord[0],
-        ${Uniforms.TEXTURE_ORIGIN_Y} - ${Uniforms.TEXTURE_RESOLUTION} * ${Uniforms.TEXTURE_PIXEL_HEIGHT} * v_textureCoord[1]
+      v_localMapCoord = vec2(
+        ${Uniforms.TEXTURE_PIXEL_WIDTH} * ${Uniforms.TEXTURE_RESOLUTION} * v_textureCoord[0],
+        -1. * ${Uniforms.TEXTURE_PIXEL_HEIGHT} * ${Uniforms.TEXTURE_RESOLUTION} * v_textureCoord[1]
       );
       gl_Position = ${Uniforms.TILE_TRANSFORM} * vec4(${Attributes.TEXTURE_COORD}, ${Uniforms.DEPTH}, 1.0);
     }
   `;
 
   /**
-   * @type {import("../style/expressions.js").ParsingContext}
+   * @type {import("../expr/gpu.js").CompilationContext}
    */
   const context = {
-    inFragmentShader: true,
-    variables: [],
-    attributes: [],
-    functions: {},
+    ...newCompilationContext(),
     bandCount: bandCount,
-    style: style,
   };
 
   const pipeline = [];
 
   if (style.color !== undefined) {
-    const color = expressionToGlsl(context, style.color, ValueTypes.COLOR);
+    const color = expressionToGlsl(context, style.color, ColorType);
     pipeline.push(`color = ${color};`);
   }
 
   if (style.contrast !== undefined) {
-    const contrast = expressionToGlsl(
-      context,
-      style.contrast,
-      ValueTypes.NUMBER
-    );
+    const contrast = expressionToGlsl(context, style.contrast, NumberType);
     pipeline.push(
-      `color.rgb = clamp((${contrast} + 1.0) * color.rgb - (${contrast} / 2.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));`
+      `color.rgb = clamp((${contrast} + 1.0) * color.rgb - (${contrast} / 2.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));`,
     );
   }
 
   if (style.exposure !== undefined) {
-    const exposure = expressionToGlsl(
-      context,
-      style.exposure,
-      ValueTypes.NUMBER
-    );
+    const exposure = expressionToGlsl(context, style.exposure, NumberType);
     pipeline.push(
-      `color.rgb = clamp((${exposure} + 1.0) * color.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));`
+      `color.rgb = clamp((${exposure} + 1.0) * color.rgb, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));`,
     );
   }
 
   if (style.saturation !== undefined) {
-    const saturation = expressionToGlsl(
-      context,
-      style.saturation,
-      ValueTypes.NUMBER
-    );
+    const saturation = expressionToGlsl(context, style.saturation, NumberType);
     pipeline.push(`
       float saturation = ${saturation} + 1.0;
       float sr = (1.0 - saturation) * 0.2126;
@@ -176,33 +161,29 @@ function parseStyle(style, bandCount) {
   }
 
   if (style.gamma !== undefined) {
-    const gamma = expressionToGlsl(context, style.gamma, ValueTypes.NUMBER);
+    const gamma = expressionToGlsl(context, style.gamma, NumberType);
     pipeline.push(`color.rgb = pow(color.rgb, vec3(1.0 / ${gamma}));`);
   }
 
   if (style.brightness !== undefined) {
-    const brightness = expressionToGlsl(
-      context,
-      style.brightness,
-      ValueTypes.NUMBER
-    );
+    const brightness = expressionToGlsl(context, style.brightness, NumberType);
     pipeline.push(
-      `color.rgb = clamp(color.rgb + ${brightness}, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));`
+      `color.rgb = clamp(color.rgb + ${brightness}, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));`,
     );
   }
 
-  /** @type {Object<string,import("../webgl/Helper").UniformValue>} */
+  /** @type {Object<string,import("../webgl/Helper.js").UniformValue>} */
   const uniforms = {};
 
-  const numVariables = context.variables.length;
+  const numVariables = Object.keys(context.variables).length;
   if (numVariables > 1 && !style.variables) {
     throw new Error(
-      `Missing variables in style (expected ${context.variables})`
+      `Missing variables in style (expected ${context.variables})`,
     );
   }
 
   for (let i = 0; i < numVariables; ++i) {
-    const variable = context.variables[i];
+    const variable = context.variables[Object.keys(context.variables)[i]];
     if (!(variable.name in style.variables)) {
       throw new Error(`Missing '${variable.name}' in style variables`);
     }
@@ -222,20 +203,37 @@ function parseStyle(style, bandCount) {
 
   const textureCount = Math.ceil(bandCount / 4);
   uniformDeclarations.push(
-    `uniform sampler2D ${Uniforms.TILE_TEXTURE_ARRAY}[${textureCount}];`
+    `uniform sampler2D ${Uniforms.TILE_TEXTURE_ARRAY}[${textureCount}];`,
   );
 
   if (context.paletteTextures) {
     uniformDeclarations.push(
-      `uniform sampler2D ${PALETTE_TEXTURE_ARRAY}[${context.paletteTextures.length}];`
+      `uniform sampler2D ${PALETTE_TEXTURE_ARRAY}[${context.paletteTextures.length}];`,
     );
   }
 
-  const functionDefintions = Object.keys(context.functions).map(function (
-    name
-  ) {
-    return context.functions[name];
-  });
+  // Ensure getBandValue function exists when nodata discard is needed
+  if (nodataBandIndex > 0 && !('getBandValue' in context.functions)) {
+    let ifBlocks = '';
+    for (let i = 0; i < bandCount; i++) {
+      const colorIndex = Math.floor(i / 4);
+      let bandIndex = i % 4;
+      if (i === bandCount - 1 && bandIndex === 1) {
+        // LUMINANCE_ALPHA - band 1 assigned to rgb and band 2 assigned to alpha
+        bandIndex = 3;
+      }
+      const textureName = `${Uniforms.TILE_TEXTURE_ARRAY}[${colorIndex}]`;
+      ifBlocks += `  if (band == ${i + 1}.0) {\n    return texture2D(${textureName}, v_textureCoord + vec2(dx, dy))[${bandIndex}];\n  }\n`;
+    }
+    context.functions['getBandValue'] =
+      `float getBandValue(float band, float xOffset, float yOffset) {\n  float dx = xOffset / ${Uniforms.TEXTURE_PIXEL_WIDTH};\n  float dy = yOffset / ${Uniforms.TEXTURE_PIXEL_HEIGHT};\n${ifBlocks}\n}`;
+  }
+
+  const functionDefintions = Object.keys(context.functions).map(
+    function (name) {
+      return context.functions[name];
+    },
+  );
 
   const fragmentShader = `
     #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -245,7 +243,7 @@ function parseStyle(style, bandCount) {
     #endif
 
     varying vec2 v_textureCoord;
-    varying vec2 v_mapCoord;
+    varying vec2 v_localMapCoord;
     uniform vec4 ${Uniforms.RENDER_EXTENT};
     uniform float ${Uniforms.TRANSITION_ALPHA};
     uniform float ${Uniforms.TEXTURE_PIXEL_WIDTH};
@@ -259,10 +257,10 @@ function parseStyle(style, bandCount) {
 
     void main() {
       if (
-        v_mapCoord[0] < ${Uniforms.RENDER_EXTENT}[0] ||
-        v_mapCoord[1] < ${Uniforms.RENDER_EXTENT}[1] ||
-        v_mapCoord[0] > ${Uniforms.RENDER_EXTENT}[2] ||
-        v_mapCoord[1] > ${Uniforms.RENDER_EXTENT}[3]
+        v_localMapCoord[0] < ${Uniforms.RENDER_EXTENT}[0] ||
+        v_localMapCoord[1] < ${Uniforms.RENDER_EXTENT}[1] ||
+        v_localMapCoord[0] > ${Uniforms.RENDER_EXTENT}[2] ||
+        v_localMapCoord[1] > ${Uniforms.RENDER_EXTENT}[3]
       ) {
         discard;
       }
@@ -270,6 +268,8 @@ function parseStyle(style, bandCount) {
       vec4 color = texture2D(${
         Uniforms.TILE_TEXTURE_ARRAY
       }[0],  v_textureCoord);
+
+      ${nodataBandIndex ? `if (getBandValue(${nodataBandIndex}.0, 0.0, 0.0) == 0.0) { discard; }` : ''}
 
       ${pipeline.join('\n')}
 
@@ -295,21 +295,19 @@ function parseStyle(style, bandCount) {
  * options means that `title` is observable, and has get/set accessors.
  *
  * @extends BaseTileLayer<SourceType, WebGLTileLayerRenderer>
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  * @api
  */
 class WebGLTileLayer extends BaseTileLayer {
   /**
-   * @param {Options} options Tile layer options.
+   * @param {Options} [options] Tile layer options.
    */
   constructor(options) {
     options = options ? Object.assign({}, options) : {};
 
     const style = options.style || {};
     delete options.style;
-
-    const cacheSize = options.cacheSize;
-    delete options.cacheSize;
 
     super(options);
 
@@ -338,17 +336,12 @@ class WebGLTileLayer extends BaseTileLayer {
     this.style_ = style;
 
     /**
-     * @type {number}
-     * @private
-     */
-    this.cacheSize_ = cacheSize;
-
-    /**
      * @type {Object<string, (string|number)>}
      * @private
      */
     this.styleVariables_ = this.style_.variables || {};
 
+    this.handleSourceUpdate_();
     this.addChangeListener(LayerProperty.SOURCE, this.handleSourceUpdate_);
   }
 
@@ -365,12 +358,13 @@ class WebGLTileLayer extends BaseTileLayer {
         ? this.sources_(extent, resolution)
         : this.sources_
       : source
-      ? [source]
-      : [];
+        ? [source]
+        : [];
   }
 
   /**
    * @return {SourceType} The source being rendered.
+   * @override
    */
   getRenderSource() {
     return this.renderedSource_ || this.getSource();
@@ -378,6 +372,7 @@ class WebGLTileLayer extends BaseTileLayer {
 
   /**
    * @return {import("../source/Source.js").State} Source state.
+   * @override
    */
   getSourceState() {
     const source = this.getRenderSource();
@@ -391,8 +386,19 @@ class WebGLTileLayer extends BaseTileLayer {
     if (this.hasRenderer()) {
       this.getRenderer().clearCache();
     }
-    if (this.getSource()) {
-      this.setStyle(this.style_);
+    const source = this.getSource();
+    if (source) {
+      if (source.getState() === 'loading') {
+        const onChange = () => {
+          if (source.getState() === 'ready') {
+            source.removeEventListener('change', onChange);
+            this.setStyle(this.style_);
+          }
+        };
+        source.addEventListener('change', onChange);
+      } else {
+        this.setStyle(this.style_);
+      }
     }
   }
 
@@ -408,20 +414,39 @@ class WebGLTileLayer extends BaseTileLayer {
       : 4;
   }
 
+  /**
+   * @private
+   * @return {number|undefined} The 1-based band index for the nodata alpha band.
+   */
+  getSourceNodataBandIndex_() {
+    const max = Number.MAX_SAFE_INTEGER;
+    const sources = this.getSources([-max, -max, max, max], max);
+    return sources && sources.length && 'nodataBandIndex' in sources[0]
+      ? sources[0].nodataBandIndex
+      : undefined;
+  }
+
+  /**
+   * @override
+   */
   createRenderer() {
-    const parsedStyle = parseStyle(this.style_, this.getSourceBandCount_());
+    const parsedStyle = parseStyle(
+      this.style_,
+      this.getSourceBandCount_(),
+      this.getSourceNodataBandIndex_(),
+    );
 
     return new WebGLTileLayerRenderer(this, {
       vertexShader: parsedStyle.vertexShader,
       fragmentShader: parsedStyle.fragmentShader,
       uniforms: parsedStyle.uniforms,
-      cacheSize: this.cacheSize_,
+      cacheSize: this.getCacheSize(),
       paletteTextures: parsedStyle.paletteTextures,
     });
   }
 
   /**
-   * @param {import("../Map").FrameState} frameState Frame state.
+   * @param {import("../Map.js").FrameState} frameState Frame state.
    * @param {Array<SourceType>} sources Sources.
    * @return {HTMLElement} Canvas.
    */
@@ -442,6 +467,7 @@ class WebGLTileLayer extends BaseTileLayer {
    * @param {HTMLElement} target Target which the renderer may (but need not) use
    * for rendering its content.
    * @return {HTMLElement} The rendered element.
+   * @override
    */
   render(frameState, target) {
     this.rendered = true;
@@ -472,7 +498,7 @@ class WebGLTileLayer extends BaseTileLayer {
     if (this.renderedResolution_ > 0.5 * viewState.resolution) {
       const altSources = this.getSources(
         frameState.extent,
-        this.renderedResolution_
+        this.renderedResolution_,
       ).filter((source) => !sources.includes(source));
       if (altSources.length > 0) {
         return this.renderSources(frameState, altSources);
@@ -492,14 +518,21 @@ class WebGLTileLayer extends BaseTileLayer {
   setStyle(style) {
     this.styleVariables_ = style.variables || {};
     this.style_ = style;
-    const parsedStyle = parseStyle(this.style_, this.getSourceBandCount_());
-    const renderer = this.getRenderer();
-    renderer.reset({
-      vertexShader: parsedStyle.vertexShader,
-      fragmentShader: parsedStyle.fragmentShader,
-      uniforms: parsedStyle.uniforms,
-    });
-    this.changed();
+    if (this.hasRenderer()) {
+      const parsedStyle = parseStyle(
+        this.style_,
+        this.getSourceBandCount_(),
+        this.getSourceNodataBandIndex_(),
+      );
+      const renderer = this.getRenderer();
+      renderer.reset({
+        vertexShader: parsedStyle.vertexShader,
+        fragmentShader: parsedStyle.fragmentShader,
+        uniforms: parsedStyle.uniforms,
+        paletteTextures: parsedStyle.paletteTextures,
+      });
+      this.changed();
+    }
   }
 
   /**

@@ -42,11 +42,11 @@ export class ImageSourceEvent extends Event {
     image: import("../Image.js").default;
 }
 export default ImageSource;
-export type ImageSourceEventTypes = 'imageloadend' | 'imageloaderror' | 'imageloadstart';
+export type ImageSourceEventTypes = "imageloadend" | "imageloaderror" | "imageloadstart";
 /**
  * *
  */
-export type ImageSourceOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | ImageSourceEventTypes, Return>;
+export type ImageSourceOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | ImageSourceEventTypes, Return>;
 export type Options = {
     /**
      * Attributions.
@@ -80,10 +80,10 @@ export type Options = {
 import Event from '../events/Event.js';
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types
  *     |ImageSourceEventTypes, Return>} ImageSourceOnSignature
  */
 /**
@@ -111,13 +111,13 @@ declare class ImageSource extends Source {
      */
     constructor(options: Options);
     /***
-     * @type {ImageSourceOnSignature<import("../events").EventsKey>}
+     * @type {ImageSourceOnSignature<import("../events.js").EventsKey>}
      */
-    on: ImageSourceOnSignature<import("../events").EventsKey>;
+    on: ImageSourceOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {ImageSourceOnSignature<import("../events").EventsKey>}
+     * @type {ImageSourceOnSignature<import("../events.js").EventsKey>}
      */
-    once: ImageSourceOnSignature<import("../events").EventsKey>;
+    once: ImageSourceOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {ImageSourceOnSignature<void>}
      */
@@ -163,9 +163,15 @@ declare class ImageSource extends Source {
      */
     private static_;
     /**
-     * @return {Array<number>|null} Resolutions.
+     * @private
+     * @type {import("../proj/Projection.js").default}
      */
-    getResolutions(): Array<number> | null;
+    private wantedProjection_;
+    /**
+     * @return {Array<number>|null} Resolutions.
+     * @override
+     */
+    override getResolutions(): Array<number> | null;
     /**
      * @param {Array<number>|null} resolutions Resolutions.
      */

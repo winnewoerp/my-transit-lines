@@ -75,7 +75,7 @@ function mtl_post_class_meta_box($post) {
 	$output .= '<p><strong>'.__('Map data of this proposal','my-transit-lines').'</strong></p>';
 	$output .= '<div id="mtl-map-box">'."\r\n";
 	$output .= '<div id="mtl-map" style="height:400px;"></div>'."\r\n";
-	$output .= '<div class="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-line').'</span></div>'."\r\n";
+	$output .= '<div id="feature-textinput-box"><label for="feature-textinput">'.__('Station name (optional)','my-transit-lines').': <br /><input type="text" name="feature-textinput" id="feature-textinput" onkeydown="var k=event.keyCode || event.which; if(k==13) { event.preventDefault(); }" /></label><br /><span class="set-name">'.__('Set new name', 'my-transit-line').'</span></div>'."\r\n";
 	$output .= '</div>'."\r\n";
 	$output .= '<p id="map-color-opacity"><span id="mtl-colored-map-box"><label for="mtl-colored-map"><input type="checkbox" checked="checked" id="mtl-colored-map" name="colored-map" onclick="toggleMapColors()" /> '.__('colored map','my-transit-lines').'</label></span> &nbsp; <span id="mtl-opacity-low-box"><label for="mtl-opacity-low"><input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()" /> '.__('brightened map','my-transit-lines').'</label></span>'."\r\n";
 	$output .= '<span id="zoomtofeatures" class="alignright"><a href="javascript:zoomToFeatures()">'.__('Fit proposition to map','my-transit-lines').'</a></span>';
@@ -90,7 +90,7 @@ function mtl_post_class_meta_box($post) {
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/openlayers/dist/ol.js?ver='.wp_get_theme()->version.'"></script>';
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/js/my-transit-lines.js?ver='.wp_get_theme()->version.'"></script>';
 	$output .= '<script type="text/javascript" src="'.get_template_directory_uri().'/modules/mtl-proposal-form/mtl-proposal-form.js?ver='.wp_get_theme()->version.'"></script>';
-	$output .= '<script type="text/javascript"> $(\'#post\').submit(function() { warningMessage = \'\'; }); </script>';
+	$output .= '<script type="text/javascript"> $(\'#post\').submit(function() { has_changed = false; }); </script>';
 	
 	// hidden input fields to save feature data
 	$output .= '<input type="hidden" id="mtl-features" value="'.$mtl_features.'" name="mtl-features" />'."\r\n";

@@ -1,17 +1,11 @@
 /**
  * @module ol/reproj/Image
  */
-import {ERROR_THRESHOLD} from './common.js';
 
-import EventType from '../events/EventType.js';
-import ImageState from '../ImageState.js';
 import ImageWrapper from '../Image.js';
-import Triangulation from './Triangulation.js';
-import {
-  calculateSourceResolution,
-  render as renderReprojected,
-} from '../reproj.js';
-import {fromResolutionLike} from '../resolution.js';
+import ImageState from '../ImageState.js';
+import {listen, unlistenByKey} from '../events.js';
+import EventType from '../events/EventType.js';
 import {
   getCenter,
   getHeight,
@@ -19,7 +13,13 @@ import {
   getWidth,
   isEmpty,
 } from '../extent.js';
-import {listen, unlistenByKey} from '../events.js';
+import {
+  calculateSourceResolution,
+  render as renderReprojected,
+} from '../reproj.js';
+import {fromResolutionLike} from '../resolution.js';
+import Triangulation from './Triangulation.js';
+import {ERROR_THRESHOLD} from './common.js';
 
 /**
  * @typedef {function(import("../extent.js").Extent, number, number) : import("../Image.js").default} FunctionType
@@ -48,7 +48,7 @@ class ReprojImage extends ImageWrapper {
     targetResolution,
     pixelRatio,
     getImageFunction,
-    interpolate
+    interpolate,
   ) {
     let maxSourceExtent = sourceProj.getExtent();
     if (maxSourceExtent && sourceProj.canWrapX()) {
@@ -72,7 +72,7 @@ class ReprojImage extends ImageWrapper {
       sourceProj,
       targetProj,
       targetCenter,
-      targetResolution
+      targetResolution,
     );
 
     const errorThresholdInPixels = ERROR_THRESHOLD;
@@ -83,7 +83,7 @@ class ReprojImage extends ImageWrapper {
       limitedTargetExtent,
       maxSourceExtent,
       sourceResolution * errorThresholdInPixels,
-      targetResolution
+      targetResolution,
     );
 
     const sourceExtent = triangulation.calculateSourceExtent();
@@ -145,7 +145,7 @@ class ReprojImage extends ImageWrapper {
 
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     this.canvas_ = null;
 
@@ -158,6 +158,7 @@ class ReprojImage extends ImageWrapper {
 
   /**
    * Clean up.
+   * @override
    */
   disposeInternal() {
     if (this.state == ImageState.LOADING) {
@@ -167,7 +168,8 @@ class ReprojImage extends ImageWrapper {
   }
 
   /**
-   * @return {HTMLCanvasElement} Image.
+   * @return {HTMLCanvasElement|OffscreenCanvas} Image.
+   * @override
    */
   getImage() {
     return this.canvas_;
@@ -205,7 +207,8 @@ class ReprojImage extends ImageWrapper {
         ],
         0,
         undefined,
-        this.interpolate_
+        this.interpolate_,
+        true,
       );
     }
     this.state = sourceState;
@@ -214,6 +217,7 @@ class ReprojImage extends ImageWrapper {
 
   /**
    * Load not yet loaded URI.
+   * @override
    */
   load() {
     if (this.state == ImageState.IDLE) {
@@ -227,7 +231,7 @@ class ReprojImage extends ImageWrapper {
         this.sourceListenerKey_ = listen(
           this.sourceImage_,
           EventType.CHANGE,
-          function (e) {
+          (e) => {
             const sourceState = this.sourceImage_.getState();
             if (
               sourceState == ImageState.LOADED ||
@@ -237,7 +241,6 @@ class ReprojImage extends ImageWrapper {
               this.reproject_();
             }
           },
-          this
         );
         this.sourceImage_.load();
       }
@@ -249,7 +252,9 @@ class ReprojImage extends ImageWrapper {
    */
   unlistenSource_() {
     unlistenByKey(
-      /** @type {!import("../events.js").EventsKey} */ (this.sourceListenerKey_)
+      /** @type {!import("../events.js").EventsKey} */ (
+        this.sourceListenerKey_
+      ),
     );
     this.sourceListenerKey_ = null;
   }

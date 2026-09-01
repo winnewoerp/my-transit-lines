@@ -17,6 +17,10 @@ export type ReplayState = {
      */
     renderedResolution: number;
     /**
+     * RenderedPixelRatio.
+     */
+    renderedPixelRatio: number;
+    /**
      * RenderedRevision.
      */
     renderedRevision: number;
@@ -34,28 +38,21 @@ declare class VectorRenderTile extends Tile {
      * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("./TileState.js").default} state State.
      * @param {import("./tilecoord.js").TileCoord} urlTileCoord Wrapped tile coordinate for source urls.
-     * @param {function(VectorRenderTile):Array<import("./VectorTile").default>} getSourceTiles Function
-     * to get source tiles for this tile.
+     * @param {function(VectorRenderTile):Array<import("./VectorTile.js").default>} getSourceTiles Function.
+     * @param {function(VectorRenderTile):void} removeSourceTiles Function.
      */
-    constructor(tileCoord: import("./tilecoord.js").TileCoord, state: any, urlTileCoord: import("./tilecoord.js").TileCoord, getSourceTiles: (arg0: VectorRenderTile) => Array<import("./VectorTile").default>);
+    constructor(tileCoord: import("./tilecoord.js").TileCoord, state: any, urlTileCoord: import("./tilecoord.js").TileCoord, getSourceTiles: (arg0: VectorRenderTile) => Array<import("./VectorTile.js").default<any>>, removeSourceTiles: (arg0: VectorRenderTile) => void);
     /**
      * @private
-     * @type {!Object<string, CanvasRenderingContext2D>}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D|null}
      */
     private context_;
     /**
-     * Executor groups by layer uid. Entries are read/written by the renderer.
+     * Executor groups. Read/written by the renderer.
      * @type {Object<string, Array<import("./render/canvas/ExecutorGroup.js").default>>}
      */
     executorGroups: {
-        [x: string]: Array<import("./render/canvas/ExecutorGroup.js").default>;
-    };
-    /**
-     * Executor groups for decluttering, by layer uid. Entries are read/written by the renderer.
-     * @type {Object<string, Array<import("./render/canvas/ExecutorGroup.js").default>>}
-     */
-    declutterExecutorGroups: {
-        [x: string]: Array<import("./render/canvas/ExecutorGroup.js").default>;
+        [x: string]: import("./render/canvas/ExecutorGroup.js").default[];
     };
     /**
      * Number of loading source tiles. Read/written by the source.
@@ -63,10 +60,10 @@ declare class VectorRenderTile extends Tile {
      */
     loadingSourceTiles: number;
     /**
-     * @type {Object<number, ImageData>}
+     * @type {Object<string, ImageData>}
      */
     hitDetectionImageData: {
-        [x: number]: ImageData;
+        [x: string]: ImageData;
     };
     /**
      * @private
@@ -76,7 +73,7 @@ declare class VectorRenderTile extends Tile {
     /**
      * @type {Array<import("./VectorTile.js").default>}
      */
-    sourceTiles: Array<import("./VectorTile.js").default>;
+    sourceTiles: Array<import("./VectorTile.js").default<any>>;
     /**
      * @type {Object<string, boolean>}
      */
@@ -90,27 +87,29 @@ declare class VectorRenderTile extends Tile {
     /**
      * @type {!function():Array<import("./VectorTile.js").default>}
      */
-    getSourceTiles: () => Array<import("./VectorTile.js").default>;
+    getSourceTiles: () => Array<import("./VectorTile.js").default<any>>;
+    /**
+     * @type {!function(VectorRenderTile):void}
+     * @private
+     */
+    private removeSourceTiles_;
     /**
      * @type {import("./tilecoord.js").TileCoord}
      */
     wrappedTileCoord: import("./tilecoord.js").TileCoord;
     /**
-     * @param {import("./layer/Layer.js").default} layer Layer.
-     * @return {CanvasRenderingContext2D} The rendering context.
+     * @return {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} The rendering context.
      */
-    getContext(layer: import("./layer/Layer.js").default): CanvasRenderingContext2D;
+    getContext(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
     /**
-     * @param {import("./layer/Layer.js").default} layer Layer.
-     * @return {boolean} Tile has a rendering context for the given layer.
+     * @return {boolean} Tile has a rendering context.
      */
-    hasContext(layer: import("./layer/Layer.js").default): boolean;
+    hasContext(): boolean;
     /**
      * Get the Canvas for this tile.
-     * @param {import("./layer/Layer.js").default} layer Layer.
-     * @return {HTMLCanvasElement} Canvas.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Canvas.
      */
-    getImage(layer: import("./layer/Layer.js").default): HTMLCanvasElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * @param {import("./layer/Layer.js").default} layer Layer.
      * @return {ReplayState} The replay state.

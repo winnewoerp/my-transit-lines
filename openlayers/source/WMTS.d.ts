@@ -27,7 +27,7 @@ export default WMTS;
 /**
  * Request encoding. One of 'KVP', 'REST'.
  */
-export type RequestEncoding = 'KVP' | 'REST';
+export type RequestEncoding = "KVP" | "REST";
 export type Options = {
     /**
      * Attributions.
@@ -38,7 +38,7 @@ export type Options = {
      */
     attributionsCollapsible?: boolean | undefined;
     /**
-     * Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -47,6 +47,10 @@ export type Options = {
      * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
      */
     crossOrigin?: string | null | undefined;
+    /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
     /**
      * Use interpolated values when resampling.  By default,
      * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
@@ -150,10 +154,11 @@ export type Options = {
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {import("../tilegrid/WMTS.js").default} tileGrid Tile grid.

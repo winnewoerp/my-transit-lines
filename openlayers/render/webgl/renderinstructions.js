@@ -1,8 +1,9 @@
 /**
  * @module ol/render/webgl/renderinstructions
  */
-import {apply as applyTransform} from '../../transform.js';
+import {UNDEFINED_PROP_VALUE} from '../../expr/gpu.js';
 import {transform2D} from '../../geom/flat/transform.js';
+import {apply as applyTransform} from '../../transform.js';
 
 /**
  * @param {Float32Array} renderInstructions Render instructions
@@ -15,13 +16,22 @@ function pushCustomAttributesInRenderInstructions(
   renderInstructions,
   customAttributes,
   batchEntry,
-  currentIndex
+  currentIndex,
 ) {
   let shift = 0;
   for (const key in customAttributes) {
     const attr = customAttributes[key];
-    const value = attr.callback(batchEntry.feature);
-    renderInstructions[currentIndex + shift++] = value[0] || value;
+    const value = attr.callback.call(batchEntry, batchEntry.feature);
+    let first = value?.[0] ?? value;
+    if (first === UNDEFINED_PROP_VALUE) {
+      console.warn('The "has" operator might return false positives.'); // eslint-disable-line no-console
+    }
+    if (first === undefined) {
+      first = UNDEFINED_PROP_VALUE;
+    } else if (first === null) {
+      first = 0;
+    }
+    renderInstructions[currentIndex + shift++] = first;
     if (!attr.size || attr.size === 1) {
       continue;
     }
@@ -45,7 +55,7 @@ function pushCustomAttributesInRenderInstructions(
 export function getCustomAttributesSize(customAttributes) {
   return Object.keys(customAttributes).reduce(
     (prev, curr) => prev + (customAttributes[curr].size || 1),
-    0
+    0,
   );
 }
 
@@ -62,7 +72,7 @@ export function generatePointRenderInstructions(
   batch,
   renderInstructions,
   customAttributes,
-  transform
+  transform,
 ) {
   // here we anticipate the amount of render instructions for points:
   // 2 instructions per vertex for position (x and y)
@@ -92,7 +102,7 @@ export function generatePointRenderInstructions(
         renderInstructions,
         customAttributes,
         batchEntry,
-        renderIndex
+        renderIndex,
       );
     }
   }
@@ -112,14 +122,14 @@ export function generateLineStringRenderInstructions(
   batch,
   renderInstructions,
   customAttributes,
-  transform
+  transform,
 ) {
   // here we anticipate the amount of render instructions for lines:
-  // 2 instructions per vertex for position (x and y)
+  // 3 instructions per vertex for position (x, y and m)
   // + 1 instruction per line per custom attributes
   // + 1 instruction per line (for vertices count)
   const totalInstructionsCount =
-    2 * batch.verticesCount +
+    3 * batch.verticesCount +
     (1 + getCustomAttributesSize(customAttributes)) * batch.geometriesCount;
   if (
     !renderInstructions ||
@@ -139,24 +149,26 @@ export function generateLineStringRenderInstructions(
         batchEntry.flatCoordss[i],
         0,
         flatCoords.length,
-        2,
+        3,
         transform,
-        flatCoords
+        flatCoords,
+        3,
       );
       renderIndex += pushCustomAttributesInRenderInstructions(
         renderInstructions,
         customAttributes,
         batchEntry,
-        renderIndex
+        renderIndex,
       );
 
       // vertices count
-      renderInstructions[renderIndex++] = flatCoords.length / 2;
+      renderInstructions[renderIndex++] = flatCoords.length / 3;
 
       // looping on points for positions
-      for (let j = 0, jj = flatCoords.length; j < jj; j += 2) {
+      for (let j = 0, jj = flatCoords.length; j < jj; j += 3) {
         renderInstructions[renderIndex++] = flatCoords[j];
         renderInstructions[renderIndex++] = flatCoords[j + 1];
+        renderInstructions[renderIndex++] = flatCoords[j + 2];
       }
     }
   }
@@ -176,7 +188,7 @@ export function generatePolygonRenderInstructions(
   batch,
   renderInstructions,
   customAttributes,
-  transform
+  transform,
 ) {
   // here we anticipate the amount of render instructions for polygons:
   // 2 instructions per vertex for position (x and y)
@@ -207,13 +219,13 @@ export function generatePolygonRenderInstructions(
         flatCoords.length,
         2,
         transform,
-        flatCoords
+        flatCoords,
       );
       renderIndex += pushCustomAttributesInRenderInstructions(
         renderInstructions,
         customAttributes,
         batchEntry,
-        renderIndex
+        renderIndex,
       );
 
       // ring count

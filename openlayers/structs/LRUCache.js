@@ -2,13 +2,14 @@
  * @module ol/structs/LRUCache
  */
 
+import Disposable from '../Disposable.js';
 import {assert} from '../asserts.js';
 
 /**
  * @typedef {Object} Entry
  * @property {string} key_ Key.
- * @property {Object} newer Newer.
- * @property {Object} older Older.
+ * @property {Entry|null} newer Newer.
+ * @property {Entry|null} older Older.
  * @property {*} value_ Value.
  */
 
@@ -58,6 +59,13 @@ class LRUCache {
     this.newest_ = null;
   }
 
+  deleteOldest() {
+    const entry = this.pop();
+    if (entry instanceof Disposable) {
+      entry.dispose();
+    }
+  }
+
   /**
    * @return {boolean} Can expire cache.
    */
@@ -66,12 +74,13 @@ class LRUCache {
   }
 
   /**
-   * Expire the cache.
+   * Expire the cache. When the cache entry is a {@link module:ol/Disposable~Disposable},
+   * the entry will be disposed.
    * @param {!Object<string, boolean>} [keep] Keys to keep. To be implemented by subclasses.
    */
   expireCache(keep) {
     while (this.canExpireCache()) {
-      this.pop();
+      this.deleteOldest();
     }
   }
 
@@ -79,10 +88,9 @@ class LRUCache {
    * FIXME empty description for jsdoc
    */
   clear() {
-    this.count_ = 0;
-    this.entries_ = {};
-    this.oldest_ = null;
-    this.newest_ = null;
+    while (this.oldest_) {
+      this.deleteOldest();
+    }
   }
 
   /**
@@ -116,7 +124,7 @@ class LRUCache {
     const entry = this.entries_[key];
     assert(
       entry !== undefined,
-      'Tried to get a value for a key that does not exist in the cache'
+      'Tried to get a value for a key that does not exist in the cache',
     );
     if (entry === this.newest_) {
       return entry.value_;
@@ -144,7 +152,7 @@ class LRUCache {
     const entry = this.entries_[key];
     assert(
       entry !== undefined,
-      'Tried to get a value for a key that does not exist in the cache'
+      'Tried to get a value for a key that does not exist in the cache',
     );
     if (entry === this.newest_) {
       this.newest_ = /** @type {Entry} */ (entry.older);
@@ -223,13 +231,10 @@ class LRUCache {
   /**
    * Return an entry without updating least recently used time.
    * @param {string} key Key.
-   * @return {T} Value.
+   * @return {T|undefined} Value.
    */
   peek(key) {
-    if (!this.containsKey(key)) {
-      return undefined;
-    }
-    return this.entries_[key].value_;
+    return this.entries_[key]?.value_;
   }
 
   /**
@@ -265,7 +270,7 @@ class LRUCache {
   set(key, value) {
     assert(
       !(key in this.entries_),
-      'Tried to set a value for a key that is used already'
+      'Tried to set a value for a key that is used already',
     );
     const entry = {
       key_: key,

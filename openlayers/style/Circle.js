@@ -16,7 +16,7 @@ import RegularShape from './RegularShape.js';
  * (positive rotation clockwise, meaningful only when used in conjunction with a two dimensional scale).
  * @property {boolean} [rotateWithView=false] Whether to rotate the shape with the view
  * (meaningful only when used in conjunction with a two dimensional scale).
- * @property {"declutter"|"obstacle"|"none"|undefined} [declutterMode] Declutter mode
+ * @property {import('./Style.js').DeclutterMode} [declutterMode] Declutter mode
  */
 
 /**
@@ -50,6 +50,7 @@ class CircleStyle extends RegularShape {
    * Clones the style.
    * @return {CircleStyle} The cloned style.
    * @api
+   * @override
    */
   clone() {
     const scale = this.getScale();
@@ -65,17 +66,6 @@ class CircleStyle extends RegularShape {
     });
     style.setOpacity(this.getOpacity());
     return style;
-  }
-
-  /**
-   * Set the circle radius.
-   *
-   * @param {number} radius Circle radius.
-   * @api
-   */
-  setRadius(radius) {
-    this.radius_ = radius;
-    this.render();
   }
 }
 

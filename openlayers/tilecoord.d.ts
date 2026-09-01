@@ -1,7 +1,4 @@
 /**
- * @module ol/tilecoord
- */
-/**
  * An array of three numbers representing the location of a tile in a tile
  * grid. The order is `z` (zoom level), `x` (column), and `y` (row).
  * @typedef {Array<number>} TileCoord
@@ -14,7 +11,7 @@
  * @param {TileCoord} [tileCoord] Tile coordinate.
  * @return {TileCoord} Tile coordinate.
  */
-export function createOrUpdate(z: number, x: number, y: number, tileCoord?: TileCoord | undefined): TileCoord;
+export function createOrUpdate(z: number, x: number, y: number, tileCoord?: TileCoord): TileCoord;
 /**
  * @param {number} z Z.
  * @param {number} x X.
@@ -35,6 +32,15 @@ export function getKey(tileCoord: TileCoord): string;
  */
 export function getCacheKeyForTileKey(tileKey: string): string;
 /**
+ * @param {import("./source/Tile.js").default} source The tile source.
+ * @param {string} sourceKey The source key.
+ * @param {number} z The tile z level.
+ * @param {number} x The tile x level.
+ * @param {number} y The tile y level.
+ * @return {string} The cache key.
+ */
+export function getCacheKey(source: import("./source/Tile.js").default, sourceKey: string, z: number, x: number, y: number): string;
+/**
  * Get a tile coord given a key.
  * @param {string} key The tile coord key.
  * @return {TileCoord} The tile coord.
@@ -45,6 +51,13 @@ export function fromKey(key: string): TileCoord;
  * @return {number} Hash.
  */
 export function hash(tileCoord: TileCoord): number;
+/**
+ * @param {number} z The tile z coordinate.
+ * @param {number} x The tile x coordinate.
+ * @param {number} y The tile y coordinate.
+ * @return {number} Hash.
+ */
+export function hashZXY(z: number, x: number, y: number): number;
 /**
  * @param {TileCoord} tileCoord Tile coordinate.
  * @param {!import("./tilegrid/TileGrid.js").default} tileGrid Tile grid.

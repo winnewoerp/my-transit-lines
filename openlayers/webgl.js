@@ -76,7 +76,8 @@ export const UNSIGNED_INT = 0x1405;
  */
 export const FLOAT = 0x1406;
 
-/** end of goog.webgl constants
+/**
+  end of goog.webgl constants
  */
 
 /**
@@ -88,7 +89,7 @@ const CONTEXT_IDS = ['experimental-webgl', 'webgl', 'webkit-3d', 'moz-webgl'];
 /**
  * @param {HTMLCanvasElement} canvas Canvas.
  * @param {Object} [attributes] Attributes.
- * @return {WebGLRenderingContext} WebGL rendering context.
+ * @return {WebGLRenderingContext|null} WebGL rendering context.
  */
 export function getContext(canvas, attributes) {
   attributes = Object.assign(
@@ -96,7 +97,7 @@ export function getContext(canvas, attributes) {
       preserveDrawingBuffer: true,
       antialias: SAFARI_BUG_237906 ? false : true, // https://bugs.webkit.org/show_bug.cgi?id=237906
     },
-    attributes
+    attributes,
   );
   const ii = CONTEXT_IDS.length;
   for (let i = 0; i < ii; ++i) {
@@ -105,7 +106,7 @@ export function getContext(canvas, attributes) {
       if (context) {
         return /** @type {!WebGLRenderingContext} */ (context);
       }
-    } catch (e) {
+    } catch {
       // pass
     }
   }
@@ -113,12 +114,12 @@ export function getContext(canvas, attributes) {
 }
 
 /**
- * @type {Array<string>}
+ * @type {Array<string>|null}
  */
-let supportedExtensions;
+let supportedExtensions = null;
 
 /**
- * @return {Array<string>} List of supported WebGL extensions.
+ * @return {Array<string>|null} List of supported WebGL extensions.
  */
 export function getSupportedExtensions() {
   if (!supportedExtensions) {

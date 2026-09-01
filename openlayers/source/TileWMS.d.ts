@@ -9,7 +9,7 @@ export type Options = {
      */
     attributionsCollapsible?: boolean | undefined;
     /**
-     * Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -116,7 +116,7 @@ export type Options = {
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
@@ -178,7 +178,7 @@ declare class TileWMS extends TileImage {
     /**
      * @param {Options} [options] Tile WMS options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {number}
@@ -238,7 +238,7 @@ declare class TileWMS extends TileImage {
      * @return {string|undefined} GetLegendGraphic URL.
      * @api
      */
-    getLegendUrl(resolution?: number | undefined, params?: any): string | undefined;
+    getLegendUrl(resolution?: number, params?: any): string | undefined;
     /**
      * Get the user-provided params, i.e. those passed to the constructor through
      * the "params" option, and possibly updated using the updateParams method.
@@ -262,8 +262,20 @@ declare class TileWMS extends TileImage {
      */
     private getKeyForParams_;
     /**
-     * Update the user-provided params.
-     * @param {Object} params Params.
+     * @param {Object} params New URL paremeters.
+     * @private
+     */
+    private setParams_;
+    /**
+     * Set the URL parameters passed to the WMS source.
+     * @param {Object} params New URL paremeters.
+     * @api
+     */
+    setParams(params: any): void;
+    /**
+     * Update the URL parameters. This method can be used to update a subset of the WMS
+     * parameters. Call `setParams` to set all of the parameters.
+     * @param {Object} params Updated URL parameters.
      * @api
      */
     updateParams(params: any): void;

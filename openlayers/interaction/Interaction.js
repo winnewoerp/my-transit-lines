@@ -2,22 +2,22 @@
  * @module ol/interaction/Interaction
  */
 import BaseObject from '../Object.js';
-import InteractionProperty from './Property.js';
 import {easeOut, linear} from '../easing.js';
+import InteractionProperty from './Property.js';
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active', Return>} InteractionOnSignature
  */
 
 /**
  * Object literal with config options for interactions.
  * @typedef {Object} InteractionOptions
- * @property {function(import("../MapBrowserEvent.js").default):boolean} handleEvent
+ * @property {function(import("../MapBrowserEvent.js").default):boolean} [handleEvent]
  * Method called by the map to notify the interaction that a browser event was
  * dispatched to the map. If the function returns a falsy value, propagation of
  * the event to other interactions in the map's interactions chain will be
@@ -46,12 +46,12 @@ class Interaction extends BaseObject {
     super();
 
     /***
-     * @type {InteractionOnSignature<import("../events").EventsKey>}
+     * @type {InteractionOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {InteractionOnSignature<import("../events").EventsKey>}
+     * @type {InteractionOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 

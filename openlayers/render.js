@@ -1,16 +1,16 @@
 /**
  * @module ol/render
  */
-import CanvasImmediateRenderer from './render/canvas/Immediate.js';
 import {DEVICE_PIXEL_RATIO} from './has.js';
+import {getTransformFromProjections, getUserProjection} from './proj.js';
+import CanvasImmediateRenderer from './render/canvas/Immediate.js';
+import {getSquaredTolerance} from './renderer/vector.js';
 import {
   apply as applyTransform,
   create as createTransform,
   multiply as multiplyTransform,
   scale as scaleTransform,
 } from './transform.js';
-import {getSquaredTolerance} from './renderer/vector.js';
-import {getTransformFromProjections, getUserProjection} from './proj.js';
 
 /**
  * @typedef {Object} State
@@ -81,7 +81,15 @@ export function toContext(context, options) {
   }
   const extent = [0, 0, canvas.width, canvas.height];
   const transform = scaleTransform(createTransform(), pixelRatio, pixelRatio);
-  return new CanvasImmediateRenderer(context, pixelRatio, extent, transform, 0);
+  const squaredTolerance = getSquaredTolerance(1, pixelRatio);
+  return new CanvasImmediateRenderer(
+    context,
+    pixelRatio,
+    extent,
+    transform,
+    0,
+    squaredTolerance,
+  );
 }
 
 /**
@@ -102,18 +110,18 @@ export function getVectorContext(event) {
   const frameState = event.frameState;
   const transform = multiplyTransform(
     event.inversePixelTransform.slice(),
-    frameState.coordinateToPixelTransform
+    frameState.coordinateToPixelTransform,
   );
   const squaredTolerance = getSquaredTolerance(
     frameState.viewState.resolution,
-    canvasPixelRatio
+    canvasPixelRatio,
   );
   let userTransform;
   const userProjection = getUserProjection();
   if (userProjection) {
     userTransform = getTransformFromProjections(
       userProjection,
-      frameState.viewState.projection
+      frameState.viewState.projection,
     );
   }
 
@@ -124,7 +132,7 @@ export function getVectorContext(event) {
     transform,
     frameState.viewState.rotation,
     squaredTolerance,
-    userTransform
+    userTransform,
   );
 }
 

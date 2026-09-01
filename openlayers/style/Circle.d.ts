@@ -34,7 +34,7 @@ export type Options = {
     /**
      * Declutter mode
      */
-    declutterMode?: "declutter" | "obstacle" | "none" | undefined;
+    declutterMode?: import("./Style.js").DeclutterMode | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -48,7 +48,7 @@ export type Options = {
  * (positive rotation clockwise, meaningful only when used in conjunction with a two dimensional scale).
  * @property {boolean} [rotateWithView=false] Whether to rotate the shape with the view
  * (meaningful only when used in conjunction with a two dimensional scale).
- * @property {"declutter"|"obstacle"|"none"|undefined} [declutterMode] Declutter mode
+ * @property {import('./Style.js').DeclutterMode} [declutterMode] Declutter mode
  */
 /**
  * @classdesc
@@ -59,20 +59,7 @@ declare class CircleStyle extends RegularShape {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
-    /**
-     * Clones the style.
-     * @return {CircleStyle} The cloned style.
-     * @api
-     */
-    clone(): CircleStyle;
-    /**
-     * Set the circle radius.
-     *
-     * @param {number} radius Circle radius.
-     * @api
-     */
-    setRadius(radius: number): void;
+    constructor(options?: Options);
 }
 import RegularShape from './RegularShape.js';
 //# sourceMappingURL=Circle.d.ts.map

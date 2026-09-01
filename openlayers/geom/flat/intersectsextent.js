@@ -2,14 +2,13 @@
  * @module ol/geom/flat/intersectsextent
  */
 import {
-  containsExtent,
   createEmpty,
   extendFlatCoordinates,
   intersects,
   intersectsSegment,
 } from '../../extent.js';
-import {forEach as forEachSegment} from './segments.js';
 import {linearRingContainsExtent, linearRingContainsXY} from './contains.js';
+import {forEach as forEachSegment} from './segments.js';
 
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
@@ -17,6 +16,7 @@ import {linearRingContainsExtent, linearRingContainsXY} from './contains.js';
  * @param {number} end End.
  * @param {number} stride Stride.
  * @param {import("../../extent.js").Extent} extent Extent.
+ * @param {import('../../extent.js').Extent} [coordinatesExtent] Coordinates extent
  * @return {boolean} True if the geometry and the extent intersect.
  */
 export function intersectsLineString(
@@ -24,25 +24,19 @@ export function intersectsLineString(
   offset,
   end,
   stride,
-  extent
+  extent,
+  coordinatesExtent,
 ) {
-  const coordinatesExtent = extendFlatCoordinates(
-    createEmpty(),
-    flatCoordinates,
-    offset,
-    end,
-    stride
-  );
+  coordinatesExtent =
+    coordinatesExtent ??
+    extendFlatCoordinates(createEmpty(), flatCoordinates, offset, end, stride);
   if (!intersects(extent, coordinatesExtent)) {
     return false;
   }
-  if (containsExtent(extent, coordinatesExtent)) {
-    return true;
-  }
-  if (coordinatesExtent[0] >= extent[0] && coordinatesExtent[2] <= extent[2]) {
-    return true;
-  }
-  if (coordinatesExtent[1] >= extent[1] && coordinatesExtent[3] <= extent[3]) {
+  if (
+    (coordinatesExtent[0] >= extent[0] && coordinatesExtent[2] <= extent[2]) ||
+    (coordinatesExtent[1] >= extent[1] && coordinatesExtent[3] <= extent[3])
+  ) {
     return true;
   }
   return forEachSegment(
@@ -58,7 +52,7 @@ export function intersectsLineString(
      */
     function (point1, point2) {
       return intersectsSegment(extent, point1, point2);
-    }
+    },
   );
 }
 
@@ -75,7 +69,7 @@ export function intersectsLineStringArray(
   offset,
   ends,
   stride,
-  extent
+  extent,
 ) {
   for (let i = 0, ii = ends.length; i < ii; ++i) {
     if (
@@ -101,7 +95,7 @@ export function intersectsLinearRing(
   offset,
   end,
   stride,
-  extent
+  extent,
 ) {
   if (intersectsLineString(flatCoordinates, offset, end, stride, extent)) {
     return true;
@@ -113,7 +107,7 @@ export function intersectsLinearRing(
       end,
       stride,
       extent[0],
-      extent[1]
+      extent[1],
     )
   ) {
     return true;
@@ -125,7 +119,7 @@ export function intersectsLinearRing(
       end,
       stride,
       extent[0],
-      extent[3]
+      extent[3],
     )
   ) {
     return true;
@@ -137,7 +131,7 @@ export function intersectsLinearRing(
       end,
       stride,
       extent[2],
-      extent[1]
+      extent[1],
     )
   ) {
     return true;
@@ -149,7 +143,7 @@ export function intersectsLinearRing(
       end,
       stride,
       extent[2],
-      extent[3]
+      extent[3],
     )
   ) {
     return true;
@@ -170,7 +164,7 @@ export function intersectsLinearRingArray(
   offset,
   ends,
   stride,
-  extent
+  extent,
 ) {
   if (!intersectsLinearRing(flatCoordinates, offset, ends[0], stride, extent)) {
     return false;
@@ -185,7 +179,7 @@ export function intersectsLinearRingArray(
         ends[i - 1],
         ends[i],
         stride,
-        extent
+        extent,
       )
     ) {
       if (
@@ -194,7 +188,7 @@ export function intersectsLinearRingArray(
           ends[i - 1],
           ends[i],
           stride,
-          extent
+          extent,
         )
       ) {
         return false;
@@ -217,7 +211,7 @@ export function intersectsLinearRingMultiArray(
   offset,
   endss,
   stride,
-  extent
+  extent,
 ) {
   for (let i = 0, ii = endss.length; i < ii; ++i) {
     const ends = endss[i];

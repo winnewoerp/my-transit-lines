@@ -2,6 +2,19 @@
  * @module ol/render/canvas/style
  */
 
+import {NO_COLOR} from '../../color.js';
+import {buildExpression, newEvaluationContext} from '../../expr/cpu.js';
+import {
+  BooleanType,
+  ColorType,
+  NumberArrayType,
+  NumberType,
+  StringType,
+  computeGeometryType,
+  newParsingContext,
+} from '../../expr/expression.js';
+import {isEmpty} from '../../obj.js';
+import {toSize} from '../../size.js';
 import Circle from '../../style/Circle.js';
 import Fill from '../../style/Fill.js';
 import Icon from '../../style/Icon.js';
@@ -9,16 +22,6 @@ import RegularShape from '../../style/RegularShape.js';
 import Stroke from '../../style/Stroke.js';
 import Style from '../../style/Style.js';
 import Text from '../../style/Text.js';
-import {
-  BooleanType,
-  ColorType,
-  NumberArrayType,
-  NumberType,
-  StringType,
-  newParsingContext,
-} from '../../expr/expression.js';
-import {buildExpression, newEvaluationContext} from '../../expr/cpu.js';
-import {toSize} from '../../size.js';
 
 /**
  * @fileoverview This module includes functions to build styles for the canvas renderer.  Building
@@ -75,6 +78,19 @@ export function rulesToStyleFunction(rules) {
   return function (feature, resolution) {
     evaluationContext.properties = feature.getPropertiesInternal();
     evaluationContext.resolution = resolution;
+    if (parsingContext.featureId) {
+      const id = feature.getId();
+      if (id !== undefined) {
+        evaluationContext.featureId = id;
+      } else {
+        evaluationContext.featureId = null;
+      }
+    }
+    if (parsingContext.geometryType) {
+      evaluationContext.geometryType = computeGeometryType(
+        feature.getGeometry(),
+      );
+    }
     return evaluator(evaluationContext);
   };
 }
@@ -108,9 +124,23 @@ export function flatStylesToStyleFunction(flatStyles) {
   return function (feature, resolution) {
     evaluationContext.properties = feature.getPropertiesInternal();
     evaluationContext.resolution = resolution;
-    for (let i = 0; i < length; ++i) {
-      styles[i] = evaluators[i](evaluationContext);
+    if (parsingContext.featureId) {
+      const id = feature.getId();
+      if (id !== undefined) {
+        evaluationContext.featureId = id;
+      } else {
+        evaluationContext.featureId = null;
+      }
     }
+    let nonNullCount = 0;
+    for (let i = 0; i < length; ++i) {
+      const style = evaluators[i](evaluationContext);
+      if (style) {
+        styles[nonNullCount] = style;
+        nonNullCount += 1;
+      }
+    }
+    styles.length = nonNullCount;
     return styles;
   };
 }
@@ -192,7 +222,7 @@ export function buildRuleSet(rules, context) {
 }
 
 /**
- * @typedef {function(EvaluationContext):Style} StyleEvaluator
+ * @typedef {function(EvaluationContext):Style|null} StyleEvaluator
  */
 
 /**
@@ -207,6 +237,21 @@ export function buildStyle(flatStyle, context) {
   const evaluateText = buildText(flatStyle, context);
   const evaluateImage = buildImage(flatStyle, context);
   const evaluateZIndex = numberEvaluator(flatStyle, 'z-index', context);
+
+  if (
+    !evaluateFill &&
+    !evaluateStroke &&
+    !evaluateText &&
+    !evaluateImage &&
+    !isEmpty(flatStyle)
+  ) {
+    // assume this is a user error
+    // would be nice to check the properties and suggest "did you mean..."
+    throw new Error(
+      'No fill, stroke, point, or text symbolizer properties in style: ' +
+        JSON.stringify(flatStyle),
+    );
+  }
 
   const style = new Style();
   return function (context) {
@@ -250,7 +295,7 @@ export function buildStyle(flatStyle, context) {
 }
 
 /**
- * @typedef {function(EvaluationContext):Fill} FillEvaluator
+ * @typedef {function(EvaluationContext):Fill|null} FillEvaluator
  */
 
 /**
@@ -260,11 +305,21 @@ export function buildStyle(flatStyle, context) {
  * @return {FillEvaluator?} A function that evaluates to a fill.
  */
 function buildFill(flatStyle, prefix, context) {
-  const evaluateColor = colorLikeEvaluator(
-    flatStyle,
-    prefix + 'fill-color',
-    context
-  );
+  let evaluateColor;
+  if (prefix + 'fill-pattern-src' in flatStyle) {
+    evaluateColor = patternEvaluator(flatStyle, prefix + 'fill-', context);
+  } else {
+    if (flatStyle[prefix + 'fill-color'] === 'none') {
+      // avoids hit detection
+      return (context) => null;
+    }
+
+    evaluateColor = colorLikeEvaluator(
+      flatStyle,
+      prefix + 'fill-color',
+      context,
+    );
+  }
   if (!evaluateColor) {
     return null;
   }
@@ -272,7 +327,7 @@ function buildFill(flatStyle, prefix, context) {
   const fill = new Fill();
   return function (context) {
     const color = evaluateColor(context);
-    if (color === 'none') {
+    if (color === NO_COLOR) {
       return null;
     }
     fill.setColor(color);
@@ -281,7 +336,7 @@ function buildFill(flatStyle, prefix, context) {
 }
 
 /**
- * @typedef {function(EvaluationContext):Stroke} StrokeEvaluator
+ * @typedef {function(EvaluationContext):Stroke|null} StrokeEvaluator
  */
 
 /**
@@ -294,13 +349,13 @@ function buildStroke(flatStyle, prefix, context) {
   const evaluateWidth = numberEvaluator(
     flatStyle,
     prefix + 'stroke-width',
-    context
+    context,
   );
 
   const evaluateColor = colorLikeEvaluator(
     flatStyle,
     prefix + 'stroke-color',
-    context
+    context,
   );
 
   if (!evaluateWidth && !evaluateColor) {
@@ -310,38 +365,44 @@ function buildStroke(flatStyle, prefix, context) {
   const evaluateLineCap = stringEvaluator(
     flatStyle,
     prefix + 'stroke-line-cap',
-    context
+    context,
   );
 
   const evaluateLineJoin = stringEvaluator(
     flatStyle,
     prefix + 'stroke-line-join',
-    context
+    context,
   );
 
   const evaluateLineDash = numberArrayEvaluator(
     flatStyle,
     prefix + 'stroke-line-dash',
-    context
+    context,
   );
 
   const evaluateLineDashOffset = numberEvaluator(
     flatStyle,
     prefix + 'stroke-line-dash-offset',
-    context
+    context,
   );
 
   const evaluateMiterLimit = numberEvaluator(
     flatStyle,
     prefix + 'stroke-miter-limit',
-    context
+    context,
+  );
+
+  const evaluateOffset = numberEvaluator(
+    flatStyle,
+    prefix + 'stroke-offset',
+    context,
   );
 
   const stroke = new Stroke();
   return function (context) {
     if (evaluateColor) {
       const color = evaluateColor(context);
-      if (color === 'none') {
+      if (color === NO_COLOR) {
         return null;
       }
       stroke.setColor(color);
@@ -383,6 +444,10 @@ function buildStroke(flatStyle, prefix, context) {
       stroke.setMiterLimit(evaluateMiterLimit(context));
     }
 
+    if (evaluateOffset) {
+      stroke.setOffset(evaluateOffset(context));
+    }
+
     return stroke;
   };
 }
@@ -413,7 +478,7 @@ function buildText(flatStyle, context) {
   const evaluateBackgroundFill = buildFill(
     flatStyle,
     prefix + 'background-',
-    context
+    context,
   );
 
   const evaluateStroke = buildStroke(flatStyle, prefix, context);
@@ -421,7 +486,7 @@ function buildText(flatStyle, context) {
   const evaluateBackgroundStroke = buildStroke(
     flatStyle,
     prefix + 'background-',
-    context
+    context,
   );
 
   const evaluateFont = stringEvaluator(flatStyle, prefix + 'font', context);
@@ -429,31 +494,31 @@ function buildText(flatStyle, context) {
   const evaluateMaxAngle = numberEvaluator(
     flatStyle,
     prefix + 'max-angle',
-    context
+    context,
   );
 
   const evaluateOffsetX = numberEvaluator(
     flatStyle,
     prefix + 'offset-x',
-    context
+    context,
   );
 
   const evaluateOffsetY = numberEvaluator(
     flatStyle,
     prefix + 'offset-y',
-    context
+    context,
   );
 
   const evaluateOverflow = booleanEvaluator(
     flatStyle,
     prefix + 'overflow',
-    context
+    context,
   );
 
   const evaluatePlacement = stringEvaluator(
     flatStyle,
     prefix + 'placement',
-    context
+    context,
   );
 
   const evaluateRepeat = numberEvaluator(flatStyle, prefix + 'repeat', context);
@@ -463,13 +528,13 @@ function buildText(flatStyle, context) {
   const evaluateRotateWithView = booleanEvaluator(
     flatStyle,
     prefix + 'rotate-with-view',
-    context
+    context,
   );
 
   const evaluateRotation = numberEvaluator(
     flatStyle,
     prefix + 'rotation',
-    context
+    context,
   );
 
   const evaluateAlign = stringEvaluator(flatStyle, prefix + 'align', context);
@@ -477,22 +542,35 @@ function buildText(flatStyle, context) {
   const evaluateJustify = stringEvaluator(
     flatStyle,
     prefix + 'justify',
-    context
+    context,
   );
 
   const evaluateBaseline = stringEvaluator(
     flatStyle,
     prefix + 'baseline',
-    context
+    context,
+  );
+
+  const evaluateKeepUpright = booleanEvaluator(
+    flatStyle,
+    prefix + 'keep-upright',
+    context,
   );
 
   const evaluatePadding = numberArrayEvaluator(
     flatStyle,
     prefix + 'padding',
-    context
+    context,
   );
 
-  const text = new Text({});
+  // The following properties are not currently settable
+  const declutterMode = optionalDeclutterMode(
+    flatStyle,
+    prefix + 'declutter-mode',
+  );
+
+  const text = new Text({declutterMode});
+
   return function (context) {
     text.setText(evaluateValue(context));
 
@@ -566,7 +644,7 @@ function buildText(flatStyle, context) {
         textAlign !== 'start'
       ) {
         throw new Error(
-          'Expected left, right, center, start, or end for text-align'
+          'Expected left, right, center, start, or end for text-align',
         );
       }
       text.setTextAlign(textAlign);
@@ -590,7 +668,7 @@ function buildText(flatStyle, context) {
         textBaseline !== 'hanging'
       ) {
         throw new Error(
-          'Expected bottom, top, middle, alphabetic, or hanging for text-baseline'
+          'Expected bottom, top, middle, alphabetic, or hanging for text-baseline',
         );
       }
       text.setTextBaseline(textBaseline);
@@ -598,6 +676,10 @@ function buildText(flatStyle, context) {
 
     if (evaluatePadding) {
       text.setPadding(evaluatePadding(context));
+    }
+
+    if (evaluateKeepUpright) {
+      text.setKeepUpright(evaluateKeepUpright(context));
     }
 
     return text;
@@ -645,7 +727,7 @@ function buildIcon(flatStyle, context) {
   const evaluateAnchor = coordinateEvaluator(
     flatStyle,
     prefix + 'anchor',
-    context
+    context,
   );
 
   const evaluateScale = sizeLikeEvaluator(flatStyle, prefix + 'scale', context);
@@ -653,52 +735,67 @@ function buildIcon(flatStyle, context) {
   const evaluateOpacity = numberEvaluator(
     flatStyle,
     prefix + 'opacity',
-    context
+    context,
   );
 
   const evaluateDisplacement = coordinateEvaluator(
     flatStyle,
     prefix + 'displacement',
-    context
+    context,
   );
 
   const evaluateRotation = numberEvaluator(
     flatStyle,
     prefix + 'rotation',
-    context
+    context,
   );
 
   const evaluateRotateWithView = booleanEvaluator(
     flatStyle,
     prefix + 'rotate-with-view',
-    context
+    context,
   );
 
   // the remaining symbolizer properties are not currently settable
   const anchorOrigin = optionalIconOrigin(flatStyle, prefix + 'anchor-origin');
   const anchorXUnits = optionalIconAnchorUnits(
     flatStyle,
-    prefix + 'anchor-x-units'
+    prefix + 'anchor-x-units',
   );
   const anchorYUnits = optionalIconAnchorUnits(
     flatStyle,
-    prefix + 'anchor-y-units'
+    prefix + 'anchor-y-units',
   );
-  const color = optionalColorLike(flatStyle, prefix + 'color');
+  const colorValue = getExpressionValue(flatStyle, prefix + 'color');
+  let color;
+  let evaluateColor = null;
+  if (colorValue !== undefined) {
+    const isColorExpression =
+      Array.isArray(colorValue) &&
+      colorValue.length > 0 &&
+      typeof colorValue[0] === 'string';
+    if (isColorExpression) {
+      evaluateColor = colorLikeEvaluator(flatStyle, prefix + 'color', context);
+    } else {
+      color = requireColorLike(colorValue, prefix + 'color');
+    }
+  }
   const crossOrigin = optionalString(flatStyle, prefix + 'cross-origin');
   const offset = optionalNumberArray(flatStyle, prefix + 'offset');
   const offsetOrigin = optionalIconOrigin(flatStyle, prefix + 'offset-origin');
   const width = optionalNumber(flatStyle, prefix + 'width');
   const height = optionalNumber(flatStyle, prefix + 'height');
   const size = optionalSize(flatStyle, prefix + 'size');
-  const declutterMode = optionalDeclutterMode(flatStyle, prefix + 'declutter');
+  const declutterMode = optionalDeclutterMode(
+    flatStyle,
+    prefix + 'declutter-mode',
+  );
 
-  const icon = new Icon({
+  const iconOptions = {
     src,
     anchorOrigin,
     anchorXUnits,
     anchorYUnits,
-    color,
     crossOrigin,
     offset,
     offsetOrigin,
@@ -706,9 +803,22 @@ function buildIcon(flatStyle, context) {
     width,
     size,
     declutterMode,
-  });
+  };
+
+  let icon = null;
 
   return function (context) {
+    if (!icon) {
+      // lazily create the icon to allow for expression evaluation
+      const initialColor = evaluateColor ? evaluateColor(context) : color;
+      icon = new Icon(
+        initialColor !== undefined
+          ? Object.assign({}, iconOptions, {color: initialColor})
+          : Object.assign({}, iconOptions),
+      );
+    } else if (evaluateColor) {
+      icon.setColor(evaluateColor(context));
+    }
     if (evaluateOpacity) {
       icon.setOpacity(evaluateOpacity(context));
     }
@@ -746,7 +856,20 @@ function buildShape(flatStyle, context) {
 
   // required property
   const pointsName = prefix + 'points';
+  const radiusName = prefix + 'radius';
   const points = requireNumber(flatStyle[pointsName], pointsName);
+  if (!(radiusName in flatStyle)) {
+    throw new Error(`Expected a number for ${radiusName}`);
+  }
+  const evaluateRadius = numberEvaluator(flatStyle, radiusName, context);
+  const initialRadius =
+    typeof flatStyle[radiusName] === 'number' ? flatStyle[radiusName] : 5;
+  const radius2Name = prefix + 'radius2';
+  const evaluateRadius2 = numberEvaluator(flatStyle, radius2Name, context);
+  const initialRadius2 =
+    typeof flatStyle[radius2Name] === 'number'
+      ? flatStyle[radius2Name]
+      : undefined;
 
   // settable properties
   const evaluateFill = buildFill(flatStyle, prefix, context);
@@ -755,39 +878,41 @@ function buildShape(flatStyle, context) {
   const evaluateDisplacement = coordinateEvaluator(
     flatStyle,
     prefix + 'displacement',
-    context
+    context,
   );
   const evaluateRotation = numberEvaluator(
     flatStyle,
     prefix + 'rotation',
-    context
+    context,
   );
   const evaluateRotateWithView = booleanEvaluator(
     flatStyle,
     prefix + 'rotate-with-view',
-    context
+    context,
   );
 
   // the remaining properties are not currently settable
-  const radius = optionalNumber(flatStyle, prefix + 'radius');
-  const radius1 = optionalNumber(flatStyle, prefix + 'radius1');
-  const radius2 = optionalNumber(flatStyle, prefix + 'radius2');
   const angle = optionalNumber(flatStyle, prefix + 'angle');
   const declutterMode = optionalDeclutterMode(
     flatStyle,
-    prefix + 'declutter-mode'
+    prefix + 'declutter-mode',
   );
 
   const shape = new RegularShape({
     points,
-    radius,
-    radius1,
-    radius2,
+    radius: initialRadius,
+    radius2: initialRadius2,
     angle,
     declutterMode,
   });
 
   return function (context) {
+    if (evaluateRadius) {
+      shape.setRadius(evaluateRadius(context));
+    }
+    if (evaluateRadius2) {
+      shape.setRadius2(evaluateRadius2(context));
+    }
     if (evaluateFill) {
       shape.setFill(evaluateFill(context));
     }
@@ -827,23 +952,23 @@ function buildCircle(flatStyle, context) {
   const evaluateDisplacement = coordinateEvaluator(
     flatStyle,
     prefix + 'displacement',
-    context
+    context,
   );
   const evaluateRotation = numberEvaluator(
     flatStyle,
     prefix + 'rotation',
-    context
+    context,
   );
   const evaluateRotateWithView = booleanEvaluator(
     flatStyle,
     prefix + 'rotate-with-view',
-    context
+    context,
   );
 
   // the remaining properties are not currently settable
   const declutterMode = optionalDeclutterMode(
     flatStyle,
-    prefix + 'declutter-mode'
+    prefix + 'declutter-mode',
   );
 
   const circle = new Circle({
@@ -881,14 +1006,28 @@ function buildCircle(flatStyle, context) {
 /**
  * @param {FlatStyle} flatStyle The flat style.
  * @param {string} name The property name.
+ * @return {any|undefined} The encoded value, or undefined if not provided.
+ */
+function getExpressionValue(flatStyle, name) {
+  if (!(name in flatStyle)) {
+    return undefined;
+  }
+  const value = flatStyle[name];
+  return value === undefined ? undefined : value;
+}
+
+/**
+ * @param {FlatStyle} flatStyle The flat style.
+ * @param {string} name The property name.
  * @param {ParsingContext} context The parsing context.
  * @return {import('../../expr/cpu.js').NumberEvaluator|undefined} The expression evaluator or undefined.
  */
 function numberEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return undefined;
   }
-  const evaluator = buildExpression(flatStyle[name], NumberType, context);
+  const evaluator = buildExpression(encoded, NumberType, context);
   return function (context) {
     return requireNumber(evaluator(context), name);
   };
@@ -901,12 +1040,44 @@ function numberEvaluator(flatStyle, name, context) {
  * @return {import('../../expr/cpu.js').StringEvaluator?} The expression evaluator.
  */
 function stringEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return null;
   }
-  const evaluator = buildExpression(flatStyle[name], StringType, context);
+  const evaluator = buildExpression(encoded, StringType, context);
   return function (context) {
     return requireString(evaluator(context), name);
+  };
+}
+
+function patternEvaluator(flatStyle, prefix, context) {
+  const srcEvaluator = stringEvaluator(
+    flatStyle,
+    prefix + 'pattern-src',
+    context,
+  );
+  const offsetEvaluator = sizeEvaluator(
+    flatStyle,
+    prefix + 'pattern-offset',
+    context,
+  );
+  const patternSizeEvaluator = sizeEvaluator(
+    flatStyle,
+    prefix + 'pattern-size',
+    context,
+  );
+  const colorEvaluator = colorLikeEvaluator(
+    flatStyle,
+    prefix + 'color',
+    context,
+  );
+  return function (context) {
+    return {
+      src: srcEvaluator(context),
+      offset: offsetEvaluator && offsetEvaluator(context),
+      size: patternSizeEvaluator && patternSizeEvaluator(context),
+      color: colorEvaluator && colorEvaluator(context),
+    };
   };
 }
 
@@ -917,10 +1088,11 @@ function stringEvaluator(flatStyle, name, context) {
  * @return {import('../../expr/cpu.js').BooleanEvaluator?} The expression evaluator.
  */
 function booleanEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return null;
   }
-  const evaluator = buildExpression(flatStyle[name], BooleanType, context);
+  const evaluator = buildExpression(encoded, BooleanType, context);
   return function (context) {
     const value = evaluator(context);
     if (typeof value !== 'boolean') {
@@ -937,14 +1109,11 @@ function booleanEvaluator(flatStyle, name, context) {
  * @return {import('../../expr/cpu.js').ColorLikeEvaluator?} The expression evaluator.
  */
 function colorLikeEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return null;
   }
-  const evaluator = buildExpression(
-    flatStyle[name],
-    ColorType | StringType,
-    context
-  );
+  const evaluator = buildExpression(encoded, ColorType, context);
   return function (context) {
     return requireColorLike(evaluator(context), name);
   };
@@ -957,10 +1126,33 @@ function colorLikeEvaluator(flatStyle, name, context) {
  * @return {import('../../expr/cpu.js').NumberArrayEvaluator?} The expression evaluator.
  */
 function numberArrayEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return null;
   }
-  const evaluator = buildExpression(flatStyle[name], NumberArrayType, context);
+  if (
+    Array.isArray(encoded) &&
+    (encoded.length === 0 || typeof encoded[0] !== 'string')
+  ) {
+    /** @type {Array<import('../../expr/cpu.js').NumberEvaluator>} */
+    const evaluators = encoded.map((value, index) => {
+      if (typeof value === 'number') {
+        return () => value;
+      }
+      const evaluator = buildExpression(value, NumberType, context);
+      return function (context) {
+        return requireNumber(evaluator(context), `${name}[${index}]`);
+      };
+    });
+    return function (context) {
+      const array = new Array(evaluators.length);
+      for (let i = 0; i < evaluators.length; ++i) {
+        array[i] = evaluators[i](context);
+      }
+      return array;
+    };
+  }
+  const evaluator = buildExpression(encoded, NumberArrayType, context);
   return function (context) {
     return requireNumberArray(evaluator(context), name);
   };
@@ -973,10 +1165,11 @@ function numberArrayEvaluator(flatStyle, name, context) {
  * @return {import('../../expr/cpu.js').CoordinateEvaluator?} The expression evaluator.
  */
 function coordinateEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return null;
   }
-  const evaluator = buildExpression(flatStyle[name], NumberArrayType, context);
+  const evaluator = buildExpression(encoded, NumberArrayType, context);
   return function (context) {
     const array = requireNumberArray(evaluator(context), name);
     if (array.length !== 2) {
@@ -990,16 +1183,34 @@ function coordinateEvaluator(flatStyle, name, context) {
  * @param {FlatStyle} flatStyle The flat style.
  * @param {string} name The property name.
  * @param {ParsingContext} context The parsing context.
+ * @return {import('../../expr/cpu.js').SizeEvaluator?} The expression evaluator.
+ */
+function sizeEvaluator(flatStyle, name, context) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
+    return null;
+  }
+  const evaluator = buildExpression(encoded, NumberArrayType, context);
+  return function (context) {
+    return requireSize(evaluator(context), name);
+  };
+}
+
+/**
+ * @param {FlatStyle} flatStyle The flat style.
+ * @param {string} name The property name.
+ * @param {ParsingContext} context The parsing context.
  * @return {import('../../expr/cpu.js').SizeLikeEvaluator?} The expression evaluator.
  */
 function sizeLikeEvaluator(flatStyle, name, context) {
-  if (!(name in flatStyle)) {
+  const encoded = getExpressionValue(flatStyle, name);
+  if (encoded === undefined) {
     return null;
   }
   const evaluator = buildExpression(
-    flatStyle[name],
+    encoded,
     NumberArrayType | NumberType,
-    context
+    context,
   );
   return function (context) {
     return requireSizeLike(evaluator(context), name);
@@ -1081,7 +1292,7 @@ function optionalIconOrigin(flatStyle, property) {
     encoded !== 'top-right'
   ) {
     throw new Error(
-      `Expected bottom-left, bottom-right, top-left, or top-right for ${property}`
+      `Expected bottom-left, bottom-right, top-left, or top-right for ${property}`,
     );
   }
   return encoded;
@@ -1119,7 +1330,7 @@ function optionalNumberArray(flatStyle, property) {
 /**
  * @param {FlatStyle} flatStyle The flat style.
  * @param {string} property The symbolizer property.
- * @return {"declutter"|"obstacle"|"none"|undefined} Icon declutter mode.
+ * @return {import('../../style/Style.js').DeclutterMode} Icon declutter mode.
  */
 function optionalDeclutterMode(flatStyle, property) {
   const encoded = flatStyle[property];
@@ -1133,19 +1344,6 @@ function optionalDeclutterMode(flatStyle, property) {
     throw new Error(`Expected declutter, obstacle, or none for ${property}`);
   }
   return encoded;
-}
-
-/**
- * @param {FlatStyle} flatStyle The flat style.
- * @param {string} property The symbolizer property.
- * @return {string|Array<number>|undefined} A string or an array of color values or undefined.
- */
-function optionalColorLike(flatStyle, property) {
-  const encoded = flatStyle[property];
-  if (encoded === undefined) {
-    return undefined;
-  }
-  return requireColorLike(encoded, property);
 }
 
 /**
@@ -1210,15 +1408,24 @@ function requireColorLike(value, property) {
 /**
  * @param {any} value The value.
  * @param {string} property The property.
+ * @return {Array<number>} A number or an array of two numbers.
+ */
+function requireSize(value, property) {
+  const size = requireNumberArray(value, property);
+  if (size.length !== 2) {
+    throw new Error(`Expected an array of two numbers for ${property}`);
+  }
+  return size;
+}
+
+/**
+ * @param {any} value The value.
+ * @param {string} property The property.
  * @return {number|Array<number>} A number or an array of two numbers.
  */
 function requireSizeLike(value, property) {
   if (typeof value === 'number') {
     return value;
   }
-  const size = requireNumberArray(value, property);
-  if (size.length !== 2) {
-    throw new Error(`Expected an array of two numbers for ${property}`);
-  }
-  return size;
+  return requireSize(value, property);
 }

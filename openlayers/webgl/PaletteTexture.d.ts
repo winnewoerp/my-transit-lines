@@ -9,9 +9,9 @@ declare class PaletteTexture {
      */
     constructor(name: string, data: Uint8Array);
     name: string;
-    data: Uint8Array;
+    data: Uint8Array<ArrayBufferLike>;
     /**
-     * @type {WebGLTexture}
+     * @type {WebGLTexture|null}
      * @private
      */
     private texture_;
@@ -20,5 +20,9 @@ declare class PaletteTexture {
      * @return {WebGLTexture} The texture.
      */
     getTexture(gl: WebGLRenderingContext): WebGLTexture;
+    /**
+     * @param {WebGLRenderingContext} gl Rendering context.
+     */
+    delete(gl: WebGLRenderingContext): void;
 }
 //# sourceMappingURL=PaletteTexture.d.ts.map

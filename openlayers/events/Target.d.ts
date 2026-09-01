@@ -30,17 +30,17 @@ declare class Target extends Disposable {
     private eventTarget_;
     /**
      * @private
-     * @type {Object<string, number>}
+     * @type {Object<string, number>|null}
      */
     private pendingRemovals_;
     /**
      * @private
-     * @type {Object<string, number>}
+     * @type {Object<string, number>|null}
      */
     private dispatching_;
     /**
      * @private
-     * @type {Object<string, Array<import("../events.js").Listener>>}
+     * @type {Object<string, Array<import("../events.js").Listener>>|null}
      */
     private listeners_;
     /**
@@ -72,7 +72,7 @@ declare class Target extends Disposable {
      *     `true` will be returned if this event target has any listeners.
      * @return {boolean} Has listeners.
      */
-    hasListener(type?: string | undefined): boolean;
+    hasListener(type?: string): boolean;
     /**
      * @param {string} type Type.
      * @param {import("../events.js").Listener} listener Listener.

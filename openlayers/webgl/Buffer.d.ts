@@ -25,9 +25,9 @@ import { DYNAMIC_DRAW } from '../webgl.js';
  * the buffer type (ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER) and available extensions.
  *
  * To populate the array, you can either use:
- * * A size using `#ofSize(buffer)`
- * * An `ArrayBuffer` object using `#fromArrayBuffer(buffer)`
- * * A plain array using `#fromArray(array)`
+ * A size using `#ofSize(buffer)`
+ * An `ArrayBuffer` object using `#fromArrayBuffer(buffer)`
+ * A plain array using `#fromArray(array)`
  *
  * Note:
  * See the documentation of [WebGLRenderingContext.bufferData](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData)
@@ -37,24 +37,24 @@ declare class WebGLArrayBuffer {
     /**
      * @param {number} type Buffer type, either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER.
      * @param {number} [usage] Intended usage, either `STATIC_DRAW`, `STREAM_DRAW` or `DYNAMIC_DRAW`.
-     * Default is `DYNAMIC_DRAW`.
+     * Default is `STATIC_DRAW`.
      */
-    constructor(type: number, usage?: number | undefined);
+    constructor(type: number, usage?: number);
     /**
      * @private
-     * @type {Float32Array|Uint32Array}
+     * @type {Float32Array|Uint32Array|null}
      */
-    private array;
-    /**
-     * @private
-     * @type {number}
-     */
-    private type;
+    private array_;
     /**
      * @private
      * @type {number}
      */
-    private usage;
+    private type_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private usage_;
     /**
      * Populates the buffer with an array of the given size (all values will be zeroes).
      * @param {number} size Array size
@@ -80,9 +80,13 @@ declare class WebGLArrayBuffer {
     getType(): number;
     /**
      * Will return null if the buffer was not initialized
-     * @return {Float32Array|Uint32Array} Array.
+     * @return {Float32Array|Uint32Array|null} Array.
      */
-    getArray(): Float32Array | Uint32Array;
+    getArray(): Float32Array | Uint32Array | null;
+    /**
+     * @param {Float32Array|Uint32Array} array Array.
+     */
+    setArray(array: Float32Array | Uint32Array): void;
     /**
      * @return {number} Usage.
      */

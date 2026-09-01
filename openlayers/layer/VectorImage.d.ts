@@ -1,5 +1,5 @@
 export default VectorImageLayer;
-export type Options<VectorSourceType extends import("../source/Vector.js").default<import("../geom/Geometry.js").default>> = {
+export type Options<VectorSourceType extends import("../source/Vector.js").default<FeatureType> = import("../source/Vector.js").default<any>, FeatureType extends import("../Feature.js").FeatureLike = import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -68,17 +68,24 @@ export type Options<VectorSourceType extends import("../source/Vector.js").defau
      */
     map?: import("../Map.js").default | undefined;
     /**
-     * Declutter images and text on this layer. The priority is defined
-     * by the `zIndex` of the style and the render order of features. Higher z-index means higher priority.
-     * Within the same z-index, a feature rendered before another has higher priority.
+     * Declutter images and text on this layer. Any truthy value will enable
+     * decluttering. The priority is defined by the `zIndex` of the style and the render order of features. Higher z-index means higher
+     * priority. Within the same z-index, a feature rendered before another has higher priority. Items will
+     * not be decluttered against or together with items on other layers with the same `declutter` value. If
+     * that is needed, use {@link import ("../layer/Vector.js").default} instead.
      */
-    declutter?: boolean | undefined;
+    declutter?: string | number | boolean | undefined;
     /**
      * Layer style. When set to `null`, only
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: import("../style/Style.js").StyleLike | null | undefined;
+    style?: import("../style/Style.js").StyleLike | import("../style/flat.js").FlatStyleLike | null | undefined;
+    /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: import("./Base.js").BackgroundColor | undefined;
     /**
      * Ratio by which the rendered extent should be larger than the
      * viewport extent. A larger ratio avoids cut images during panning, but will cause a decrease in performance.
@@ -92,7 +99,8 @@ export type Options<VectorSourceType extends import("../source/Vector.js").defau
     } | undefined;
 };
 /**
- * @template {import("../source/Vector.js").default} VectorSourceType
+ * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>]
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
@@ -122,12 +130,16 @@ export type Options<VectorSourceType extends import("../source/Vector.js").defau
  * this layer in its layers collection, and the layer will be rendered on top. This is useful for
  * temporary layers. The standard way to add a layer to a map and have it managed by the map is to
  * use [map.addLayer()]{@link import("../Map.js").default#addLayer}.
- * @property {boolean} [declutter=false] Declutter images and text on this layer. The priority is defined
- * by the `zIndex` of the style and the render order of features. Higher z-index means higher priority.
- * Within the same z-index, a feature rendered before another has higher priority.
- * @property {import("../style/Style.js").StyleLike|null} [style] Layer style. When set to `null`, only
+ * @property {boolean|string|number} [declutter=false] Declutter images and text on this layer. Any truthy value will enable
+ * decluttering. The priority is defined by the `zIndex` of the style and the render order of features. Higher z-index means higher
+ * priority. Within the same z-index, a feature rendered before another has higher priority. Items will
+ * not be decluttered against or together with items on other layers with the same `declutter` value. If
+ * that is needed, use {@link import("../layer/Vector.js").default} instead.
+ * @property {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike|null} [style] Layer style. When set to `null`, only
  * features that have their own style will be rendered. See {@link module:ol/style/Style~Style} for the default style
  * which will be used if this is not set.
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
  * @property {number} [imageRatio=1] Ratio by which the rendered extent should be larger than the
  * viewport extent. A larger ratio avoids cut images during panning, but will cause a decrease in performance.
  * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
@@ -143,15 +155,16 @@ export type Options<VectorSourceType extends import("../source/Vector.js").defau
  * property on the layer object; for example, setting `title: 'My Title'` in the
  * options means that `title` is observable, and has get/set accessors.
  *
- * @template {import("../source/Vector.js").default} VectorSourceType
- * @extends {BaseVectorLayer<VectorSourceType, CanvasVectorImageLayerRenderer>}
+ * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>]
+ * @extends {BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorImageLayerRenderer>}
  * @api
  */
-declare class VectorImageLayer<VectorSourceType extends import("../source/Vector.js").default<import("../geom/Geometry.js").default>> extends BaseVectorLayer<VectorSourceType, CanvasVectorImageLayerRenderer> {
+declare class VectorImageLayer<VectorSourceType extends import("../source/Vector.js").default<FeatureType> = import("../source/Vector.js").default<any>, FeatureType extends import("../Feature.js").FeatureLike = import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>> extends BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorImageLayerRenderer> {
     /**
-     * @param {Options<VectorSourceType>} [options] Options.
+     * @param {Options<VectorSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options<VectorSourceType> | undefined);
+    constructor(options?: Options<VectorSourceType, FeatureType>);
     /**
      * @type {number}
      * @private

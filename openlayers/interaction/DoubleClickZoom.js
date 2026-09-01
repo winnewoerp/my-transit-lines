@@ -1,8 +1,8 @@
 /**
  * @module ol/interaction/DoubleClickZoom
  */
-import Interaction, {zoomByDelta} from './Interaction.js';
 import MapBrowserEventType from '../MapBrowserEventType.js';
+import Interaction, {zoomByDelta} from './Interaction.js';
 
 /**
  * @typedef {Object} Options
@@ -42,6 +42,7 @@ class DoubleClickZoom extends Interaction {
    * doubleclick) and eventually zooms the map.
    * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
    * @return {boolean} `false` to stop event propagation.
+   * @override
    */
   handleEvent(mapBrowserEvent) {
     let stopEvent = false;

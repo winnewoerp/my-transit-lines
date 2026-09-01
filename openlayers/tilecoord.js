@@ -2,6 +2,8 @@
  * @module ol/tilecoord
  */
 
+import {getUid} from './util.js';
+
 /**
  * An array of three numbers representing the location of a tile in a tile
  * grid. The order is `z` (zoom level), `x` (column), and `y` (row).
@@ -59,6 +61,18 @@ export function getCacheKeyForTileKey(tileKey) {
 }
 
 /**
+ * @param {import("./source/Tile.js").default} source The tile source.
+ * @param {string} sourceKey The source key.
+ * @param {number} z The tile z level.
+ * @param {number} x The tile x level.
+ * @param {number} y The tile y level.
+ * @return {string} The cache key.
+ */
+export function getCacheKey(source, sourceKey, z, x, y) {
+  return `${getUid(source)},${sourceKey},${getKeyZXY(z, x, y)}`;
+}
+
+/**
  * Get a tile coord given a key.
  * @param {string} key The tile coord key.
  * @return {TileCoord} The tile coord.
@@ -72,7 +86,17 @@ export function fromKey(key) {
  * @return {number} Hash.
  */
 export function hash(tileCoord) {
-  return (tileCoord[1] << tileCoord[0]) + tileCoord[2];
+  return hashZXY(tileCoord[0], tileCoord[1], tileCoord[2]);
+}
+
+/**
+ * @param {number} z The tile z coordinate.
+ * @param {number} x The tile x coordinate.
+ * @param {number} y The tile y coordinate.
+ * @return {number} Hash.
+ */
+export function hashZXY(z, x, y) {
+  return (x << z) + y;
 }
 
 /**

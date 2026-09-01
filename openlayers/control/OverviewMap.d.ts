@@ -25,7 +25,11 @@ export type Options = {
     /**
      * Layers for the overview map.
      */
-    layers?: import("../layer/Base.js").default[] | Collection<import("../layer/Base.js").default> | undefined;
+    layers?: import("../layer/Base.js").default<{
+        [x: string]: any;
+    }>[] | Collection<import("../layer/Base.js").default<{
+        [x: string]: any;
+    }>> | undefined;
     /**
      * Function called when the control
      * should be re-rendered. This is called in a `requestAnimationFrame` callback.
@@ -80,7 +84,7 @@ declare class OverviewMap extends Control {
     /**
      * @param {Options} [options] OverviewMap options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      */

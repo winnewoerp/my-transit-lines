@@ -42,59 +42,49 @@ if ( ! isset( $content_width ) ) {
 	$content_width = 640; /* pixels */
 }
 
-if ( ! function_exists( 'my_transit_lines_setup' ) ) :
-/**
- * Sets up theme defaults and registers support for various WordPress features.
- *
- * Note that this function is hooked into the after_setup_theme hook, which
- * runs before the init hook. The init hook is too late for some features, such
- * as indicating support for post thumbnails.
- */
-function my_transit_lines_setup() {
-
-	/*
-	 * Make theme available for translation.
-	 * Translations can be filed in the /languages/ directory.
-	 * If you're building a theme based on My Transit Lines, use a find and replace
-	 * to change 'my-transit-lines' to the name of your theme in all the template files
-	 */
-	// load_theme_textdomain( 'my-transit-lines', get_template_directory() . '/languages' ); // up to WP 6.7. this worked
-	// the following line is a workaround so far, not working for WP < 6.7
-	load_textdomain( 'my-transit-lines', get_template_directory() . '/languages/' . determine_locale() . '.mo' );
-
-	// Add default posts and comments RSS feed links to head.
-	add_theme_support( 'automatic-feed-links' );
-
-	/*
-	 * Enable support for Post Thumbnails on posts and pages.
+if ( ! function_exists( 'my_transit_lines_setup' ) ) {
+	/**
+	 * Sets up theme defaults and registers support for various WordPress features.
 	 *
-	 * @link http://codex.wordpress.org/Function_Reference/add_theme_support#Post_Thumbnails
+	 * Note that this function is hooked into the after_setup_theme hook, which
+	 * runs before the init hook. The init hook is too late for some features, such
+	 * as indicating support for post thumbnails.
 	 */
-	add_theme_support( 'post-thumbnails' );
+	function my_transit_lines_setup() {
 
-	/*
-	 * Switch default core markup for search form, comment form, and comments
-	 * to output valid HTML5.
-	 */
-	add_theme_support( 'html5', array(
-		'search-form', 'comment-form', 'comment-list', 'gallery', 'caption',
-	) );
+		// Add default posts and comments RSS feed links to head.
+		add_theme_support( 'automatic-feed-links' );
 
-	/*
-	 * Enable support for Post Formats.
-	 * See http://codex.wordpress.org/Post_Formats
-	 */
-	add_theme_support( 'post-formats', array(
-		'aside', 'image', 'video', 'quote', 'link',
-	) );
+		/*
+		* Enable support for Post Thumbnails on posts and pages.
+		*
+		* @link http://codex.wordpress.org/Function_Reference/add_theme_support#Post_Thumbnails
+		*/
+		add_theme_support( 'post-thumbnails' );
 
-	// Setup the WordPress core custom background feature.
-	add_theme_support( 'custom-background', apply_filters( 'my_transit_lines_custom_background_args', array(
-		'default-color' => 'ffffff',
-		'default-image' => '',
-	) ) );
+		/*
+		* Switch default core markup for search form, comment form, and comments
+		* to output valid HTML5.
+		*/
+		add_theme_support( 'html5', array(
+			'search-form', 'comment-form', 'comment-list', 'gallery', 'caption',
+		) );
+
+		/*
+		* Enable support for Post Formats.
+		* See http://codex.wordpress.org/Post_Formats
+		*/
+		add_theme_support( 'post-formats', array(
+			'aside', 'image', 'video', 'quote', 'link',
+		) );
+
+		// Setup the WordPress core custom background feature.
+		add_theme_support( 'custom-background', apply_filters( 'my_transit_lines_custom_background_args', array(
+			'default-color' => 'ffffff',
+			'default-image' => '',
+		) ) );
+	}
 }
-endif; // my_transit_lines_setup
 add_action( 'after_setup_theme', 'my_transit_lines_setup' );
 
 /**
@@ -161,14 +151,6 @@ function my_transit_lines_scripts() {
 add_action( 'wp_enqueue_scripts', 'my_transit_lines_scripts' );
 
 /**
- * register all nav menus needed for the theme
- */
-register_nav_menus( array(
-	'primary' => __( 'Primary Menu', 'my-transit-lines' ),
-	'secondary' => __( 'Secondary Menu', 'my-transit-lines' ),
-) );
-
-/**
  * Register widget area.
  *
  * @link http://codex.wordpress.org/Function_Reference/register_sidebar
@@ -197,12 +179,28 @@ add_action( 'widgets_init', 'mtl_widgets_init' );
  * start session - needed for frontend form captcha and for other things.
  */
 function mtl_session_start() {
-  if( !session_id() ) { 
-     session_cache_limiter ('private, must-revalidate');
-     session_start();
-  }
+	if( !session_id() ) { 
+		session_cache_limiter ('private, must-revalidate');
+		session_start();
+	}
+
+	/*
+	 * Make theme available for translation.
+	 * Translations can be filed in the /languages/ directory.
+	 * If you're building a theme based on My Transit Lines, use a find and replace
+	 * to change 'my-transit-lines' to the name of your theme in all the template files
+	 */
+	load_theme_textdomain( 'my-transit-lines', get_template_directory() . '/languages' );
+
+	/**
+	 * register all nav menus needed for the theme
+	 */
+	register_nav_menus( array(
+		'primary' => __( 'Primary Menu', 'my-transit-lines' ),
+		'secondary' => __( 'Secondary Menu', 'my-transit-lines' ),
+	) );
 }
-add_action( 'init', 'mtl_session_start' );
+add_action( 'init', 'mtl_session_start', -1 );
 
 /**
  * Uses output buffering to return the echoed output of the function passed as a variable
@@ -302,6 +300,7 @@ function mtl_localize_script($getVar = false) {
 		'RemoveSnapping'=>__('Disable snapping', 'my-transit-lines'),
 		'lengthString'=>__('Length: ', 'my-transit-lines'),
 		'radius'=>__('Radius: ', 'my-transit-lines'),
+		'speed'=>__('Speed: ', 'my-transit-lines'),
 		'area'=>__('Area: ', 'my-transit-lines'),
 		'decimalSeparator'=>_x('.', 'decimal separator', 'my-transit-lines'),
 		'vectorLayerToggle'=>__('Show feature data', 'my-transit-lines'),
@@ -564,6 +563,7 @@ function allowed_css_styles() {
 		'text-decoration',
 		'font-style',
 		'font-weight',
+		'font-size',
 	);
 }
 add_filter( 'safe_style_css', 'allowed_css_styles');

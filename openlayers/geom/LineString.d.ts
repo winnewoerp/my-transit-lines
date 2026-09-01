@@ -11,10 +11,10 @@ declare class LineString extends SimpleGeometry {
      *     For internal use, flat coordinates in combination with `layout` are also accepted.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(coordinates: Array<import("../coordinate.js").Coordinate> | Array<number>, layout?: import("./Geometry.js").GeometryLayout | undefined);
+    constructor(coordinates: Array<import("../coordinate.js").Coordinate> | Array<number>, layout?: import("./Geometry.js").GeometryLayout);
     /**
      * @private
-     * @type {import("../coordinate.js").Coordinate}
+     * @type {import("../coordinate.js").Coordinate|null}
      */
     private flatMidpoint_;
     /**
@@ -42,8 +42,9 @@ declare class LineString extends SimpleGeometry {
      * Make a complete copy of the geometry.
      * @return {!LineString} Clone.
      * @api
+     * @override
      */
-    clone(): LineString;
+    override clone(): LineString;
     /**
      * Iterate over each segment, calling the provided callback.
      * If the callback returns a truthy value the function returns that
@@ -55,7 +56,7 @@ declare class LineString extends SimpleGeometry {
      * @template T,S
      * @api
      */
-    forEachSegment<T, S>(callback: (this: S, arg1: import("../coordinate.js").Coordinate, arg2: import("../coordinate.js").Coordinate) => T): boolean | T;
+    forEachSegment<T, S>(callback: (this: S, arg1: import("../coordinate.js").Coordinate, arg2: import("../coordinate.js").Coordinate) => T): T | boolean;
     /**
      * Returns the coordinate at `m` using linear interpolation, or `null` if no
      * such coordinate exists.
@@ -70,13 +71,14 @@ declare class LineString extends SimpleGeometry {
      * @return {import("../coordinate.js").Coordinate|null} Coordinate.
      * @api
      */
-    getCoordinateAtM(m: number, extrapolate?: boolean | undefined): import("../coordinate.js").Coordinate | null;
+    getCoordinateAtM(m: number, extrapolate?: boolean): import("../coordinate.js").Coordinate | null;
     /**
      * Return the coordinates of the linestring.
      * @return {Array<import("../coordinate.js").Coordinate>} Coordinates.
      * @api
+     * @override
      */
-    getCoordinates(): Array<import("../coordinate.js").Coordinate>;
+    override getCoordinates(): Array<import("../coordinate.js").Coordinate>;
     /**
      * Return the coordinate at the provided fraction along the linestring.
      * The `fraction` is a number between 0 and 1, where 0 is the start of the
@@ -87,7 +89,7 @@ declare class LineString extends SimpleGeometry {
      * @return {import("../coordinate.js").Coordinate} Coordinate of the interpolated point.
      * @api
      */
-    getCoordinateAt(fraction: number, dest?: import("../coordinate.js").Coordinate | undefined): import("../coordinate.js").Coordinate;
+    getCoordinateAt(fraction: number, dest?: import("../coordinate.js").Coordinate): import("../coordinate.js").Coordinate;
     /**
      * Return the length of the linestring on projected plane.
      * @return {number} Length (on projected plane).
@@ -102,15 +104,17 @@ declare class LineString extends SimpleGeometry {
      * @param {number} squaredTolerance Squared tolerance.
      * @return {LineString} Simplified LineString.
      * @protected
+     * @override
      */
-    protected getSimplifiedGeometryInternal(squaredTolerance: number): LineString;
+    protected override getSimplifiedGeometryInternal(squaredTolerance: number): LineString;
     /**
      * Set the coordinates of the linestring.
      * @param {!Array<import("../coordinate.js").Coordinate>} coordinates Coordinates.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @api
+     * @override
      */
-    setCoordinates(coordinates: Array<import("../coordinate.js").Coordinate>, layout?: import("./Geometry.js").GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<import("../coordinate.js").Coordinate>, layout?: import("./Geometry.js").GeometryLayout): void;
 }
 import SimpleGeometry from './SimpleGeometry.js';
 //# sourceMappingURL=LineString.d.ts.map

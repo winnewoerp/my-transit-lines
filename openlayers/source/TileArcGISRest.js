@@ -2,20 +2,21 @@
  * @module ol/source/TileArcGISRest
  */
 
-import TileImage from './TileImage.js';
 import {createEmpty} from '../extent.js';
-import {getRequestUrl} from './arcgisRest.js';
 import {modulo} from '../math.js';
 import {scale as scaleSize, toSize} from '../size.js';
 import {hash as tileCoordHash} from '../tilecoord.js';
+import TileImage from './TileImage.js';
+import {getRequestUrl} from './arcgisRest.js';
 
 /**
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {Object<string,*>} [params] ArcGIS Rest parameters. This field is optional. Service defaults will be
@@ -76,6 +77,7 @@ class TileArcGISRest extends TileImage {
       attributions: options.attributions,
       cacheSize: options.cacheSize,
       crossOrigin: options.crossOrigin,
+      referrerPolicy: options.referrerPolicy,
       interpolate: options.interpolate,
       projection: options.projection,
       reprojectionErrorThreshold: options.reprojectionErrorThreshold,
@@ -92,7 +94,7 @@ class TileArcGISRest extends TileImage {
      * @private
      * @type {!Object}
      */
-    this.params_ = options.params || {};
+    this.params_ = Object.assign({}, options.params);
 
     /**
      * @private
@@ -148,7 +150,7 @@ class TileArcGISRest extends TileImage {
     tileExtent,
     pixelRatio,
     projection,
-    params
+    params,
   ) {
     const urls = this.urls;
     if (!urls) {
@@ -170,7 +172,7 @@ class TileArcGISRest extends TileImage {
       ).getResolution(tileCoord[0]),
       pixelRatio,
       projection,
-      params
+      params,
     );
   }
 
@@ -178,9 +180,20 @@ class TileArcGISRest extends TileImage {
    * Get the tile pixel ratio for this source.
    * @param {number} pixelRatio Pixel ratio.
    * @return {number} Tile pixel ratio.
+   * @override
    */
   getTilePixelRatio(pixelRatio) {
     return this.hidpi_ ? pixelRatio : 1;
+  }
+
+  /**
+   * Set the user-provided params.
+   * @param {Object} params Params.
+   * @api
+   */
+  setParams(params) {
+    this.params_ = Object.assign({}, params);
+    this.setKey(this.getKeyForParams_());
   }
 
   /**
@@ -235,7 +248,7 @@ class TileArcGISRest extends TileImage {
       tileExtent,
       pixelRatio,
       projection,
-      baseParams
+      baseParams,
     );
   }
 }

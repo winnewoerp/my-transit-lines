@@ -2,10 +2,10 @@
  * @module ol/webgl/BaseTileRepresentation
  */
 
-import EventTarget from '../events/Target.js';
-import EventType from '../events/EventType.js';
 import ImageTile from '../ImageTile.js';
 import TileState from '../TileState.js';
+import EventType from '../events/EventType.js';
+import EventTarget from '../events/Target.js';
 import {abstract} from '../util.js';
 
 /**
@@ -38,19 +38,23 @@ class BaseTileRepresentation extends EventTarget {
      * @type {TileType}
      */
     this.tile;
+
+    /**
+     * @private
+     */
     this.handleTileChange_ = this.handleTileChange_.bind(this);
 
     /**
      * @type {number}
      * @protected
      */
-    this.gutter_ = options.gutter || 0;
+    this.gutter = options.gutter || 0;
 
     /**
      * @type {import("../webgl/Helper.js").default}
      * @protected
      */
-    this.helper_ = options.helper;
+    this.helper = options.helper;
 
     this.loaded = false;
     this.ready = false;
@@ -100,7 +104,21 @@ class BaseTileRepresentation extends EventTarget {
     }
   }
 
+  /**
+   * @param {import("./Helper.js").default} helper The WebGL helper.
+   */
+  setHelper(helper) {
+    this.helper = helper;
+    if (this.helper && this.loaded) {
+      this.uploadTile();
+    }
+  }
+
+  /**
+   * @override
+   */
   disposeInternal() {
+    this.setHelper(null);
     this.tile.removeEventListener(EventType.CHANGE, this.handleTileChange_);
   }
 }

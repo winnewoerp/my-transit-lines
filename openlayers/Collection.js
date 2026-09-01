@@ -1,8 +1,8 @@
 /**
  * @module ol/Collection
  */
-import BaseObject from './Object.js';
 import CollectionEventType from './CollectionEventType.js';
+import BaseObject from './Object.js';
 import Event from './events/Event.js';
 
 /**
@@ -47,10 +47,10 @@ export class CollectionEvent extends Event {
 /***
  * @template T
  * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *   import("./Observable").OnSignature<import("./ObjectEventType").Types|'change:length', import("./Object").ObjectEvent, Return> &
- *   import("./Observable").OnSignature<'add'|'remove', CollectionEvent<T>, Return> &
- *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|import("./ObjectEventType").Types|
+ * @typedef {import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> &
+ *   import("./Observable.js").OnSignature<import("./ObjectEventType.js").Types|'change:length', import("./Object.js").ObjectEvent, Return> &
+ *   import("./Observable.js").OnSignature<'add'|'remove', CollectionEvent<T>, Return> &
+ *   import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes|import("./ObjectEventType.js").Types|
  *     'change:length'|'add'|'remove',Return>} CollectionOnSignature
  */
 
@@ -82,12 +82,12 @@ class Collection extends BaseObject {
     super();
 
     /***
-     * @type {CollectionOnSignature<T, import("./events").EventsKey>}
+     * @type {CollectionOnSignature<T, import("./events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {CollectionOnSignature<T, import("./events").EventsKey>}
+     * @type {CollectionOnSignature<T, import("./events.js").EventsKey>}
      */
     this.once;
 
@@ -108,10 +108,10 @@ class Collection extends BaseObject {
      * @private
      * @type {!Array<T>}
      */
-    this.array_ = array ? array : [];
+    this.array_ = array ?? [];
 
     if (this.unique_) {
-      for (let i = 0, ii = this.array_.length; i < ii; ++i) {
+      for (let i = 1, ii = this.array_.length; i < ii; ++i) {
         this.assertUnique_(this.array_[i], i);
       }
     }
@@ -205,7 +205,7 @@ class Collection extends BaseObject {
     this.array_.splice(index, 0, elem);
     this.updateLength_();
     this.dispatchEvent(
-      new CollectionEvent(CollectionEventType.ADD, elem, index)
+      new CollectionEvent(CollectionEventType.ADD, elem, index),
     );
   }
 
@@ -226,9 +226,6 @@ class Collection extends BaseObject {
    * @api
    */
   push(elem) {
-    if (this.unique_) {
-      this.assertUnique_(elem);
-    }
     const n = this.getLength();
     this.insertAt(n, elem);
     return this.getLength();
@@ -267,7 +264,7 @@ class Collection extends BaseObject {
     this.dispatchEvent(
       /** @type {CollectionEvent<T>} */ (
         new CollectionEvent(CollectionEventType.REMOVE, prev, index)
-      )
+      ),
     );
     return prev;
   }
@@ -295,12 +292,12 @@ class Collection extends BaseObject {
     this.dispatchEvent(
       /** @type {CollectionEvent<T>} */ (
         new CollectionEvent(CollectionEventType.REMOVE, prev, index)
-      )
+      ),
     );
     this.dispatchEvent(
       /** @type {CollectionEvent<T>} */ (
         new CollectionEvent(CollectionEventType.ADD, elem, index)
-      )
+      ),
     );
   }
 
@@ -317,8 +314,9 @@ class Collection extends BaseObject {
    * @param {number} [except] Optional index to ignore.
    */
   assertUnique_(elem, except) {
-    for (let i = 0, ii = this.array_.length; i < ii; ++i) {
-      if (this.array_[i] === elem && i !== except) {
+    const array = this.array_;
+    for (let i = 0, ii = array.length; i < ii; ++i) {
+      if (array[i] === elem && i !== except) {
         throw new Error('Duplicate item added to a unique collection');
       }
     }

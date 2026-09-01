@@ -1,15 +1,15 @@
 /**
  * @module ol/Geolocation
  */
-import BaseEvent from './events/Event.js';
 import BaseObject from './Object.js';
+import BaseEvent from './events/Event.js';
 import {circular as circularPolygon} from './geom/Polygon.js';
+import {toRadians} from './math.js';
 import {
   get as getProjection,
   getTransformFromProjections,
   identityTransform,
 } from './proj.js';
-import {toRadians} from './math.js';
 
 /**
  * @enum {string}
@@ -77,17 +77,17 @@ export class GeolocationError extends BaseEvent {
  */
 
 /**
- * @typedef {import("./ObjectEventType").Types|'change:accuracy'|'change:accuracyGeometry'|'change:altitude'|
+ * @typedef {import("./ObjectEventType.js").Types|'change:accuracy'|'change:accuracyGeometry'|'change:altitude'|
  *    'change:altitudeAccuracy'|'change:heading'|'change:position'|'change:projection'|'change:speed'|'change:tracking'|
  *    'change:trackingOptions'} GeolocationObjectEventTypes
  */
 
 /***
  * @template Return
- * @typedef {import("./Observable").OnSignature<GeolocationObjectEventTypes, import("./Object").ObjectEvent, Return> &
- *   import("./Observable").OnSignature<'error', GeolocationError, Return> &
- *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|GeolocationObjectEventTypes, Return> &
- *   import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return>} GeolocationOnSignature
+ * @typedef {import("./Observable.js").OnSignature<GeolocationObjectEventTypes, import("./Object.js").ObjectEvent, Return> &
+ *   import("./Observable.js").OnSignature<'error', GeolocationError, Return> &
+ *   import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes|GeolocationObjectEventTypes, Return> &
+ *   import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return>} GeolocationOnSignature
  */
 
 /**
@@ -125,12 +125,12 @@ class Geolocation extends BaseObject {
     super();
 
     /***
-     * @type {GeolocationOnSignature<import("./events").EventsKey>}
+     * @type {GeolocationOnSignature<import("./events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {GeolocationOnSignature<import("./events").EventsKey>}
+     * @type {GeolocationOnSignature<import("./events.js").EventsKey>}
      */
     this.once;
 
@@ -175,6 +175,7 @@ class Geolocation extends BaseObject {
 
   /**
    * Clean up.
+   * @override
    */
   disposeInternal() {
     this.setTracking(false);
@@ -189,7 +190,7 @@ class Geolocation extends BaseObject {
     if (projection) {
       this.transform_ = getTransformFromProjections(
         getProjection('EPSG:4326'),
-        projection
+        projection,
       );
       if (this.position_) {
         this.set(Property.POSITION, this.transform_(this.position_));
@@ -207,7 +208,7 @@ class Geolocation extends BaseObject {
         this.watchId_ = navigator.geolocation.watchPosition(
           this.positionChange_.bind(this),
           this.positionError_.bind(this),
-          this.getTrackingOptions()
+          this.getTrackingOptions(),
         );
       } else if (!tracking && this.watchId_ !== undefined) {
         navigator.geolocation.clearWatch(this.watchId_);
@@ -225,15 +226,15 @@ class Geolocation extends BaseObject {
     this.set(Property.ACCURACY, coords.accuracy);
     this.set(
       Property.ALTITUDE,
-      coords.altitude === null ? undefined : coords.altitude
+      coords.altitude === null ? undefined : coords.altitude,
     );
     this.set(
       Property.ALTITUDE_ACCURACY,
-      coords.altitudeAccuracy === null ? undefined : coords.altitudeAccuracy
+      coords.altitudeAccuracy === null ? undefined : coords.altitudeAccuracy,
     );
     this.set(
       Property.HEADING,
-      coords.heading === null ? undefined : toRadians(coords.heading)
+      coords.heading === null ? undefined : toRadians(coords.heading),
     );
     if (!this.position_) {
       this.position_ = [coords.longitude, coords.latitude];

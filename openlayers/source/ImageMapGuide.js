@@ -2,9 +2,9 @@
  * @module ol/source/ImageMapGuide
  */
 
+import {decode} from '../Image.js';
 import ImageSource, {defaultImageLoadFunction} from './Image.js';
 import {createLoader} from './mapguide.js';
-import {decode} from '../Image.js';
 
 /**
  * @typedef {Object} Options
@@ -12,6 +12,7 @@ import {decode} from '../Image.js';
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {number} [displayDpi=96] The display resolution.
  * @property {number} [metersPerUnit=1] The meters-per-unit value.
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting
@@ -55,6 +56,12 @@ class ImageMapGuide extends ImageSource {
 
     /**
      * @private
+     * @type {ReferrerPolicy}
+     */
+    this.referrerPolicy_ = options.referrerPolicy;
+
+    /**
+     * @private
      * @type {number}
      */
     this.displayDpi_ =
@@ -64,7 +71,7 @@ class ImageMapGuide extends ImageSource {
      * @private
      * @type {!Object}
      */
-    this.params_ = options.params || {};
+    this.params_ = Object.assign({}, options.params);
 
     /**
      * @private
@@ -109,15 +116,15 @@ class ImageMapGuide extends ImageSource {
 
     /**
      * @private
-     * @type {import("../Image.js").default}
-     */
-    this.image_ = null;
-
-    /**
-     * @private
      * @type {number}
      */
     this.renderedRevision_ = 0;
+
+    /**
+     * @private
+     * @type {import("../proj/Projection.js").default}
+     */
+    this.loaderProjection_ = null;
   }
 
   /**
@@ -136,15 +143,18 @@ class ImageMapGuide extends ImageSource {
    * @param {number} pixelRatio Pixel ratio.
    * @param {import("../proj/Projection.js").default} projection Projection.
    * @return {import("../Image.js").default} Single image.
+   * @override
    */
   getImageInternal(extent, resolution, pixelRatio, projection) {
     if (this.url_ === undefined) {
       return null;
     }
-    if (!this.loader) {
+    if (!this.loader || this.loaderProjection_ !== projection) {
       // Lazily create loader to pick up the view projection and to allow `params` updates
+      this.loaderProjection_ = projection;
       this.loader = createLoader({
         crossOrigin: this.crossOrigin_,
+        referrerPolicy: this.referrerPolicy_,
         params: this.params_,
         hidpi: this.hidpi_,
         metersPerUnit: this.metersPerUnit_,
@@ -172,6 +182,16 @@ class ImageMapGuide extends ImageSource {
   }
 
   /**
+   * Set the user-provided params.
+   * @param {Object} params Params.
+   * @api
+   */
+  setParams(params) {
+    this.params_ = Object.assign({}, params);
+    this.changed();
+  }
+
+  /**
    * Update the user-provided params.
    * @param {Object} params Params.
    * @api
@@ -187,9 +207,16 @@ class ImageMapGuide extends ImageSource {
    * @api
    */
   setImageLoadFunction(imageLoadFunction) {
-    this.image_ = null;
     this.imageLoadFunction_ = imageLoadFunction;
     this.changed();
+  }
+
+  /**
+   * @override
+   */
+  changed() {
+    this.image = null;
+    super.changed();
   }
 }
 

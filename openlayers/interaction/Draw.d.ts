@@ -11,7 +11,7 @@
  * @return {GeometryFunction} Function that draws a polygon.
  * @api
  */
-export function createRegularPolygon(sides?: number | undefined, angle?: number | undefined): GeometryFunction;
+export function createRegularPolygon(sides?: number, angle?: number): GeometryFunction;
 /**
  * Create a `geometryFunction` that will create a box-shaped polygon (aligned
  * with the coordinate system axes).  Use this with the draw interaction and
@@ -56,12 +56,16 @@ export type Options = {
     /**
      * Destination collection for the drawn features.
      */
-    features?: import("../Collection.js").default<Feature<import("../geom/Geometry.js").default>> | undefined;
+    features?: import("../Collection.js").default<Feature<import("../geom/Geometry.js").default, {
+        [x: string]: any;
+    }>> | undefined;
     /**
      * Destination source for
      * the drawn features.
      */
-    source?: VectorSource<import("../geom/Geometry.js").default> | undefined;
+    source?: VectorSource<Feature<import("../geom/Geometry.js").default, {
+        [x: string]: any;
+    }>> | undefined;
     /**
      * Delay in milliseconds after pointerdown
      * before the current vertex can be dragged to its exact position.
@@ -91,13 +95,21 @@ export type Options = {
     minPoints?: number | undefined;
     /**
      * A function
-     * that takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
+     * that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
      * boolean to indicate whether the drawing can be finished. Not used when drawing
      * POINT or MULTI_POINT geometries.
      */
     finishCondition?: import("../events/condition.js").Condition | undefined;
     /**
-     * Style for sketch features.
+     * Style for sketch features. The draw interaction can have up to three sketch features, depending on the mode.
+     * It will always contain a feature with a `Point` geometry that corresponds to the current cursor position.
+     * If the mode is `LineString` or `Polygon`, and there is at least one drawn point, it will also contain a feature with
+     * a `LineString` geometry that corresponds to the line between the already drawn points and the current cursor position.
+     * If the mode is `Polygon`, and there is at least one drawn point, it will also contain a feature with a `Polygon`
+     * geometry that corresponds to the polygon between the already drawn points and the current cursor position
+     * (note that this polygon has only two points if only one point is drawn).
+     * If the mode is `Circle`, and there is one point drawn, it will also contain a feature with a `Circle` geometry whose
+     * center is the drawn point and the radius is determined by the distance between the drawn point and the cursor.
      */
     style?: import("../style/Style.js").StyleLike | import("../style/flat.js").FlatStyleLike | undefined;
     /**
@@ -111,7 +123,7 @@ export type Options = {
     geometryName?: string | undefined;
     /**
      * A function that
-     * takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
+     * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
      * boolean to indicate whether that event should be handled.
      * By default {@link module :ol/events/condition.noModifierKeys}, i.e. a click,
      * adds a vertex or deactivates freehand drawing.
@@ -125,7 +137,7 @@ export type Options = {
     freehand?: boolean | undefined;
     /**
      * Condition that activates freehand drawing for lines and polygons. This
-     * function takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and
+     * function takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and
      * returns a boolean to indicate whether that event should be handled. The
      * default is {@link module :ol/events/condition.shiftKeyOnly}, meaning that the
      * Shift key activates freehand drawing.
@@ -141,7 +153,9 @@ export type Options = {
      * not provided, the interaction's `source` will be used.  Tracing requires that the interaction is configured with
      * either a `traceSource` or a `source`.
      */
-    traceSource?: VectorSource<import("../geom/Geometry.js").default> | undefined;
+    traceSource?: VectorSource<Feature<import("../geom/Geometry.js").default, {
+        [x: string]: any;
+    }>> | undefined;
     /**
      * Wrap the world horizontally on the sketch
      * overlay.
@@ -157,10 +171,7 @@ export type Options = {
  * Coordinate type when drawing points.
  */
 export type PointCoordType = import("../coordinate.js").Coordinate;
-/**
- * Coordinate type when drawing lines.
- */
-export type LineCoordType = Array<import("../coordinate.js").Coordinate>;
+export type LineCoordType = import("./tracing.js").LineCoordType;
 /**
  * Coordinate type when drawing polygons.
  */
@@ -168,45 +179,9 @@ export type PolyCoordType = Array<Array<import("../coordinate.js").Coordinate>>;
 /**
  * Types used for drawing coordinates.
  */
-export type SketchCoordType = number[] | import("../coordinate.js").Coordinate[] | import("../coordinate.js").Coordinate[][];
-export type TraceState = {
-    /**
-     * Tracing active.
-     */
-    active: boolean;
-    /**
-     * The initially clicked pixel location.
-     */
-    startPx?: import("../pixel.js").Pixel | undefined;
-    /**
-     * Targets available for tracing.
-     */
-    targets?: TraceTarget[] | undefined;
-    /**
-     * The index of the currently traced target.  A value of -1 indicates
-     * that no trace target is active.
-     */
-    targetIndex?: number | undefined;
-};
-export type TraceTarget = {
-    /**
-     * Target coordinates.
-     */
-    coordinates: Array<import("../coordinate.js").Coordinate>;
-    /**
-     * The target coordinates are a linear ring.
-     */
-    ring: boolean;
-    /**
-     * The index of first traced coordinate.  A fractional index represents an
-     * edge intersection.  Index values for rings will wrap (may be negative or larger than coordinates length).
-     */
-    startIndex: number;
-    /**
-     * The index of last traced coordinate.  Details from startIndex also apply here.
-     */
-    endIndex: number;
-};
+export type SketchCoordType = PointCoordType | LineCoordType | PolyCoordType;
+export type TraceState = import("./tracing.js").TraceState;
+export type TraceTarget = import("./tracing.js").TraceTarget;
 /**
  * Function that takes an array of coordinates and an optional existing geometry
  * and a projection as arguments, and returns a geometry. The optional existing
@@ -218,31 +193,11 @@ export type GeometryFunction = (arg0: SketchCoordType, arg1: import("../geom/Sim
  * Draw mode.  This collapses multi-part geometry types with their single-part
  * cousins.
  */
-export type Mode = 'Point' | 'LineString' | 'Polygon' | 'Circle';
-export type TraceTargetUpdateInfo = {
-    /**
-     * The new target index.
-     */
-    index: number;
-    /**
-     * The new segment end index.
-     */
-    endIndex: number;
-};
-export type PointSegmentRelationship = {
-    /**
-     * The closest point expressed as a fraction along the segment length.
-     */
-    along: number;
-    /**
-     * The squared distance of the point to the segment.
-     */
-    squaredDistance: number;
-};
+export type Mode = "Point" | "LineString" | "Polygon" | "Circle";
 /**
  * *
  */
-export type DrawOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types | 'change:active', import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<'drawabort' | 'drawend' | 'drawstart', DrawEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | 'change:active' | 'drawabort' | 'drawend' | 'drawstart', Return>;
+export type DrawOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types | "change:active", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<"drawabort" | "drawend" | "drawstart", DrawEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | "change:active" | "drawabort" | "drawend" | "drawstart", Return>;
 import Event from '../events/Event.js';
 import Feature from '../Feature.js';
 type DrawEventType = string;
@@ -253,11 +208,11 @@ declare namespace DrawEventType {
 }
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'drawabort'|'drawend'|'drawstart', DrawEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'drawabort'|'drawend'|'drawstart', DrawEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active'|'drawabort'|'drawend'|'drawstart', Return>} DrawOnSignature
  */
 /**
@@ -273,17 +228,22 @@ declare class Draw extends PointerInteraction {
      */
     constructor(options: Options);
     /***
-     * @type {DrawOnSignature<import("../events").EventsKey>}
+     * @type {DrawOnSignature<import("../events.js").EventsKey>}
      */
-    on: DrawOnSignature<import("../events").EventsKey>;
+    on: DrawOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {DrawOnSignature<import("../events").EventsKey>}
+     * @type {DrawOnSignature<import("../events.js").EventsKey>}
      */
-    once: DrawOnSignature<import("../events").EventsKey>;
+    once: DrawOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {DrawOnSignature<void>}
      */
     un: DrawOnSignature<void>;
+    /**
+     * @type {Options}
+     * @private
+     */
+    private options_;
     /**
      * @type {boolean}
      * @private
@@ -352,6 +312,14 @@ declare class Draw extends PointerInteraction {
      * @private
      */
     private stopClick_;
+    /**
+     * Ignore the next up event. This is set to `true` when a drag event is encountered,
+     * e.g. when the user pans the map while drawing. In this case, we do not want to bail
+     * out of tracing.
+     * @type {boolean}
+     * @private
+     */
+    private ignoreNextUpEvent_;
     /**
      * The number of points that must be drawn before a polygon ring or line
      * string can be finished.  The default is 3 for polygon rings and 2 for
@@ -482,14 +450,43 @@ declare class Draw extends PointerInteraction {
      * Subclasses may set up event handlers to get notified about changes to
      * the map here.
      * @param {import("../Map.js").default} map Map.
+     * @override
      */
-    setMap(map: import("../Map.js").default): void;
+    override setMap(map: import("../Map.js").default): void;
+    /**
+     * Set whether the drawing is done in freehand mode.
+     *
+     * @param {boolean} freehand Freehand drawing.
+     * @api
+     */
+    setFreehand(freehand: boolean): void;
     /**
      * Get the overlay layer that this interaction renders sketch features to.
      * @return {VectorLayer} Overlay layer.
      * @api
      */
-    getOverlay(): VectorLayer<any>;
+    getOverlay(): VectorLayer;
+    /**
+     * Get if this interaction is in freehand mode.
+     * @return {boolean} Freehand drawing.
+     * @api
+     */
+    getFreehand(): boolean;
+    /**
+     * Handles the {@link module:ol/MapBrowserEvent~MapBrowserEvent map browser event} and may actually draw or finish the drawing.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Map browser event.
+     * @return {boolean} `false` to stop event propagation.
+     * @api
+     * @override
+     */
+    override handleEvent(event: import("../MapBrowserEvent.js").default<PointerEvent>): boolean;
+    /**
+     * Handle pointer down events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
+     * @return {boolean} If the event was consumed.
+     * @override
+     */
+    override handleDownEvent(event: import("../MapBrowserEvent.js").default<PointerEvent>): boolean;
     /**
      * @private
      */
@@ -526,8 +523,21 @@ declare class Draw extends PointerInteraction {
      */
     private updateTrace_;
     /**
+     * Handle drag events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
+     * @override
+     */
+    override handleDragEvent(event: import("../MapBrowserEvent.js").default<PointerEvent>): void;
+    /**
+     * Handle pointer up events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
+     * @return {boolean} If the event was consumed.
+     * @override
+     */
+    override handleUpEvent(event: import("../MapBrowserEvent.js").default<PointerEvent>): boolean;
+    /**
      * Handle move events.
-     * @param {import("../MapBrowserEvent.js").default} event A move event.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event A move event.
      * @private
      */
     private handlePointerMove_;
@@ -540,7 +550,7 @@ declare class Draw extends PointerInteraction {
      */
     private atFinish_;
     /**
-     * @param {import("../coordinate").Coordinate} coordinates Coordinate.
+     * @param {import("../coordinate.js").Coordinate} coordinates Coordinate.
      * @private
      */
     private createOrUpdateSketchPoint_;
@@ -564,6 +574,7 @@ declare class Draw extends PointerInteraction {
     /**
      * Add a new coordinate to the drawing.
      * @param {!PointCoordType} coordinate Coordinate
+     * @return {Feature<import("../geom/SimpleGeometry.js").default>} The sketch feature.
      * @private
      */
     private addToDrawing_;
@@ -581,9 +592,10 @@ declare class Draw extends PointerInteraction {
      * Stop drawing and add the sketch feature to the target layer.
      * The {@link module:ol/interaction/Draw~DrawEventType.DRAWEND} event is
      * dispatched before inserting the feature.
+     * @return {Feature<import("../geom/SimpleGeometry.js").default>|null} The drawn feature.
      * @api
      */
-    finishDrawing(): void;
+    finishDrawing(): Feature<import("../geom/SimpleGeometry.js").default> | null;
     /**
      * Stop drawing without adding the sketch feature to the target layer.
      * @return {Feature<import("../geom/SimpleGeometry.js").default>|null} The sketch feature (or null if none).

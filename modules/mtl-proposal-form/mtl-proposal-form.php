@@ -226,7 +226,7 @@ function mtl_proposal_form_output( $atts ){
 		}
 		
 		if(!$action || $err) {
-			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data" onsubmit=" warningMessage = \'\' ">'."\r\n";
+			$output .= '<form id="new_post" name="new_post" method="post" action="" enctype="multipart/form-data" onsubmit=" has_changed = false; ">'."\r\n";
 			$output .= '<p class="alignleft"><label for="title"><strong>'.$mtl_string['form-title'][$postType].'</strong><br />'."\r\n";
 			
 			// input field title with value set to title from post variables, if existing
@@ -314,6 +314,7 @@ function mtl_proposal_form_output( $atts ){
 				$output .= '<span class="mtl-tool-hint Polygon">'.__('Click on the map to add a polygon.<br /> Every click adds a new point to the polygon. Click the first point to finish drawing the polygon.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Circle">'.__('Click on the map to add a circle.<br /> The first click sets the center, the second one sets the radius.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Modify">'.__('Click on features to edit them.<br /> You can move or modify the feature (move points, add points) with this tool.','my-transit-lines').'</span>';
+				$output .= '<span class="mtl-tool-hint Scissors">'.__('Click on features to split them into two.<br /> You can divide lines at a specific point or divide polygons at a specific line.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Select">'.__('Use the tool to select features.<br /> Select a feature to add a name. With the delete tool (second from bottom) you can delete a selected feature.','my-transit-lines').'</span>';
 				$output .= '<span class="mtl-tool-hint Navigate">'.__('Use the selected tool to navigate the map.<br /> With this tool, no modification of the objects is possible.','my-transit-lines').'</span>';
 				$output .= '</p>'."\r\n";
@@ -444,13 +445,13 @@ function add_textinput_box($box) {
 	$split = strrpos($box, '</div>');
 
 	return substr($box, 0, $split).'
-		<div class="feature-textinput-box">
+		<div id="feature-textinput-box">
 			<label for="feature-textinput">'.
 				__('Station name (optional)','my-transit-lines').': '.
 				'<br>
 				<input type="text" name="feature-textinput" id="feature-textinput">
 			</label>
-			<span class="set-name">'.
+			<span class="set-name" onclick="unselectAllFeatures()">'.
 				__('Set new name', 'my-transit-lines').
 			'</span>
 		</div>

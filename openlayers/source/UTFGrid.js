@@ -2,17 +2,18 @@
  * @module ol/source/UTFGrid
  */
 
-import EventType from '../events/EventType.js';
 import Tile from '../Tile.js';
-import TileSource from './Tile.js';
 import TileState from '../TileState.js';
-import {applyTransform, intersects} from '../extent.js';
-import {createFromTemplates, nullTileUrlFunction} from '../tileurlfunction.js';
-import {createXYZ, extentFromProjection} from '../tilegrid.js';
-import {getKeyZXY} from '../tilecoord.js';
-import {get as getProjection, getTransformFromProjections} from '../proj.js';
 import {listenOnce} from '../events.js';
+import EventType from '../events/EventType.js';
+import {applyTransform, intersects} from '../extent.js';
 import {jsonp as requestJSONP} from '../net.js';
+import {get as getProjection, getTransformFromProjections} from '../proj.js';
+import LRUCache from '../structs/LRUCache.js';
+import {getKeyZXY} from '../tilecoord.js';
+import {createXYZ, extentFromProjection} from '../tilegrid.js';
+import {createFromTemplates, nullTileUrlFunction} from '../tileurlfunction.js';
+import TileSource from './Tile.js';
 
 /**
  * @typedef {Object} UTFGridJSON
@@ -136,14 +137,9 @@ export class CustomTile extends Tile {
   forDataAtCoordinate(coordinate, callback, request) {
     if (this.state == TileState.EMPTY && request === true) {
       this.state = TileState.IDLE;
-      listenOnce(
-        this,
-        EventType.CHANGE,
-        function (e) {
-          callback(this.getData(coordinate));
-        },
-        this
-      );
+      listenOnce(this, EventType.CHANGE, (e) => {
+        callback(this.getData(coordinate));
+      });
       this.loadInternal_();
     } else {
       if (request === true) {
@@ -159,6 +155,7 @@ export class CustomTile extends Tile {
   /**
    * Return the key to be used for all tiles in the source.
    * @return {string} The key for all tiles.
+   * @override
    */
   getKey() {
     return this.src_;
@@ -195,7 +192,7 @@ export class CustomTile extends Tile {
         requestJSONP(
           this.src_,
           this.handleLoad_.bind(this),
-          this.handleError_.bind(this)
+          this.handleError_.bind(this),
         );
       } else {
         const client = new XMLHttpRequest();
@@ -220,7 +217,7 @@ export class CustomTile extends Tile {
         response = /** @type {!UTFGridJSON} */ (
           JSON.parse(client.responseText)
         );
-      } catch (err) {
+      } catch {
         this.handleError_();
         return;
       }
@@ -239,6 +236,7 @@ export class CustomTile extends Tile {
   }
 
   /**
+   * @override
    */
   load() {
     if (this.preemptive_) {
@@ -263,6 +261,7 @@ export class CustomTile extends Tile {
  * If not provided, `url` must be configured.
  * @property {string} [url] TileJSON endpoint that provides the configuration for this source.
  * Request will be made through JSONP. If not provided, `tileJSON` must be configured.
+ * @property {boolean} [wrapX=true] Whether to wrap the world horizontally.
  * @property {number|import("../array.js").NearestDirectionFunction} [zDirection=0]
  * Choose whether to use tiles with a higher or lower zoom level when between integer
  * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
@@ -281,6 +280,7 @@ class UTFGrid extends TileSource {
     super({
       projection: getProjection('EPSG:3857'),
       state: 'loading',
+      wrapX: options.wrapX !== undefined ? options.wrapX : true,
       zDirection: options.zDirection,
     });
 
@@ -309,12 +309,18 @@ class UTFGrid extends TileSource {
      */
     this.jsonp_ = options.jsonp || false;
 
+    /**
+     * @private
+     * @type {LRUCache}
+     */
+    this.tileCache_ = new LRUCache(512);
+
     if (options.url) {
       if (this.jsonp_) {
         requestJSONP(
           options.url,
           this.handleTileJSONResponse.bind(this),
-          this.handleTileJSONError.bind(this)
+          this.handleTileJSONError.bind(this),
         );
       } else {
         const client = new XMLHttpRequest();
@@ -343,7 +349,7 @@ class UTFGrid extends TileSource {
         response = /** @type {import("./TileJSON.js").Config} */ (
           JSON.parse(client.responseText)
         );
-      } catch (err) {
+      } catch {
         this.handleTileJSONError();
         return;
       }
@@ -391,9 +397,12 @@ class UTFGrid extends TileSource {
           tileCoord[1],
           tileCoord[2],
           1,
-          this.getProjection()
+          this.getProjection(),
         )
       );
+      if (tile.getState() == TileState.IDLE) {
+        tile.load();
+      }
       tile.forDataAtCoordinate(coordinate, callback, request);
     } else {
       if (request === true) {
@@ -426,7 +435,7 @@ class UTFGrid extends TileSource {
     if (tileJSON['bounds'] !== undefined) {
       const transform = getTransformFromProjections(
         epsg4326Projection,
-        sourceProjection
+        sourceProjection,
       );
       extent = applyTransform(tileJSON['bounds'], transform);
     }
@@ -451,7 +460,7 @@ class UTFGrid extends TileSource {
 
     this.tileUrlFunction_ = createFromTemplates(grids, tileGrid);
 
-    if (tileJSON['attribution'] !== undefined) {
+    if (tileJSON['attribution']) {
       const attributionExtent = extent !== undefined ? extent : gridExtent;
       this.setAttributions(function (frameState) {
         if (intersects(attributionExtent, frameState.extent)) {
@@ -471,41 +480,30 @@ class UTFGrid extends TileSource {
    * @param {number} pixelRatio Pixel ratio.
    * @param {import("../proj/Projection.js").default} projection Projection.
    * @return {!CustomTile} Tile.
+   * @override
    */
   getTile(z, x, y, pixelRatio, projection) {
-    const tileCoordKey = getKeyZXY(z, x, y);
-    if (this.tileCache.containsKey(tileCoordKey)) {
-      return this.tileCache.get(tileCoordKey);
-    }
     const tileCoord = [z, x, y];
     const urlTileCoord = this.getTileCoordForTileUrlFunction(
       tileCoord,
-      projection
+      projection,
     );
     const tileUrl = this.tileUrlFunction_(urlTileCoord, pixelRatio, projection);
+    const tileKey = `${this.getKey()},${getKeyZXY(z, x, y)}`;
+    if (this.tileCache_.containsKey(tileKey)) {
+      return this.tileCache_.get(tileKey);
+    }
+    this.tileCache_.expireCache();
     const tile = new CustomTile(
       tileCoord,
       tileUrl !== undefined ? TileState.IDLE : TileState.EMPTY,
       tileUrl !== undefined ? tileUrl : '',
       this.tileGrid.getTileCoordExtent(tileCoord),
       this.preemptive_,
-      this.jsonp_
+      this.jsonp_,
     );
-    this.tileCache.set(tileCoordKey, tile);
+    this.tileCache_.set(tileKey, tile);
     return tile;
-  }
-
-  /**
-   * Marks a tile coord as being used, without triggering a load.
-   * @param {number} z Tile coordinate z.
-   * @param {number} x Tile coordinate x.
-   * @param {number} y Tile coordinate y.
-   */
-  useTile(z, x, y) {
-    const tileCoordKey = getKeyZXY(z, x, y);
-    if (this.tileCache.containsKey(tileCoordKey)) {
-      this.tileCache.get(tileCoordKey);
-    }
   }
 }
 

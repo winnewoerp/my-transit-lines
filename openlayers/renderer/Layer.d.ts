@@ -2,7 +2,7 @@ export default LayerRenderer;
 /**
  * @template {import("../layer/Layer.js").default} LayerType
  */
-declare class LayerRenderer<LayerType extends import("../layer/Layer.js").default<import("../source/Source.js").default, LayerRenderer<any>>> extends Observable {
+declare class LayerRenderer<LayerType extends import("../layer/Layer.js").default> extends Observable {
     /**
      * @param {LayerType} layer Layer.
      */
@@ -15,21 +15,35 @@ declare class LayerRenderer<LayerType extends import("../layer/Layer.js").defaul
     /** @private */
     private boundHandleImageChange_;
     /**
-     * @protected
+     * @private
      * @type {LayerType}
      */
-    protected layer_: LayerType;
+    private layer_;
     /**
-     * @type {import("../render/canvas/ExecutorGroup").default}
+     * @type {Array<string>}
+     * @private
      */
-    declutterExecutorGroup: import("../render/canvas/ExecutorGroup").default;
+    private staleKeys_;
+    /**
+     * @type {number}
+     * @protected
+     */
+    protected maxStaleKeys: number;
+    /**
+     * @return {Array<string>} Get the list of stale keys.
+     */
+    getStaleKeys(): Array<string>;
+    /**
+     * @param {string} key The new stale key.
+     */
+    prependStaleKey(key: string): void;
     /**
      * Asynchronous layer level hit detection.
      * @param {import("../pixel.js").Pixel} pixel Pixel.
-     * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
+     * @return {Promise<Array<import("../Feature.js").FeatureLike>>} Promise that resolves with
      * an array of features.
      */
-    getFeatures(pixel: import("../pixel.js").Pixel): Promise<Array<import("../Feature").FeatureLike>>;
+    getFeatures(pixel: import("../pixel.js").Pixel): Promise<Array<import("../Feature.js").FeatureLike>>;
     /**
      * @param {import("../pixel.js").Pixel} pixel Pixel.
      * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
@@ -47,34 +61,9 @@ declare class LayerRenderer<LayerType extends import("../layer/Layer.js").defaul
      * @abstract
      * @param {import("../Map.js").FrameState} frameState Frame state.
      * @param {HTMLElement|null} target Target that may be used to render content to.
-     * @return {HTMLElement|null} The rendered element.
+     * @return {HTMLElement} The rendered element.
      */
-    renderFrame(frameState: import("../Map.js").FrameState, target: HTMLElement | null): HTMLElement | null;
-    /**
-     * @param {Object<number, Object<string, import("../Tile.js").default>>} tiles Lookup of loaded tiles by zoom level.
-     * @param {number} zoom Zoom level.
-     * @param {import("../Tile.js").default} tile Tile.
-     * @return {boolean|void} If `false`, the tile will not be considered loaded.
-     */
-    loadedTileCallback(tiles: {
-        [x: number]: {
-            [x: string]: import("../Tile.js").default;
-        };
-    }, zoom: number, tile: import("../Tile.js").default): boolean | void;
-    /**
-     * Create a function that adds loaded tiles to the tile lookup.
-     * @param {import("../source/Tile.js").default} source Tile source.
-     * @param {import("../proj/Projection.js").default} projection Projection of the tiles.
-     * @param {Object<number, Object<string, import("../Tile.js").default>>} tiles Lookup of loaded tiles by zoom level.
-     * @return {function(number, import("../TileRange.js").default):boolean} A function that can be
-     *     called with a zoom level and a tile range to add loaded tiles to the lookup.
-     * @protected
-     */
-    protected createLoadedTileFinder(source: import("../source/Tile.js").default, projection: import("../proj/Projection.js").default, tiles: {
-        [x: number]: {
-            [x: string]: import("../Tile.js").default;
-        };
-    }): (arg0: number, arg1: import("../TileRange.js").default) => boolean;
+    renderFrame(frameState: import("../Map.js").FrameState, target: HTMLElement | null): HTMLElement;
     /**
      * @abstract
      * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
@@ -85,7 +74,7 @@ declare class LayerRenderer<LayerType extends import("../layer/Layer.js").defaul
      * @return {T|undefined} Callback result.
      * @template T
      */
-    forEachFeatureAtCoordinate<T>(coordinate: import("../coordinate.js").Coordinate, frameState: import("../Map.js").FrameState, hitTolerance: number, callback: import("./vector.js").FeatureCallback<T>, matches: import("./Map.js").HitMatch<T>[]): T | undefined;
+    forEachFeatureAtCoordinate<T>(coordinate: import("../coordinate.js").Coordinate, frameState: import("../Map.js").FrameState, hitTolerance: number, callback: import("./vector.js").FeatureCallback<T>, matches: Array<import("./Map.js").HitMatch<T>>): T | undefined;
     /**
      * @return {LayerType} Layer.
      */
@@ -113,6 +102,10 @@ declare class LayerRenderer<LayerType extends import("../layer/Layer.js").defaul
      * @protected
      */
     protected renderIfReadyAndVisible(): void;
+    /**
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     */
+    renderDeferred(frameState: import("../Map.js").FrameState): void;
 }
 import Observable from '../Observable.js';
 //# sourceMappingURL=Layer.d.ts.map

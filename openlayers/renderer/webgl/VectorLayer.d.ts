@@ -1,8 +1,12 @@
 export const Uniforms: {
     RENDER_EXTENT: string;
     GLOBAL_ALPHA: string;
+    PATTERN_ORIGIN_X_DOUBLE: string;
+    PATTERN_ORIGIN_Y_DOUBLE: string;
+    PATTERN_SCALE_RATIO_DOUBLE: string;
+    ONE: string;
     PROJECTION_MATRIX: string;
-    SCREEN_TO_WORLD_MATRIX: string;
+    INVERT_PROJECTION_MATRIX: string;
     TIME: string;
     ZOOM: string;
     RESOLUTION: string;
@@ -12,43 +16,61 @@ export const Uniforms: {
     HIT_DETECTION: string;
 };
 export default WebGLVectorLayerRenderer;
-export type VectorStyle = import('../../render/webgl/VectorStyleRenderer.js').VectorStyle;
+export type StyleShaders = import("../../render/webgl/VectorStyleRenderer.js").StyleShaders;
+export type LayerStyle = import("../../style/flat.js").FlatStyleLike | Array<StyleShaders> | StyleShaders;
 export type Options = {
     /**
      * A CSS class name to set to the canvas element.
      */
     className?: string | undefined;
     /**
-     * Vector style as literal style or shaders; can also accept an array of styles
+     * Flat vector style; also accepts shaders
      */
-    style: VectorStyle | Array<VectorStyle>;
+    style: LayerStyle;
+    /**
+     * Style variables
+     */
+    variables: {
+        [x: string]: string | number | boolean | number[];
+    };
+    /**
+     * Setting this to true will provide a slight performance boost, but will
+     * prevent all hit detection on the layer.
+     */
+    disableHitDetection?: boolean | undefined;
     /**
      * Post-processes definitions
      */
     postProcesses?: import("./Layer.js").PostProcessesOptions[] | undefined;
 };
 /**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').VectorStyle} VectorStyle
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').StyleShaders} StyleShaders
+ */
+/**
+ * @typedef {import('../../style/flat.js').FlatStyleLike | Array<StyleShaders> | StyleShaders} LayerStyle
  */
 /**
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the canvas element.
- * @property {VectorStyle|Array<VectorStyle>} style Vector style as literal style or shaders; can also accept an array of styles
- * @property {Array<import("./Layer").PostProcessesOptions>} [postProcesses] Post-processes definitions
+ * @property {LayerStyle} style Flat vector style; also accepts shaders
+ * @property {Object<string, number|Array<number>|string|boolean>} variables Style variables
+ * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
+ * prevent all hit detection on the layer.
+ * @property {Array<import("./Layer.js").PostProcessesOptions>} [postProcesses] Post-processes definitions
  */
 /**
  * @classdesc
  * Experimental WebGL vector renderer. Supports polygons, lines and points:
- *  * Polygons are broken down into triangles
- *  * Lines are rendered as strips of quads
- *  * Points are rendered as quads
+ *  Polygons are broken down into triangles
+ *  Lines are rendered as strips of quads
+ *  Points are rendered as quads
  *
  * You need to provide vertex and fragment shaders as well as custom attributes for each type of geometry. All shaders
  * can access the uniforms in the {@link module:ol/webgl/Helper~DefaultUniform} enum.
  * The vertex shaders can access the following attributes depending on the geometry type:
- *  * For polygons: {@link module:ol/render/webgl/PolygonBatchRenderer~Attributes}
- *  * For line strings: {@link module:ol/render/webgl/LineStringBatchRenderer~Attributes}
- *  * For points: {@link module:ol/render/webgl/PointBatchRenderer~Attributes}
+ *  For polygons: {@link module:ol/render/webgl/PolygonBatchRenderer~Attributes}
+ *  For line strings: {@link module:ol/render/webgl/LineStringBatchRenderer~Attributes}
+ *  For points: {@link module:ol/render/webgl/PointBatchRenderer~Attributes}
  *
  * Please note that the fragment shaders output should have premultiplied alpha, otherwise visual anomalies may occur.
  *
@@ -60,8 +82,24 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      * @param {Options} options Options.
      */
     constructor(layer: import("../../layer/Layer.js").default, options: Options);
-    sourceRevision_: number;
-    previousExtent_: import("../../extent.js").Extent;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hitDetectionEnabled_;
+    /**
+     * @type {WebGLRenderTarget}
+     * @private
+     */
+    private hitRenderTarget_;
+    /**
+     * @private
+     */
+    private sourceRevision_;
+    /**
+     * @private
+     */
+    private previousExtent_;
     /**
      * This transform is updated on every frame and is the composition of:
      * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
@@ -70,25 +108,28 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      * @private
      */
     private currentTransform_;
-    tmpTransform_: number[];
-    tmpMat4_: number[];
     /**
      * @type {import("../../transform.js").Transform}
      * @private
      */
     private currentFrameStateTransform_;
     /**
-     * @type {Array<VectorStyle>}
+     * @type {import('../../style/flat.js').StyleVariables}
      * @private
      */
-    private styles_;
+    private styleVariables_;
     /**
-     * @type {Array<VectorStyleRenderer>}
+     * @type {LayerStyle}
      * @private
      */
-    private styleRenderers_;
+    private style_;
     /**
-     * @type {Array<import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers>}
+     * @type {VectorStyleRenderer}
+     * @public
+     */
+    public styleRenderer_: VectorStyleRenderer;
+    /**
+     * @type {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers}
      * @private
      */
     private buffers_;
@@ -96,7 +137,21 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      * @private
      */
     private batch_;
-    sourceListenKeys_: import("../../events.js").EventsKey[];
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private initialFeaturesAdded_;
+    /**
+     * @private
+     * @type {Array<import("../../events.js").EventsKey|null>}
+     */
+    private sourceListenKeys_;
+    /**
+     * @private
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     */
+    private addInitialFeatures_;
     /**
      * @param {Options} options Options.
      * @private
@@ -106,13 +161,18 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      * @private
      */
     private createRenderers_;
-    reset(options: any): void;
     /**
+     * @override
+     */
+    override reset(options: any): void;
+    /**
+     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
      * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
      * @private
      */
     private handleSourceFeatureAdded_;
     /**
+     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
      * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
      * @private
      */
@@ -128,6 +188,7 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
     private handleSourceFeatureClear_;
     /**
      * @param {import("../../transform.js").Transform} batchInvertTransform Inverse of the transformation in which geometries are expressed
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @private
      */
     private applyUniforms_;
@@ -135,8 +196,25 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      * Render the layer.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @return {HTMLElement} The rendered element.
+     * @override
      */
-    renderFrame(frameState: import("../../Map.js").FrameState): HTMLElement;
+    override renderFrame(frameState: import("../../Map.js").FrameState): HTMLElement;
+    /**
+     * Render the world, either to the main framebuffer or to the hit framebuffer
+     * @param {import("../../Map.js").FrameState} frameState current frame state
+     * @param {boolean} forHitDetection whether the rendering is for hit detection
+     * @param {number} startWorld the world to render in the first iteration
+     * @param {number} endWorld the last world to render
+     * @param {number} worldWidth the width of the worlds being rendered
+     */
+    renderWorlds(frameState: import("../../Map.js").FrameState, forHitDetection: boolean, startWorld: number, endWorld: number, worldWidth: number): void;
+    /**
+     * Will release a set of Webgl buffers
+     * @param {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers} buffers Buffers
+     */
+    disposeBuffers(buffers: import("../../render/webgl/VectorStyleRenderer.js").WebGLBuffers): void;
+    renderDeclutter(): void;
 }
 import WebGLLayerRenderer from './Layer.js';
+import VectorStyleRenderer from '../../render/webgl/VectorStyleRenderer.js';
 //# sourceMappingURL=VectorLayer.d.ts.map

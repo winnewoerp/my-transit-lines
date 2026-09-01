@@ -10,14 +10,19 @@ export function toGeometry(renderFeature: RenderFeature): Point | MultiPoint | L
 /**
  * Create an `ol/Feature` from an `ol/render/Feature`
  * @param {RenderFeature} renderFeature RenderFeature
- * @param {string} [geometryName='geometry'] Geometry name to use
+ * @param {string} [geometryName] Geometry name to use
  * when creating the Feature.
  * @return {Feature} Newly constructed `ol/Feature` with properties,
  * geometry, and id copied over.
  * @api
  */
-export function toFeature(renderFeature: RenderFeature, geometryName?: string | undefined): Feature;
+export function toFeature(renderFeature: RenderFeature, geometryName?: string): Feature;
 export default RenderFeature;
+/**
+ * The geometry type.  One of `'Point'`, `'LineString'`, `'LinearRing'`,
+ * `'Polygon'`, `'MultiPoint'` or 'MultiLineString'`.
+ */
+export type Type = "Point" | "LineString" | "LinearRing" | "Polygon" | "MultiPoint" | "MultiLineString";
 /**
  * Lightweight, read-only, {@link module:ol/Feature~Feature} and {@link module:ol/geom/Geometry~Geometry} like
  * structure, optimized for vector tile rendering and styling. Geometry access
@@ -25,14 +30,15 @@ export default RenderFeature;
  */
 declare class RenderFeature {
     /**
-     * @param {import("../geom/Geometry.js").Type} type Geometry type.
+     * @param {Type} type Geometry type.
      * @param {Array<number>} flatCoordinates Flat coordinates. These always need
      *     to be right-handed for polygons.
-     * @param {Array<number>|Array<Array<number>>} ends Ends or Endss.
+     * @param {Array<number>} ends Ends.
+     * @param {number} stride Stride.
      * @param {Object<string, *>} properties Properties.
      * @param {number|string|undefined} id Feature id.
      */
-    constructor(type: import("../geom/Geometry.js").Type, flatCoordinates: Array<number>, ends: Array<number> | Array<Array<number>>, properties: {
+    constructor(type: Type, flatCoordinates: Array<number>, ends: Array<number>, stride: number, properties: {
         [x: string]: any;
     }, id: number | string | undefined);
     /**
@@ -51,7 +57,7 @@ declare class RenderFeature {
     private id_;
     /**
      * @private
-     * @type {import("../geom/Geometry.js").Type}
+     * @type {Type}
      */
     private type_;
     /**
@@ -71,7 +77,7 @@ declare class RenderFeature {
     private flatMidpoints_;
     /**
      * @private
-     * @type {Array<number>|Array<Array<number>>}
+     * @type {Array<number>|null}
      */
     private ends_;
     /**
@@ -79,6 +85,21 @@ declare class RenderFeature {
      * @type {Object<string, *>}
      */
     private properties_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private squaredTolerance_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private stride_;
+    /**
+     * @private
+     * @type {RenderFeature}
+     */
+    private simplifiedGeometry_;
     /**
      * Get a feature property by its key.
      * @param {string} key Key
@@ -133,12 +154,11 @@ declare class RenderFeature {
     getSimplifiedGeometry(squaredTolerance: number): RenderFeature;
     /**
      * Get a transformed and simplified version of the geometry.
-     * @abstract
      * @param {number} squaredTolerance Squared tolerance.
      * @param {import("../proj.js").TransformFunction} [transform] Optional transform function.
      * @return {RenderFeature} Simplified geometry.
      */
-    simplifyTransformed(squaredTolerance: number, transform?: import("../proj.js").TransformFunction | undefined): RenderFeature;
+    simplifyTransformed(squaredTolerance: number, transform?: import("../proj.js").TransformFunction): RenderFeature;
     /**
      * Get the feature properties.
      * @return {Object<string, *>} Feature properties.
@@ -162,13 +182,13 @@ declare class RenderFeature {
     /**
      * @return {import('../style/Style.js').StyleFunction|undefined} Style
      */
-    getStyleFunction(): import('../style/Style.js').StyleFunction | undefined;
+    getStyleFunction(): import("../style/Style.js").StyleFunction | undefined;
     /**
      * Get the type of this feature's geometry.
-     * @return {import("../geom/Geometry.js").Type} Geometry type.
+     * @return {Type} Geometry type.
      * @api
      */
-    getType(): import("../geom/Geometry.js").Type;
+    getType(): Type;
     /**
      * Transform geometry coordinates from tile pixel space to projected.
      *
@@ -176,20 +196,36 @@ declare class RenderFeature {
      */
     transform(projection: import("../proj.js").ProjectionLike): void;
     /**
-     * @return {Array<number>|Array<Array<number>>} Ends or endss.
+     * Apply a transform function to the coordinates of the geometry.
+     * The geometry is modified in place.
+     * If you do not want the geometry modified in place, first `clone()` it and
+     * then use this function on the clone.
+     * @param {import("../proj.js").TransformFunction} transformFn Transform function.
      */
-    getEnds(): Array<number> | Array<Array<number>>;
-    getEndss: () => Array<number> | Array<Array<number>>;
+    applyTransform(transformFn: import("../proj.js").TransformFunction): void;
+    /**
+     * @return {RenderFeature} A cloned render feature.
+     */
+    clone(): RenderFeature;
+    /**
+     * @return {Array<number>|null} Ends.
+     */
+    getEnds(): Array<number> | null;
+    /**
+     * Add transform and resolution based geometry simplification to this instance.
+     * @return {RenderFeature} This render feature.
+     */
+    enableSimplifyTransformed(): RenderFeature;
     /**
      * @return {Array<number>} Flat coordinates.
      */
     getFlatCoordinates: () => Array<number>;
 }
-import { Point } from '../geom.js';
-import { MultiPoint } from '../geom.js';
-import { LineString } from '../geom.js';
-import { MultiLineString } from '../geom.js';
-import { Polygon } from '../geom.js';
-import { MultiPolygon } from '../geom.js';
+import Point from '../geom/Point.js';
+import MultiPoint from '../geom/MultiPoint.js';
+import LineString from '../geom/LineString.js';
+import MultiLineString from '../geom/MultiLineString.js';
+import Polygon from '../geom/Polygon.js';
+import MultiPolygon from '../geom/MultiPolygon.js';
 import Feature from '../Feature.js';
 //# sourceMappingURL=Feature.d.ts.map

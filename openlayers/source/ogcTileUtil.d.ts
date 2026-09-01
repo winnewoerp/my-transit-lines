@@ -1,30 +1,48 @@
 /**
  * @typedef {Object} TileSetInfo
- * @property {string} urlTemplate The tile URL template.
- * @property {import("../tilegrid/TileGrid.js").default} grid The tile grid.
- * @property {import("../Tile.js").UrlFunction} urlFunction The tile URL function.
+ * @property {string} [urlTemplate] The tile URL template.
+ * @property {import("../proj/Projection.js").default} projection The source projection.
+ * @property {import("../tilegrid/WMTS.js").default} grid The tile grid.
+ * @property {import("../Tile.js").UrlFunction} [urlFunction] The tile URL function.
  */
 /**
  * @typedef {Object} SourceInfo
- * @property {string} url The tile set URL.
- * @property {string} mediaType The preferred tile media type.
+ * @property {string} [url] The tile set URL.
+ * @property {string} [mediaType] The preferred tile media type.
  * @property {Array<string>} [supportedMediaTypes] The supported media types.
- * @property {import("../proj/Projection.js").default} projection The source projection.
+ * @property {import("../proj/Projection.js").default} [projection] The source projection.
  * @property {Object} [context] Optional context for constructing the URL.
+ * @property {Array<string>} [collections] Optional collections to append the URL with.
  */
+/**
+ * @param {string} tileUrlTemplate Tile URL template.
+ * @param {Array<string>} collections List of collections to include as query parameter.
+ * @return {string} The tile URL template with appended collections query parameter.
+ */
+export function appendCollectionsQueryParam(tileUrlTemplate: string, collections: Array<string>): string;
 /**
  * @param {Array<Link>} links Tileset links.
  * @param {string} [mediaType] The preferred media type.
+ * @param {Array<string>} [collections] Optional collections to append the URL with.
  * @return {string} The tile URL template.
  */
-export function getMapTileUrlTemplate(links: Array<Link>, mediaType?: string | undefined): string;
+export function getMapTileUrlTemplate(links: Array<Link>, mediaType?: string, collections?: Array<string>): string;
 /**
  * @param {Array<Link>} links Tileset links.
  * @param {string} [mediaType] The preferred media type.
  * @param {Array<string>} [supportedMediaTypes] The media types supported by the parser.
+ * @param {Array<string>} [collections] Optional collections to append the URL with.
  * @return {string} The tile URL template.
  */
-export function getVectorTileUrlTemplate(links: Array<Link>, mediaType?: string | undefined, supportedMediaTypes?: string[] | undefined): string;
+export function getVectorTileUrlTemplate(links: Array<Link>, mediaType?: string, supportedMediaTypes?: Array<string>, collections?: Array<string>): string;
+/**
+ * @param {SourceInfo} sourceInfo The source info.
+ * @param {TileMatrixSet} tileMatrixSet Tile matrix set.
+ * @param {string} [tileUrlTemplate] Tile URL template.
+ * @param {Array<TileMatrixSetLimit>} [tileMatrixSetLimits] Tile matrix set limits.
+ * @return {TileSetInfo} Tile set info.
+ */
+export function parseTileMatrixSet(sourceInfo: SourceInfo, tileMatrixSet: TileMatrixSet, tileUrlTemplate?: string, tileMatrixSetLimits?: Array<TileMatrixSetLimit>): TileSetInfo;
 /**
  * @param {SourceInfo} sourceInfo Source info.
  * @return {Promise<TileSetInfo>} Tile set info.
@@ -34,25 +52,29 @@ export type TileSetInfo = {
     /**
      * The tile URL template.
      */
-    urlTemplate: string;
+    urlTemplate?: string | undefined;
+    /**
+     * The source projection.
+     */
+    projection: import("../proj/Projection.js").default;
     /**
      * The tile grid.
      */
-    grid: import("../tilegrid/TileGrid.js").default;
+    grid: import("../tilegrid/WMTS.js").default;
     /**
      * The tile URL function.
      */
-    urlFunction: import("../Tile.js").UrlFunction;
+    urlFunction?: import("../Tile.js").UrlFunction | undefined;
 };
 export type SourceInfo = {
     /**
      * The tile set URL.
      */
-    url: string;
+    url?: string | undefined;
     /**
      * The preferred tile media type.
      */
-    mediaType: string;
+    mediaType?: string | undefined;
     /**
      * The supported media types.
      */
@@ -60,14 +82,18 @@ export type SourceInfo = {
     /**
      * The source projection.
      */
-    projection: import("../proj/Projection.js").default;
+    projection?: import("../proj.js").Projection | undefined;
     /**
      * Optional context for constructing the URL.
      */
     context?: any;
+    /**
+     * Optional collections to append the URL with.
+     */
+    collections?: string[] | undefined;
 };
-export type TileType = 'map' | 'vector';
-export type CornerOfOrigin = 'topLeft' | 'bottomLeft';
+export type TileType = "map" | "vector";
+export type CornerOfOrigin = "topLeft" | "bottomLeft";
 export type TileSet = {
     /**
      * Type of data represented in the tileset.
@@ -134,11 +160,33 @@ export type TileMatrixSet = {
     /**
      * The coordinate reference system.
      */
-    crs: string;
+    crs: string | CrsUri | CrsWkt | CrsReferenceSystem;
+    /**
+     * Axis order.
+     */
+    orderedAxes?: string[] | undefined;
     /**
      * Array of tile matrices.
      */
     tileMatrices: Array<TileMatrix>;
+};
+export type CrsUri = {
+    /**
+     * Reference to one coordinate reference system (CRS).
+     */
+    uri: string;
+};
+export type CrsWkt = {
+    /**
+     * JSON encoding for WKT representation of CRS 2.0.
+     */
+    wkt: any;
+};
+export type CrsReferenceSystem = {
+    /**
+     * Data structure as defined in the MD_ReferenceSystem of the ISO 19115.
+     */
+    referenceSystem: any;
 };
 export type TileMatrix = {
     /**

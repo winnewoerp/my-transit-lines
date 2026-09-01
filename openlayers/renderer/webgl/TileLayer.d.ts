@@ -3,17 +3,20 @@ export const Uniforms: {
     TEXTURE_PIXEL_WIDTH: string;
     TEXTURE_PIXEL_HEIGHT: string;
     TEXTURE_RESOLUTION: string;
-    TEXTURE_ORIGIN_X: string;
-    TEXTURE_ORIGIN_Y: string;
     TILE_TRANSFORM: string;
     TRANSITION_ALPHA: string;
     DEPTH: string;
     RENDER_EXTENT: string;
-    RESOLUTION: string;
-    ZOOM: string;
     GLOBAL_ALPHA: string;
     PROJECTION_MATRIX: string;
-    SCREEN_TO_WORLD_MATRIX: string;
+    INVERT_PROJECTION_MATRIX: string;
+    TIME: string;
+    ZOOM: string;
+    RESOLUTION: string;
+    ROTATION: string;
+    VIEWPORT_SIZE_PX: string;
+    PIXEL_RATIO: string;
+    HIT_DETECTION: string;
 };
 export namespace Attributes {
     let TEXTURE_COORD: string;
@@ -43,21 +46,22 @@ export type Options = {
      * The texture cache size.
      */
     cacheSize?: number | undefined;
+    /**
+     * Post-processes definitions.
+     */
+    postProcesses?: import("./Layer.js").PostProcessesOptions[] | undefined;
 };
-export type LayerType = import("../../layer/WebGLTile.js").default;
 export type TileTextureType = import("../../webgl/TileTexture.js").TileType;
 export type TileTextureRepresentation = import("../../webgl/TileTexture.js").default;
 /**
  * @typedef {Object} Options
  * @property {string} vertexShader Vertex shader source.
  * @property {string} fragmentShader Fragment shader source.
- * @property {Object<string, import("../../webgl/Helper").UniformValue>} [uniforms] Additional uniforms
+ * @property {Object<string, import("../../webgl/Helper.js").UniformValue>} [uniforms] Additional uniforms
  * made available to shaders.
  * @property {Array<import("../../webgl/PaletteTexture.js").default>} [paletteTextures] Palette textures.
  * @property {number} [cacheSize=512] The texture cache size.
- */
-/**
- * @typedef {import("../../layer/WebGLTile.js").default} LayerType
+ * @property {Array<import('./Layer.js').PostProcessesOptions>} [postProcesses] Post-processes definitions.
  */
 /**
  * @typedef {import("../../webgl/TileTexture.js").TileType} TileTextureType
@@ -68,10 +72,11 @@ export type TileTextureRepresentation = import("../../webgl/TileTexture.js").def
 /**
  * @classdesc
  * WebGL renderer for tile layers.
+ * @template {import("../../layer/WebGLTile.js").default|import("../../layer/Flow.js").default} LayerType
  * @extends {WebGLBaseTileLayerRenderer<LayerType, TileTextureType, TileTextureRepresentation>}
  * @api
  */
-declare class WebGLTileLayerRenderer extends WebGLBaseTileLayerRenderer<import("../../layer/WebGLTile.js").default, import("../../webgl/TileTexture.js").TileType, TileTexture> {
+declare class WebGLTileLayerRenderer<LayerType extends import("../../layer/WebGLTile.js").default | import("../../layer/Flow.js").default> extends WebGLBaseTileLayerRenderer<LayerType, import("../../webgl/TileTexture.js").TileType, TileTexture> {
     /**
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
@@ -115,16 +120,27 @@ declare class WebGLTileLayerRenderer extends WebGLBaseTileLayerRenderer<import("
     private paletteTextures_;
     /**
      * @param {Options} options Options.
+     * @override
      */
-    reset(options: Options): void;
-    createTileRepresentation(options: any): TileTexture;
-    beforeTilesRender(frameState: any, tilesWithAlpha: any): void;
-    renderTile(tileTexture: any, tileTransform: any, frameState: any, renderExtent: any, tileResolution: any, tileSize: any, tileOrigin: any, tileExtent: any, depth: any, gutter: any, alpha: any): void;
+    override reset(options: Options): void;
+    /**
+     * @override
+     */
+    override createTileRepresentation(options: any): TileTexture;
+    /**
+     * @override
+     */
+    override beforeTilesRender(frameState: any, tilesWithAlpha: any): void;
+    /**
+     * @override
+     */
+    override renderTile(tileTexture: any, tileTransform: any, frameState: any, renderExtent: any, tileResolution: any, tileSize: any, tileOrigin: any, tileExtent: any, depth: any, gutter: any, alpha: any): void;
     /**
      * @param {import("../../pixel.js").Pixel} pixel Pixel.
      * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView} Data at the pixel location.
+     * @override
      */
-    getData(pixel: import("../../pixel.js").Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView;
+    override getData(pixel: import("../../pixel.js").Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView;
 }
 import TileTexture from '../../webgl/TileTexture.js';
 import WebGLBaseTileLayerRenderer from './TileLayerBase.js';

@@ -1,3 +1,8 @@
+/**
+ * @param {ImageTile} imageTile Image tile.
+ * @param {string} src Source.
+ */
+export function defaultTileLoadFunction(imageTile: ImageTile, src: string): void;
 export default TileImage;
 export type Options = {
     /**
@@ -9,7 +14,7 @@ export type Options = {
      */
     attributionsCollapsible?: boolean | undefined;
     /**
-     * Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -19,14 +24,14 @@ export type Options = {
      */
     crossOrigin?: string | null | undefined;
     /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
      * Use interpolated values when resampling.  By default,
      * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
      */
     interpolate?: boolean | undefined;
-    /**
-     * Whether the layer is opaque.
-     */
-    opaque?: boolean | undefined;
     /**
      * Projection. Default is the view projection.
      */
@@ -48,7 +53,7 @@ export type Options = {
     /**
      * Tile grid.
      */
-    tileGrid?: import("../tilegrid/TileGrid.js").default | undefined;
+    tileGrid?: import("../tilegrid.js").TileGrid | undefined;
     /**
      * Optional function to load a tile given a URL. The default is
      * ```js
@@ -66,7 +71,8 @@ export type Options = {
      */
     tilePixelRatio?: number | undefined;
     /**
-     * Optional function to get tile URL given a tile coordinate and the projection.
+     * Deprecated.  Use an ImageTile source and provide a function
+     * for the url option instead.
      */
     tileUrlFunction?: import("../Tile.js").UrlFunction | undefined;
     /**
@@ -101,17 +107,18 @@ export type Options = {
      */
     zDirection?: number | import("../array.js").NearestDirectionFunction | undefined;
 };
+import ImageTile from '../ImageTile.js';
 /**
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
- * @property {boolean} [opaque=false] Whether the layer is opaque.
  * @property {import("../proj.js").ProjectionLike} [projection] Projection. Default is the view projection.
  * @property {number} [reprojectionErrorThreshold=0.5] Maximum allowed reprojection error (in pixels).
  * Higher values can increase reprojection performance, but decrease precision.
@@ -129,7 +136,8 @@ export type Options = {
  * service advertizes 256px by 256px tiles but actually sends 512px
  * by 512px images (for retina/hidpi devices) then `tilePixelRatio`
  * should be set to `2`.
- * @property {import("../Tile.js").UrlFunction} [tileUrlFunction] Optional function to get tile URL given a tile coordinate and the projection.
+ * @property {import("../Tile.js").UrlFunction} [tileUrlFunction] Deprecated.  Use an ImageTile source and provide a function
+ * for the url option instead.
  * @property {string} [url] URL template. Must include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
  * A `{?-?}` template pattern, for example `subdomain{a-f}.domain.com`, may be
  * used instead of defining each one separately in the `urls` option.
@@ -146,8 +154,7 @@ export type Options = {
  * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
  */
 /**
- * @classdesc
- * Base class for sources providing images divided into a tile grid.
+ * @deprecated Use the ol/source/ImageTile.js instead.
  *
  * @fires import("./Tile.js").TileSourceEvent
  * @api
@@ -164,16 +171,14 @@ declare class TileImage extends UrlTile {
     protected crossOrigin: string | null;
     /**
      * @protected
+     * @type {ReferrerPolicy}
+     */
+    protected referrerPolicy: ReferrerPolicy;
+    /**
+     * @protected
      * @type {typeof ImageTile}
      */
     protected tileClass: typeof ImageTile;
-    /**
-     * @protected
-     * @type {!Object<string, TileCache>}
-     */
-    protected tileCacheForProjection: {
-        [x: string]: TileCache;
-    };
     /**
      * @protected
      * @type {!Object<string, import("../tilegrid/TileGrid.js").default>}
@@ -212,19 +217,22 @@ declare class TileImage extends UrlTile {
      * @param {number} y Tile coordinate y.
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
      * @return {!(ImageTile|ReprojTile)} Tile.
+     * @override
      */
-    getTile(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default): (ImageTile | ReprojTile);
+    override getTile(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default, tileCache?: import("../structs/LRUCache.js").default<import("../Tile.js").default>): (ImageTile | ReprojTile);
     /**
      * @param {number} z Tile coordinate z.
      * @param {number} x Tile coordinate x.
      * @param {number} y Tile coordinate y.
      * @param {number} pixelRatio Pixel ratio.
      * @param {!import("../proj/Projection.js").default} projection Projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
      * @return {!ImageTile} Tile.
      * @protected
      */
-    protected getTileInternal(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default): ImageTile;
+    protected getTileInternal(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default, tileCache?: import("../structs/LRUCache.js").default<import("../Tile.js").default>): ImageTile;
     /**
      * Sets whether to render reprojection edges or not (usually for debugging).
      * @param {boolean} render Render the edges.
@@ -245,8 +253,6 @@ declare class TileImage extends UrlTile {
      */
     setTileGridForProjection(projection: import("../proj.js").ProjectionLike, tilegrid: import("../tilegrid/TileGrid.js").default): void;
 }
-import ImageTile from '../ImageTile.js';
 import UrlTile from './UrlTile.js';
-import TileCache from '../TileCache.js';
 import ReprojTile from '../reproj/Tile.js';
 //# sourceMappingURL=TileImage.d.ts.map

@@ -7,3 +7,11 @@
 #mtl-map-box {
 	position:relative;
 }
+
+:root.light-theme .mtl-map-controls #mtl-opacity-low-darker {
+	display: none;
+}
+
+:root.dark-theme .mtl-map-controls #mtl-opacity-low-brighter {
+	display: none;
+}

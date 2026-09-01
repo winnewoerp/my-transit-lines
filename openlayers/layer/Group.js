@@ -1,21 +1,35 @@
 /**
  * @module ol/layer/Group
  */
-import BaseLayer from './Base.js';
 import Collection from '../Collection.js';
 import CollectionEventType from '../CollectionEventType.js';
-import Event from '../events/Event.js';
-import EventType from '../events/EventType.js';
 import ObjectEventType from '../ObjectEventType.js';
 import {assert} from '../asserts.js';
-import {clear} from '../obj.js';
-import {getIntersection} from '../extent.js';
-import {getUid} from '../util.js';
 import {listen, unlistenByKey} from '../events.js';
+import Event from '../events/Event.js';
+import EventType from '../events/EventType.js';
+import {getIntersection} from '../extent.js';
+import {clear} from '../obj.js';
+import {getUid} from '../util.js';
+import BaseLayer from './Base.js';
 
 /**
- * @typedef {'addlayer'|'removelayer'} EventType
+ * @enum {string}
  */
+const GroupEventType = {
+  /**
+   * Triggered when a layer is added
+   * @event GroupEvent#addlayer
+   * @api
+   */
+  ADDLAYER: 'addlayer',
+  /**
+   * Triggered when a layer is removed
+   * @event GroupEvent#removelayer
+   * @api
+   */
+  REMOVELAYER: 'removelayer',
+};
 
 /**
  * @classdesc
@@ -25,7 +39,7 @@ import {listen, unlistenByKey} from '../events.js';
  */
 export class GroupEvent extends Event {
   /**
-   * @param {EventType} type The event type.
+   * @param {GroupEventType} type The event type.
    * @param {BaseLayer} layer The layer.
    */
   constructor(type, layer) {
@@ -42,10 +56,11 @@ export class GroupEvent extends Event {
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes|
- *     'change:layers', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("./Base").BaseLayerObjectEventTypes|'change:layers', Return>} GroupOnSignature
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("./Base.js").BaseLayerObjectEventTypes|
+ *     'change:layers', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'addlayer'|'removelayer', GroupEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("./Base.js").BaseLayerObjectEventTypes|'addlayer'|'removelayer'|'change:layers', Return>} GroupOnSignature
  */
 
 /**
@@ -84,6 +99,7 @@ const Property = {
  *
  * A generic `change` event is triggered when the group/Collection changes.
  *
+ * @fires GroupEvent
  * @api
  */
 class LayerGroup extends BaseLayer {
@@ -100,12 +116,12 @@ class LayerGroup extends BaseLayer {
     super(baseOptions);
 
     /***
-     * @type {GroupOnSignature<import("../events").EventsKey>}
+     * @type {GroupOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {GroupOnSignature<import("../events").EventsKey>}
+     * @type {GroupOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 
@@ -134,7 +150,7 @@ class LayerGroup extends BaseLayer {
       } else {
         assert(
           typeof (/** @type {?} */ (layers).getArray) === 'function',
-          'Expected `layers` to be an array or a `Collection`'
+          'Expected `layers` to be an array or a `Collection`',
         );
       }
     } else {
@@ -161,7 +177,12 @@ class LayerGroup extends BaseLayer {
     const layers = this.getLayers();
     this.layersListenerKeys_.push(
       listen(layers, CollectionEventType.ADD, this.handleLayersAdd_, this),
-      listen(layers, CollectionEventType.REMOVE, this.handleLayersRemove_, this)
+      listen(
+        layers,
+        CollectionEventType.REMOVE,
+        this.handleLayersRemove_,
+        this,
+      ),
     );
 
     for (const id in this.listenerKeys_) {
@@ -173,7 +194,7 @@ class LayerGroup extends BaseLayer {
     for (let i = 0, ii = layersArray.length; i < ii; i++) {
       const layer = layersArray[i];
       this.registerLayerListeners_(layer);
-      this.dispatchEvent(new GroupEvent('addlayer', layer));
+      this.dispatchEvent(new GroupEvent(GroupEventType.ADDLAYER, layer));
     }
     this.changed();
   }
@@ -187,15 +208,20 @@ class LayerGroup extends BaseLayer {
         layer,
         ObjectEventType.PROPERTYCHANGE,
         this.handleLayerChange_,
-        this
+        this,
       ),
       listen(layer, EventType.CHANGE, this.handleLayerChange_, this),
     ];
 
     if (layer instanceof LayerGroup) {
       listenerKeys.push(
-        listen(layer, 'addlayer', this.handleLayerGroupAdd_, this),
-        listen(layer, 'removelayer', this.handleLayerGroupRemove_, this)
+        listen(layer, GroupEventType.ADDLAYER, this.handleLayerGroupAdd_, this),
+        listen(
+          layer,
+          GroupEventType.REMOVELAYER,
+          this.handleLayerGroupRemove_,
+          this,
+        ),
       );
     }
 
@@ -206,14 +232,14 @@ class LayerGroup extends BaseLayer {
    * @param {GroupEvent} event The layer group event.
    */
   handleLayerGroupAdd_(event) {
-    this.dispatchEvent(new GroupEvent('addlayer', event.layer));
+    this.dispatchEvent(new GroupEvent(GroupEventType.ADDLAYER, event.layer));
   }
 
   /**
    * @param {GroupEvent} event The layer group event.
    */
   handleLayerGroupRemove_(event) {
-    this.dispatchEvent(new GroupEvent('removelayer', event.layer));
+    this.dispatchEvent(new GroupEvent(GroupEventType.REMOVELAYER, event.layer));
   }
 
   /**
@@ -223,7 +249,7 @@ class LayerGroup extends BaseLayer {
   handleLayersAdd_(collectionEvent) {
     const layer = collectionEvent.element;
     this.registerLayerListeners_(layer);
-    this.dispatchEvent(new GroupEvent('addlayer', layer));
+    this.dispatchEvent(new GroupEvent(GroupEventType.ADDLAYER, layer));
     this.changed();
   }
 
@@ -236,7 +262,7 @@ class LayerGroup extends BaseLayer {
     const key = getUid(layer);
     this.listenerKeys_[key].forEach(unlistenByKey);
     delete this.listenerKeys_[key];
-    this.dispatchEvent(new GroupEvent('removelayer', layer));
+    this.dispatchEvent(new GroupEvent(GroupEventType.REMOVELAYER, layer));
     this.changed();
   }
 
@@ -267,7 +293,9 @@ class LayerGroup extends BaseLayer {
     if (collection) {
       const currentLayers = collection.getArray();
       for (let i = 0, ii = currentLayers.length; i < ii; ++i) {
-        this.dispatchEvent(new GroupEvent('removelayer', currentLayers[i]));
+        this.dispatchEvent(
+          new GroupEvent(GroupEventType.REMOVELAYER, currentLayers[i]),
+        );
       }
     }
 
@@ -277,6 +305,7 @@ class LayerGroup extends BaseLayer {
   /**
    * @param {Array<import("./Layer.js").default>} [array] Array of layers (to be modified in place).
    * @return {Array<import("./Layer.js").default>} Array of layers.
+   * @override
    */
   getLayersArray(array) {
     array = array !== undefined ? array : [];
@@ -294,6 +323,7 @@ class LayerGroup extends BaseLayer {
    * @param {Array<import("./Layer.js").State>} [dest] Optional list
    * of layer states (to be modified in place).
    * @return {Array<import("./Layer.js").State>} List of layer states.
+   * @override
    */
   getLayerStatesArray(dest) {
     const states = dest !== undefined ? dest : [];
@@ -314,11 +344,11 @@ class LayerGroup extends BaseLayer {
       layerState.visible = layerState.visible && ownLayerState.visible;
       layerState.maxResolution = Math.min(
         layerState.maxResolution,
-        ownLayerState.maxResolution
+        ownLayerState.maxResolution,
       );
       layerState.minResolution = Math.max(
         layerState.minResolution,
-        ownLayerState.minResolution
+        ownLayerState.minResolution,
       );
       layerState.minZoom = Math.max(layerState.minZoom, ownLayerState.minZoom);
       layerState.maxZoom = Math.min(layerState.maxZoom, ownLayerState.maxZoom);
@@ -326,7 +356,7 @@ class LayerGroup extends BaseLayer {
         if (layerState.extent !== undefined) {
           layerState.extent = getIntersection(
             layerState.extent,
-            ownLayerState.extent
+            ownLayerState.extent,
           );
         } else {
           layerState.extent = ownLayerState.extent;
@@ -342,6 +372,7 @@ class LayerGroup extends BaseLayer {
 
   /**
    * @return {import("../source/Source.js").State} Source state.
+   * @override
    */
   getSourceState() {
     return 'ready';

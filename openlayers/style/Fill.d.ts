@@ -1,19 +1,20 @@
 export default Fill;
 export type Options = {
     /**
-     * A color, gradient or pattern.
-     * See {@link module :ol/color~Color} and {@link module :ol/colorlike~ColorLike} for possible formats.
+     * A color,
+     * gradient or pattern.
+     * See {@link module :ol/color~Color} and {@link module :ol/colorlike~ColorLike} for possible formats. For polygon fills (not for {@link import ("./RegularShape.js").default} fills),
+     * a pattern can also be provided as {@link module :ol/colorlike~PatternDescriptor}.
      * Default null; if null, the Canvas/renderer default black will be used.
      */
-    color?: import("../color.js").Color | import("../colorlike.js").ColorLike | null | undefined;
+    color?: import("../color.js").Color | import("../colorlike.js").ColorLike | import("../colorlike.js").PatternDescriptor | null | undefined;
 };
 /**
- * @module ol/style/Fill
- */
-/**
  * @typedef {Object} Options
- * @property {import("../color.js").Color|import("../colorlike.js").ColorLike|null} [color=null] A color, gradient or pattern.
- * See {@link module:ol/color~Color} and {@link module:ol/colorlike~ColorLike} for possible formats.
+ * @property {import("../color.js").Color|import("../colorlike.js").ColorLike|import('../colorlike.js').PatternDescriptor|null} [color=null] A color,
+ * gradient or pattern.
+ * See {@link module:ol/color~Color} and {@link module:ol/colorlike~ColorLike} for possible formats. For polygon fills (not for {@link import("./RegularShape.js").default} fills),
+ * a pattern can also be provided as {@link module:ol/colorlike~PatternDescriptor}.
  * Default null; if null, the Canvas/renderer default black will be used.
  */
 /**
@@ -25,30 +26,47 @@ declare class Fill {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
-     * @type {import("../color.js").Color|import("../colorlike.js").ColorLike|null}
+     * @type {import("./IconImage.js").default|null}
+     */
+    private patternImage_;
+    /**
+     * @private
+     * @type {import("../color.js").Color|import("../colorlike.js").ColorLike|import('../colorlike.js').PatternDescriptor|null}
      */
     private color_;
     /**
-     * Clones the style. The color is not cloned if it is an {@link module:ol/colorlike~ColorLike}.
+     * Clones the style. The color is not cloned if it is a {@link module:ol/colorlike~ColorLike}.
      * @return {Fill} The cloned style.
      * @api
      */
     clone(): Fill;
     /**
      * Get the fill color.
-     * @return {import("../color.js").Color|import("../colorlike.js").ColorLike|null} Color.
+     * @return {import("../color.js").Color|import("../colorlike.js").ColorLike|import('../colorlike.js').PatternDescriptor|null} Color.
      * @api
      */
-    getColor(): import("../color.js").Color | import("../colorlike.js").ColorLike | null;
+    getColor(): import("../color.js").Color | import("../colorlike.js").ColorLike | import("../colorlike.js").PatternDescriptor | null;
     /**
      * Set the color.
      *
-     * @param {import("../color.js").Color|import("../colorlike.js").ColorLike|null} color Color.
+     * @param {import("../color.js").Color|import("../colorlike.js").ColorLike|import('../colorlike.js').PatternDescriptor|null} color Color.
      * @api
      */
-    setColor(color: import("../color.js").Color | import("../colorlike.js").ColorLike | null): void;
+    setColor(color: import("../color.js").Color | import("../colorlike.js").ColorLike | import("../colorlike.js").PatternDescriptor | null): void;
+    /**
+     * @return {string} Key of the fill for cache lookup.
+     */
+    getKey(): string;
+    /**
+     * @return {boolean} The fill style is loading an image pattern.
+     */
+    loading(): boolean;
+    /**
+     * @return {Promise<void>} `false` or a promise that resolves when the style is ready to use.
+     */
+    ready(): Promise<void>;
 }
 //# sourceMappingURL=Fill.d.ts.map

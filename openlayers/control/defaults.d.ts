@@ -16,16 +16,16 @@
  * Set of controls included in maps by default. Unless configured otherwise,
  * this returns a collection containing an instance of each of the following
  * controls:
- * * {@link module:ol/control/Zoom~Zoom}
- * * {@link module:ol/control/Rotate~Rotate}
- * * {@link module:ol/control/Attribution~Attribution}
+ * {@link module:ol/control/Zoom~Zoom}
+ * {@link module:ol/control/Rotate~Rotate}
+ * {@link module:ol/control/Attribution~Attribution}
  *
  * @param {DefaultsOptions} [options] Options for the default controls.
  * @return {Collection<import("./Control.js").default>} A collection of controls
  * to be used with the {@link module:ol/Map~Map} constructor's `controls` option.
  * @api
  */
-export function defaults(options?: DefaultsOptions | undefined): Collection<import("./Control.js").default>;
+export function defaults(options?: DefaultsOptions): Collection<import("./Control.js").default>;
 export type DefaultsOptions = {
     /**
      * Include

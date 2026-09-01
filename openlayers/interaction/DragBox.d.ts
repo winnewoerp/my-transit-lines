@@ -9,7 +9,7 @@ export class DragBoxEvent extends Event {
      * @param {import("../coordinate.js").Coordinate} coordinate The event coordinate.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Originating event.
      */
-    constructor(type: string, coordinate: import("../coordinate.js").Coordinate, mapBrowserEvent: import("../MapBrowserEvent.js").default<any>);
+    constructor(type: string, coordinate: import("../coordinate.js").Coordinate, mapBrowserEvent: import("../MapBrowserEvent.js").default);
     /**
      * The coordinate of the drag event.
      * @const
@@ -22,7 +22,7 @@ export class DragBoxEvent extends Event {
      * @type {import("../MapBrowserEvent.js").default}
      * @api
      */
-    mapBrowserEvent: import("../MapBrowserEvent.js").default<any>;
+    mapBrowserEvent: import("../MapBrowserEvent.js").default;
 }
 export default DragBox;
 /**
@@ -30,14 +30,14 @@ export default DragBox;
  * {@link module :ol/pixel~Pixel}s and returns a `{boolean}`. If the condition is met,
  * true should be returned.
  */
-export type EndCondition = (this: unknown, arg1: import("../MapBrowserEvent.js").default<any>, arg2: import("../pixel.js").Pixel, arg3: import("../pixel.js").Pixel) => boolean;
+export type EndCondition = (this: unknown, arg1: import("../MapBrowserEvent.js").default, arg2: import("../pixel.js").Pixel, arg3: import("../pixel.js").Pixel) => boolean;
 export type Options = {
     /**
      * CSS class name for styling the box.
      */
     className?: string | undefined;
     /**
-     * A function that takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
+     * A function that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
      * to indicate whether that event should be handled.
      * Default is {@link ol /events/condition~mouseActionButton}.
      */
@@ -57,26 +57,26 @@ export type Options = {
      * Code to execute just
      * before `boxend` is fired.
      */
-    onBoxEnd?: ((this: DragBox, arg1: import("../MapBrowserEvent.js").default<any>) => void) | undefined;
+    onBoxEnd?: ((this: DragBox, arg1: import("../MapBrowserEvent.js").default) => void) | undefined;
 };
 /**
  * *
  */
-export type DragBoxOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types | 'change:active', import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<'boxcancel' | 'boxdrag' | 'boxend' | 'boxstart', DragBoxEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | 'change:active' | 'boxcancel' | 'boxdrag' | 'boxend', Return>;
+export type DragBoxOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types | "change:active", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<"boxcancel" | "boxdrag" | "boxend" | "boxstart", DragBoxEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | "change:active" | "boxcancel" | "boxdrag" | "boxend", Return>;
 import Event from '../events/Event.js';
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'boxcancel'|'boxdrag'|'boxend'|'boxstart', DragBoxEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'boxcancel'|'boxdrag'|'boxend'|'boxstart', DragBoxEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active'|'boxcancel'|'boxdrag'|'boxend', Return>} DragBoxOnSignature
  */
 /**
  * @classdesc
  * Allows the user to draw a vector box by clicking and dragging on the map,
- * normally combined with an {@link module:ol/events/condition} that limits
+ * normally combined with a {@link module:ol/events/condition} that limits
  * it to when the shift or other key is held down. This is used, for example,
  * for zooming to a specific area of the map
  * (see {@link module:ol/interaction/DragZoom~DragZoom} and
@@ -89,15 +89,15 @@ declare class DragBox extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /***
-     * @type {DragBoxOnSignature<import("../events").EventsKey>}
+     * @type {DragBoxOnSignature<import("../events.js").EventsKey>}
      */
-    on: DragBoxOnSignature<import("../events").EventsKey>;
+    on: DragBoxOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {DragBoxOnSignature<import("../events").EventsKey>}
+     * @type {DragBoxOnSignature<import("../events.js").EventsKey>}
      */
-    once: DragBoxOnSignature<import("../events").EventsKey>;
+    once: DragBoxOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {DragBoxOnSignature<void>}
      */
@@ -116,7 +116,7 @@ declare class DragBox extends PointerInteraction {
      * Function to execute just before `onboxend` is fired
      * @param {import("../MapBrowserEvent.js").default} event Event.
      */
-    onBoxEnd(event: import("../MapBrowserEvent.js").default<any>): void;
+    onBoxEnd(event: import("../MapBrowserEvent.js").default): void;
     /**
      * @type {import("../pixel.js").Pixel}
      * @private
@@ -141,7 +141,7 @@ declare class DragBox extends PointerInteraction {
      * @param {import("../pixel.js").Pixel} endPixel The end pixel of the box.
      * @return {boolean} Whether or not the boxend condition should be fired.
      */
-    defaultBoxEndCondition(mapBrowserEvent: import("../MapBrowserEvent.js").default<any>, startPixel: import("../pixel.js").Pixel, endPixel: import("../pixel.js").Pixel): boolean;
+    defaultBoxEndCondition(mapBrowserEvent: import("../MapBrowserEvent.js").default, startPixel: import("../pixel.js").Pixel, endPixel: import("../pixel.js").Pixel): boolean;
     /**
      * Returns geometry of last drawn box.
      * @return {import("../geom/Polygon.js").default} Geometry.

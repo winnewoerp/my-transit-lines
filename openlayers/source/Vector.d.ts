@@ -10,27 +10,29 @@
  * @classdesc
  * Events emitted by {@link module:ol/source/Vector~VectorSource} instances are instances of this
  * type.
- * @template {import("../geom/Geometry.js").default} [Geometry=import("../geom/Geometry.js").default]
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
  */
-export class VectorSourceEvent<Geometry extends import("../geom/Geometry.js").default = import("../geom/Geometry.js").default> extends Event {
+export class VectorSourceEvent<FeatureType extends import("../Feature.js").FeatureLike = import("../Feature.js").default<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>> extends Event {
     /**
      * @param {string} type Type.
-     * @param {import("../Feature.js").default<Geometry>} [feature] Feature.
-     * @param {Array<import("../Feature.js").default<Geometry>>} [features] Features.
+     * @param {FeatureType} [feature] Feature.
+     * @param {Array<FeatureType>} [features] Features.
      */
-    constructor(type: string, feature?: import("../Feature.js").default<Geometry> | undefined, features?: import("../Feature.js").default<Geometry>[] | undefined);
+    constructor(type: string, feature?: FeatureType, features?: Array<FeatureType>);
     /**
      * The added or removed feature for the `ADDFEATURE` and `REMOVEFEATURE` events, `undefined` otherwise.
-     * @type {import("../Feature.js").default<Geometry>|undefined}
+     * @type {FeatureType|undefined}
      * @api
      */
-    feature: import("../Feature.js").default<Geometry> | undefined;
+    feature: FeatureType | undefined;
     /**
      * The loaded features for the `FEATURESLOADED` event, `undefined` otherwise.
-     * @type {Array<import("../Feature.js").default<Geometry>>|undefined}
+     * @type {Array<FeatureType>|undefined}
      * @api
      */
-    features: Array<import("../Feature.js").default<Geometry>> | undefined;
+    features: Array<FeatureType> | undefined;
 }
 export default VectorSource;
 /**
@@ -42,8 +44,18 @@ export type LoadingStrategy = (arg0: import("../extent.js").Extent, arg1: number
 /**
  * *
  */
-export type VectorSourceOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<import("./VectorEventType").VectorSourceEventTypes, VectorSourceEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | import("./VectorEventType").VectorSourceEventTypes, Return>;
-export type Options<Geometry extends import("../geom/Geometry.js").default = import("../geom/Geometry.js").default> = {
+export type FeatureClassOrArrayOfRenderFeatures<T extends import("../Feature.js").FeatureLike = import("../Feature.js").default<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>> = T extends RenderFeature ? T | Array<T> : T;
+/**
+ * *
+ */
+export type VectorSourceOnSignature<Return, FeatureType extends import("../Feature.js").FeatureLike = import("../Feature.js").default<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<import("./VectorEventType.js").VectorSourceEventTypes, VectorSourceEvent<FeatureType>, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | import("./VectorEventType.js").VectorSourceEventTypes, Return>;
+export type Options<FeatureType extends import("../Feature.js").FeatureLike = import("../Feature.js").default<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>> = {
     /**
      * Attributions.
      */
@@ -52,12 +64,12 @@ export type Options<Geometry extends import("../geom/Geometry.js").default = imp
      * Features. If provided as {@link module :ol/Collection~Collection}, the features in the source
      * and the collection will stay in sync.
      */
-    features?: import("../Feature.js").default<Geometry>[] | Collection<import("../Feature.js").default<Geometry>> | undefined;
+    features?: FeatureType[] | Collection<FeatureType> | undefined;
     /**
      * The feature format used by the XHR
      * feature loader when `url` is set. Required if `url` is set, otherwise ignored.
      */
-    format?: import("../format/Feature.js").default | undefined;
+    format?: import("../format/Feature.js").default<FeatureType> | undefined;
     /**
      * The loader function used to load features, from a remote source for example.
      * If this is not set and `url` is set, the source will create and use an XHR
@@ -72,36 +84,32 @@ export type Options<Geometry extends import("../geom/Geometry.js").default = imp
      * import {bbox} from 'ol/loadingstrategy.js';
      *
      * const vectorSource = new Vector({
-     * format: new GeoJSON(),
-     * loader: function(extent, resolution, projection, success, failure) {
-     * const proj = projection.getCode();
+     * loader: async (extent, resolution, projection) => {
      * const url = 'https://ahocevar.com/geoserver/wfs?service=WFS&' +
      * 'version=1.1.0&request=GetFeature&typename=osm:water_areas&' +
-     * 'outputFormat=application/json&srsname=' + proj + '&' +
-     * 'bbox=' + extent.join(',') + ',' + proj;
-     * const xhr = new XMLHttpRequest();
-     * xhr.open('GET', url);
-     * const onError = function() {
-     * vectorSource.removeLoadedExtent(extent);
-     * failure();
+     * 'outputFormat=application/json' +
+     * 'bbox=' + extent.join(',') + ',' + projection.getCode();
+     * const response = await fetch(url);
+     * if (!response.ok) {
+     * throw new Error('Network response was not ok');
      * }
-     * xhr.onerror = onError;
-     * xhr.onload = function() {
-     * if (xhr.status == 200) {
-     * const features = vectorSource.getFormat().readFeatures(xhr.responseText);
-     * vectorSource.addFeatures(features);
-     * success(features);
-     * } else {
-     * onError();
-     * }
-     * }
-     * xhr.send();
+     * const json = await response.json();
+     * const features = new GeoJSON().readFeatures(json, {
+     * featureProjection: projection,
+     * });
+     * return features;
      * },
      * strategy: bbox,
      * });
      * ```
+     *
+     * When you want to retry a failed request, use
+     * ```js
+     * vectorSource.removeLoadedExtent(extent);
+     * vectorSource.changed();
+     * ```
      */
-    loader?: import("../featureloader.js").FeatureLoader | undefined;
+    loader?: import("../featureloader.js").FeatureLoader<FeatureType> | undefined;
     /**
      * This source may have overlapping geometries.
      * Setting this to `false` (e.g. for sources with polygons that represent administrative
@@ -157,23 +165,28 @@ export type Options<Geometry extends import("../geom/Geometry.js").default = imp
 };
 import Event from '../events/Event.js';
 /***
+ * @template {import("../Feature.js").FeatureLike} [T=import("../Feature.js").default]
+ * @typedef {T extends RenderFeature ? T|Array<T> : T} FeatureClassOrArrayOfRenderFeatures
+ */
+/***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("./VectorEventType").VectorSourceEventTypes, VectorSourceEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
- *     import("./VectorEventType").VectorSourceEventTypes, Return>} VectorSourceOnSignature
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<import("./VectorEventType.js").VectorSourceEventTypes, VectorSourceEvent<FeatureType>, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
+ *     import("./VectorEventType.js").VectorSourceEventTypes, Return>} VectorSourceOnSignature
  */
 /**
- * @template {import("../geom/Geometry.js").default} [Geometry=import("../geom/Geometry.js").default]
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
- * @property {Array<import("../Feature.js").default<Geometry>>|Collection<import("../Feature.js").default<Geometry>>} [features]
+ * @property {Array<FeatureType>|Collection<FeatureType>} [features]
  * Features. If provided as {@link module:ol/Collection~Collection}, the features in the source
  * and the collection will stay in sync.
- * @property {import("../format/Feature.js").default} [format] The feature format used by the XHR
+ * @property {import("../format/Feature.js").default<FeatureType>} [format] The feature format used by the XHR
  * feature loader when `url` is set. Required if `url` is set, otherwise ignored.
- * @property {import("../featureloader.js").FeatureLoader} [loader]
+ * @property {import("../featureloader.js").FeatureLoader<FeatureType>} [loader]
  * The loader function used to load features, from a remote source for example.
  * If this is not set and `url` is set, the source will create and use an XHR
  * feature loader. The `'featuresloadend'` and `'featuresloaderror'` events
@@ -187,34 +200,31 @@ import Event from '../events/Event.js';
  * import {bbox} from 'ol/loadingstrategy.js';
  *
  * const vectorSource = new Vector({
- *   format: new GeoJSON(),
- *   loader: function(extent, resolution, projection, success, failure) {
- *      const proj = projection.getCode();
+ *   loader: async (extent, resolution, projection) => {
  *      const url = 'https://ahocevar.com/geoserver/wfs?service=WFS&' +
  *          'version=1.1.0&request=GetFeature&typename=osm:water_areas&' +
- *          'outputFormat=application/json&srsname=' + proj + '&' +
- *          'bbox=' + extent.join(',') + ',' + proj;
- *      const xhr = new XMLHttpRequest();
- *      xhr.open('GET', url);
- *      const onError = function() {
- *        vectorSource.removeLoadedExtent(extent);
- *        failure();
+ *          'outputFormat=application/json' +
+ *          'bbox=' + extent.join(',') + ',' + projection.getCode();
+ *      const response = await fetch(url);
+ *      if (!response.ok) {
+ *        throw new Error('Network response was not ok');
  *      }
- *      xhr.onerror = onError;
- *      xhr.onload = function() {
- *        if (xhr.status == 200) {
- *          const features = vectorSource.getFormat().readFeatures(xhr.responseText);
- *          vectorSource.addFeatures(features);
- *          success(features);
- *        } else {
- *          onError();
- *        }
- *      }
- *      xhr.send();
+ *      const json = await response.json();
+ *      const features = new GeoJSON().readFeatures(json, {
+ *        featureProjection: projection,
+ *      });
+ *      return features;
  *    },
  *    strategy: bbox,
  *  });
  * ```
+ *
+ * When you want to retry a failed request, use
+ * ```js
+ * vectorSource.removeLoadedExtent(extent);
+ * vectorSource.changed();
+ * ```
+ *
  * @property {boolean} [overlaps=true] This source may have overlapping geometries.
  * Setting this to `false` (e.g. for sources with polygons that represent administrative
  * boundaries or TopoJSON sources) allows the renderer to optimise fill and
@@ -264,33 +274,35 @@ import Event from '../events/Event.js';
  *
  * @fires VectorSourceEvent
  * @api
- * @template {import("../geom/Geometry.js").default} [Geometry=import("../geom/Geometry.js").default]
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
  */
-declare class VectorSource<Geometry extends import("../geom/Geometry.js").default = import("../geom/Geometry.js").default> extends Source {
+declare class VectorSource<FeatureType extends import("../Feature.js").FeatureLike = import("../Feature.js").default<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>> extends Source {
     /**
-     * @param {Options<Geometry>} [options] Vector source options.
+     * @param {Options<FeatureType>} [options] Vector source options.
      */
-    constructor(options?: Options<Geometry> | undefined);
+    constructor(options?: Options<FeatureType>);
     /***
-     * @type {VectorSourceOnSignature<import("../events").EventsKey>}
+     * @type {VectorSourceOnSignature<import("../events.js").EventsKey, FeatureType>}
      */
-    on: VectorSourceOnSignature<import("../events").EventsKey>;
+    on: VectorSourceOnSignature<import("../events.js").EventsKey, FeatureType>;
     /***
-     * @type {VectorSourceOnSignature<import("../events").EventsKey>}
+     * @type {VectorSourceOnSignature<import("../events.js").EventsKey, FeatureType>}
      */
-    once: VectorSourceOnSignature<import("../events").EventsKey>;
+    once: VectorSourceOnSignature<import("../events.js").EventsKey, FeatureType>;
     /***
      * @type {VectorSourceOnSignature<void>}
      */
     un: VectorSourceOnSignature<void>;
     /**
      * @private
-     * @type {import("../featureloader.js").FeatureLoader}
+     * @type {import("../featureloader.js").FeatureLoader<import("../Feature.js").FeatureLike>}
      */
     private loader_;
     /**
      * @private
-     * @type {import("../format/Feature.js").default|undefined}
+     * @type {import("../format/Feature.js").default<FeatureType>|null}
      */
     private format_;
     /**
@@ -310,7 +322,7 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
     private strategy_;
     /**
      * @private
-     * @type {RBush<import("../Feature.js").default<Geometry>>}
+     * @type {RBush<FeatureType>}
      */
     private featuresRtree_;
     /**
@@ -319,25 +331,20 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      */
     private loadedExtentsRtree_;
     /**
-     * @type {number}
      * @private
-     */
-    private loadingExtentsCount_;
-    /**
-     * @private
-     * @type {!Object<string, import("../Feature.js").default<Geometry>>}
+     * @type {!Object<string, FeatureType>}
      */
     private nullGeometryFeatures_;
     /**
      * A lookup of features by id (the return from feature.getId()).
      * @private
-     * @type {!Object<string, import("../Feature.js").default<Geometry>>}
+     * @type {!Object<string, import('../Feature.js').FeatureLike|Array<import('../Feature.js').FeatureLike>>}
      */
     private idIndex_;
     /**
      * A lookup of features by uid (using getUid(feature)).
      * @private
-     * @type {!Object<string, import("../Feature.js").default<Geometry>>}
+     * @type {!Object<string, FeatureType>}
      */
     private uidIndex_;
     /**
@@ -347,7 +354,7 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
     private featureChangeKeys_;
     /**
      * @private
-     * @type {Collection<import("../Feature.js").default<Geometry>>|null}
+     * @type {Collection<FeatureType>|null}
      */
     private featuresCollection_;
     /**
@@ -356,28 +363,28 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      * instead. A feature will not be added to the source if feature with
      * the same id is already there. The reason for this behavior is to avoid
      * feature duplication when using bbox or tile loading strategies.
-     * Note: this also applies if an {@link module:ol/Collection~Collection} is used for features,
+     * Note: this also applies if a {@link module:ol/Collection~Collection} is used for features,
      * meaning that if a feature with a duplicate id is added in the collection, it will
      * be removed from it right away.
-     * @param {import("../Feature.js").default<Geometry>} feature Feature to add.
+     * @param {FeatureType} feature Feature to add.
      * @api
      */
-    addFeature(feature: import("../Feature.js").default<Geometry>): void;
+    addFeature(feature: FeatureType): void;
     /**
      * Add a feature without firing a `change` event.
-     * @param {import("../Feature.js").default<Geometry>} feature Feature.
+     * @param {FeatureType} feature Feature.
      * @protected
      */
-    protected addFeatureInternal(feature: import("../Feature.js").default<Geometry>): void;
+    protected addFeatureInternal(feature: FeatureType): void;
     /**
      * @param {string} featureKey Unique identifier for the feature.
-     * @param {import("../Feature.js").default<Geometry>} feature The feature.
+     * @param {FeatureType} feature The feature.
      * @private
      */
     private setupChangeEvents_;
     /**
      * @param {string} featureKey Unique identifier for the feature.
-     * @param {import("../Feature.js").default<Geometry>} feature The feature.
+     * @param {FeatureType} feature The feature.
      * @return {boolean} The feature is "valid", in the sense that it is also a
      *     candidate for insertion into the Rtree.
      * @private
@@ -385,18 +392,18 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
     private addToIndex_;
     /**
      * Add a batch of features to the source.
-     * @param {Array<import("../Feature.js").default<Geometry>>} features Features to add.
+     * @param {Array<FeatureType>} features Features to add.
      * @api
      */
-    addFeatures(features: Array<import("../Feature.js").default<Geometry>>): void;
+    addFeatures(features: Array<FeatureType>): void;
     /**
      * Add features without firing a `change` event.
-     * @param {Array<import("../Feature.js").default<Geometry>>} features Features.
+     * @param {Array<FeatureType>} features Features.
      * @protected
      */
-    protected addFeaturesInternal(features: Array<import("../Feature.js").default<Geometry>>): void;
+    protected addFeaturesInternal(features: Array<FeatureType>): void;
     /**
-     * @param {!Collection<import("../Feature.js").default<Geometry>>} collection Collection.
+     * @param {!Collection<FeatureType>} collection Collection.
      * @private
      */
     private bindFeaturesCollection_;
@@ -405,33 +412,36 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      * @param {boolean} [fast] Skip dispatching of {@link module:ol/source/Vector.VectorSourceEvent#event:removefeature} events.
      * @api
      */
-    clear(fast?: boolean | undefined): void;
+    clear(fast?: boolean): void;
     /**
      * Iterate through all features on the source, calling the provided callback
      * with each one.  If the callback returns any "truthy" value, iteration will
      * stop and the function will return the same value.
      * Note: this function only iterate through the feature that have a defined geometry.
      *
-     * @param {function(import("../Feature.js").default<Geometry>): T} callback Called with each feature
+     * @param {function(FeatureType): T} callback Called with each feature
      *     on the source.  Return a truthy value to stop iteration.
      * @return {T|undefined} The return value from the last call to the callback.
      * @template T
      * @api
      */
-    forEachFeature<T>(callback: (arg0: import("../Feature.js").default<Geometry>) => T): T | undefined;
+    forEachFeature<T>(callback: (arg0: FeatureType) => T): T | undefined;
     /**
      * Iterate through all features whose geometries contain the provided
      * coordinate, calling the callback with each feature.  If the callback returns
      * a "truthy" value, iteration will stop and the function will return the same
      * value.
      *
+     * For {@link module:ol/render/Feature~RenderFeature} features, the callback will be
+     * called for all features.
+     *
      * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
-     * @param {function(import("../Feature.js").default<Geometry>): T} callback Called with each feature
+     * @param {function(FeatureType): T} callback Called with each feature
      *     whose goemetry contains the provided coordinate.
      * @return {T|undefined} The return value from the last call to the callback.
      * @template T
      */
-    forEachFeatureAtCoordinateDirect<T_1>(coordinate: import("../coordinate.js").Coordinate, callback: (arg0: import("../Feature.js").default<Geometry>) => T_1): T_1 | undefined;
+    forEachFeatureAtCoordinateDirect<T>(coordinate: import("../coordinate.js").Coordinate, callback: (arg0: FeatureType) => T): T | undefined;
     /**
      * Iterate through all features whose bounding box intersects the provided
      * extent (note that the feature's geometry may not intersect the extent),
@@ -445,13 +455,13 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      * features, equivalent to {@link module:ol/source/Vector~VectorSource#forEachFeature #forEachFeature()}.
      *
      * @param {import("../extent.js").Extent} extent Extent.
-     * @param {function(import("../Feature.js").default<Geometry>): T} callback Called with each feature
+     * @param {function(FeatureType): T} callback Called with each feature
      *     whose bounding box intersects the provided extent.
      * @return {T|undefined} The return value from the last call to the callback.
      * @template T
      * @api
      */
-    forEachFeatureInExtent<T_2>(extent: import("../extent.js").Extent, callback: (arg0: import("../Feature.js").default<Geometry>) => T_2): T_2 | undefined;
+    forEachFeatureInExtent<T>(extent: import("../extent.js").Extent, callback: (arg0: FeatureType) => T): T | undefined;
     /**
      * Iterate through all features whose geometry intersects the provided extent,
      * calling the callback with each feature.  If the callback returns a "truthy"
@@ -461,35 +471,35 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      * {@link module:ol/source/Vector~VectorSource#forEachFeatureInExtent #forEachFeatureInExtent()} method instead.
      *
      * @param {import("../extent.js").Extent} extent Extent.
-     * @param {function(import("../Feature.js").default<Geometry>): T} callback Called with each feature
+     * @param {function(FeatureType): T} callback Called with each feature
      *     whose geometry intersects the provided extent.
      * @return {T|undefined} The return value from the last call to the callback.
      * @template T
      * @api
      */
-    forEachFeatureIntersectingExtent<T_3>(extent: import("../extent.js").Extent, callback: (arg0: import("../Feature.js").default<Geometry>) => T_3): T_3 | undefined;
+    forEachFeatureIntersectingExtent<T>(extent: import("../extent.js").Extent, callback: (arg0: FeatureType) => T): T | undefined;
     /**
      * Get the features collection associated with this source. Will be `null`
      * unless the source was configured with `useSpatialIndex` set to `false`, or
-     * with an {@link module:ol/Collection~Collection} as `features`.
-     * @return {Collection<import("../Feature.js").default<Geometry>>|null} The collection of features.
+     * with a {@link module:ol/Collection~Collection} as `features`.
+     * @return {Collection<FeatureType>|null} The collection of features.
      * @api
      */
-    getFeaturesCollection(): Collection<import("../Feature.js").default<Geometry>> | null;
+    getFeaturesCollection(): Collection<FeatureType> | null;
     /**
      * Get a snapshot of the features currently on the source in random order. The returned array
      * is a copy, the features are references to the features in the source.
-     * @return {Array<import("../Feature.js").default<Geometry>>} Features.
+     * @return {Array<FeatureType>} Features.
      * @api
      */
-    getFeatures(): Array<import("../Feature.js").default<Geometry>>;
+    getFeatures(): Array<FeatureType>;
     /**
      * Get all features whose geometry intersects the provided coordinate.
      * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
-     * @return {Array<import("../Feature.js").default<Geometry>>} Features.
+     * @return {Array<FeatureType>} Features.
      * @api
      */
-    getFeaturesAtCoordinate(coordinate: import("../coordinate.js").Coordinate): Array<import("../Feature.js").default<Geometry>>;
+    getFeaturesAtCoordinate(coordinate: import("../coordinate.js").Coordinate): Array<FeatureType>;
     /**
      * Get all features whose bounding box intersects the provided extent.  Note that this returns an array of
      * all features intersecting the given extent in random order (so it may include
@@ -501,58 +511,62 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      * @param {import("../extent.js").Extent} extent Extent.
      * @param {import("../proj/Projection.js").default} [projection] Include features
      * where `extent` exceeds the x-axis bounds of `projection` and wraps around the world.
-     * @return {Array<import("../Feature.js").default<Geometry>>} Features.
+     * @return {Array<FeatureType>} Features.
      * @api
      */
-    getFeaturesInExtent(extent: import("../extent.js").Extent, projection?: import("../proj/Projection.js").default | undefined): Array<import("../Feature.js").default<Geometry>>;
+    getFeaturesInExtent(extent: import("../extent.js").Extent, projection?: import("../proj/Projection.js").default): Array<FeatureType>;
     /**
      * Get the closest feature to the provided coordinate.
      *
      * This method is not available when the source is configured with
-     * `useSpatialIndex` set to `false`.
+     * `useSpatialIndex` set to `false` and the features in this source are of type
+     * {@link module:ol/Feature~Feature}.
      * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
-     * @param {function(import("../Feature.js").default<Geometry>):boolean} [filter] Feature filter function.
+     * @param {function(FeatureType):boolean} [filter] Feature filter function.
      *     The filter function will receive one argument, the {@link module:ol/Feature~Feature feature}
      *     and it should return a boolean value. By default, no filtering is made.
-     * @return {import("../Feature.js").default<Geometry>} Closest feature.
+     * @return {FeatureType|null} Closest feature (or `null` if none found).
      * @api
      */
-    getClosestFeatureToCoordinate(coordinate: import("../coordinate.js").Coordinate, filter?: ((arg0: import("../Feature.js").default<Geometry>) => boolean) | undefined): import("../Feature.js").default<Geometry>;
+    getClosestFeatureToCoordinate(coordinate: import("../coordinate.js").Coordinate, filter?: (arg0: FeatureType) => boolean): FeatureType | null;
     /**
      * Get the extent of the features currently in the source.
      *
-     * This method is not available when the source is configured with
+     * This will return `null` when the source is configured with
      * `useSpatialIndex` set to `false`.
      * @param {import("../extent.js").Extent} [extent] Destination extent. If provided, no new extent
      *     will be created. Instead, that extent's coordinates will be overwritten.
-     * @return {import("../extent.js").Extent} Extent.
+     * @return {import("../extent.js").Extent | null} Extent.
      * @api
      */
-    getExtent(extent?: import("../extent.js").Extent | undefined): import("../extent.js").Extent;
+    getExtent(extent?: import("../extent.js").Extent): import("../extent.js").Extent | null;
     /**
-     * Get a feature by its identifier (the value returned by feature.getId()).
+     * Get a feature by its identifier (the value returned by feature.getId()). When `RenderFeature`s
+     * are used, `getFeatureById()` can return an array of `RenderFeature`s. This allows for handling
+     * of `GeometryCollection` geometries, where format readers create one `RenderFeature` per
+     * `GeometryCollection` member.
      * Note that the index treats string and numeric identifiers as the same.  So
      * `source.getFeatureById(2)` will return a feature with id `'2'` or `2`.
      *
      * @param {string|number} id Feature identifier.
-     * @return {import("../Feature.js").default<Geometry>|null} The feature (or `null` if not found).
+     * @return {FeatureClassOrArrayOfRenderFeatures<FeatureType>|null} The feature (or `null` if not found).
      * @api
      */
-    getFeatureById(id: string | number): import("../Feature.js").default<Geometry> | null;
+    getFeatureById(id: string | number): FeatureClassOrArrayOfRenderFeatures<FeatureType> | null;
     /**
      * Get a feature by its internal unique identifier (using `getUid`).
      *
      * @param {string} uid Feature identifier.
-     * @return {import("../Feature.js").default<Geometry>|null} The feature (or `null` if not found).
+     * @return {FeatureType|null} The feature (or `null` if not found).
      */
-    getFeatureByUid(uid: string): import("../Feature.js").default<Geometry> | null;
+    getFeatureByUid(uid: string): FeatureType | null;
     /**
      * Get the format associated with this source.
      *
-     * @return {import("../format/Feature.js").default|undefined} The feature format.
+     * @return {import("../format/Feature.js").default<FeatureType>|null}} The feature format.
      * @api
      */
-    getFormat(): import("../format/Feature.js").default | undefined;
+    getFormat(): import("../format/Feature.js").default<FeatureType> | null;
     /**
      * @return {boolean} The source can have overlapping geometries.
      */
@@ -571,11 +585,11 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
     private handleFeatureChange_;
     /**
      * Returns true if the feature is contained within the source.
-     * @param {import("../Feature.js").default<Geometry>} feature Feature.
+     * @param {FeatureType} feature Feature.
      * @return {boolean} Has feature.
      * @api
      */
-    hasFeature(feature: import("../Feature.js").default<Geometry>): boolean;
+    hasFeature(feature: FeatureType): boolean;
     /**
      * @return {boolean} Is empty.
      */
@@ -593,26 +607,32 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      */
     removeLoadedExtent(extent: import("../extent.js").Extent): void;
     /**
-     * Remove a single feature from the source.  If you want to remove all features
+     * Batch remove features from the source.  If you want to remove all features
      * at once, use the {@link module:ol/source/Vector~VectorSource#clear #clear()} method
      * instead.
-     * @param {import("../Feature.js").default<Geometry>} feature Feature to remove.
+     * @param {Array<FeatureType>} features Features to remove.
      * @api
      */
-    removeFeature(feature: import("../Feature.js").default<Geometry>): void;
+    removeFeatures(features: Array<FeatureType>): void;
+    /**
+     * Remove a single feature from the source. If you want to batch remove
+     * features, use the {@link module:ol/source/Vector~VectorSource#removeFeatures #removeFeatures()} method
+     * instead.
+     * @param {FeatureType} feature Feature to remove.
+     * @api
+     */
+    removeFeature(feature: FeatureType): void;
     /**
      * Remove feature without firing a `change` event.
-     * @param {import("../Feature.js").default<Geometry>} feature Feature.
-     * @return {import("../Feature.js").default<Geometry>|undefined} The removed feature
-     *     (or undefined if the feature was not found).
+     * @param {FeatureType} feature Feature.
+     * @return {boolean} True if the feature was removed, false if it was not found.
      * @protected
      */
-    protected removeFeatureInternal(feature: import("../Feature.js").default<Geometry>): import("../Feature.js").default<Geometry> | undefined;
+    protected removeFeatureInternal(feature: FeatureType): boolean;
     /**
      * Remove a feature from the id index.  Called internally when the feature id
      * may have changed.
-     * @param {import("../Feature.js").default<Geometry>} feature The feature.
-     * @return {boolean} Removed the feature from the index.
+     * @param {FeatureType} feature The feature.
      * @private
      */
     private removeFromIdIndex_;
@@ -629,7 +649,12 @@ declare class VectorSource<Geometry extends import("../geom/Geometry.js").defaul
      * @api
      */
     setUrl(url: string | import("../featureloader.js").FeatureUrlFunction): void;
+    /**
+     * @param {boolean} overlaps The source can have overlapping geometries.
+     */
+    setOverlaps(overlaps: boolean): void;
 }
+import RenderFeature from '../render/Feature.js';
 import Collection from '../Collection.js';
 import Source from './Source.js';
 //# sourceMappingURL=Vector.d.ts.map

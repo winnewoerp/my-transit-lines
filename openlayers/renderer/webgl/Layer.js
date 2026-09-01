@@ -2,14 +2,14 @@
  * @module ol/renderer/webgl/Layer
  */
 import LayerProperty from '../../layer/Property.js';
-import LayerRenderer from '../Layer.js';
 import RenderEvent from '../../render/Event.js';
 import RenderEventType from '../../render/EventType.js';
-import WebGLHelper from '../../webgl/Helper.js';
 import {
   compose as composeTransform,
   create as createTransform,
 } from '../../transform.js';
+import WebGLHelper from '../../webgl/Helper.js';
+import LayerRenderer from '../Layer.js';
 
 /**
  * @typedef {Object} PostProcessesOptions
@@ -17,12 +17,12 @@ import {
  * the main canvas that will then be sampled up (useful for saving resource on blur steps).
  * @property {string} [vertexShader] Vertex shader source
  * @property {string} [fragmentShader] Fragment shader source
- * @property {Object<string,import("../../webgl/Helper").UniformValue>} [uniforms] Uniform definitions for the post process step
+ * @property {Object<string,import("../../webgl/Helper.js").UniformValue>} [uniforms] Uniform definitions for the post process step
  */
 
 /**
  * @typedef {Object} Options
- * @property {Object<string,import("../../webgl/Helper").UniformValue>} [uniforms] Uniform definitions for the post process steps
+ * @property {Object<string,import("../../webgl/Helper.js").UniformValue>} [uniforms] Uniform definitions for the post process steps
  * @property {Array<PostProcessesOptions>} [postProcesses] Post-processes definitions
  */
 
@@ -53,12 +53,6 @@ class WebGLLayerRenderer extends LayerRenderer {
 
     /**
      * @private
-     * @type {CanvasRenderingContext2D}
-     */
-    this.pixelContext_ = null;
-
-    /**
-     * @private
      */
     this.postProcesses_ = options.postProcesses;
 
@@ -73,7 +67,12 @@ class WebGLLayerRenderer extends LayerRenderer {
      */
     this.helper;
 
-    layer.addChangeListener(LayerProperty.MAP, this.removeHelper.bind(this));
+    this.onMapChanged_ = () => {
+      this.clearCache();
+      this.removeHelper();
+    };
+
+    layer.addChangeListener(LayerProperty.MAP, this.onMapChanged_);
 
     this.dispatchPreComposeEvent = this.dispatchPreComposeEvent.bind(this);
     this.dispatchPostComposeEvent = this.dispatchPostComposeEvent.bind(this);
@@ -91,7 +90,7 @@ class WebGLLayerRenderer extends LayerRenderer {
         RenderEventType.PRECOMPOSE,
         undefined,
         frameState,
-        context
+        context,
       );
       layer.dispatchEvent(event);
     }
@@ -109,7 +108,7 @@ class WebGLLayerRenderer extends LayerRenderer {
         RenderEventType.POSTCOMPOSE,
         undefined,
         frameState,
-        context
+        context,
       );
       layer.dispatchEvent(event);
     }
@@ -140,6 +139,7 @@ class WebGLLayerRenderer extends LayerRenderer {
    * Determine whether renderFrame should be called.
    * @param {import("../../Map.js").FrameState} frameState Frame state.
    * @return {boolean} Layer is ready to be rendered.
+   * @override
    */
   prepareFrame(frameState) {
     if (this.getLayer().getRenderSource()) {
@@ -207,10 +207,21 @@ class WebGLLayerRenderer extends LayerRenderer {
   }
 
   /**
+   * @protected
+   */
+  clearCache() {}
+
+  /**
    * Clean up.
+   * @override
    */
   disposeInternal() {
+    this.clearCache();
     this.removeHelper();
+    this.getLayer()?.removeChangeListener(
+      LayerProperty.MAP,
+      this.onMapChanged_,
+    );
     super.disposeInternal();
   }
 
@@ -231,14 +242,14 @@ class WebGLLayerRenderer extends LayerRenderer {
         -frameState.pixelRatio,
         0,
         0,
-        -frameState.size[1]
+        -frameState.size[1],
       );
 
       const event = new RenderEvent(
         type,
         this.inversePixelTransform_,
         frameState,
-        context
+        context,
       );
       layer.dispatchEvent(event);
     }

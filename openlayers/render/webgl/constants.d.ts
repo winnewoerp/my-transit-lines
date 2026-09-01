@@ -20,21 +20,25 @@ export type WebGLWorkerGenerateBuffersMessage = {
      */
     type: WebGLWorkerMessageType;
     /**
-     * Polygon render instructions raw binary buffer.
+     * render instructions raw binary buffer.
      */
-    renderInstructions: ArrayBuffer;
+    renderInstructions: ArrayBufferLike;
     /**
-     * Amount of custom attributes count in the polygon render instructions.
+     * Amount of hit detection + custom attributes count in the render instructions.
      */
     customAttributesSize?: number | undefined;
     /**
-     * Vertices array raw binary buffer (sent by the worker).
-     */
-    vertexBuffer?: ArrayBuffer | undefined;
-    /**
      * Indices array raw binary buffer (sent by the worker).
      */
-    indexBuffer?: ArrayBuffer | undefined;
+    indicesBuffer?: ArrayBuffer | undefined;
+    /**
+     * Vertex attributes array raw binary buffer (sent by the worker).
+     */
+    vertexAttributesBuffer?: ArrayBuffer | undefined;
+    /**
+     * Instance attributes array raw binary buffer (sent by the worker).
+     */
+    instanceAttributesBuffer?: ArrayBuffer | undefined;
     /**
      * Transformation matrix used to project the instructions coordinates
      */

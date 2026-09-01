@@ -3,19 +3,23 @@
  */
 import Collection from '../Collection.js';
 import CollectionEventType from '../CollectionEventType.js';
-import Event from '../events/Event.js';
-import EventType from '../events/EventType.js';
 import Feature from '../Feature.js';
 import MapBrowserEventType from '../MapBrowserEventType.js';
-import Point from '../geom/Point.js';
-import PointerInteraction from './Pointer.js';
-import RBush from '../structs/RBush.js';
-import VectorEventType from '../source/VectorEventType.js';
-import VectorLayer from '../layer/Vector.js';
-import VectorSource from '../source/Vector.js';
+import ObjectEventType from '../ObjectEventType.js';
+import {equals} from '../array.js';
+import {
+  closestOnSegment,
+  distance as coordinateDistance,
+  equals as coordinatesEqual,
+  squaredDistance as squaredCoordinateDistance,
+  squaredDistanceToSegment,
+} from '../coordinate.js';
+import Event from '../events/Event.js';
+import EventType from '../events/EventType.js';
 import {
   altKeyOnly,
   always,
+  never,
   primaryAction,
   singleClick,
 } from '../events/condition.js';
@@ -24,16 +28,9 @@ import {
   buffer as bufferExtent,
   createOrUpdateFromCoordinate as createExtent,
 } from '../extent.js';
-import {
-  closestOnSegment,
-  distance as coordinateDistance,
-  equals as coordinatesEqual,
-  squaredDistance as squaredCoordinateDistance,
-  squaredDistanceToSegment,
-} from '../coordinate.js';
-import {createEditingStyle} from '../style/Style.js';
-import {equals} from '../array.js';
+import Point from '../geom/Point.js';
 import {fromCircle} from '../geom/Polygon.js';
+import VectorLayer from '../layer/Vector.js';
 import {
   fromUserCoordinate,
   fromUserExtent,
@@ -41,7 +38,17 @@ import {
   toUserCoordinate,
   toUserExtent,
 } from '../proj.js';
+import VectorSource from '../source/Vector.js';
+import VectorEventType from '../source/VectorEventType.js';
+import RBush from '../structs/RBush.js';
+import {createEditingStyle} from '../style/Style.js';
 import {getUid} from '../util.js';
+import PointerInteraction from './Pointer.js';
+import {
+  getCoordinate,
+  getTraceTargetUpdate,
+  getTraceTargets,
+} from './tracing.js';
 
 /**
  * The segment index assigned to a circle's center when
@@ -89,19 +96,37 @@ const ModifyEventType = {
  */
 
 /**
+ * A function that takes a {@link module:ol/Feature~Feature} and  returns `true` if
+ * the feature may be modified or `false` otherwise.
+ * @typedef {function(Feature):boolean} FilterFunction
+ */
+
+/**
+ * @typedef {[SegmentData, number]} DragSegment
+ */
+
+/**
  * @typedef {Object} Options
  * @property {import("../events/condition.js").Condition} [condition] A function that
- * takes an {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
+ * takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
  * boolean to indicate whether that event will be considered to add or move a
  * vertex to the sketch. Default is
  * {@link module:ol/events/condition.primaryAction}.
  * @property {import("../events/condition.js").Condition} [deleteCondition] A function
- * that takes an {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
+ * that takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
  * boolean to indicate whether that event should be handled. By default,
  * {@link module:ol/events/condition.singleClick} with
  * {@link module:ol/events/condition.altKeyOnly} results in a vertex deletion.
+ * This combination is handled by wrapping the two condition checks in a single function:
+ * ```js
+ * import { altKeyOnly, singleClick } from 'ol/events/condition.js';
+ *
+ * function (event) {
+ *   return altKeyOnly(event) && singleClick(event)
+ * }
+ * ```
  * @property {import("../events/condition.js").Condition} [insertVertexCondition] A
- * function that takes an {@link module:ol/MapBrowserEvent~MapBrowserEvent} and
+ * function that takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and
  * returns a boolean to indicate whether a new vertex should be added to the sketch
  * features. Default is {@link module:ol/events/condition.always}.
  * @property {number} [pixelTolerance=10] Pixel tolerance for considering the
@@ -110,7 +135,8 @@ const ModifyEventType = {
  * Style used for the modification point or vertex. For linestrings and polygons, this will
  * be the affected vertex, for circles a point along the circle, and for points the actual
  * point. If not configured, the default edit style is used (see {@link module:ol/style/Style~Style}).
- * When using a style function, the point feature passed to the function will have a `features`
+ * When using a style function, the point feature passed to the function will have an `existing` property -
+ * indicating whether there is an existing vertex underneath or not, a `features`
  * property - an array whose entries are the features that are being modified, and a `geometries`
  * property - an array whose entries are the geometries that are being modified. Both arrays are
  * in the same order. The `geometries` are only useful when modifying geometry collections, where
@@ -118,18 +144,50 @@ const ModifyEventType = {
  * @property {VectorSource} [source] The vector source with
  * features to modify.  If a vector source is not provided, a feature collection
  * must be provided with the `features` option.
- * @property {boolean|import("../layer/BaseVector").default} [hitDetection] When configured, point
+ * @property {boolean|import("../layer/BaseVector.js").default} [hitDetection] When configured, point
  * features will be considered for modification based on their visual appearance, instead of being within
  * the `pixelTolerance` from the pointer location. When a {@link module:ol/layer/BaseVector~BaseVectorLayer} is
  * provided, only the rendered representation of the features on that layer will be considered.
  * @property {Collection<Feature>} [features]
  * The features the interaction works on.  If a feature collection is not
  * provided, a vector source must be provided with the `source` option.
+ * @property {FilterFunction} [filter] A function that takes a {@link module:ol/Feature~Feature}
+ * and returns `true` if the feature may be modified or `false` otherwise.
+ * @property {boolean|import("../events/condition.js").Condition} [trace=false] Trace a portion of another geometry.
+ * Tracing starts when two neighboring vertices are dragged onto a trace target, without any other modification in between..
+ * @property {VectorSource} [traceSource] Source for features to trace.  If tracing is active and a `traceSource` is
+ * not provided, the interaction's `source` will be used.  Tracing requires that the interaction is configured with
+ * either a `traceSource` or a `source`.
  * @property {boolean} [wrapX=false] Wrap the world horizontally on the sketch
  * overlay.
  * @property {boolean} [snapToPointer=!hitDetection] The vertex, point or segment being modified snaps to the
  * pointer coordinate when clicked within the `pixelTolerance`.
+ * @property {function(import("../coordinate.js").Coordinate, import("../coordinate.js").Coordinate): boolean} [sharedVerticesEqual]
+ * A function that takes two coordinates and returns whether they should be
+ * considered equal for vertex matching purposes. By default, all coordinate
+ * dimensions are compared. This is useful when features have mixed coordinate
+ * dimensions (e.g., XY and XYZ) but should still be treated as sharing vertices
+ * at the same 2D position.
  */
+
+function getCoordinatesArray(coordinates, geometryType, depth) {
+  let coordinatesArray;
+  switch (geometryType) {
+    case 'LineString':
+      coordinatesArray = coordinates;
+      break;
+    case 'MultiLineString':
+    case 'Polygon':
+      coordinatesArray = coordinates[depth[0]];
+      break;
+    case 'MultiPolygon':
+      coordinatesArray = coordinates[depth[1]][depth[0]];
+      break;
+    default:
+    // pass
+  }
+  return coordinatesArray;
+}
 
 /**
  * @classdesc
@@ -165,11 +223,11 @@ export class ModifyEvent extends Event {
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'modifyend'|'modifystart', ModifyEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'modifyend'|'modifystart', ModifyEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active'|'modifyend'|'modifystart', Return>} ModifyOnSignature
  */
 
@@ -201,13 +259,31 @@ class Modify extends PointerInteraction {
   constructor(options) {
     super(/** @type {import("./Pointer.js").Options} */ (options));
 
+    //Maintain a ref to event handlers for later unregistering
+    /** @private */
+    this.handleSourceAdd_ = this.handleSourceAdd_.bind(this);
+
+    /** @private */
+    this.handleSourceRemove_ = this.handleSourceRemove_.bind(this);
+
+    /** @private */
+    this.handleExternalCollectionAdd_ =
+      this.handleExternalCollectionAdd_.bind(this);
+
+    /** @private */
+    this.handleExternalCollectionRemove_ =
+      this.handleExternalCollectionRemove_.bind(this);
+
+    /** @private */
+    this.handleFeatureChange_ = this.handleFeatureChange_.bind(this);
+
     /***
-     * @type {ModifyOnSignature<import("../events").EventsKey>}
+     * @type {ModifyOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {ModifyOnSignature<import("../events").EventsKey>}
+     * @type {ModifyOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 
@@ -215,9 +291,6 @@ class Modify extends PointerInteraction {
      * @type {ModifyOnSignature<void>}
      */
     this.un;
-
-    /** @private */
-    this.boundHandleFeatureChange_ = this.handleFeatureChange_.bind(this);
 
     /**
      * @private
@@ -265,10 +338,10 @@ class Modify extends PointerInteraction {
     this.vertexSegments_ = null;
 
     /**
-     * @type {import("../pixel.js").Pixel}
+     * @type {import("../coordinate.js").Coordinate}
      * @private
      */
-    this.lastPixel_ = [0, 0];
+    this.lastCoordinate_ = [0, 0];
 
     /**
      * Tracks if the next `singleclick` event should be ignored to prevent
@@ -313,7 +386,7 @@ class Modify extends PointerInteraction {
     this.changingFeature_ = false;
 
     /**
-     * @type {Array}
+     * @type {Array<DragSegment>}
      * @private
      */
     this.dragSegments_ = [];
@@ -339,15 +412,15 @@ class Modify extends PointerInteraction {
      * @type {!Object<string, function(Feature, import("../geom/Geometry.js").default): void>}
      */
     this.SEGMENT_WRITERS_ = {
-      'Point': this.writePointGeometry_.bind(this),
-      'LineString': this.writeLineStringGeometry_.bind(this),
-      'LinearRing': this.writeLineStringGeometry_.bind(this),
-      'Polygon': this.writePolygonGeometry_.bind(this),
-      'MultiPoint': this.writeMultiPointGeometry_.bind(this),
-      'MultiLineString': this.writeMultiLineStringGeometry_.bind(this),
-      'MultiPolygon': this.writeMultiPolygonGeometry_.bind(this),
-      'Circle': this.writeCircleGeometry_.bind(this),
-      'GeometryCollection': this.writeGeometryCollectionGeometry_.bind(this),
+      Point: this.writePointGeometry_.bind(this),
+      LineString: this.writeLineStringGeometry_.bind(this),
+      LinearRing: this.writeLineStringGeometry_.bind(this),
+      Polygon: this.writePolygonGeometry_.bind(this),
+      MultiPoint: this.writeMultiPointGeometry_.bind(this),
+      MultiLineString: this.writeMultiLineStringGeometry_.bind(this),
+      MultiPolygon: this.writeMultiPolygonGeometry_.bind(this),
+      Circle: this.writeCircleGeometry_.bind(this),
+      GeometryCollection: this.writeGeometryCollectionGeometry_.bind(this),
     };
 
     /**
@@ -357,50 +430,118 @@ class Modify extends PointerInteraction {
     this.source_ = null;
 
     /**
-     * @type {boolean|import("../layer/BaseVector").default}
+     * @type {VectorSource|null}
+     * @private
+     */
+    this.traceSource_ = options.traceSource || options.source || null;
+
+    /**
+     * @type {import("../events/condition.js").Condition}
+     * @private
+     */
+    this.traceCondition_;
+    this.setTrace(options.trace || false);
+
+    /**
+     * @type {import('./tracing.js').TraceState}
+     * @private
+     */
+    this.traceState_ = {active: false};
+
+    /**
+     * @type {Array<DragSegment>|null}
+     * @private
+     */
+    this.traceSegments_ = null;
+
+    /**
+     * @type {boolean|import("../layer/BaseVector.js").default}
+     * @private
      */
     this.hitDetection_ = null;
 
-    /** @type {Collection<Feature>} */
+    /**
+     * Useful for performance optimization
+     * @private
+     * @type boolean
+     */
+    this.filterFunctionWasSupplied_ =
+      options.filter != undefined ? true : false;
+
+    /**
+     * @private
+     * @type {FilterFunction}
+     */
+    this.filter_ = options.filter ? options.filter : () => true;
+
+    /**
+     * @private
+     * @type {function(import("../coordinate.js").Coordinate, import("../coordinate.js").Coordinate): boolean}
+     */
+    this.coordinatesEqual_ = options.sharedVerticesEqual
+      ? options.sharedVerticesEqual
+      : coordinatesEqual;
+
+    if (!(options.features || options.source)) {
+      throw new Error(
+        'The modify interaction requires features collection or a source',
+      );
+    }
+    /** @type {Array<Feature>} */
     let features;
     if (options.features) {
-      features = options.features;
+      features = options.features.getArray();
+      //setup listeners on external features collection and features
+      options.features.addEventListener(
+        CollectionEventType.ADD,
+        this.handleExternalCollectionAdd_,
+      );
+      options.features.addEventListener(
+        CollectionEventType.REMOVE,
+        this.handleExternalCollectionRemove_,
+      );
+      //keep ref for unsubscribe on dispose
+      this.featuresCollection_ = options.features;
     } else if (options.source) {
-      this.source_ = options.source;
-      features = new Collection(this.source_.getFeatures());
-      this.source_.addEventListener(
+      features = options.source.getFeatures();
+      //setup listeners on external source and features
+      options.source.addEventListener(
         VectorEventType.ADDFEATURE,
-        this.handleSourceAdd_.bind(this)
+        this.handleSourceAdd_,
       );
-      this.source_.addEventListener(
+      options.source.addEventListener(
         VectorEventType.REMOVEFEATURE,
-        this.handleSourceRemove_.bind(this)
+        this.handleSourceRemove_,
       );
+      //keep ref for unsubscribe on dispose
+      this.source_ = options.source;
     }
-    if (!features) {
-      throw new Error(
-        'The modify interaction requires features, a source or a layer'
-      );
-    }
+    features.forEach((feature) => {
+      //any modification to the feature requires filter to be re-run
+      feature.addEventListener(EventType.CHANGE, this.handleFeatureChange_);
+      //prop change handler is only to re-run the filter
+      if (this.filterFunctionWasSupplied_) {
+        feature.addEventListener(
+          ObjectEventType.PROPERTYCHANGE,
+          this.handleFeatureChange_,
+        );
+      }
+    });
+
     if (options.hitDetection) {
       this.hitDetection_ = options.hitDetection;
     }
 
     /**
-     * @type {Collection<Feature>}
+     * Internal features array.  When adding or removing features, be sure to use
+     * addFeature_()/removeFeature_() so that the the segment index is adjusted.
+     * @type {Array<Feature>}
      * @private
      */
-    this.features_ = features;
-
-    this.features_.forEach(this.addFeature_.bind(this));
-    this.features_.addEventListener(
-      CollectionEventType.ADD,
-      this.handleFeatureAdd_.bind(this)
-    );
-    this.features_.addEventListener(
-      CollectionEventType.REMOVE,
-      this.handleFeatureRemove_.bind(this)
-    );
+    this.features_ = [];
+    features
+      .filter(this.filter_)
+      .forEach((feature) => this.addFeature_(feature));
 
     /**
      * @type {import("../MapBrowserEvent.js").default}
@@ -411,6 +552,7 @@ class Modify extends PointerInteraction {
     /**
      * Delta (x, y in map units) between matched rtree vertex and pointer vertex.
      * @type {Array<number>}
+     * @private
      */
     this.delta_ = [0, 0];
 
@@ -424,10 +566,30 @@ class Modify extends PointerInteraction {
   }
 
   /**
+   * Toggle tracing mode or set a tracing condition.
+   *
+   * @param {boolean|import("../events/condition.js").Condition} trace A boolean to toggle tracing mode or an event
+   *     condition that will be checked when a feature is clicked to determine if tracing should be active.
+   */
+  setTrace(trace) {
+    let condition;
+    if (!trace) {
+      condition = never;
+    } else if (trace === true) {
+      condition = always;
+    } else {
+      condition = trace;
+    }
+    this.traceCondition_ = condition;
+  }
+
+  /**
+   * Called when a feature is added to the internal features collection
    * @param {Feature} feature Feature.
    * @private
    */
   addFeature_(feature) {
+    this.features_.push(feature);
     const geometry = feature.getGeometry();
     if (geometry) {
       const writer = this.SEGMENT_WRITERS_[geometry.getType()];
@@ -437,14 +599,13 @@ class Modify extends PointerInteraction {
     }
     const map = this.getMap();
     if (map && map.isRendered() && this.getActive()) {
-      this.handlePointerAtPixel_(this.lastPixel_, map);
+      this.handlePointerAtPixel_(this.lastCoordinate_);
     }
-    feature.addEventListener(EventType.CHANGE, this.boundHandleFeatureChange_);
   }
 
   /**
    * @param {import("../MapBrowserEvent.js").default} evt Map browser event.
-   * @param {Array<Array<SegmentData>>} segments The segments subject to modification.
+   * @param {Array<SegmentData>} segments The segments subject to modification.
    * @private
    */
   willModifyFeatures_(evt, segments) {
@@ -452,12 +613,9 @@ class Modify extends PointerInteraction {
       this.featuresBeingModified_ = new Collection();
       const features = this.featuresBeingModified_.getArray();
       for (let i = 0, ii = segments.length; i < ii; ++i) {
-        const segment = segments[i];
-        for (let s = 0, ss = segment.length; s < ss; ++s) {
-          const feature = segment[s].feature;
-          if (feature && !features.includes(feature)) {
-            this.featuresBeingModified_.push(feature);
-          }
+        const feature = segments[i].feature;
+        if (feature && !features.includes(feature)) {
+          this.featuresBeingModified_.push(feature);
         }
       }
       if (this.featuresBeingModified_.getLength() === 0) {
@@ -467,28 +625,28 @@ class Modify extends PointerInteraction {
           new ModifyEvent(
             ModifyEventType.MODIFYSTART,
             this.featuresBeingModified_,
-            evt
-          )
+            evt,
+          ),
         );
       }
     }
   }
 
   /**
+   * Removes a feature from the internal features collection and updates internal state
+   * accordingly.
    * @param {Feature} feature Feature.
    * @private
    */
   removeFeature_(feature) {
+    const itemIndex = this.features_.indexOf(feature);
+    this.features_.splice(itemIndex, 1);
     this.removeFeatureSegmentData_(feature);
     // Remove the vertex feature if the collection of candidate features is empty.
-    if (this.vertexFeature_ && this.features_.getLength() === 0) {
+    if (this.vertexFeature_ && this.features_.length === 0) {
       this.overlay_.getSource().removeFeature(this.vertexFeature_);
       this.vertexFeature_ = null;
     }
-    feature.removeEventListener(
-      EventType.CHANGE,
-      this.boundHandleFeatureChange_
-    );
   }
 
   /**
@@ -507,7 +665,7 @@ class Modify extends PointerInteraction {
         if (feature === node.feature) {
           nodesToRemove.push(node);
         }
-      }
+      },
     );
     for (let i = nodesToRemove.length - 1; i >= 0; --i) {
       const nodeToRemove = nodesToRemove[i];
@@ -525,6 +683,7 @@ class Modify extends PointerInteraction {
    * @param {boolean} active Active.
    * @observable
    * @api
+   * @override
    */
   setActive(active) {
     if (this.vertexFeature_ && !active) {
@@ -539,6 +698,7 @@ class Modify extends PointerInteraction {
    * Subclasses may set up event handlers to get notified about changes to
    * the map here.
    * @param {import("../Map.js").default} map Map.
+   * @override
    */
   setMap(map) {
     this.overlay_.setMap(map);
@@ -559,8 +719,9 @@ class Modify extends PointerInteraction {
    * @private
    */
   handleSourceAdd_(event) {
-    if (event.feature) {
-      this.features_.push(event.feature);
+    const feature = event.feature;
+    if (feature) {
+      this.externalAddFeatureHandler_(feature);
     }
   }
 
@@ -569,37 +730,83 @@ class Modify extends PointerInteraction {
    * @private
    */
   handleSourceRemove_(event) {
-    if (event.feature) {
-      this.features_.remove(event.feature);
+    const feature = event.feature;
+    if (feature) {
+      this.externalRemoveFeatureHandler_(feature);
     }
   }
 
   /**
-   * @param {import("../Collection.js").CollectionEvent<Feature>} evt Event.
+   * @param {import("../Collection.js").CollectionEvent} event Event.
    * @private
    */
-  handleFeatureAdd_(evt) {
-    this.addFeature_(evt.element);
+  handleExternalCollectionAdd_(event) {
+    const feature = event.element;
+    if (feature) {
+      this.externalAddFeatureHandler_(feature);
+    }
   }
 
   /**
-   * @param {import("../events/Event.js").default} evt Event.
+   * @param {import("../Collection.js").CollectionEvent} event Event.
+   * @private
+   */
+  handleExternalCollectionRemove_(event) {
+    const feature = event.element;
+    if (feature) {
+      this.externalRemoveFeatureHandler_(feature);
+    }
+  }
+
+  /**
+   * Common handler for event signaling addition of feature to the supplied features source
+   * or collection.
+   * @param {Feature} feature Feature.
+   */
+  externalAddFeatureHandler_(feature) {
+    feature.addEventListener(EventType.CHANGE, this.handleFeatureChange_);
+    //prop change handler is only for reapplying the filter
+    if (this.filterFunctionWasSupplied_) {
+      feature.addEventListener(
+        ObjectEventType.PROPERTYCHANGE,
+        this.handleFeatureChange_,
+      );
+    }
+    if (this.filter_(feature)) {
+      this.addFeature_(feature);
+    }
+  }
+
+  /**
+   * Common handler for event signaling removal of feature from the supplied features source
+   * or collection.
+   * @param {Feature} feature Feature.
+   */
+  externalRemoveFeatureHandler_(feature) {
+    feature.removeEventListener(EventType.CHANGE, this.handleFeatureChange_);
+    if (this.filterFunctionWasSupplied_) {
+      feature.removeEventListener(
+        ObjectEventType.PROPERTYCHANGE,
+        this.handleFeatureChange_,
+      );
+    }
+    this.removeFeature_(feature);
+  }
+
+  /**
+   * Listener for features in external source or features collection.  Ensures the feature filter
+   * is re-run and segment data is updated.
+   * @param {import("../events/Event.js").default | import("../Object.js").ObjectEvent} evt Event.
    * @private
    */
   handleFeatureChange_(evt) {
     if (!this.changingFeature_) {
       const feature = /** @type {Feature} */ (evt.target);
       this.removeFeature_(feature);
-      this.addFeature_(feature);
+      //safe to remove handler on a feature if there isn't one, but need to apply the filter
+      // before adding the feature.
+      this.filter_(feature) && this.addFeature_(feature);
     }
-  }
-
-  /**
-   * @param {import("../Collection.js").CollectionEvent<Feature>} evt Event.
-   * @private
-   */
-  handleFeatureRemove_(evt) {
-    this.removeFeature_(evt.element);
   }
 
   /**
@@ -790,7 +997,7 @@ class Modify extends PointerInteraction {
         .clone()
         .transform(userProjection, projection);
       circleGeometry = fromCircle(
-        /** @type {import("../geom/Circle.js").default} */ (circleGeometry)
+        /** @type {import("../geom/Circle.js").default} */ (circleGeometry),
       ).transform(projection, userProjection);
     }
     this.rBush_.insert(circleGeometry.getExtent(), circumferenceSegmentData);
@@ -814,10 +1021,11 @@ class Modify extends PointerInteraction {
    * @param {import("../coordinate.js").Coordinate} coordinates Coordinates.
    * @param {Array<Feature>} features The features being modified.
    * @param {Array<import("../geom/SimpleGeometry.js").default>} geometries The geometries being modified.
+   * @param {boolean} existing The vertex represents an existing vertex.
    * @return {Feature} Vertex feature.
    * @private
    */
-  createOrUpdateVertexFeature_(coordinates, features, geometries) {
+  createOrUpdateVertexFeature_(coordinates, features, geometries, existing) {
     let vertexFeature = this.vertexFeature_;
     if (!vertexFeature) {
       vertexFeature = new Feature(new Point(coordinates));
@@ -829,6 +1037,7 @@ class Modify extends PointerInteraction {
     }
     vertexFeature.set('features', features);
     vertexFeature.set('geometries', geometries);
+    vertexFeature.set('existing', existing);
     return vertexFeature;
   }
 
@@ -836,6 +1045,7 @@ class Modify extends PointerInteraction {
    * Handles the {@link module:ol/MapBrowserEvent~MapBrowserEvent map browser event} and may modify the geometry.
    * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
    * @return {boolean} `false` to stop event propagation.
+   * @override
    */
   handleEvent(mapBrowserEvent) {
     if (!mapBrowserEvent.originalEvent) {
@@ -870,12 +1080,524 @@ class Modify extends PointerInteraction {
   }
 
   /**
+   * @param {import("../coordinate.js").Coordinate} pixelCoordinate Pixel coordinate.
+   * @return {Array<SegmentData>|undefined} Insert vertices and update drag segments.
+   * @private
+   */
+  findInsertVerticesAndUpdateDragSegments_(pixelCoordinate) {
+    this.handlePointerAtPixel_(pixelCoordinate);
+    this.dragSegments_.length = 0;
+    this.featuresBeingModified_ = null;
+    const vertexFeature = this.vertexFeature_;
+    if (!vertexFeature) {
+      return;
+    }
+
+    const projection = this.getMap().getView().getProjection();
+    /** @type {Array<SegmentData>} */
+    const insertVertices = [];
+    const vertex = this.vertexFeature_.getGeometry().getCoordinates();
+    const vertexExtent = boundingExtent([vertex]);
+    const segmentDataMatches = this.rBush_.getInExtent(vertexExtent);
+    const componentSegments = {};
+    segmentDataMatches.sort(compareIndexes);
+    for (let i = 0, ii = segmentDataMatches.length; i < ii; ++i) {
+      const segmentDataMatch = segmentDataMatches[i];
+      const segment = segmentDataMatch.segment;
+      let uid = getUid(segmentDataMatch.geometry);
+      const depth = segmentDataMatch.depth;
+      if (depth) {
+        uid += '-' + depth.join('-'); // separate feature components
+      }
+      if (!componentSegments[uid]) {
+        componentSegments[uid] = new Array(2);
+      }
+
+      if (
+        segmentDataMatch.geometry.getType() === 'Circle' &&
+        segmentDataMatch.index === CIRCLE_CIRCUMFERENCE_INDEX
+      ) {
+        const closestVertex = closestOnSegmentData(
+          pixelCoordinate,
+          segmentDataMatch,
+          projection,
+        );
+        if (
+          this.coordinatesEqual_(closestVertex, vertex) &&
+          !componentSegments[uid][0]
+        ) {
+          this.dragSegments_.push([segmentDataMatch, 0]);
+          componentSegments[uid][0] = segmentDataMatch;
+        }
+        continue;
+      }
+
+      if (
+        this.coordinatesEqual_(segment[0], vertex) &&
+        !componentSegments[uid][0]
+      ) {
+        this.dragSegments_.push([segmentDataMatch, 0]);
+        componentSegments[uid][0] = segmentDataMatch;
+        continue;
+      }
+
+      if (
+        this.coordinatesEqual_(segment[1], vertex) &&
+        !componentSegments[uid][1]
+      ) {
+        if (
+          componentSegments[uid][0] &&
+          componentSegments[uid][0].index === 0
+        ) {
+          let coordinates = segmentDataMatch.geometry.getCoordinates();
+          switch (segmentDataMatch.geometry.getType()) {
+            // prevent dragging closed linestrings by the connecting node
+            case 'LineString':
+            case 'MultiLineString':
+              continue;
+            // if dragging the first vertex of a polygon, ensure the other segment
+            // belongs to the closing vertex of the linear ring
+            case 'MultiPolygon':
+              coordinates = coordinates[depth[1]];
+            /* falls through */
+            case 'Polygon':
+              if (segmentDataMatch.index !== coordinates[depth[0]].length - 2) {
+                continue;
+              }
+              break;
+            default:
+            // pass
+          }
+        }
+
+        this.dragSegments_.push([segmentDataMatch, 1]);
+        componentSegments[uid][1] = segmentDataMatch;
+        continue;
+      }
+
+      if (
+        getUid(segment) in this.vertexSegments_ &&
+        !componentSegments[uid][0] &&
+        !componentSegments[uid][1]
+      ) {
+        insertVertices.push(segmentDataMatch);
+      }
+    }
+
+    return insertVertices;
+  }
+
+  /**
+   * @private
+   */
+  deactivateTrace_() {
+    this.traceState_ = {active: false};
+  }
+
+  /**
+   * Update the trace.
+   * @param {import("../MapBrowserEvent.js").default} event Event.
+   * @private
+   */
+  updateTrace_(event) {
+    const traceState = this.traceState_;
+    if (!traceState.active) {
+      return;
+    }
+
+    if (traceState.targetIndex === -1) {
+      // check if we are ready to pick a target
+      const startPx = event.map.getPixelFromCoordinate(traceState.startCoord);
+      if (coordinateDistance(startPx, event.pixel) < this.pixelTolerance_) {
+        return;
+      }
+    }
+
+    const updatedTraceTarget = getTraceTargetUpdate(
+      event.coordinate,
+      traceState,
+      event.map,
+      this.pixelTolerance_,
+    );
+
+    if (
+      traceState.targetIndex === -1 &&
+      Math.sqrt(updatedTraceTarget.closestTargetDistance) /
+        event.map.getView().getResolution() >
+        this.pixelTolerance_
+    ) {
+      return;
+    }
+
+    if (traceState.targetIndex !== updatedTraceTarget.index) {
+      // target changed
+      if (traceState.targetIndex !== -1) {
+        // remove points added during previous trace
+        const oldTarget = traceState.targets[traceState.targetIndex];
+        this.removeTracedCoordinates_(oldTarget.startIndex, oldTarget.endIndex);
+      } else {
+        for (const traceSegment of this.traceSegments_) {
+          const segmentData = traceSegment[0];
+          const geometry = segmentData.geometry;
+          const index = traceSegment[1];
+          const coordinates = geometry.getCoordinates();
+          const coordinatesArray = getCoordinatesArray(
+            coordinates,
+            geometry.getType(),
+            segmentData.depth,
+          );
+          coordinatesArray.splice(segmentData.index + index, 1);
+          geometry.setCoordinates(coordinates);
+          if (index === 0) {
+            segmentData.index -= 1;
+          }
+        }
+      }
+      // add points for the new target
+      const newTarget = traceState.targets[updatedTraceTarget.index];
+      this.addTracedCoordinates_(
+        newTarget,
+        newTarget.startIndex,
+        updatedTraceTarget.endIndex,
+      );
+    } else {
+      // target stayed the same
+      const target = traceState.targets[traceState.targetIndex];
+      this.addOrRemoveTracedCoordinates_(target, updatedTraceTarget.endIndex);
+    }
+
+    // modify the state with updated info
+    traceState.targetIndex = updatedTraceTarget.index;
+    const target = traceState.targets[traceState.targetIndex];
+    target.endIndex = updatedTraceTarget.endIndex;
+  }
+
+  getTraceCandidates_(event) {
+    const map = this.getMap();
+    const tolerance = this.pixelTolerance_;
+    const lowerLeft = map.getCoordinateFromPixel([
+      event.pixel[0] - tolerance,
+      event.pixel[1] + tolerance,
+    ]);
+    const upperRight = map.getCoordinateFromPixel([
+      event.pixel[0] + tolerance,
+      event.pixel[1] - tolerance,
+    ]);
+    const extent = boundingExtent([lowerLeft, upperRight]);
+    const features = this.traceSource_.getFeaturesInExtent(extent);
+    return features;
+  }
+
+  /**
+   * Activate or deactivate trace state based on a browser event.
+   * @param {import("../MapBrowserEvent.js").default} event Event.
+   * @private
+   */
+  toggleTraceState_(event) {
+    if (!this.traceSource_ || !this.traceCondition_(event)) {
+      return;
+    }
+
+    if (this.traceState_.active) {
+      this.deactivateTrace_();
+      this.traceSegments_ = null;
+      return;
+    }
+
+    const features = this.getTraceCandidates_(event);
+    if (features.length === 0) {
+      return;
+    }
+
+    const targets = getTraceTargets(event.coordinate, features);
+    if (targets.length) {
+      this.traceState_ = {
+        active: true,
+        startCoord: event.coordinate.slice(),
+        targets: targets,
+        targetIndex: -1,
+      };
+    }
+  }
+
+  /**
+   * @param {import('./tracing.js').TraceTarget} target The trace target.
+   * @param {number} endIndex The new end index of the trace.
+   * @private
+   */
+  addOrRemoveTracedCoordinates_(target, endIndex) {
+    // three cases to handle:
+    //  1. traced in the same direction and points need adding
+    //  2. traced in the same direction and points need removing
+    //  3. traced in a new direction
+    const previouslyForward = target.startIndex <= target.endIndex;
+    const currentlyForward = target.startIndex <= endIndex;
+    if (previouslyForward === currentlyForward) {
+      // same direction
+      if (
+        (previouslyForward && endIndex > target.endIndex) ||
+        (!previouslyForward && endIndex < target.endIndex)
+      ) {
+        // case 1 - add new points
+        this.addTracedCoordinates_(target, target.endIndex, endIndex);
+      } else if (
+        (previouslyForward && endIndex < target.endIndex) ||
+        (!previouslyForward && endIndex > target.endIndex)
+      ) {
+        // case 2 - remove old points
+        this.removeTracedCoordinates_(endIndex, target.endIndex);
+      }
+    } else {
+      // case 3 - remove old points, add new points
+      this.removeTracedCoordinates_(target.startIndex, target.endIndex);
+      this.addTracedCoordinates_(target, target.startIndex, endIndex);
+    }
+  }
+
+  /**
+   * @param {number} fromIndex The start index.
+   * @param {number} toIndex The end index.
+   * @private
+   */
+  removeTracedCoordinates_(fromIndex, toIndex) {
+    if (fromIndex === toIndex) {
+      return;
+    }
+
+    let remove = 0;
+    if (fromIndex < toIndex) {
+      const start = Math.ceil(fromIndex);
+      let end = Math.floor(toIndex);
+      if (end === toIndex) {
+        end -= 1;
+      }
+      remove = end - start + 1;
+    } else {
+      const start = Math.floor(fromIndex);
+      let end = Math.ceil(toIndex);
+      if (end === toIndex) {
+        end += 1;
+      }
+      remove = start - end + 1;
+    }
+
+    if (remove > 0) {
+      for (const traceSegment of this.traceSegments_) {
+        const segmentData = traceSegment[0];
+        const geometry = segmentData.geometry;
+        const index = traceSegment[1];
+        let removeIndex = traceSegment[0].index + 1;
+        if (index === 1) {
+          removeIndex -= remove;
+        }
+        const coordinates = geometry.getCoordinates();
+        const coordinatesArray = getCoordinatesArray(
+          coordinates,
+          geometry.getType(),
+          segmentData.depth,
+        );
+        coordinatesArray.splice(removeIndex, remove);
+        geometry.setCoordinates(coordinates);
+        if (index === 1) {
+          segmentData.index -= remove;
+        }
+      }
+    }
+  }
+
+  /**
+   * @param {import('./tracing.js').TraceTarget} target The trace target.
+   * @param {number} fromIndex The start index.
+   * @param {number} toIndex The end index.
+   * @private
+   */
+  addTracedCoordinates_(target, fromIndex, toIndex) {
+    if (fromIndex === toIndex) {
+      return;
+    }
+
+    const newCoordinates = [];
+    if (fromIndex < toIndex) {
+      // forward trace
+      const start = Math.ceil(fromIndex);
+      let end = Math.floor(toIndex);
+      if (end === toIndex) {
+        // if end is snapped to a vertex, it will be added later
+        end -= 1;
+      }
+      for (let i = start; i <= end; ++i) {
+        newCoordinates.push(getCoordinate(target.coordinates, i));
+      }
+    } else {
+      // reverse trace
+      const start = Math.floor(fromIndex);
+      let end = Math.ceil(toIndex);
+      if (end === toIndex) {
+        end += 1;
+      }
+      for (let i = start; i >= end; --i) {
+        newCoordinates.push(getCoordinate(target.coordinates, i));
+      }
+    }
+
+    if (newCoordinates.length) {
+      for (const traceSegment of this.traceSegments_) {
+        const segmentData = traceSegment[0];
+        const geometry = segmentData.geometry;
+        const index = traceSegment[1];
+        const insertIndex = segmentData.index + 1;
+        if (index === 0) {
+          newCoordinates.reverse();
+        }
+        const coordinates = geometry.getCoordinates();
+        const coordinatesArray = getCoordinatesArray(
+          coordinates,
+          geometry.getType(),
+          segmentData.depth,
+        );
+        coordinatesArray.splice(insertIndex, 0, ...newCoordinates);
+        geometry.setCoordinates(coordinates);
+        if (index === 1) {
+          segmentData.index += newCoordinates.length;
+        }
+      }
+    }
+  }
+
+  /**
+   * @param {import('../coordinate.js').Coordinate} vertex Vertex.
+   * @param {DragSegment} dragSegment Drag segment.
+   */
+  updateGeometry_(vertex, dragSegment) {
+    const segmentData = dragSegment[0];
+    const depth = segmentData.depth;
+    let coordinates;
+    const segment = segmentData.segment;
+    const geometry = segmentData.geometry;
+    const index = dragSegment[1];
+
+    const stride = geometry.getStride();
+    for (let i = 2; i < stride; ++i) {
+      vertex[i] = segment[index][i];
+    }
+    vertex.length = stride;
+    switch (geometry.getType()) {
+      case 'Point':
+        coordinates = vertex;
+        segment[0] = vertex;
+        segment[1] = vertex;
+        break;
+      case 'MultiPoint':
+        coordinates = geometry.getCoordinates();
+        coordinates[segmentData.index] = vertex;
+        segment[0] = vertex;
+        segment[1] = vertex;
+        break;
+      case 'LineString':
+        coordinates = geometry.getCoordinates();
+        coordinates[segmentData.index + index] = vertex;
+        segment[index] = vertex;
+        break;
+      case 'MultiLineString':
+        coordinates = geometry.getCoordinates();
+        coordinates[depth[0]][segmentData.index + index] = vertex;
+        segment[index] = vertex;
+        break;
+      case 'Polygon': {
+        coordinates = geometry.getCoordinates();
+        const ring = coordinates[depth[0]];
+        const targetIndex = segmentData.index + index;
+
+        // Prevent duplicate change events when vertex already at position
+        if (
+          ring[targetIndex][0] === vertex[0] &&
+          ring[targetIndex][1] === vertex[1]
+        ) {
+          coordinates = null;
+        } else {
+          ring[targetIndex] = vertex;
+          if (targetIndex === 0) {
+            ring[ring.length - 1] = vertex;
+          } else if (targetIndex === ring.length - 1) {
+            ring[0] = vertex;
+          }
+        }
+        segment[index] = vertex;
+        break;
+      }
+      case 'MultiPolygon': {
+        coordinates = geometry.getCoordinates();
+        const mRing = coordinates[depth[1]][depth[0]];
+        const mTargetIndex = segmentData.index + index;
+
+        // Prevent duplicate change events when vertex already at position
+        if (
+          mRing[mTargetIndex][0] === vertex[0] &&
+          mRing[mTargetIndex][1] === vertex[1]
+        ) {
+          coordinates = null;
+        } else {
+          mRing[mTargetIndex] = vertex;
+          if (mTargetIndex === 0) {
+            mRing[mRing.length - 1] = vertex;
+          } else if (mTargetIndex === mRing.length - 1) {
+            mRing[0] = vertex;
+          }
+        }
+        segment[index] = vertex;
+        break;
+      }
+      case 'Circle':
+        const circle = /** @type {import("../geom/Circle.js").default} */ (
+          geometry
+        );
+        segment[0] = vertex;
+        segment[1] = vertex;
+        if (segmentData.index === CIRCLE_CENTER_INDEX) {
+          this.changingFeature_ = true;
+          circle.setCenter(vertex);
+          this.changingFeature_ = false;
+        } else {
+          // We're dragging the circle's circumference:
+          this.changingFeature_ = true;
+          const projection = this.getMap().getView().getProjection();
+          let radius = coordinateDistance(
+            fromUserCoordinate(circle.getCenter(), projection),
+            fromUserCoordinate(vertex, projection),
+          );
+          const userProjection = getUserProjection();
+          if (userProjection) {
+            const circleGeometry = circle
+              .clone()
+              .transform(userProjection, projection);
+            circleGeometry.setRadius(radius);
+            radius = circleGeometry
+              .transform(projection, userProjection)
+              .getRadius();
+          }
+          circle.setRadius(radius);
+          this.changingFeature_ = false;
+        }
+        break;
+      default:
+      // pass
+    }
+    if (coordinates) {
+      this.setGeometryCoordinates_(geometry, coordinates);
+    }
+  }
+
+  /**
    * Handle pointer drag events.
    * @param {import("../MapBrowserEvent.js").default} evt Event.
+   * @override
    */
   handleDragEvent(evt) {
     this.ignoreNextSingleClick_ = false;
-    this.willModifyFeatures_(evt, this.dragSegments_);
+    this.willModifyFeatures_(
+      evt,
+      this.dragSegments_.map(([segment]) => segment),
+    );
 
     const vertex = [
       evt.coordinate[0] + this.delta_[0],
@@ -883,6 +1605,26 @@ class Modify extends PointerInteraction {
     ];
     const features = [];
     const geometries = [];
+    const startTraceCoord =
+      this.traceState_.active && !this.traceSegments_
+        ? this.traceState_.startCoord
+        : null;
+    if (startTraceCoord) {
+      this.traceSegments_ = [];
+      for (const dragSegment of this.dragSegments_) {
+        const segmentData = dragSegment[0];
+        const eligibleForTracing =
+          coordinateDistance(
+            closestOnSegment(startTraceCoord, segmentData.segment),
+            startTraceCoord,
+          ) /
+            evt.map.getView().getResolution() <
+          1;
+        if (eligibleForTracing) {
+          this.traceSegments_.push(dragSegment);
+        }
+      }
+    }
     for (let i = 0, ii = this.dragSegments_.length; i < ii; ++i) {
       const dragSegment = this.dragSegments_[i];
       const segmentData = dragSegment[0];
@@ -894,204 +1636,39 @@ class Modify extends PointerInteraction {
       if (!geometries.includes(geometry)) {
         geometries.push(geometry);
       }
-      const depth = segmentData.depth;
-      let coordinates;
-      const segment = segmentData.segment;
-      const index = dragSegment[1];
 
-      while (vertex.length < geometry.getStride()) {
-        vertex.push(segment[index][vertex.length]);
-      }
-
-      switch (geometry.getType()) {
-        case 'Point':
-          coordinates = vertex;
-          segment[0] = vertex;
-          segment[1] = vertex;
-          break;
-        case 'MultiPoint':
-          coordinates = geometry.getCoordinates();
-          coordinates[segmentData.index] = vertex;
-          segment[0] = vertex;
-          segment[1] = vertex;
-          break;
-        case 'LineString':
-          coordinates = geometry.getCoordinates();
-          coordinates[segmentData.index + index] = vertex;
-          segment[index] = vertex;
-          break;
-        case 'MultiLineString':
-          coordinates = geometry.getCoordinates();
-          coordinates[depth[0]][segmentData.index + index] = vertex;
-          segment[index] = vertex;
-          break;
-        case 'Polygon':
-          coordinates = geometry.getCoordinates();
-          coordinates[depth[0]][segmentData.index + index] = vertex;
-          segment[index] = vertex;
-          break;
-        case 'MultiPolygon':
-          coordinates = geometry.getCoordinates();
-          coordinates[depth[1]][depth[0]][segmentData.index + index] = vertex;
-          segment[index] = vertex;
-          break;
-        case 'Circle':
-          segment[0] = vertex;
-          segment[1] = vertex;
-          if (segmentData.index === CIRCLE_CENTER_INDEX) {
-            this.changingFeature_ = true;
-            geometry.setCenter(vertex);
-            this.changingFeature_ = false;
-          } else {
-            // We're dragging the circle's circumference:
-            this.changingFeature_ = true;
-            const projection = evt.map.getView().getProjection();
-            let radius = coordinateDistance(
-              fromUserCoordinate(geometry.getCenter(), projection),
-              fromUserCoordinate(vertex, projection)
-            );
-            const userProjection = getUserProjection();
-            if (userProjection) {
-              const circleGeometry = geometry
-                .clone()
-                .transform(userProjection, projection);
-              circleGeometry.setRadius(radius);
-              radius = circleGeometry
-                .transform(projection, userProjection)
-                .getRadius();
-            }
-            geometry.setRadius(radius);
-            this.changingFeature_ = false;
-          }
-          break;
-        default:
-        // pass
-      }
-
-      if (coordinates) {
-        this.setGeometryCoordinates_(geometry, coordinates);
-      }
+      this.updateGeometry_(vertex, dragSegment);
     }
-    this.createOrUpdateVertexFeature_(vertex, features, geometries);
+    this.updateTrace_(evt);
+    this.createOrUpdateVertexFeature_(vertex, features, geometries, true);
   }
 
   /**
    * Handle pointer down events.
    * @param {import("../MapBrowserEvent.js").default} evt Event.
    * @return {boolean} If the event was consumed.
+   * @override
    */
   handleDownEvent(evt) {
     if (!this.condition_(evt)) {
       return false;
     }
     const pixelCoordinate = evt.coordinate;
-    this.handlePointerAtPixel_(evt.pixel, evt.map, pixelCoordinate);
-    this.dragSegments_.length = 0;
-    this.featuresBeingModified_ = null;
-    const vertexFeature = this.vertexFeature_;
-    if (vertexFeature) {
-      const projection = evt.map.getView().getProjection();
-      const insertVertices = [];
-      const vertex = vertexFeature.getGeometry().getCoordinates();
-      const vertexExtent = boundingExtent([vertex]);
-      const segmentDataMatches = this.rBush_.getInExtent(vertexExtent);
-      const componentSegments = {};
-      segmentDataMatches.sort(compareIndexes);
-      for (let i = 0, ii = segmentDataMatches.length; i < ii; ++i) {
-        const segmentDataMatch = segmentDataMatches[i];
-        const segment = segmentDataMatch.segment;
-        let uid = getUid(segmentDataMatch.geometry);
-        const depth = segmentDataMatch.depth;
-        if (depth) {
-          uid += '-' + depth.join('-'); // separate feature components
+    const insertVertices =
+      this.findInsertVerticesAndUpdateDragSegments_(pixelCoordinate);
+
+    if (insertVertices?.length && this.insertVertexCondition_(evt)) {
+      this.willModifyFeatures_(evt, insertVertices);
+
+      if (this.vertexFeature_) {
+        const vertex = this.vertexFeature_.getGeometry().getCoordinates();
+        for (let j = insertVertices.length - 1; j >= 0; --j) {
+          this.insertVertex_(insertVertices[j], vertex);
         }
-        if (!componentSegments[uid]) {
-          componentSegments[uid] = new Array(2);
-        }
-
-        if (
-          segmentDataMatch.geometry.getType() === 'Circle' &&
-          segmentDataMatch.index === CIRCLE_CIRCUMFERENCE_INDEX
-        ) {
-          const closestVertex = closestOnSegmentData(
-            pixelCoordinate,
-            segmentDataMatch,
-            projection
-          );
-          if (
-            coordinatesEqual(closestVertex, vertex) &&
-            !componentSegments[uid][0]
-          ) {
-            this.dragSegments_.push([segmentDataMatch, 0]);
-            componentSegments[uid][0] = segmentDataMatch;
-          }
-          continue;
-        }
-
-        if (
-          coordinatesEqual(segment[0], vertex) &&
-          !componentSegments[uid][0]
-        ) {
-          this.dragSegments_.push([segmentDataMatch, 0]);
-          componentSegments[uid][0] = segmentDataMatch;
-          continue;
-        }
-
-        if (
-          coordinatesEqual(segment[1], vertex) &&
-          !componentSegments[uid][1]
-        ) {
-          if (
-            componentSegments[uid][0] &&
-            componentSegments[uid][0].index === 0
-          ) {
-            let coordinates = segmentDataMatch.geometry.getCoordinates();
-            switch (segmentDataMatch.geometry.getType()) {
-              // prevent dragging closed linestrings by the connecting node
-              case 'LineString':
-              case 'MultiLineString':
-                continue;
-              // if dragging the first vertex of a polygon, ensure the other segment
-              // belongs to the closing vertex of the linear ring
-              case 'MultiPolygon':
-                coordinates = coordinates[depth[1]];
-              /* falls through */
-              case 'Polygon':
-                if (
-                  segmentDataMatch.index !==
-                  coordinates[depth[0]].length - 2
-                ) {
-                  continue;
-                }
-                break;
-              default:
-              // pass
-            }
-          }
-
-          this.dragSegments_.push([segmentDataMatch, 1]);
-          componentSegments[uid][1] = segmentDataMatch;
-          continue;
-        }
-
-        if (
-          getUid(segment) in this.vertexSegments_ &&
-          !componentSegments[uid][0] &&
-          !componentSegments[uid][1] &&
-          this.insertVertexCondition_(evt)
-        ) {
-          insertVertices.push(segmentDataMatch);
-        }
-      }
-
-      if (insertVertices.length) {
-        this.willModifyFeatures_(evt, [insertVertices]);
-      }
-
-      for (let j = insertVertices.length - 1; j >= 0; --j) {
-        this.insertVertex_(insertVertices[j], vertex);
+        this.ignoreNextSingleClick_ = true;
       }
     }
+
     return !!this.vertexFeature_;
   }
 
@@ -1099,14 +1676,18 @@ class Modify extends PointerInteraction {
    * Handle pointer up events.
    * @param {import("../MapBrowserEvent.js").default} evt Event.
    * @return {boolean} If the event was consumed.
+   * @override
    */
   handleUpEvent(evt) {
     for (let i = this.dragSegments_.length - 1; i >= 0; --i) {
       const segmentData = this.dragSegments_[i][0];
       const geometry = segmentData.geometry;
       if (geometry.getType() === 'Circle') {
+        const circle = /** @type {import("../geom/Circle.js").default} */ (
+          geometry
+        );
         // Update a circle object in the R* bush:
-        const coordinates = geometry.getCenter();
+        const coordinates = circle.getCenter();
         const centerSegmentData = segmentData.featureSegments[0];
         const circumferenceSegmentData = segmentData.featureSegments[1];
         centerSegmentData.segment[0] = coordinates;
@@ -1114,7 +1695,8 @@ class Modify extends PointerInteraction {
         circumferenceSegmentData.segment[0] = coordinates;
         circumferenceSegmentData.segment[1] = coordinates;
         this.rBush_.update(createExtent(coordinates), centerSegmentData);
-        let circleGeometry = geometry;
+        /** @type {import("../geom/Circle.js").default | import("../geom/Polygon.js").default} */
+        let circleGeometry = circle;
         const userProjection = getUserProjection();
         if (userProjection) {
           const projection = evt.map.getView().getProjection();
@@ -1123,24 +1705,25 @@ class Modify extends PointerInteraction {
             .transform(userProjection, projection);
           circleGeometry = fromCircle(circleGeometry).transform(
             projection,
-            userProjection
+            userProjection,
           );
         }
         this.rBush_.update(
           circleGeometry.getExtent(),
-          circumferenceSegmentData
+          circumferenceSegmentData,
         );
       } else {
         this.rBush_.update(boundingExtent(segmentData.segment), segmentData);
       }
     }
     if (this.featuresBeingModified_) {
+      this.toggleTraceState_(evt);
       this.dispatchEvent(
         new ModifyEvent(
           ModifyEventType.MODIFYEND,
           this.featuresBeingModified_,
-          evt
-        )
+          evt,
+        ),
       );
       this.featuresBeingModified_ = null;
     }
@@ -1152,18 +1735,17 @@ class Modify extends PointerInteraction {
    * @private
    */
   handlePointerMove_(evt) {
-    this.lastPixel_ = evt.pixel;
-    this.handlePointerAtPixel_(evt.pixel, evt.map, evt.coordinate);
+    this.lastCoordinate_ = evt.coordinate;
+    this.handlePointerAtPixel_(this.lastCoordinate_);
   }
 
   /**
-   * @param {import("../pixel.js").Pixel} pixel Pixel
-   * @param {import("../Map.js").default} map Map.
-   * @param {import("../coordinate.js").Coordinate} [coordinate] The pixel Coordinate.
+   * @param {import("../coordinate.js").Coordinate} pixelCoordinate The pixel Coordinate.
    * @private
    */
-  handlePointerAtPixel_(pixel, map, coordinate) {
-    const pixelCoordinate = coordinate || map.getCoordinateFromPixel(pixel);
+  handlePointerAtPixel_(pixelCoordinate) {
+    const map = this.getMap();
+    const pixel = map.getPixelFromCoordinate(pixelCoordinate);
     const projection = map.getView().getProjection();
     const sortByDistance = function (a, b) {
       return (
@@ -1184,16 +1766,18 @@ class Modify extends PointerInteraction {
       map.forEachFeatureAtPixel(
         pixel,
         (feature, layer, geometry) => {
-          if (geometry) {
+          if (geometry && geometry.getType() === 'Point') {
             geometry = new Point(
-              toUserCoordinate(geometry.getCoordinates(), projection)
+              toUserCoordinate(geometry.getCoordinates(), projection),
             );
           }
           const geom = geometry || feature.getGeometry();
+
           if (
+            geom &&
             geom.getType() === 'Point' &&
             feature instanceof Feature &&
-            this.features_.getArray().includes(feature)
+            this.features_.includes(feature)
           ) {
             hitPointGeometry = /** @type {Point} */ (geom);
             const coordinate = /** @type {Point} */ (feature.getGeometry())
@@ -1209,18 +1793,18 @@ class Modify extends PointerInteraction {
           }
           return true;
         },
-        {layerFilter}
+        {layerFilter},
       );
     }
     if (!nodes) {
       const viewExtent = fromUserExtent(
         createExtent(pixelCoordinate, tempExtent),
-        projection
+        projection,
       );
       const buffer = map.getView().getResolution() * this.pixelTolerance_;
       const box = toUserExtent(
         bufferExtent(viewExtent, buffer, tempExtent),
-        projection
+        projection,
       );
       nodes = this.rBush_.getInExtent(box);
     }
@@ -1248,7 +1832,8 @@ class Modify extends PointerInteraction {
           this.createOrUpdateVertexFeature_(
             vertex,
             [node.feature],
-            [node.geometry]
+            [node.geometry],
+            this.snappedToVertex_,
           );
         } else {
           const pixel1 = map.getPixelFromCoordinate(closestSegment[0]);
@@ -1257,6 +1842,17 @@ class Modify extends PointerInteraction {
           const squaredDist2 = squaredCoordinateDistance(vertexPixel, pixel2);
           dist = Math.sqrt(Math.min(squaredDist1, squaredDist2));
           this.snappedToVertex_ = dist <= this.pixelTolerance_;
+          // Stop and cleanup overlay vertex feature if a segment was hit and new vertex creation is not allowed by the insertVertexCondition
+          if (
+            !this.snappedToVertex_ &&
+            !this.insertVertexCondition_(this.lastPointerEvent_)
+          ) {
+            if (this.vertexFeature_) {
+              this.overlay_.getSource().removeFeature(this.vertexFeature_);
+              this.vertexFeature_ = null;
+            }
+            return;
+          }
           if (this.snappedToVertex_) {
             vertex =
               squaredDist1 > squaredDist2
@@ -1266,17 +1862,18 @@ class Modify extends PointerInteraction {
           this.createOrUpdateVertexFeature_(
             vertex,
             [node.feature],
-            [node.geometry]
+            [node.geometry],
+            this.snappedToVertex_,
           );
           const geometries = {};
           geometries[getUid(node.geometry)] = true;
           for (let i = 1, ii = nodes.length; i < ii; ++i) {
             const segment = nodes[i].segment;
             if (
-              (coordinatesEqual(closestSegment[0], segment[0]) &&
-                coordinatesEqual(closestSegment[1], segment[1])) ||
-              (coordinatesEqual(closestSegment[0], segment[1]) &&
-                coordinatesEqual(closestSegment[1], segment[0]))
+              (this.coordinatesEqual_(closestSegment[0], segment[0]) &&
+                this.coordinatesEqual_(closestSegment[1], segment[1])) ||
+              (this.coordinatesEqual_(closestSegment[0], segment[1]) &&
+                this.coordinatesEqual_(closestSegment[1], segment[0]))
             ) {
               const geometryUid = getUid(nodes[i].geometry);
               if (!(geometryUid in geometries)) {
@@ -1302,6 +1899,7 @@ class Modify extends PointerInteraction {
   /**
    * @param {SegmentData} segmentData Segment data.
    * @param {import("../coordinate.js").Coordinate} vertex Vertex.
+   * @return {boolean} A vertex was inserted.
    * @private
    */
   insertVertex_(segmentData, vertex) {
@@ -1334,7 +1932,7 @@ class Modify extends PointerInteraction {
         coordinates.splice(index + 1, 0, vertex);
         break;
       default:
-        return;
+        return false;
     }
 
     this.setGeometryCoordinates_(geometry, coordinates);
@@ -1365,29 +1963,99 @@ class Modify extends PointerInteraction {
 
     rTree.insert(boundingExtent(newSegmentData2.segment), newSegmentData2);
     this.dragSegments_.push([newSegmentData2, 0]);
-    this.ignoreNextSingleClick_ = true;
+    return true;
   }
 
   /**
-   * Removes the vertex currently being pointed.
+   * @param {import("../coordinate.js").Coordinate} coordinate The coordinate.
+   * @return {import("../coordinate.js").Coordinate} The updated pointer coordinate.
+   * @private
+   */
+  updatePointer_(coordinate) {
+    if (coordinate) {
+      this.findInsertVerticesAndUpdateDragSegments_(coordinate);
+    }
+    return this.vertexFeature_?.getGeometry().getCoordinates();
+  }
+
+  /**
+   * Get the current pointer position.
+   * @return {import("../coordinate.js").Coordinate | null} The current pointer coordinate.
+   */
+  getPoint() {
+    const coordinate = this.vertexFeature_?.getGeometry().getCoordinates();
+    if (!coordinate) {
+      return null;
+    }
+    return toUserCoordinate(
+      coordinate,
+      this.getMap().getView().getProjection(),
+    );
+  }
+
+  /**
+   * Check if a point can be removed from the current linestring or polygon at the current
+   * pointer position.
+   * @return {boolean} A point can be deleted at the current pointer position.
+   * @api
+   */
+  canRemovePoint() {
+    if (!this.vertexFeature_) {
+      return false;
+    }
+    if (
+      this.vertexFeature_
+        .get('geometries')
+        .every(
+          (geometry) =>
+            geometry.getType() === 'Circle' ||
+            geometry.getType().endsWith('Point'),
+        )
+    ) {
+      return false;
+    }
+    const coordinate = this.vertexFeature_.getGeometry().getCoordinates();
+    const segments = this.rBush_.getInExtent(boundingExtent([coordinate]));
+    return segments.some(
+      ({segment}) =>
+        this.coordinatesEqual_(segment[0], coordinate) ||
+        this.coordinatesEqual_(segment[1], coordinate),
+    );
+  }
+
+  /**
+   * Removes the vertex currently being pointed from the current linestring or polygon.
+   * @param {import('../coordinate.js').Coordinate} [coordinate] If provided, the pointer
+   * will be set to the provided coordinate. If not, the current pointer coordinate will be used.
    * @return {boolean} True when a vertex was removed.
    * @api
    */
-  removePoint() {
+  removePoint(coordinate) {
+    if (coordinate) {
+      coordinate = fromUserCoordinate(
+        coordinate,
+        this.getMap().getView().getProjection(),
+      );
+      this.updatePointer_(coordinate);
+    }
     if (
-      this.lastPointerEvent_ &&
-      this.lastPointerEvent_.type != MapBrowserEventType.POINTERDRAG
+      !this.lastPointerEvent_ ||
+      (this.lastPointerEvent_ &&
+        this.lastPointerEvent_.type != MapBrowserEventType.POINTERDRAG)
     ) {
       const evt = this.lastPointerEvent_;
-      this.willModifyFeatures_(evt, this.dragSegments_);
+      this.willModifyFeatures_(
+        evt,
+        this.dragSegments_.map(([segment]) => segment),
+      );
       const removed = this.removeVertex_();
       if (this.featuresBeingModified_) {
         this.dispatchEvent(
           new ModifyEvent(
             ModifyEventType.MODIFYEND,
             this.featuresBeingModified_,
-            evt
-          )
+            evt,
+          ),
         );
       }
 
@@ -1503,7 +2171,7 @@ class Modify extends PointerInteraction {
 
           this.rBush_.insert(
             boundingExtent(newSegmentData.segment),
-            newSegmentData
+            newSegmentData,
           );
         }
         this.updateSegmentIndices_(geometry, index, segmentData.depth, -1);
@@ -1515,6 +2183,61 @@ class Modify extends PointerInteraction {
       }
     }
     return deleted;
+  }
+
+  /**
+   * Check if a point can be inserted to the current linestring or polygon at the current
+   * pointer position.
+   * @return {boolean} A point can be inserted at the current pointer position.
+   * @api
+   */
+  canInsertPoint() {
+    if (!this.vertexFeature_) {
+      return false;
+    }
+    if (
+      this.vertexFeature_
+        .get('geometries')
+        .every(
+          (geometry) =>
+            geometry.getType() === 'Circle' ||
+            geometry.getType().endsWith('Point'),
+        )
+    ) {
+      return false;
+    }
+    const coordinate = this.vertexFeature_.getGeometry().getCoordinates();
+    const segments = this.rBush_.getInExtent(boundingExtent([coordinate]));
+    return segments.some(
+      ({segment}) =>
+        !(
+          this.coordinatesEqual_(segment[0], coordinate) ||
+          this.coordinatesEqual_(segment[1], coordinate)
+        ),
+    );
+  }
+
+  /**
+   * Inserts the vertex currently being pointed to the current linestring or polygon.
+   * @param {import('../coordinate.js').Coordinate} [coordinate] If provided, the pointer
+   * will be set to the provided coordinate. If not, the current pointer coordinate will be used.
+   * @return {boolean} A vertex was inserted.
+   * @api
+   */
+  insertPoint(coordinate) {
+    const pixelCoordinate = coordinate
+      ? fromUserCoordinate(coordinate, this.getMap().getView().getProjection())
+      : this.vertexFeature_?.getGeometry().getCoordinates();
+    if (!pixelCoordinate) {
+      return false;
+    }
+    const insertVertices =
+      this.findInsertVerticesAndUpdateDragSegments_(pixelCoordinate);
+    return insertVertices.reduce(
+      (prev, segmentData) =>
+        prev || this.insertVertex_(segmentData, pixelCoordinate),
+      false,
+    );
   }
 
   /**
@@ -1548,8 +2271,62 @@ class Modify extends PointerInteraction {
         ) {
           segmentDataMatch.index += delta;
         }
-      }
+      },
     );
+  }
+
+  /**
+   * @override
+   */
+  disposeInternal() {
+    super.disposeInternal();
+    if (this.featuresCollection_) {
+      this.featuresCollection_.removeEventListener(
+        CollectionEventType.ADD,
+        this.handleExternalCollectionAdd_,
+      );
+      this.featuresCollection_.removeEventListener(
+        CollectionEventType.REMOVE,
+        this.handleExternalCollectionRemove_,
+      );
+      //change and propertychange event handlers were placed on all features in the external
+      // collection, not just the ones that passed the filter.  Remove these too.
+      for (const feature of this.featuresCollection_.getArray()) {
+        feature.removeEventListener(
+          EventType.CHANGE,
+          this.handleFeatureChange_,
+        );
+        if (this.filterFunctionWasSupplied_) {
+          feature.removeEventListener(
+            ObjectEventType.PROPERTYCHANGE,
+            this.handleFeatureChange_,
+          );
+        }
+      }
+    } else if (this.source_) {
+      this.source_.removeEventListener(
+        VectorEventType.ADDFEATURE,
+        this.handleSourceAdd_,
+      );
+      this.source_.removeEventListener(
+        VectorEventType.REMOVEFEATURE,
+        this.handleSourceRemove_,
+      );
+      //change and propertychange event handlers were placed on all features in the source, not
+      // just the ones that passed the filter.  Remove these too.
+      for (const feature of this.source_.getFeatures()) {
+        feature.removeEventListener(
+          EventType.CHANGE,
+          this.handleFeatureChange_,
+        );
+        if (this.filterFunctionWasSupplied_) {
+          feature.removeEventListener(
+            ObjectEventType.PROPERTYCHANGE,
+            this.handleFeatureChange_,
+          );
+        }
+      }
+    }
   }
 }
 
@@ -1575,7 +2352,7 @@ function compareIndexes(a, b) {
 function projectedDistanceToSegmentDataSquared(
   pointCoordinates,
   segmentData,
-  projection
+  projection,
 ) {
   const geometry = segmentData.geometry;
 
@@ -1587,13 +2364,13 @@ function projectedDistanceToSegmentDataSquared(
     if (segmentData.index === CIRCLE_CIRCUMFERENCE_INDEX) {
       const userProjection = getUserProjection();
       if (userProjection) {
-        circleGeometry = /** @type {import("../geom/Circle.js").default} */ (
-          circleGeometry.clone().transform(userProjection, projection)
-        );
+        circleGeometry = circleGeometry
+          .clone()
+          .transform(userProjection, projection);
       }
       const distanceToCenterSquared = squaredCoordinateDistance(
         circleGeometry.getCenter(),
-        fromUserCoordinate(pointCoordinates, projection)
+        fromUserCoordinate(pointCoordinates, projection),
       );
       const distanceToCircumference =
         Math.sqrt(distanceToCenterSquared) - circleGeometry.getRadius();
@@ -1629,15 +2406,15 @@ function closestOnSegmentData(pointCoordinates, segmentData, projection) {
     );
     const userProjection = getUserProjection();
     if (userProjection) {
-      circleGeometry = /** @type {import("../geom/Circle.js").default} */ (
-        circleGeometry.clone().transform(userProjection, projection)
-      );
+      circleGeometry = circleGeometry
+        .clone()
+        .transform(userProjection, projection);
     }
     return toUserCoordinate(
       circleGeometry.getClosestPoint(
-        fromUserCoordinate(pointCoordinates, projection)
+        fromUserCoordinate(pointCoordinates, projection),
       ),
-      projection
+      projection,
     );
   }
   const coordinate = fromUserCoordinate(pointCoordinates, projection);
@@ -1645,7 +2422,7 @@ function closestOnSegmentData(pointCoordinates, segmentData, projection) {
   tempSegment[1] = fromUserCoordinate(segmentData.segment[1], projection);
   return toUserCoordinate(
     closestOnSegment(coordinate, tempSegment),
-    projection
+    projection,
   );
 }
 

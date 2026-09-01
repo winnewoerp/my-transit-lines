@@ -11,6 +11,10 @@ export type Options = {
      */
     crossOrigin?: string | null | undefined;
     /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
      * The display resolution.
      */
     displayDpi?: number | undefined;
@@ -61,6 +65,7 @@ export type Options = {
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {number} [displayDpi=96] The display resolution.
  * @property {number} [metersPerUnit=1] The meters-per-unit value.
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting
@@ -93,6 +98,11 @@ declare class ImageMapGuide extends ImageSource {
      * @type {?string}
      */
     private crossOrigin_;
+    /**
+     * @private
+     * @type {ReferrerPolicy}
+     */
+    private referrerPolicy_;
     /**
      * @private
      * @type {number}
@@ -135,14 +145,14 @@ declare class ImageMapGuide extends ImageSource {
     private useOverlay_;
     /**
      * @private
-     * @type {import("../Image.js").default}
-     */
-    private image_;
-    /**
-     * @private
      * @type {number}
      */
     private renderedRevision_;
+    /**
+     * @private
+     * @type {import("../proj/Projection.js").default}
+     */
+    private loaderProjection_;
     /**
      * Get the user-provided params, i.e. those passed to the constructor through
      * the "params" option, and possibly updated using the updateParams method.
@@ -156,6 +166,12 @@ declare class ImageMapGuide extends ImageSource {
      * @api
      */
     getImageLoadFunction(): import("../Image.js").LoadFunction;
+    /**
+     * Set the user-provided params.
+     * @param {Object} params Params.
+     * @api
+     */
+    setParams(params: any): void;
     /**
      * Update the user-provided params.
      * @param {Object} params Params.

@@ -14,7 +14,7 @@ const UNSELECTED_Z_INDEX = 0;
 const SELECTED_Z_INDEX = 1;
 const ICON_SIZE_UNSELECTED = 21;
 const ICON_SIZE_SELECTED = 23;
-const COLOR_SELECTED = '#07f';
+const COLOR_SELECTED = '#0077ff';
 const STROKE_WIDTH_UNSELECTED = 4;
 const STROKE_WIDTH_SELECTED = 3;
 const TEXT_X_OFFSET = 15;
@@ -37,7 +37,7 @@ const OEPNVKARTE_SOURCE = new ol.source.OSM({
 	attributions: objectL10n.attributionOPNV,
 	maxZoom: MAX_ZOOM_OEPNV_MAP,
 	crossOrigin: null,
-}); OEPNVKARTE_SOURCE.setProperties({title: objectL10n.titleOPNV, id: 'oepnv'});
+}); OEPNVKARTE_SOURCE.setProperties({ title: objectL10n.titleOPNV, id: 'oepnv' });
 const OPENTOPOMAP_SOURCE = new ol.source.OSM({
 	url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpentopomap,
@@ -53,7 +53,7 @@ const ESRI_SOURCE = new ol.source.OSM({
 	url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png',
 	attributions: objectL10n.attributionESRISatellite,
 	crossOrigin: null,
-}); ESRI_SOURCE.setProperties({ title: objectL10n.titleESRISatellite, id: 'esri' });
+}); ESRI_SOURCE.setProperties({ title: objectL10n.titleESRISatellite, id: 'esri', class: 'no-darkmode' });
 
 const OPENRAILWAYMAP_STANDARD_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
@@ -72,7 +72,7 @@ const OPENRAILWAYMAP_ELECTRIFICATION_SOURCE = new ol.source.OSM({
 	attributions: objectL10n.attributionOpenrailwaymapElectrified,
 	opaque: false,
 	crossOrigin: null,
-}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification'});
+}); OPENRAILWAYMAP_ELECTRIFICATION_SOURCE.setProperties({ title: objectL10n.titleOpenrailwaymapElectrified, id: 'openrailway-electrification' });
 const OPENRAILWAYMAP_SIGNALS_SOURCE = new ol.source.OSM({
 	url: 'https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png',
 	attributions: objectL10n.attributionOpenrailwaymapSignals,
@@ -223,6 +223,11 @@ class OptionsControl extends ol.control.Control {
 			for (let source of BACKGROUND_SOURCES) {
 				if (target.id.includes(source.get('id'))) {
 					backgroundTileLayer.setSource(source);
+
+					let classes = source.get("class") ? " " + source.get("class") : "";
+
+					document.querySelector("#" + MAP_ID + " .background-tilelayer").className = "background-tilelayer" + classes;
+
 					return;
 				}
 			}
@@ -238,6 +243,15 @@ class OptionsControl extends ol.control.Control {
 	}
 }
 
+class FullscreenControl extends ol.control.Control {
+	constructor(options = {}) {
+		super({
+			element: document.getElementById('toggle-fullscreen'),
+			target: options.target,
+		});
+	}
+}
+
 const backgroundTileLayer = new ol.layer.Tile({
 	className: 'background-tilelayer',
 	source: OSM_SOURCE,
@@ -250,7 +264,7 @@ const overlayTileLayer = new ol.layer.Tile({
 const vectorSource = new ol.source.Vector();
 const vectorLayerConfig = {
 	source: vectorSource,
-	style: styleFunction,
+	style: unselectedStyleFunction,
 };
 const vectorLayer = editMode ? new ol.layer.Vector(vectorLayerConfig) : new ol.layer.VectorImage(vectorLayerConfig);
 
@@ -266,87 +280,65 @@ const attributionControl = new ol.control.Attribution({
 	collapsible: true,
 	collapsed: false,
 });
+const fullscreenControl = new FullscreenControl();
 
 const map = new ol.Map({
-	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), new ol.control.Rotate(), attributionControl, optionsControl],
+	controls: [new ol.control.Zoom(), new ol.control.ScaleLine(), new ol.control.Rotate(), attributionControl, optionsControl, fullscreenControl],
 	layers: [backgroundTileLayer, overlayTileLayer, vectorLayer],
 	target: MAP_ID,
 	view: view,
 });
+document.getElementById(MAP_ID).addEventListener('contextmenu', (e) => {
+	e.preventDefault();
+	e.stopPropagation();
+}, { capture: true });
 
 window.addEventListener('load', loadNewFeatures);
 
 document.addEventListener('DOMContentLoaded', loadDataScripts);
 
-$(document).ready(function(){
+$(document).ready(function () {
 	// Proposal contact form
-	if($('#proposal-author-contact-form').length) {
-		$('#proposal-author-contact-form .pacf-toggle').on('click',function(e){
+	if ($('#proposal-author-contact-form').length) {
+		$('#proposal-author-contact-form .pacf-toggle').on('click', function (e) {
 			e.preventDefault();
 			$(this).closest('div').find('form').slideToggle();
 		});
 	}
 });
 
-// returns the style for the given feature
-function styleFunction(feature) {
-	const color = transportModeStyleData[getCategoryOf(feature)]['color'];
-
-	const fillStyle = new ol.style.Fill({
-		color: color + '40',
-	});
-
-	const imageStyle = new ol.style.Icon({
-		src: transportModeStyleData[getCategoryOf(feature)]['image'],
-		width: ICON_SIZE_UNSELECTED,
-		height: ICON_SIZE_UNSELECTED,
-	});
-
-	const strokeStyle = new ol.style.Stroke({
-		color: color,
-		width: STROKE_WIDTH_UNSELECTED,
-	});
-
-	let text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
-
-	const textStyle = new ol.style.Text({
-		font: 'bold 11px sans-serif',
-		text: text,
-		textAlign: 'left',
-		fill: new ol.style.Fill({
-			color: 'white',
-		}),
-		stroke: strokeStyle,
-		offsetX: TEXT_X_OFFSET,
-		overflow: true,
-	});
-
-	const zIndex = UNSELECTED_Z_INDEX;
-
-	return new ol.style.Style({
-		fill: fillStyle,
-		image: imageStyle,
-		stroke: strokeStyle,
-		text: textStyle,
-		zIndex: zIndex,
-	});
+function unselectedStyleFunction(feature) {
+	return styleFunction(feature);
 }
 
 // returns the style for a selected feature
 function selectedStyleFunction(feature) {
-    const fillStyle = new ol.style.Fill({
-		color: COLOR_SELECTED + '4',
+	return styleFunction(feature, true);
+}
+
+// returns the style for the given feature
+function styleFunction(feature, selected = false) {
+	const color = selected ? COLOR_SELECTED : transportModeStyleData[getCategoryOf(feature)]['color'];
+
+	const fillStyle = new ol.style.Fill({
+		color: color + '44',
 	});
 
 	const imageStyle = new ol.style.Icon({
-		src: transportModeStyleData[getCategoryOf(feature)]['image-selected'],
-		width: ICON_SIZE_SELECTED,
-		height: ICON_SIZE_SELECTED,
+		src: selected ? transportModeStyleData[getCategoryOf(feature)]['image-selected'] : transportModeStyleData[getCategoryOf(feature)]['image'],
+		width: selected ? ICON_SIZE_SELECTED : ICON_SIZE_UNSELECTED,
+		height: selected ? ICON_SIZE_SELECTED : ICON_SIZE_UNSELECTED,
 	});
 
 	const strokeStyle = new ol.style.Stroke({
-		color: COLOR_SELECTED,
-		width: STROKE_WIDTH_SELECTED,
+		color: feature.get('tunnel') ? color + 'AA' : color,
+		width: selected ? STROKE_WIDTH_SELECTED : STROKE_WIDTH_UNSELECTED,
+		lineDash: feature.get('tunnel') ? [8] : [],
+	});
+
+	const textStrokeStyle = new ol.style.Stroke({
+		color: color,
+		width: selected ? STROKE_WIDTH_SELECTED : STROKE_WIDTH_UNSELECTED,
 	});
 
 	let text = ((showLabels ? feature.get('name') : '') || '') + (feature.get('size') ? '\n' + feature.get('size') : '');
@@ -358,20 +350,42 @@ function selectedStyleFunction(feature) {
 		fill: new ol.style.Fill({
 			color: 'white',
 		}),
-		stroke: strokeStyle,
+		stroke: textStrokeStyle,
 		offsetX: TEXT_X_OFFSET,
 		overflow: true,
 	});
 
-	const zIndex = SELECTED_Z_INDEX;
+	const zIndex = selected ? SELECTED_Z_INDEX : UNSELECTED_Z_INDEX;
 
-	return new ol.style.Style({
+	const style = new ol.style.Style({
 		fill: fillStyle,
 		image: imageStyle,
 		stroke: strokeStyle,
 		text: textStyle,
 		zIndex: zIndex,
 	});
+
+	if (feature.get('bridge')) {
+		const outlineColor = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? '#FFFFFFAA' : '#000000AA';
+
+		return [style, new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: outlineColor,
+				width: 1,
+				offset: STROKE_WIDTH_UNSELECTED / 2,
+			}),
+			zIndex: zIndex + 1,
+		}), new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: outlineColor,
+				width: 1,
+				offset: -STROKE_WIDTH_UNSELECTED / 2,
+			}),
+			zIndex: zIndex + 1,
+		})]
+	} else {
+		return style;
+	}
 }
 
 /**
@@ -385,11 +399,14 @@ function getFeatureSize(feature) {
 	if (geom instanceof ol.geom.Point) {
 		return "";
 	} else if (geom instanceof ol.geom.LineString) {
-		return objectL10n.lengthString + formatNumber(ol.sphere.getLength(geom), false) + 'm';
+		return objectL10n.lengthString + formatMeters(ol.sphere.getLength(geom)) + 'm';
 	} else if (geom instanceof ol.geom.Polygon) {
-		return objectL10n.area + formatNumber(ol.sphere.getArea(geom), false, 1E6) + 'm²';
+		return objectL10n.area + formatMeters(ol.sphere.getArea(geom), 1E6) + 'm²';
 	} else if (geom instanceof ol.geom.Circle) {
-		return objectL10n.radius + formatNumber(ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate()), false) + 'm';
+		const meters = ol.sphere.getDistance(geom.transform('EPSG:3857', 'EPSG:4326').getCenter(), geom.getLastCoordinate());
+
+		return objectL10n.radius + formatMeters(meters) + 'm\n' +
+			objectL10n.speed + Math.floor(Math.sqrt(meters * (310) / 11.8)) + ' km/h';
 	}
 }
 
@@ -460,8 +477,8 @@ function importJSONFiles(filePicker) {
 		file.text().then((value) => {
 			if (isJsonParsable(value)) {
 				try {
-					importToMapJSON(value);
-	
+					importToMapJSON(value, document.querySelector("[name=\"cat\"]:checked").value);
+
 					zoomToFeatures();
 				} catch (error) {
 					console.log(error);
@@ -474,7 +491,7 @@ function importJSONFiles(filePicker) {
 /**
  * Imports source string to the map using the GeoJSON format
  * @param {string|JSON} source the JSON string or object to import
- * @param {string} categorySource the category to use for the features
+ * @param {int} categorySource the category to use for the features
  * @param {int} proposal_data_index relevant for multiple proposal view: which proposal data index to add to the features. Default: 0
  */
 function importToMapJSON(source, categorySource, proposal_data_index = 0, vector = vectorSource) {
@@ -492,6 +509,10 @@ function importToMapJSON(source, categorySource, proposal_data_index = 0, vector
 	for (let feature of features) {
 		if (!feature.get('category'))
 			feature.set('category', categorySource);
+
+		if (feature.get('category') != categorySource && !transportModeStyleData[categorySource]["allow-others"].split(",").includes(feature.get('category'))) {
+			feature.set('category', categorySource);
+		}
 
 		feature.set('name', decodeSpecialChars(feature.get('name') || ""));
 
@@ -556,9 +577,16 @@ function toggleLabels() {
 	redraw();
 }
 
+// Remove fullscreen on 'Escape' press
+document.querySelector('body').addEventListener('keydown', event => {
+	if (event.key == "Escape" && document.querySelector('[data-mtl-toggle-fullscreen]').classList.contains('fullscreen')) {
+		toggleFullscreen();
+	}
+});
+
 // Toggle if the map is displayed in fullscreen or not
 function toggleFullscreen() {
-	if (document.getElementById('mtl-fullscreen-link') === document.activeElement)
+	if (document.getElementById('toggle-fullscreen') === document.activeElement)
 		document.activeElement.blur();
 
 	const prevExtent = view.calculateExtent();
@@ -576,8 +604,8 @@ function toggleFullscreen() {
 
 	// Need to get the size manually because OpenLayers only updates the map size after this function and redraw() doesn't help
 	const mapContainer = document.getElementById('mtl-map');
-	mapContainer.scrollIntoView({behaviour: 'instant', block: 'center', inline: 'center'});
-	view.fit(prevExtent, {size: [mapContainer.offsetWidth, mapContainer.offsetHeight]});
+	mapContainer.scrollIntoView({ behaviour: 'instant', block: 'center', inline: 'center' });
+	view.fit(prevExtent, { size: [mapContainer.offsetWidth, mapContainer.offsetHeight] });
 }
 
 // Toggle if the map is brigthened (low opacity) or not (full opacity)
@@ -622,9 +650,9 @@ function toggleSizes() {
 */
 function decodeSpecialChars(p_string) {
 	let new_string = p_string;
-	new_string = new_string.replace(/&#44;/g,',');
-	new_string = new_string.replace(/&quot;/g,'"');
-	new_string = new_string.replace(/&apos;/g,'\'');
+	new_string = new_string.replace(/&#44;/g, ',');
+	new_string = new_string.replace(/&quot;/g, '"');
+	new_string = new_string.replace(/&apos;/g, '\'');
 	return new_string;
 }
 
@@ -638,9 +666,9 @@ function decodeSpecialChars(p_string) {
 */
 function encodeSpecialChars(p_string) {
 	let new_string = p_string;
-	new_string = new_string.replace(/,/g,'&#44;');
-	new_string = new_string.replace(/"/g,'&quot;');
-	new_string = new_string.replace(/'/g,'&apos;');
+	new_string = new_string.replace(/,/g, '&#44;');
+	new_string = new_string.replace(/"/g, '&quot;');
+	new_string = new_string.replace(/'/g, '&apos;');
 	return new_string;
 }
 

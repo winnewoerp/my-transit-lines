@@ -221,6 +221,7 @@ class MtlSettingsPage
 		add_settings_field('mtl-addpost-page', __('Page to add proposal','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-addpost-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
 		add_settings_field('mtl-postlist-page', __('Page for proposal list','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-postlist-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
 		add_settings_field('mtl-settings-page', __('Page for user settings','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-settings-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
+		add_settings_field('mtl-forum-page', __('Page for forum','my-transit-lines'), array( $this, 'mtl_field_callback' ), 'mtl-settings','mtl-settings-group-pageids',array('field_name' => 'mtl-forum-page','type' => 'select','option_name'=>'mtl-option-name','options'=>$all_pages));
 
 		// settings section general texts
 		add_settings_section('mtl-settings-group-general3', __('General texts settings','my-transit-lines'), array( $this, 'print_general_section_content' ), 'mtl-general-settings');
@@ -296,6 +297,7 @@ class MtlSettingsPage
 		if( isset( $input['mtl-addpost-page']) ) $new_input['mtl-addpost-page'] = $input['mtl-addpost-page'];
 		if( isset( $input['mtl-postlist-page']) ) $new_input['mtl-postlist-page'] = $input['mtl-postlist-page'];
 		if( isset( $input['mtl-settings-page']) ) $new_input['mtl-settings-page'] = $input['mtl-settings-page'];
+		if( isset( $input['mtl-forum-page']) ) $new_input['mtl-forum-page'] = $input['mtl-forum-page'];
 		return $new_input;
 	}
 

@@ -45,15 +45,19 @@ import {clear} from './obj.js';
  * @return {EventsKey} Unique key for the listener.
  */
 export function listen(target, type, listener, thisArg, once) {
-  if (thisArg && thisArg !== target) {
-    listener = listener.bind(thisArg);
-  }
   if (once) {
     const originalListener = listener;
-    listener = function () {
+    /**
+     * @param {Event|import('./events/Event.js').default} event The event
+     * @return {void|boolean} When the function returns `false`, event propagation will stop.
+     * @this {typeof target}
+     */
+    listener = function (event) {
       target.removeEventListener(type, listener);
-      originalListener.apply(this, arguments);
+      return originalListener.call(thisArg ?? this, event);
     };
+  } else if (thisArg && thisArg !== target) {
+    listener = listener.bind(thisArg);
   }
   const eventsKey = {
     target: target,

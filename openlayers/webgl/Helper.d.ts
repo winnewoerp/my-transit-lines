@@ -19,7 +19,7 @@ export namespace ShaderType {
 export type DefaultUniform = string;
 export namespace DefaultUniform {
     let PROJECTION_MATRIX: string;
-    let SCREEN_TO_WORLD_MATRIX: string;
+    let INVERT_PROJECTION_MATRIX: string;
     let TIME: string;
     let ZOOM: string;
     let RESOLUTION: string;
@@ -55,9 +55,9 @@ export type BufferCacheEntry = {
  */
 export type AttributeDescription = {
     /**
-     * Attribute name to use in shaders
+     * Attribute name to use in shaders; if null, this attribute will not be enabled and is simply used as padding in the buffers
      */
-    name: string;
+    name: string | null;
     /**
      * Number of components per attributes
      */
@@ -69,7 +69,7 @@ export type AttributeDescription = {
      */
     type?: number | undefined;
 };
-export type UniformLiteralValue = number | Array<number> | HTMLCanvasElement | HTMLImageElement | ImageData | import("../transform").Transform;
+export type UniformLiteralValue = number | Array<number> | HTMLCanvasElement | HTMLImageElement | ImageData | WebGLTexture | import("../transform.js").Transform;
 /**
  * Uniform value can be a number, array of numbers (2 to 4), canvas element or a callback returning
  * one of the previous types.
@@ -154,14 +154,14 @@ import { FLOAT } from '../webgl.js';
  *
  * ### Define custom shaders and uniforms
  *
- *   *Shaders* are low-level programs executed on the GPU and written in GLSL. There are two types of shaders:
+ *   Shaders* are low-level programs executed on the GPU and written in GLSL. There are two types of shaders:
  *
  *   Vertex shaders are used to manipulate the position and attribute of *vertices* of rendered primitives (ie. corners of a square).
  *   Outputs are:
  *
- *   * `gl_Position`: position of the vertex in screen space
+ *   `gl_Position`: position of the vertex in screen space
  *
- *   * Varyings usually prefixed with `v_` are passed on to the fragment shader
+ *   Varyings usually prefixed with `v_` are passed on to the fragment shader
  *
  *   Fragment shaders are used to control the actual color of the pixels drawn on screen. Their only output is `gl_FragColor`.
  *
@@ -187,16 +187,16 @@ import { FLOAT } from '../webgl.js';
  *
  * ### Defining post processing passes
  *
- *   *Post processing* describes the act of rendering primitives to a texture, and then rendering this texture to the final canvas
+ *   Post processing* describes the act of rendering primitives to a texture, and then rendering this texture to the final canvas
  *   while applying special effects in screen space.
  *   Typical uses are: blurring, color manipulation, depth of field, filtering...
  *
  *   The `WebGLHelper` class offers the possibility to define post processes at creation time using the `postProcesses` option.
  *   A post process step accepts the following options:
  *
- *   * `fragmentShader` and `vertexShader`: text literals in GLSL language that will be compiled and used in the post processing step.
- *   * `uniforms`: uniforms can be defined for the post processing steps just like for the main render.
- *   * `scaleRatio`: allows using an intermediate texture smaller or higher than the final canvas in the post processing step.
+ *   `fragmentShader` and `vertexShader`: text literals in GLSL language that will be compiled and used in the post processing step.
+ *   `uniforms`: uniforms can be defined for the post processing steps just like for the main render.
+ *   `scaleRatio`: allows using an intermediate texture smaller or higher than the final canvas in the post processing step.
  *     This is typically used in blur steps to reduce the performance overhead by using an already downsampled texture as input.
  *
  *   The {@link module:ol/webgl/PostProcessingPass~WebGLPostProcessingPass} class is used internally, refer to its documentation for more info.
@@ -273,7 +273,7 @@ declare class WebGLHelper extends Disposable {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /** @private */
     private boundHandleWebGLContextLost_;
     /** @private */
@@ -305,7 +305,7 @@ declare class WebGLHelper extends Disposable {
     private currentProgram_;
     /**
      * @private
-     * @type boolean
+     * @type {boolean}
      */
     private needsToBeRecreated_;
     /**
@@ -359,6 +359,11 @@ declare class WebGLHelper extends Disposable {
      */
     private startTime_;
     /**
+     * @type {number}
+     * @private
+     */
+    private maxAttributeCount_;
+    /**
      * @param {Object<string, UniformValue>} uniforms Uniform definitions.
      */
     setUniforms(uniforms: {
@@ -383,18 +388,23 @@ declare class WebGLHelper extends Disposable {
      */
     getExtension(name: string): any | null;
     /**
+     * Will throw if the extension is not available
+     * @return {ANGLE_instanced_arrays} Extension
+     */
+    getInstancedRenderingExtension_(): ANGLE_instanced_arrays;
+    /**
      * Just bind the buffer if it's in the cache. Otherwise create
      * the WebGL buffer, bind it, populate it, and add an entry to
      * the cache.
-     * @param {import("./Buffer").default} buffer Buffer.
+     * @param {import("./Buffer.js").default} buffer Buffer.
      */
-    bindBuffer(buffer: import("./Buffer").default): void;
+    bindBuffer(buffer: import("./Buffer.js").default): void;
     /**
      * Update the data contained in the buffer array; this is required for the
      * new data to be rendered
-     * @param {import("./Buffer").default} buffer Buffer.
+     * @param {import("./Buffer.js").default} buffer Buffer.
      */
-    flushBufferData(buffer: import("./Buffer").default): void;
+    flushBufferData(buffer: import("./Buffer.js").default): void;
     /**
      * @param {import("./Buffer.js").default} buf Buffer.
      */
@@ -407,7 +417,16 @@ declare class WebGLHelper extends Disposable {
      * @param {boolean} [disableAlphaBlend] If true, no alpha blending will happen.
      * @param {boolean} [enableDepth] If true, enables depth testing.
      */
-    prepareDraw(frameState: import("../Map.js").FrameState, disableAlphaBlend?: boolean | undefined, enableDepth?: boolean | undefined): void;
+    prepareDraw(frameState: import("../Map.js").FrameState, disableAlphaBlend?: boolean, enableDepth?: boolean): void;
+    /**
+     * @param {WebGLFramebuffer|null} frameBuffer The frame buffer.
+     * @param {WebGLTexture} [texture] The texture.
+     */
+    bindFrameBuffer(frameBuffer: WebGLFramebuffer | null, texture?: WebGLTexture): void;
+    /**
+     * Bind the frame buffer from the initial render.
+     */
+    bindInitialFrameBuffer(): void;
     /**
      * Prepare a program to use a texture.
      * @param {WebGLTexture} texture The texture.
@@ -415,6 +434,13 @@ declare class WebGLHelper extends Disposable {
      * @param {string} uniformName The corresponding uniform name.
      */
     bindTexture(texture: WebGLTexture, slot: number, uniformName: string): void;
+    /**
+     * Set up an attribute array buffer for use in the vertex shader.
+     * @param {import("./Buffer.js").default} buffer The buffer.
+     * @param {string} attributeName The attribute name.
+     * @param {number} size The number of components per attribute vertex.
+     */
+    bindAttribute(buffer: import("./Buffer.js").default, attributeName: string, size: number): void;
     /**
      * Clear the render target & bind it for future draw operations.
      * This is similar to `prepareDraw`, only post processes will not be applied.
@@ -424,7 +450,7 @@ declare class WebGLHelper extends Disposable {
      * @param {boolean} [disableAlphaBlend] If true, no alpha blending will happen.
      * @param {boolean} [enableDepth] If true, enables depth testing.
      */
-    prepareDrawToRenderTarget(frameState: import("../Map.js").FrameState, renderTarget: import("./RenderTarget.js").default, disableAlphaBlend?: boolean | undefined, enableDepth?: boolean | undefined): void;
+    prepareDrawToRenderTarget(frameState: import("../Map.js").FrameState, renderTarget: import("./RenderTarget.js").default, disableAlphaBlend?: boolean, enableDepth?: boolean): void;
     /**
      * Execute a draw call based on the currently bound program, texture, buffers, attributes.
      * @param {number} start Start index.
@@ -432,12 +458,20 @@ declare class WebGLHelper extends Disposable {
      */
     drawElements(start: number, end: number): void;
     /**
+     * Execute a draw call similar to `drawElements`, but using instanced rendering.
+     * Will have no effect if `enableAttributesInstanced` was not called for this rendering pass.
+     * @param {number} start Start index.
+     * @param {number} end End index.
+     * @param {number} instanceCount The number of instances to render
+     */
+    drawElementsInstanced(start: number, end: number, instanceCount: number): void;
+    /**
      * Apply the successive post process passes which will eventually render to the actual canvas.
      * @param {import("../Map.js").FrameState} frameState current frame state
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [preCompose] Called before composing.
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [postCompose] Called before composing.
      */
-    finalizeDraw(frameState: import("../Map.js").FrameState, preCompose?: ((arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void) | undefined, postCompose?: ((arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void) | undefined): void;
+    finalizeDraw(frameState: import("../Map.js").FrameState, preCompose?: (arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void, postCompose?: (arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void): void;
     /**
      * @return {HTMLCanvasElement} Canvas.
      */
@@ -466,9 +500,9 @@ declare class WebGLHelper extends Disposable {
      * Set up a program for use. The program will be set as the current one. Then, the uniforms used
      * in the program will be set based on the current frame state and the helper configuration.
      * @param {WebGLProgram} program Program.
-     * @param {import("../Map.js").FrameState} frameState Frame state.
+     * @param {import("../Map.js").FrameState} [frameState] Frame state.
      */
-    useProgram(program: WebGLProgram, frameState: import("../Map.js").FrameState): void;
+    useProgram(program: WebGLProgram, frameState?: import("../Map.js").FrameState): void;
     /**
      * Will attempt to compile a vertex or fragment shader based on source
      * On error, the shader will be returned but
@@ -502,10 +536,10 @@ declare class WebGLHelper extends Disposable {
      * Sets the given transform to apply the rotation/translation/scaling of the given frame state.
      * The resulting transform can be used to convert world space coordinates to view coordinates in the [-1, 1] range.
      * @param {import("../Map.js").FrameState} frameState Frame state.
-     * @param {import("../transform").Transform} transform Transform to update.
-     * @return {import("../transform").Transform} The updated transform object.
+     * @param {import("../transform.js").Transform} transform Transform to update.
+     * @return {import("../transform.js").Transform} The updated transform object.
      */
-    makeProjectionTransform(frameState: import("../Map.js").FrameState, transform: import("../transform").Transform): import("../transform").Transform;
+    makeProjectionTransform(frameState: import("../Map.js").FrameState, transform: import("../transform.js").Transform): import("../transform.js").Transform;
     /**
      * Give a value for a standard float uniform
      * @param {string} uniform Uniform name
@@ -531,6 +565,11 @@ declare class WebGLHelper extends Disposable {
      */
     setUniformMatrixValue(uniform: string, value: Array<number>): void;
     /**
+     * Disable all vertex attributes.
+     * @private
+     */
+    private disableAllAttributes_;
+    /**
      * Will set the currently bound buffer to an attribute of the shader program. Used by `#enableAttributes`
      * internally.
      * @param {string} attribName Attribute name
@@ -538,9 +577,16 @@ declare class WebGLHelper extends Disposable {
      * @param {number} type UNSIGNED_INT, UNSIGNED_BYTE, UNSIGNED_SHORT or FLOAT
      * @param {number} stride Stride in bytes (0 means attribs are packed)
      * @param {number} offset Offset in bytes
+     * @param {boolean} instanced Whether the attribute is used for instanced rendering
      * @private
      */
     private enableAttributeArray_;
+    /**
+     * @private
+     * @param {Array<AttributeDescription>} attributes Ordered list of attributes to read from the buffer
+     * @param {boolean} instanced Whether the attributes are instanced.
+     */
+    private enableAttributes_;
     /**
      * Will enable the following attributes to be read from the currently bound buffer,
      * i.e. tell the GPU where to read the different attributes in the buffer. An error in the
@@ -548,6 +594,12 @@ declare class WebGLHelper extends Disposable {
      * @param {Array<AttributeDescription>} attributes Ordered list of attributes to read from the buffer
      */
     enableAttributes(attributes: Array<AttributeDescription>): void;
+    /**
+     * Will enable these attributes as instanced, meaning that they will only be read
+     * once per instance instead of per vertex.
+     * @param {Array<AttributeDescription>} attributes Ordered list of attributes to read from the buffer
+     */
+    enableAttributesInstanced(attributes: Array<AttributeDescription>): void;
     /**
      * WebGL context was lost
      * @param {WebGLContextEvent} event The context loss event.
@@ -567,14 +619,15 @@ declare class WebGLHelper extends Disposable {
     /**
      * Will create or reuse a given webgl texture and apply the given size. If no image data
      * specified, the texture will be empty, otherwise image data will be used and the `size`
-     * parameter will be ignored.
+     * parameter will be ignored.  If a Uint8Array is provided for data, a size must also be provided.
      * Note: wrap parameters are set to clamp to edge, min filter is set to linear.
      * @param {Array<number>} size Expected size of the texture
-     * @param {ImageData|HTMLImageElement|HTMLCanvasElement} [data] Image data/object to bind to the texture
+     * @param {ImageData|HTMLImageElement|HTMLCanvasElement|Uint8Array|null} data Image data/object to bind to the texture
      * @param {WebGLTexture} [texture] Existing texture to reuse
+     * @param {boolean} [nearest] Use gl.NEAREST for min/mag filter.
      * @return {WebGLTexture} The generated texture
      */
-    createTexture(size: Array<number>, data?: HTMLCanvasElement | HTMLImageElement | ImageData | undefined, texture?: WebGLTexture | undefined): WebGLTexture;
+    createTexture(size: Array<number>, data: ImageData | HTMLImageElement | HTMLCanvasElement | Uint8Array | null, texture?: WebGLTexture, nearest?: boolean): WebGLTexture;
 }
 import Disposable from '../Disposable.js';
 //# sourceMappingURL=Helper.d.ts.map

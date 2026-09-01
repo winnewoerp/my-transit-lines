@@ -34,7 +34,7 @@ export function getTextDimensions(baseStyle: TextState, chunks: Array<string>): 
  */
 export function rotateAtOffset(context: CanvasRenderingContext2D, rotation: number, offsetX: number, offsetY: number): void;
 /**
- * @param {CanvasRenderingContext2D} context Context.
+ * @param {CanvasRenderingContext2D|import("../render/canvas/ZIndexContext.js").ZIndexContextProxy} context Context.
  * @param {import("../transform.js").Transform|null} transform Transform.
  * @param {number} opacity Opacity.
  * @param {Label|HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} labelOrImage Label.
@@ -46,7 +46,7 @@ export function rotateAtOffset(context: CanvasRenderingContext2D, rotation: numb
  * @param {number} y Y.
  * @param {import("../size.js").Size} scale Scale.
  */
-export function drawImageOrLabel(context: CanvasRenderingContext2D, transform: import("../transform.js").Transform | null, opacity: number, labelOrImage: Label | HTMLCanvasElement | HTMLImageElement | HTMLVideoElement, originX: number, originY: number, w: number, h: number, x: number, y: number, scale: import("../size.js").Size): void;
+export function drawImageOrLabel(context: CanvasRenderingContext2D | import("../render/canvas/ZIndexContext.js").ZIndexContextProxy, transform: import("../transform.js").Transform | null, opacity: number, labelOrImage: Label | HTMLCanvasElement | HTMLImageElement | HTMLVideoElement, originX: number, originY: number, w: number, h: number, x: number, y: number, scale: import("../size.js").Size): void;
 /**
  * @typedef {'Circle' | 'Image' | 'LineString' | 'Polygon' | 'Text' | 'Default'} BuilderType
  */
@@ -70,6 +70,7 @@ export function drawImageOrLabel(context: CanvasRenderingContext2D, transform: i
  * @property {CanvasLineJoin} [currentLineJoin] Current LineJoin.
  * @property {number} [currentLineWidth] Current LineWidth.
  * @property {number} [currentMiterLimit] Current MiterLimit.
+ * @property {number} [currentStrokeOffset] Current StrokeOffset.
  * @property {number} [lastStroke] Last stroke.
  * @property {import("../colorlike.js").ColorLike} [fillStyle] FillStyle.
  * @property {import("../colorlike.js").ColorLike} [strokeStyle] StrokeStyle.
@@ -79,6 +80,8 @@ export function drawImageOrLabel(context: CanvasRenderingContext2D, transform: i
  * @property {CanvasLineJoin} [lineJoin] LineJoin.
  * @property {number} [lineWidth] LineWidth.
  * @property {number} [miterLimit] MiterLimit.
+ * @property {number} [strokeOffset] StrokeOffset.
+ * @property {number} [fillPatternScale] Fill pattern scale.
  */
 /**
  * @typedef {Object} StrokeState
@@ -88,6 +91,7 @@ export function drawImageOrLabel(context: CanvasRenderingContext2D, transform: i
  * @property {CanvasLineJoin} lineJoin LineJoin.
  * @property {number} lineWidth LineWidth.
  * @property {number} miterLimit MiterLimit.
+ * @property {number} [strokeOffset] StrokeOffset.
  * @property {import("../colorlike.js").ColorLike} strokeStyle StrokeStyle.
  */
 /**
@@ -154,6 +158,11 @@ export const defaultLineJoin: CanvasLineJoin;
 export const defaultMiterLimit: number;
 /**
  * @const
+ * @type {number}
+ */
+export const defaultStrokeOffset: number;
+/**
+ * @const
  * @type {import("../colorlike.js").ColorLike}
  */
 export const defaultStrokeStyle: import("../colorlike.js").ColorLike;
@@ -187,9 +196,9 @@ export const checkedFonts: BaseObject;
 export const textHeights: {
     [x: string]: number;
 };
-export function registerFont(fontSpec: any): void;
+export function registerFont(fontSpec: any): Promise<void>;
 export function measureTextHeight(fontSpec: any): number;
-export type BuilderType = 'Circle' | 'Image' | 'LineString' | 'Polygon' | 'Text' | 'Default';
+export type BuilderType = "Circle" | "Image" | "LineString" | "Polygon" | "Text" | "Default";
 export type FillState = {
     /**
      * FillStyle.
@@ -244,6 +253,10 @@ export type FillStrokeState = {
      */
     currentMiterLimit?: number | undefined;
     /**
+     * Current StrokeOffset.
+     */
+    currentStrokeOffset?: number | undefined;
+    /**
      * Last stroke.
      */
     lastStroke?: number | undefined;
@@ -279,6 +292,14 @@ export type FillStrokeState = {
      * MiterLimit.
      */
     miterLimit?: number | undefined;
+    /**
+     * StrokeOffset.
+     */
+    strokeOffset?: number | undefined;
+    /**
+     * Fill pattern scale.
+     */
+    fillPatternScale?: number | undefined;
 };
 export type StrokeState = {
     /**
@@ -305,6 +326,10 @@ export type StrokeState = {
      * MiterLimit.
      */
     miterLimit: number;
+    /**
+     * StrokeOffset.
+     */
+    strokeOffset?: number | undefined;
     /**
      * StrokeStyle.
      */

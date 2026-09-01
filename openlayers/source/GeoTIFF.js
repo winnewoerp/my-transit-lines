@@ -1,25 +1,34 @@
 /**
  * @module ol/source/GeoTIFF
  */
-import DataTile from './DataTile.js';
-import TileGrid from '../tilegrid/TileGrid.js';
 import {
   Pool,
   globals as geotiffGlobals,
   fromBlob as tiffFromBlob,
+  fromCustomClient as tiffFromCustomClient,
   fromUrl as tiffFromUrl,
   fromUrls as tiffFromUrls,
 } from 'geotiff';
+import {error as logError} from '../console.js';
+import {applyTransform, getCenter, getIntersection} from '../extent.js';
+import {clamp} from '../math.js';
 import {
   Projection,
+  createTransformFromCoordinateTransform,
   get as getCachedProjection,
   toUserCoordinate,
   toUserExtent,
 } from '../proj.js';
-import {clamp} from '../math.js';
-import {getCenter, getIntersection} from '../extent.js';
-import {error as logError} from '../console.js';
 import {fromCode as unitsFromCode} from '../proj/Units.js';
+import {fromProjectionCode} from '../proj/proj4.js';
+import TileGrid from '../tilegrid/TileGrid.js';
+import {
+  apply as applyMatrix,
+  create as createMatrix,
+  makeInverse,
+  multiply as multiplyTransform,
+} from '../transform.js';
+import DataTile from './DataTile.js';
 
 /**
  * Determine if an image type is a mask.
@@ -28,8 +37,7 @@ import {fromCode as unitsFromCode} from '../proj/Units.js';
  * @return {boolean} The image is a mask.
  */
 function isMask(image) {
-  const fileDirectory = image.fileDirectory;
-  const type = fileDirectory.NewSubfileType || 0;
+  const type = image.fileDirectory.getValue('NewSubfileType') || 0;
   return (type & 4) === 4;
 }
 
@@ -48,7 +56,9 @@ function readRGB(preference, image) {
   if (image.getSamplesPerPixel() !== 3) {
     return false;
   }
-  const interpretation = image.fileDirectory.PhotometricInterpretation;
+  const interpretation = image.fileDirectory.getValue(
+    'PhotometricInterpretation',
+  );
   const interpretations = geotiffGlobals.photometricInterpretations;
   return (
     interpretation === interpretations.CMYK ||
@@ -61,20 +71,27 @@ function readRGB(preference, image) {
 /**
  * @typedef {Object} SourceInfo
  * @property {string} [url] URL for the source GeoTIFF.
- * @property {Array<string>} [overviews] List of any overview URLs, only applies if the url parameter is given.
+ * @property {function(string, HeadersInit, AbortSignal): Promise<Response>} [loader] Custom loader function for URL based sources.
+ * Called with the URL, request headers, and an abort signal. Expected to resolve with a `Response`.
+ * @property {Array<string>} [overviews] List of any overview URLs, only applies if the url parameter is given and no loader is specified.
  * @property {Blob} [blob] Blob containing the source GeoTIFF. `blob` and `url` are mutually exclusive.
- * @property {number} [min=0] The minimum source data value.  Rendered values are scaled from 0 to 1 based on
- * the configured min and max.  If not provided and raster statistics are available, those will be used instead.
- * If neither are available, the minimum for the data type will be used.  To disable this behavior, set
- * the `normalize` option to `false` in the constructor.
- * @property {number} [max] The maximum source data value.  Rendered values are scaled from 0 to 1 based on
- * the configured min and max.  If not provided and raster statistics are available, those will be used instead.
- * If neither are available, the maximum for the data type will be used.  To disable this behavior, set
- * the `normalize` option to `false` in the constructor.
- * @property {number} [nodata] Values to discard (overriding any nodata values in the metadata).
- * When provided, an additional alpha band will be added to the data.  Often the GeoTIFF metadata
+ * @property {number|Array<number|undefined>} [min=0] The minimum source data value.  Rendered values are
+ * scaled from 0 to 1 based on the configured min and max.  If not provided and raster statistics are available,
+ * those will be used instead.  If neither are available, the minimum for the data type will be used.  To disable
+ * this behavior, set the `normalize` option to `false` in the constructor.  If an array is provided, values
+ * correspond to the bands in the file (not the `bands` option).  Array values can be left `undefined` to trigger
+ * the default behavior.
+ * @property {number|Array<number|undefined>} [max] The maximum source data value.  Rendered values are
+ * scaled from 0 to 1 based on the configured min and max.  If not provided and raster statistics are available,
+ * those will be used instead.  If neither are available, the maximum for the data type will be used.  To disable
+ * this behavior, set the `normalize` option to `false` in the constructor.  If an array is provided, values
+ * correspond to the bands in the file (not the `bands` option).  Array values can be left `undefined` to to trigger
+ * the default behavior.
+ * @property {number|Array<number|undefined>} [nodata] Values to discard (overriding any nodata values in the
+ * metadata).  When provided, an additional alpha band will be added to the data.  Often the GeoTIFF metadata
  * will include information about nodata values, so you should only need to set this property if
- * you find that it is not already extracted from the metadata.
+ * you find that it is not already extracted from the metadata.  If an array is provided, values correspond to
+ * the bands in the file (not the `bands` option).  Array values can be left `undefined` to trigger the default behavior.
  * @property {Array<number>} [bands] Band numbers to be read from (where the first band is `1`). If not provided, all bands will
  * be read. For example, if a GeoTIFF has blue (1), green (2), red (3), and near-infrared (4) bands, and you only need the
  * near-infrared band, configure `bands: [4]`.
@@ -92,13 +109,7 @@ function readRGB(preference, image) {
  * @property {number} ProjectedCSTypeGeoKey Projected coordinate system code.
  */
 
-/**
- * @typedef {import("geotiff").GeoTIFF} GeoTIFF
- */
-
-/**
- * @typedef {import("geotiff").MultiGeoTIFF} MultiGeoTIFF
- */
+/** @import {GeoTIFF, GeoTIFFImage, MultiGeoTIFF} from 'geotiff' */
 
 /**
  * @typedef {Object} GDALMetadata
@@ -110,10 +121,6 @@ const STATISTICS_MAXIMUM = 'STATISTICS_MAXIMUM';
 const STATISTICS_MINIMUM = 'STATISTICS_MINIMUM';
 
 const defaultTileSize = 256;
-
-/**
- * @typedef {import("geotiff").GeoTIFFImage} GeoTIFFImage
- */
 
 let workerPool;
 function getWorkerPool() {
@@ -131,8 +138,8 @@ function getWorkerPool() {
  */
 function getBoundingBox(image) {
   try {
-    return image.getBoundingBox();
-  } catch (_) {
+    return image.getBoundingBox(true);
+  } catch {
     return [0, 0, image.getWidth(), image.getHeight()];
   }
 }
@@ -146,7 +153,7 @@ function getBoundingBox(image) {
 function getOrigin(image) {
   try {
     return image.getOrigin().slice(0, 2);
-  } catch (_) {
+  } catch {
     return [0, image.getHeight()];
   }
 }
@@ -161,7 +168,7 @@ function getOrigin(image) {
 function getResolutions(image, referenceImage) {
   try {
     return image.getResolution(referenceImage);
-  } catch (_) {
+  } catch {
     return [
       referenceImage.getWidth() / image.getWidth(),
       referenceImage.getHeight() / image.getHeight(),
@@ -170,49 +177,63 @@ function getResolutions(image, referenceImage) {
 }
 
 /**
- * @param {GeoTIFFImage} image A GeoTIFF.
- * @return {import("../proj/Projection.js").default} The image projection.
+ * @param {Object<string, any>} geoKeys Geo keys object.
+ * @param {string} geoKey The geo key to lookup.
+ * @param {string} unitKey The unit key to lookup.
+ * @param {boolean} loadMissingProjection Whether to load missing projections.
+ * @return {Promise<Projection|null>} The projection.
  */
-function getProjection(image) {
-  const geoKeys = image.geoKeys;
+async function getProjectionFromKeys(
+  geoKeys,
+  geoKey,
+  unitKey,
+  loadMissingProjection,
+) {
+  const value = geoKeys[geoKey];
+  if (value && value !== 32767) {
+    const code = 'EPSG:' + value;
+    let projection = getCachedProjection(code);
+    if (!projection && loadMissingProjection) {
+      projection = await fromProjectionCode(code);
+    }
+    if (!projection) {
+      const units = unitsFromCode(geoKeys[unitKey]);
+      if (units) {
+        projection = new Projection({
+          code: code,
+          units: units,
+        });
+      }
+    }
+    return projection || null;
+  }
+}
+
+/**
+ * @param {GeoTIFFImage} image A GeoTIFF.
+ * @param {boolean} loadMissingProjection Whether to load missing projections.
+ * @return {Promise<Projection|null>} The image projection.
+ */
+async function getProjection(image, loadMissingProjection) {
+  const geoKeys = image.getGeoKeys();
   if (!geoKeys) {
     return null;
   }
-
-  if (
-    geoKeys.ProjectedCSTypeGeoKey &&
-    geoKeys.ProjectedCSTypeGeoKey !== 32767
-  ) {
-    const code = 'EPSG:' + geoKeys.ProjectedCSTypeGeoKey;
-    let projection = getCachedProjection(code);
-    if (!projection) {
-      const units = unitsFromCode(geoKeys.ProjLinearUnitsGeoKey);
-      if (units) {
-        projection = new Projection({
-          code: code,
-          units: units,
-        });
-      }
-    }
+  const projection = await getProjectionFromKeys(
+    geoKeys,
+    'ProjectedCSTypeGeoKey',
+    'ProjLinearUnitsGeoKey',
+    loadMissingProjection,
+  );
+  if (projection) {
     return projection;
   }
-
-  if (geoKeys.GeographicTypeGeoKey && geoKeys.GeographicTypeGeoKey !== 32767) {
-    const code = 'EPSG:' + geoKeys.GeographicTypeGeoKey;
-    let projection = getCachedProjection(code);
-    if (!projection) {
-      const units = unitsFromCode(geoKeys.GeogAngularUnitsGeoKey);
-      if (units) {
-        projection = new Projection({
-          code: code,
-          units: units,
-        });
-      }
-    }
-    return projection;
-  }
-
-  return null;
+  return await getProjectionFromKeys(
+    geoKeys,
+    'GeographicTypeGeoKey',
+    'GeogAngularUnitsGeoKey',
+    loadMissingProjection,
+  );
 }
 
 /**
@@ -230,20 +251,74 @@ function getImagesForTIFF(tiff) {
 }
 
 /**
+ * @param {string} url The URL.
+ * @param {function(string, HeadersInit, AbortSignal): Promise<Response>} loader The loader function.
+ * @return {import('geotiff').BaseClient} The custom loader client.
+ */
+const createCustomClient = (url, loader) => ({
+  url,
+  request: async (options) => {
+    const response = Object.assign(
+      await loader(url, options?.headers, options?.signal),
+      {
+        getHeader: (name) => response.headers.get(name),
+        getData: () => response.arrayBuffer(),
+      },
+    );
+    return response;
+  },
+});
+
+/**
  * @param {SourceInfo} source The GeoTIFF source.
- * @param {Object} options Options for the GeoTIFF source.
+ * @param {import('geotiff').RemoteSourceOptions} options Options for the GeoTIFF source.
  * @return {Promise<Array<GeoTIFFImage>>} Resolves to a list of images.
  */
 function getImagesForSource(source, options) {
   let request;
   if (source.blob) {
     request = tiffFromBlob(source.blob);
+  } else if (source.loader) {
+    if (source.overviews) {
+      throw new Error(
+        'Source overviews are not supported when using a custom loader',
+      );
+    }
+    const client = createCustomClient(source.url, source.loader);
+    request = tiffFromCustomClient(client, options);
   } else if (source.overviews) {
     request = tiffFromUrls(source.url, source.overviews, options);
   } else {
     request = tiffFromUrl(source.url, options);
   }
-  return request.then(getImagesForTIFF);
+  return request.then(getImagesForTIFF).then(function (images) {
+    // For non-tiled (strip-encoded) images served over HTTP, re-open with a
+    // blockSize large enough to cover all strips needed for one render tile.
+    // This coalesces what would be thousands of individual HTTP range requests
+    // into roughly one per tile.
+    const image = images[0];
+    if (
+      source.url &&
+      !source.blob &&
+      image.getTileWidth() !== image.getTileHeight() &&
+      image.getTileHeight() < defaultTileSize
+    ) {
+      const bytesPerPixel = image.getBytesPerPixel();
+      const blockSize = image.getWidth() * bytesPerPixel * defaultTileSize;
+      const reopenOptions = Object.assign({}, options, {blockSize});
+      let reopened;
+      if (source.loader) {
+        const client = createCustomClient(source.url, source.loader);
+        reopened = tiffFromCustomClient(client, reopenOptions);
+      } else if (source.overviews) {
+        reopened = tiffFromUrls(source.url, source.overviews, reopenOptions);
+      } else {
+        reopened = tiffFromUrl(source.url, reopenOptions);
+      }
+      return reopened.then(getImagesForTIFF);
+    }
+    return images;
+  });
 }
 
 /**
@@ -341,6 +416,7 @@ function getMaxForDataType(array) {
 
 /**
  * @typedef {Object} Options
+ * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {Array<SourceInfo>} sources List of information about GeoTIFF sources.
  * Multiple sources can be combined when their resolution sets are equal after applying a scale.
  * The list of sources defines a mapping between input bands as they are read from each GeoTIFF and
@@ -358,9 +434,10 @@ function getMaxForDataType(array) {
  * 0 and 1 with scaling factors based on the raster statistics or `min` and `max` properties of each source.
  * If instead you want to work with the raw values in a style expression, set this to `false`.  Setting this option
  * to `false` will make it so any `min` and `max` properties on sources are ignored.
- * @property {boolean} [opaque=false] Whether the layer is opaque.
  * @property {import("../proj.js").ProjectionLike} [projection] Source projection.  If not provided, the GeoTIFF metadata
  * will be read for projection information.
+ * @property {boolean} [loadMissingProjection=false] Whether to attempt to load missing projection definitions.
+ * Uses the pre-configured projection lookup function, which can be customized with {@link module:ol/proj/proj4.setProjectionCodeLookup}.
  * @property {number} [transition=250] Duration of the opacity transition for rendering.
  * To disable the opacity transition, pass `transition: 0`.
  * @property {boolean} [wrapX=false] Render tiles beyond the tile grid extent.
@@ -382,10 +459,10 @@ class GeoTIFFSource extends DataTile {
    */
   constructor(options) {
     super({
+      attributions: options.attributions,
       state: 'loading',
       tileGrid: null,
       projection: options.projection || null,
-      opaque: options.opaque,
       transition: options.transition,
       interpolate: options.interpolate !== false,
       wrapX: options.wrapX,
@@ -461,8 +538,15 @@ class GeoTIFFSource extends DataTile {
 
     /**
      * @type {true|false|'auto'}
+     * @private
      */
     this.convertToRGB_ = options.convertToRGB || false;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this.loadMissingProjection_ = options.loadMissingProjection || false;
 
     this.setKey(this.sourceInfo_.map((source) => source.url).join(','));
 
@@ -471,7 +555,7 @@ class GeoTIFFSource extends DataTile {
     for (let i = 0; i < numSources; ++i) {
       requests[i] = getImagesForSource(
         this.sourceInfo_[i],
-        this.sourceOptions_
+        this.sourceOptions_,
       );
     }
     Promise.all(requests)
@@ -510,13 +594,53 @@ class GeoTIFFSource extends DataTile {
    * @param {Array<Array<GeoTIFFImage>>} sources Each source is a list of images
    * from a single GeoTIFF.
    */
-  determineProjection(sources) {
+  async determineProjection(sources) {
     const firstSource = sources[0];
     for (let i = firstSource.length - 1; i >= 0; --i) {
       const image = firstSource[i];
-      const projection = getProjection(image);
+      const projection = await getProjection(
+        image,
+        this.loadMissingProjection_,
+      );
       if (projection) {
         this.projection = projection;
+        break;
+      }
+    }
+  }
+
+  /**
+   * Determine any transform matrix for the images in this GeoTIFF.
+   *
+   * @param {Array<Array<GeoTIFFImage>>} sources Each source is a list of images
+   * from a single GeoTIFF.
+   */
+  determineTransformMatrix(sources) {
+    const firstSource = sources[0];
+    for (let i = firstSource.length - 1; i >= 0; --i) {
+      const image = firstSource[i];
+      const modelTransformation = image.fileDirectory.getValue(
+        'ModelTransformation',
+      );
+      if (modelTransformation) {
+        // eslint-disable-next-line no-unused-vars
+        const [a, b, c, d, e, f, g, h] = modelTransformation;
+        const matrix = multiplyTransform(
+          multiplyTransform(
+            [
+              1 / Math.sqrt(a * a + e * e),
+              0,
+              0,
+              -1 / Math.sqrt(b * b + f * f),
+              d,
+              h,
+            ],
+            [a, e, b, f, 0, 0],
+          ),
+          [1, 0, 0, 1, -d, -h],
+        );
+        this.transformMatrix = matrix;
+        this.addAlpha_ = true;
         break;
       }
     }
@@ -529,7 +653,7 @@ class GeoTIFFSource extends DataTile {
    * from a single GeoTIFF.
    * @private
    */
-  configure_(sources) {
+  async configure_(sources) {
     let extent;
     let origin;
     let commonRenderTileSizes;
@@ -555,7 +679,7 @@ class GeoTIFFSource extends DataTile {
       const imageCount = images.length;
       if (masks.length > 0 && masks.length !== imageCount) {
         throw new Error(
-          `Expected one mask per image found ${masks.length} masks and ${imageCount} images`
+          `Expected one mask per image found ${masks.length} masks and ${imageCount} images`,
         );
       }
 
@@ -571,7 +695,7 @@ class GeoTIFFSource extends DataTile {
       for (let imageIndex = 0; imageIndex < imageCount; ++imageIndex) {
         const image = images[imageIndex];
         const nodataValue = image.getGDALNoData();
-        metadata[sourceIndex][imageIndex] = image.getGDALMetadata(0);
+        metadata[sourceIndex][imageIndex] = await image.getGDALMetadata(0);
         nodataValues[sourceIndex][imageIndex] = nodataValue;
 
         const wantedSamples = this.sourceInfo_[sourceIndex].bands;
@@ -636,7 +760,7 @@ class GeoTIFFSource extends DataTile {
           sourceResolutions[sourceResolutions.length - 1];
         this.resolutionFactors_[sourceIndex] = resolutionFactor;
         const scaledSourceResolutions = sourceResolutions.map(
-          (resolution) => (resolution *= resolutionFactor)
+          (resolution) => (resolution *= resolutionFactor),
         );
         const message = `Resolution mismatch for source ${sourceIndex}, got [${scaledSourceResolutions}] but expected [${resolutions}]`;
         assertEqual(
@@ -644,7 +768,7 @@ class GeoTIFFSource extends DataTile {
           scaledSourceResolutions,
           0.02,
           message,
-          this.viewRejector
+          this.viewRejector,
         );
       }
 
@@ -656,7 +780,7 @@ class GeoTIFFSource extends DataTile {
           renderTileSizes,
           0.01,
           `Tile size mismatch for source ${sourceIndex}`,
-          this.viewRejector
+          this.viewRejector,
         );
       }
 
@@ -668,7 +792,7 @@ class GeoTIFFSource extends DataTile {
           sourceTileSizes,
           0,
           `Tile size mismatch for source ${sourceIndex}`,
-          this.viewRejector
+          this.viewRejector,
         );
       }
 
@@ -684,8 +808,9 @@ class GeoTIFFSource extends DataTile {
     }
 
     if (!this.getProjection()) {
-      this.determineProjection(sources);
+      await this.determineProjection(sources);
     }
+    this.determineTransformMatrix(sources);
 
     this.samplesPerPixel_ = samplesPerPixel;
     this.nodataValues_ = nodataValues;
@@ -694,9 +819,15 @@ class GeoTIFFSource extends DataTile {
     // decide if we need to add an alpha band to handle nodata
     outer: for (let sourceIndex = 0; sourceIndex < sourceCount; ++sourceIndex) {
       // option 1: source is configured with a nodata value
-      if (this.sourceInfo_[sourceIndex].nodata !== undefined) {
-        this.addAlpha_ = true;
-        break;
+      const sourceNodata = this.sourceInfo_[sourceIndex].nodata;
+      if (sourceNodata !== undefined) {
+        if (
+          !Array.isArray(sourceNodata) ||
+          sourceNodata.some((v) => v !== undefined)
+        ) {
+          this.addAlpha_ = true;
+          break;
+        }
       }
       if (this.sourceMasks_[sourceIndex].length) {
         this.addAlpha_ = true;
@@ -753,12 +884,21 @@ class GeoTIFFSource extends DataTile {
       resolutions = [resolutions[0] * 2, resolutions[0], resolutions[0] / 2];
     }
 
+    let viewExtent = extent;
+    if (this.transformMatrix) {
+      const matrix = makeInverse(createMatrix(), this.transformMatrix.slice());
+      const transformFn = createTransformFromCoordinateTransform((input) =>
+        applyMatrix(matrix, input),
+      );
+      viewExtent = applyTransform(extent, transformFn);
+    }
+
     this.viewResolver({
       showFullExtent: true,
       projection: this.projection,
       resolutions: resolutions,
-      center: toUserCoordinate(getCenter(extent), this.projection),
-      extent: toUserExtent(extent, this.projection),
+      center: toUserCoordinate(getCenter(viewExtent), this.projection),
+      extent: toUserExtent(viewExtent, this.projection),
       zoom: zoom,
     });
   }
@@ -767,10 +907,11 @@ class GeoTIFFSource extends DataTile {
    * @param {number} z The z tile index.
    * @param {number} x The x tile index.
    * @param {number} y The y tile index.
+   * @param {import('./DataTile.js').LoaderOptions} options The loader options.
    * @return {Promise} The composed tile data.
    * @private
    */
-  loadTile_(z, x, y) {
+  loadTile_(z, x, y, options) {
     const sourceTileSize = this.getTileSize(z);
     const sourceCount = this.sourceImagery_.length;
     const requests = new Array(sourceCount * 2);
@@ -797,7 +938,22 @@ class GeoTIFFSource extends DataTile {
       /** @type {number|Array<number>} */
       let fillValue;
       if ('nodata' in source && source.nodata !== null) {
-        fillValue = source.nodata;
+        if (Array.isArray(source.nodata)) {
+          if (samples) {
+            fillValue = samples.map(function (sampleIndex) {
+              const v = source.nodata[sampleIndex];
+              return v !== undefined
+                ? v
+                : nodataValues[sourceIndex][sampleIndex];
+            });
+          } else {
+            fillValue = source.nodata.map(function (v, i) {
+              return v !== undefined ? v : nodataValues[sourceIndex][i];
+            });
+          }
+        } else {
+          fillValue = source.nodata;
+        }
       } else {
         if (!samples) {
           fillValue = nodataValues[sourceIndex];
@@ -816,6 +972,7 @@ class GeoTIFFSource extends DataTile {
         fillValue: fillValue,
         pool: pool,
         interleave: false,
+        signal: options.signal,
       };
       if (readRGB(this.convertToRGB_, image)) {
         requests[sourceIndex] = image.readRGB(readOptions);
@@ -876,17 +1033,33 @@ class GeoTIFFSource extends DataTile {
       data = new Float32Array(dataLength);
     }
 
-    let dataIndex = 0;
-    for (let pixelIndex = 0; pixelIndex < pixelCount; ++pixelIndex) {
-      let transparent = addAlpha;
-      for (let sourceIndex = 0; sourceIndex < sourceCount; ++sourceIndex) {
-        const source = sourceInfo[sourceIndex];
+    // Precompute per-source, per-sample normalization and nodata values
+    const sourceGains = new Array(sourceCount);
+    const sourceBiases = new Array(sourceCount);
+    const sourceNodatas = new Array(sourceCount);
+    for (let sourceIndex = 0; sourceIndex < sourceCount; ++sourceIndex) {
+      const source = sourceInfo[sourceIndex];
+      const numSamples = samplesPerPixel[sourceIndex];
 
-        let min = source.min;
-        let max = source.max;
-        let gain, bias;
-        if (normalize) {
-          const stats = metadata[sourceIndex][0];
+      if (normalize) {
+        const gains = new Array(numSamples);
+        const biases = new Array(numSamples);
+        const stats = metadata[sourceIndex][0];
+        for (let sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex) {
+          let bandIndex;
+          if (source.bands) {
+            bandIndex = source.bands[sampleIndex] - 1;
+          } else {
+            bandIndex = sampleIndex;
+          }
+
+          let min = Array.isArray(source.min)
+            ? source.min[bandIndex]
+            : source.min;
+          let max = Array.isArray(source.max)
+            ? source.max[bandIndex]
+            : source.max;
+
           if (min === undefined) {
             if (stats && STATISTICS_MINIMUM in stats) {
               min = parseFloat(stats[STATISTICS_MINIMUM]);
@@ -902,10 +1075,41 @@ class GeoTIFFSource extends DataTile {
             }
           }
 
-          gain = 255 / (max - min);
-          bias = -min * gain;
+          gains[sampleIndex] = 255 / (max - min);
+          biases[sampleIndex] = -min * gains[sampleIndex];
         }
+        sourceGains[sourceIndex] = gains;
+        sourceBiases[sourceIndex] = biases;
+      }
 
+      if (addAlpha) {
+        const nodatas = new Array(numSamples);
+        for (let sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex) {
+          let bandIndex;
+          if (source.bands) {
+            bandIndex = source.bands[sampleIndex] - 1;
+          } else {
+            bandIndex = sampleIndex;
+          }
+
+          if (Array.isArray(source.nodata)) {
+            const nd = source.nodata[bandIndex];
+            nodatas[sampleIndex] =
+              nd !== undefined ? nd : nodataValues[sourceIndex][bandIndex];
+          } else if (source.nodata !== undefined) {
+            nodatas[sampleIndex] = source.nodata;
+          } else {
+            nodatas[sampleIndex] = nodataValues[sourceIndex][bandIndex];
+          }
+        }
+        sourceNodatas[sourceIndex] = nodatas;
+      }
+    }
+
+    let dataIndex = 0;
+    for (let pixelIndex = 0; pixelIndex < pixelCount; ++pixelIndex) {
+      let transparent = addAlpha;
+      for (let sourceIndex = 0; sourceIndex < sourceCount; ++sourceIndex) {
         for (
           let sampleIndex = 0;
           sampleIndex < samplesPerPixel[sourceIndex];
@@ -916,7 +1120,12 @@ class GeoTIFFSource extends DataTile {
 
           let value;
           if (normalize) {
-            value = clamp(gain * sourceValue + bias, 0, 255);
+            value = clamp(
+              sourceGains[sourceIndex][sampleIndex] * sourceValue +
+                sourceBiases[sourceIndex][sampleIndex],
+              0,
+              255,
+            );
           } else {
             value = sourceValue;
           }
@@ -924,17 +1133,7 @@ class GeoTIFFSource extends DataTile {
           if (!addAlpha) {
             data[dataIndex] = value;
           } else {
-            let nodata = source.nodata;
-            if (nodata === undefined) {
-              let bandIndex;
-              if (source.bands) {
-                bandIndex = source.bands[sampleIndex] - 1;
-              } else {
-                bandIndex = sampleIndex;
-              }
-              nodata = nodataValues[sourceIndex][bandIndex];
-            }
-
+            const nodata = sourceNodatas[sourceIndex][sampleIndex];
             const nodataIsNaN = isNaN(nodata);
             if (
               (!nodataIsNaN && sourceValue !== nodata) ||

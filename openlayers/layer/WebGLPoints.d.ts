@@ -1,9 +1,23 @@
 export default WebGLPointsLayer;
-export type Options<VectorSourceType extends import("../source/Vector.js").default<import("../geom/Point.js").default>> = {
+export type Options<VectorSourceType extends import("../source/Vector.js").default<import("../Feature.js").FeatureLike>> = {
     /**
      * Literal style to apply to the layer features.
      */
-    style: import('../style/literal.js').LiteralStyle;
+    style: import("../style/flat.js").FlatStyle;
+    /**
+     * The filter used
+     * to determine if a style applies. If no filter is included, the rule always applies.
+     */
+    filter?: import("../expr/expression.js").EncodedExpression | undefined;
+    /**
+     * Style variables. Each variable must hold a literal value (not
+     * an expression). These variables can be used as {@link import ("../expr/expression.js").ExpressionValue expressions} in the styles properties
+     * using the `['var', 'varName']` operator.
+     * To update style variables, use the {@link import ("./WebGLPoints.js").default#updateStyleVariables} method.
+     */
+    variables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
     /**
      * A CSS class name to set to the layer element.
      */
@@ -65,9 +79,15 @@ export type Options<VectorSourceType extends import("../source/Vector.js").defau
     } | undefined;
 };
 /**
- * @template {import("../source/Vector.js").default<import("../geom/Point.js").default>} VectorSourceType
+ * @template {import("../source/Vector.js").default<import('../Feature.js').FeatureLike>} VectorSourceType
  * @typedef {Object} Options
- * @property {import('../style/literal.js').LiteralStyle} style Literal style to apply to the layer features.
+ * @property {import('../style/flat.js').FlatStyle} style Literal style to apply to the layer features.
+ * @property {import("../expr/expression.js").EncodedExpression} [filter] The filter used
+ * to determine if a style applies. If no filter is included, the rule always applies.
+ * @property {import('../style/flat.js').StyleVariables} [variables] Style variables. Each variable must hold a literal value (not
+ * an expression). These variables can be used as {@link import("../expr/expression.js").ExpressionValue expressions} in the styles properties
+ * using the `['var', 'varName']` operator.
+ * To update style variables, use the {@link import("./WebGLPoints.js").default#updateStyleVariables} method.
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
@@ -120,31 +140,34 @@ export type Options<VectorSourceType extends import("../source/Vector.js").defau
  * property on the layer object; for example, setting `title: 'My Title'` in the
  * options means that `title` is observable, and has get/set accessors.
  *
- * @template {import("../source/Vector.js").default<import("../geom/Point.js").default>} VectorSourceType
+ * @template {import("../source/Vector.js").default<import('../Feature.js').FeatureLike>} VectorSourceType
  * @extends {Layer<VectorSourceType, WebGLPointsLayerRenderer>}
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
+ * @deprecated Use ol/layer/WebGLVector instead
  */
-declare class WebGLPointsLayer<VectorSourceType extends import("../source/Vector.js").default<import("../geom/Point.js").default>> extends Layer<VectorSourceType, WebGLPointsLayerRenderer> {
+declare class WebGLPointsLayer<VectorSourceType extends import("../source/Vector.js").default<import("../Feature.js").FeatureLike>> extends Layer<VectorSourceType, WebGLPointsLayerRenderer, {
+    [x: string]: any;
+}> {
     /**
      * @param {Options<VectorSourceType>} options Options.
      */
     constructor(options: Options<VectorSourceType>);
     /**
-     * @private
-     * @type {import('../webgl/styleparser.js').StyleParseResult}
-     */
-    private parseResult_;
-    /**
-     * @type {Object<string, (string|number|Array<number>|boolean)>}
+     * @type {import('../style/flat.js').StyleVariables}
      * @private
      */
     private styleVariables_;
     /**
      * @private
+     * @type {import('../render/webgl/style.js').StyleParseResult}
+     */
+    private parseResult_;
+    /**
+     * @private
      * @type {boolean}
      */
     private hitDetectionDisabled_;
-    createRenderer(): any;
     /**
      * Update any variables used by the layer style and trigger a re-render.
      * @param {Object<string, number>} variables Variables to update.

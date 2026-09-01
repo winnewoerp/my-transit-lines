@@ -1,12 +1,12 @@
 /**
  * @module ol/Overlay
  */
-import BaseObject from './Object.js';
 import MapEventType from './MapEventType.js';
+import BaseObject from './Object.js';
 import {CLASS_SELECTABLE} from './css.js';
-import {containsExtent} from './extent.js';
+import {outerHeight, outerWidth, removeChildren} from './dom.js';
 import {listen, unlistenByKey} from './events.js';
-import {outerHeight, outerWidth, removeChildren, removeNode} from './dom.js';
+import {containsExtent} from './extent.js';
 
 /**
  * @typedef {'bottom-left' | 'bottom-center' | 'bottom-right' | 'center-left' | 'center-center' | 'center-right' | 'top-left' | 'top-center' | 'top-right'} Positioning
@@ -77,15 +77,15 @@ const Property = {
 };
 
 /**
- * @typedef {import("./ObjectEventType").Types|'change:element'|'change:map'|'change:offset'|'change:position'|
+ * @typedef {import("./ObjectEventType.js").Types|'change:element'|'change:map'|'change:offset'|'change:position'|
  *   'change:positioning'} OverlayObjectEventTypes
  */
 
 /***
  * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *   import("./Observable").OnSignature<OverlayObjectEventTypes, import("./Object").ObjectEvent, Return> &
- *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|OverlayObjectEventTypes, Return>} OverlayOnSignature
+ * @typedef {import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> &
+ *   import("./Observable.js").OnSignature<OverlayObjectEventTypes, import("./Object.js").ObjectEvent, Return> &
+ *   import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes|OverlayObjectEventTypes, Return>} OverlayOnSignature
  */
 
 /**
@@ -117,12 +117,12 @@ class Overlay extends BaseObject {
     super();
 
     /***
-     * @type {OverlayOnSignature<import("./events").EventsKey>}
+     * @type {OverlayOnSignature<import("./events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {OverlayOnSignature<import("./events").EventsKey>}
+     * @type {OverlayOnSignature<import("./events.js").EventsKey>}
      */
     this.once;
 
@@ -291,7 +291,7 @@ class Overlay extends BaseObject {
    */
   handleMapChanged() {
     if (this.mapPostrenderListenerKey) {
-      removeNode(this.element);
+      this.element?.remove();
       unlistenByKey(this.mapPostrenderListenerKey);
       this.mapPostrenderListenerKey = null;
     }
@@ -301,7 +301,7 @@ class Overlay extends BaseObject {
         map,
         MapEventType.POSTRENDER,
         this.render,
-        this
+        this,
       );
       this.updatePixelPosition();
       const container = this.stopEvent
@@ -533,8 +533,8 @@ class Overlay extends BaseObject {
 
     this.setVisible(true);
 
-    const x = Math.round(pixel[0] + offset[0]) + 'px';
-    const y = Math.round(pixel[1] + offset[1]) + 'px';
+    const x = `${pixel[0] + offset[0]}px`;
+    const y = `${pixel[1] + offset[1]}px`;
     let posX = '0%';
     let posY = '0%';
     if (

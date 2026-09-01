@@ -21,14 +21,14 @@ export type Options = {
      * Uniform definitions for the post process step
      */
     uniforms?: {
-        [x: string]: import("./Helper").UniformValue;
+        [x: string]: import("./Helper.js").UniformValue;
     } | undefined;
 };
 export type UniformInternalDescription = {
     /**
      * Value
      */
-    value: import("./Helper").UniformValue;
+    value: import("./Helper.js").UniformValue;
     /**
      * Location
      */
@@ -45,11 +45,11 @@ export type UniformInternalDescription = {
  * the main canvas that will then be sampled up (useful for saving resource on blur steps).
  * @property {string} [vertexShader] Vertex shader source
  * @property {string} [fragmentShader] Fragment shader source
- * @property {Object<string,import("./Helper").UniformValue>} [uniforms] Uniform definitions for the post process step
+ * @property {Object<string,import("./Helper.js").UniformValue>} [uniforms] Uniform definitions for the post process step
  */
 /**
  * @typedef {Object} UniformInternalDescription
- * @property {import("./Helper").UniformValue} value Value
+ * @property {import("./Helper.js").UniformValue} value Value
  * @property {WebGLUniformLocation} location Location
  * @property {WebGLTexture} [texture] Texture
  * @private
@@ -68,7 +68,7 @@ export type UniformInternalDescription = {
  *
  * Default shaders are shown hereafter:
  *
- * * Vertex shader:
+ * Vertex shader:
  *
  *   ```
  *   precision mediump float;
@@ -86,7 +86,7 @@ export type UniformInternalDescription = {
  *   }
  *   ```
  *
- * * Fragment shader:
+ * Fragment shader:
  *
  *   ```
  *   precision mediump float;
@@ -106,24 +106,63 @@ declare class WebGLPostProcessingPass {
      * @param {Options} options Options.
      */
     constructor(options: Options);
-    gl_: WebGLRenderingContext;
-    scaleRatio_: number;
-    renderTargetTexture_: WebGLTexture | null;
-    renderTargetTextureSize_: number[] | null;
-    frameBuffer_: WebGLFramebuffer | null;
-    depthBuffer_: WebGLRenderbuffer | null;
-    renderTargetProgram_: WebGLProgram | null;
-    renderTargetVerticesBuffer_: WebGLBuffer | null;
-    renderTargetAttribLocation_: number;
-    renderTargetUniformLocation_: WebGLUniformLocation | null;
-    renderTargetOpacityLocation_: WebGLUniformLocation | null;
-    renderTargetTextureLocation_: WebGLUniformLocation | null;
+    /**
+     * @private
+     */
+    private gl_;
+    /**
+     * @private
+     */
+    private scaleRatio_;
+    /**
+     * @type {WebGLTexture}
+     * @private
+     */
+    private renderTargetTexture_;
+    /**
+     * @type {import('../size.js').Size|null}
+     * @private
+     */
+    private renderTargetTextureSize_;
+    /**
+     * @private
+     */
+    private frameBuffer_;
+    /**
+     * @private
+     */
+    private depthBuffer_;
+    /**
+     * @private
+     */
+    private renderTargetProgram_;
+    /**
+     * @private
+     */
+    private renderTargetVerticesBuffer_;
+    /**
+     * @private
+     */
+    private renderTargetAttribLocation_;
+    /**
+     * @private
+     */
+    private renderTargetUniformLocation_;
+    /**
+     * @private
+     */
+    private renderTargetOpacityLocation_;
+    /**
+     * @private
+     */
+    private renderTargetTextureLocation_;
     /**
      * Holds info about custom uniforms used in the post processing pass
      * @type {Array<UniformInternalDescription>}
      * @private
      */
     private uniforms_;
+    getRenderTargetTexture(): WebGLTexture;
     /**
      * Get the WebGL rendering context
      * @return {WebGLRenderingContext} The rendering context.
@@ -143,7 +182,7 @@ declare class WebGLPostProcessingPass {
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [preCompose] Called before composing.
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [postCompose] Called before composing.
      */
-    apply(frameState: import("../Map.js").FrameState, nextPass?: WebGLPostProcessingPass | undefined, preCompose?: ((arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void) | undefined, postCompose?: ((arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void) | undefined): void;
+    apply(frameState: import("../Map.js").FrameState, nextPass?: WebGLPostProcessingPass, preCompose?: (arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void, postCompose?: (arg0: WebGLRenderingContext, arg1: import("../Map.js").FrameState) => void): void;
     /**
      * @return {WebGLFramebuffer} Frame buffer
      */

@@ -9,7 +9,7 @@ export type Options = {
      */
     attributionsCollapsible?: boolean | undefined;
     /**
-     * Size of the cache.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -107,7 +107,7 @@ declare class IIIF extends TileImage {
      * to parse Image API service information responses into constructor options.
      * @api
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
 }
 import TileImage from './TileImage.js';
 //# sourceMappingURL=IIIF.d.ts.map

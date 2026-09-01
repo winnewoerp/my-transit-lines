@@ -19,11 +19,22 @@ export default Extent;
 export type Options = {
     /**
      * A function that
-     * takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
+     * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
      * boolean to indicate whether that event should be handled.
      * Default is {@link module :ol/events/condition.always}.
      */
     condition?: import("../events/condition.js").Condition | undefined;
+    /**
+     * A function that
+     * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
+     * boolean to indicate whether that event should be handled to create a new extent.
+     * If `null`, the `condition` will also be used as `createCondition`.
+     */
+    createCondition?: import("../events/condition.js").Condition | null | undefined;
+    /**
+     * An extent can be dragged.
+     */
+    drag?: boolean | undefined;
     /**
      * Initial extent. Defaults to no
      * initial extent.
@@ -50,25 +61,30 @@ export type Options = {
      */
     wrapX?: boolean | undefined;
 };
+export type PointerHandler = (arg0: import("../coordinate.js").Coordinate) => import("../extent.js").Extent;
 /**
  * *
  */
-export type ExtentOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types | 'change:active', import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<'extentchanged', ExtentEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | 'change:active' | 'extentchanged', Return>;
+export type ExtentOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types | "change:active", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<"extentchanged", ExtentEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | "change:active" | "extentchanged", Return>;
 import Event from '../events/Event.js';
+/**
+ * @typedef {function (import("../coordinate.js").Coordinate): import("../extent.js").Extent} PointerHandler
+ */
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'extentchanged', ExtentEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'extentchanged', ExtentEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active'|'extentchanged', Return>} ExtentOnSignature
  */
 /**
  * @classdesc
  * Allows the user to draw a vector box by clicking and dragging on the map.
  * Once drawn, the vector box can be modified by dragging its vertices or edges.
- * This interaction is only supported for mouse devices.
+ * The interaction can also be configured with an initial extent and a `createCondition`
+ * to prevent the creation of a new extent on `pointerdown`, if desired.
  *
  * @fires ExtentEvent
  * @api
@@ -77,15 +93,15 @@ declare class Extent extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /***
-     * @type {ExtentOnSignature<import("../events").EventsKey>}
+     * @type {ExtentOnSignature<import("../events.js").EventsKey>}
      */
-    on: ExtentOnSignature<import("../events").EventsKey>;
+    on: ExtentOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {ExtentOnSignature<import("../events").EventsKey>}
+     * @type {ExtentOnSignature<import("../events.js").EventsKey>}
      */
-    once: ExtentOnSignature<import("../events").EventsKey>;
+    once: ExtentOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {ExtentOnSignature<void>}
      */
@@ -97,6 +113,16 @@ declare class Extent extends PointerInteraction {
      */
     private condition_;
     /**
+     * @type {import("../events/condition.js").Condition}
+     * @private
+     */
+    private createCondition_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private drag_;
+    /**
      * Extent of the drawn box
      * @type {import("../extent.js").Extent}
      * @private
@@ -104,7 +130,7 @@ declare class Extent extends PointerInteraction {
     private extent_;
     /**
      * Handler for pointer move events
-     * @type {function (import("../coordinate.js").Coordinate): import("../extent.js").Extent|null}
+     * @type {PointerHandler|null}
      * @private
      */
     private pointerHandler_;
@@ -153,6 +179,7 @@ declare class Extent extends PointerInteraction {
     private snapToVertex_;
     /**
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent pointer move event
+     * @return {boolean} The event was handled.
      * @private
      */
     private handlePointerMove_;
@@ -164,17 +191,24 @@ declare class Extent extends PointerInteraction {
     private createOrUpdateExtentFeature_;
     /**
      * @param {import("../coordinate.js").Coordinate} vertex location of feature
+     * @param {boolean} [createIfNotExists] create the feature if it does not exist
      * @return {Feature} vertex as feature
      * @private
      */
-    private createOrUpdatePointerFeature_;
+    private updatePointerFeature_;
+    /**
+     * Remove the vertex feature if it exists.
+     * @private
+     */
+    private noVertexFeature_;
     /**
      * Remove the interaction from its current map and attach it to the new map.
      * Subclasses may set up event handlers to get notified about changes to
      * the map here.
      * @param {import("../Map.js").default} map Map.
+     * @override
      */
-    setMap(map: import("../Map.js").default): void;
+    override setMap(map: import("../Map.js").default): void;
     /**
      * Returns the current drawn extent in the view projection (or user projection if set)
      *
@@ -187,6 +221,7 @@ declare class Extent extends PointerInteraction {
      *
      * @return {import("../extent.js").Extent} Drawn extent in the view projection.
      * @api
+     * @deprecated Use {@link module:ol/interaction/Extent~Extent#getExtent} instead.
      */
     getExtentInternal(): import("../extent.js").Extent;
     /**

@@ -10,7 +10,7 @@
  * @param {Function} [comparator] Comparator function.
  * @return {number} The index of the item if found, -1 if not.
  */
-export function binarySearch(haystack: Array<any>, needle: any, comparator?: Function | undefined): number;
+export function binarySearch(haystack: Array<any>, needle: any, comparator?: Function): number;
 /**
  * Compare function sorting arrays in ascending order.  Safe to use for numeric values.
  * @param {*} a The first object to be compared.
@@ -61,26 +61,27 @@ export function reverseSubArray(arr: Array<any>, begin: number, end: number): vo
  * @param {!Array<VALUE>|VALUE} data The elements or arrays of elements to add to arr.
  * @template VALUE
  */
-export function extend<VALUE>(arr: VALUE[], data: VALUE | VALUE[]): void;
+export function extend<VALUE>(arr: Array<VALUE>, data: Array<VALUE> | VALUE): void;
 /**
  * @param {Array<VALUE>} arr The array to modify.
  * @param {VALUE} obj The element to remove.
  * @template VALUE
  * @return {boolean} If the element was removed.
  */
-export function remove<VALUE>(arr: VALUE[], obj: VALUE): boolean;
+export function remove<VALUE>(arr: Array<VALUE>, obj: VALUE): boolean;
 /**
- * @param {Array|Uint8ClampedArray} arr1 The first array to compare.
- * @param {Array|Uint8ClampedArray} arr2 The second array to compare.
+ * @param {Array<any>|Uint8ClampedArray} arr1 The first array to compare.
+ * @param {Array<any>|Uint8ClampedArray} arr2 The second array to compare.
  * @return {boolean} Whether the two arrays are equal.
  */
-export function equals(arr1: any[] | Uint8ClampedArray, arr2: any[] | Uint8ClampedArray): boolean;
+export function equals(arr1: Array<any> | Uint8ClampedArray, arr2: Array<any> | Uint8ClampedArray): boolean;
 /**
  * Sort the passed array such that the relative order of equal elements is preserved.
  * See https://en.wikipedia.org/wiki/Sorting_algorithm#Stability for details.
  * @param {Array<*>} arr The array to sort (modifies original).
  * @param {!function(*, *): number} compareFnc Comparison function.
  * @api
+ * @deprecated
  */
 export function stableSort(arr: Array<any>, compareFnc: (arg0: any, arg1: any) => number): void;
 /**
@@ -89,7 +90,7 @@ export function stableSort(arr: Array<any>, compareFnc: (arg0: any, arg1: any) =
  * @param {boolean} [strict] Strictly sorted (default false).
  * @return {boolean} Return index.
  */
-export function isSorted(arr: Array<any>, func?: Function | undefined, strict?: boolean | undefined): boolean;
+export function isSorted(arr: Array<any>, func?: Function, strict?: boolean): boolean;
 /**
  * {@link module :ol/tilegrid/TileGrid~TileGrid#getZForResolution} can use a function
  * of this type to determine which nearest resolution to use.

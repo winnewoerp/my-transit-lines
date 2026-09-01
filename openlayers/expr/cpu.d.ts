@@ -10,6 +10,8 @@
  * @property {Object} properties The values for properties used in 'get' expressions.
  * @property {Object} variables The values for variables used in 'var' expressions.
  * @property {number} resolution The map resolution.
+ * @property {string|number|null} featureId The feature id.
+ * @property {string} geometryType Geometry type of the current object.
  */
 /**
  * @return {EvaluationContext} A new evaluation context.
@@ -37,6 +39,9 @@ export function newEvaluationContext(): EvaluationContext;
  * @typedef {function(EvaluationContext):Array<number>} CoordinateEvaluator
  */
 /**
+ * @typedef {function(EvaluationContext):(Array<number>)} SizeEvaluator
+ */
+/**
  * @typedef {function(EvaluationContext):(Array<number>|number)} SizeLikeEvaluator
  */
 /**
@@ -45,7 +50,7 @@ export function newEvaluationContext(): EvaluationContext;
  * @param {import('./expression.js').ParsingContext} context The parsing context.
  * @return {ExpressionEvaluator} The expression evaluator.
  */
-export function buildExpression(encoded: import('./expression.js').EncodedExpression, type: number, context: import('./expression.js').ParsingContext): ExpressionEvaluator;
+export function buildExpression(encoded: import("./expression.js").EncodedExpression, type: number, context: import("./expression.js").ParsingContext): ExpressionEvaluator;
 export type EvaluationContext = {
     /**
      * The values for properties used in 'get' expressions.
@@ -59,6 +64,14 @@ export type EvaluationContext = {
      * The map resolution.
      */
     resolution: number;
+    /**
+     * The feature id.
+     */
+    featureId: string | number | null;
+    /**
+     * Geometry type of the current object.
+     */
+    geometryType: string;
 };
 export type ExpressionEvaluator = (arg0: EvaluationContext) => import("./expression.js").LiteralValue;
 export type BooleanEvaluator = (arg0: EvaluationContext) => boolean;
@@ -67,5 +80,6 @@ export type StringEvaluator = (arg0: EvaluationContext) => string;
 export type ColorLikeEvaluator = (arg0: EvaluationContext) => (Array<number> | string);
 export type NumberArrayEvaluator = (arg0: EvaluationContext) => Array<number>;
 export type CoordinateEvaluator = (arg0: EvaluationContext) => Array<number>;
+export type SizeEvaluator = (arg0: EvaluationContext) => (Array<number>);
 export type SizeLikeEvaluator = (arg0: EvaluationContext) => (Array<number> | number);
 //# sourceMappingURL=cpu.d.ts.map

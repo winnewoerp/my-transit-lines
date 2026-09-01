@@ -1,6 +1,7 @@
 /**
  * @module ol/webgl/Buffer
  */
+import {assert} from '../asserts.js';
 import {
   ARRAY_BUFFER,
   DYNAMIC_DRAW,
@@ -8,7 +9,6 @@ import {
   STATIC_DRAW,
   STREAM_DRAW,
 } from '../webgl.js';
-import {assert} from '../asserts.js';
 
 /**
  * Used to describe the intended usage for the data: `STATIC_DRAW`, `STREAM_DRAW`
@@ -28,9 +28,9 @@ export const BufferUsage = {
  * the buffer type (ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER) and available extensions.
  *
  * To populate the array, you can either use:
- * * A size using `#ofSize(buffer)`
- * * An `ArrayBuffer` object using `#fromArrayBuffer(buffer)`
- * * A plain array using `#fromArray(array)`
+ * A size using `#ofSize(buffer)`
+ * An `ArrayBuffer` object using `#fromArrayBuffer(buffer)`
+ * A plain array using `#fromArray(array)`
  *
  * Note:
  * See the documentation of [WebGLRenderingContext.bufferData](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData)
@@ -40,31 +40,31 @@ class WebGLArrayBuffer {
   /**
    * @param {number} type Buffer type, either ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER.
    * @param {number} [usage] Intended usage, either `STATIC_DRAW`, `STREAM_DRAW` or `DYNAMIC_DRAW`.
-   * Default is `DYNAMIC_DRAW`.
+   * Default is `STATIC_DRAW`.
    */
   constructor(type, usage) {
     /**
      * @private
-     * @type {Float32Array|Uint32Array}
+     * @type {Float32Array|Uint32Array|null}
      */
-    this.array = null;
+    this.array_ = null;
 
     /**
      * @private
      * @type {number}
      */
-    this.type = type;
+    this.type_ = type;
 
     assert(
       type === ARRAY_BUFFER || type === ELEMENT_ARRAY_BUFFER,
-      'A `WebGLArrayBuffer` must either be of type `ELEMENT_ARRAY_BUFFER` or `ARRAY_BUFFER`'
+      'A `WebGLArrayBuffer` must either be of type `ELEMENT_ARRAY_BUFFER` or `ARRAY_BUFFER`',
     );
 
     /**
      * @private
      * @type {number}
      */
-    this.usage = usage !== undefined ? usage : BufferUsage.STATIC_DRAW;
+    this.usage_ = usage !== undefined ? usage : BufferUsage.STATIC_DRAW;
   }
 
   /**
@@ -73,7 +73,7 @@ class WebGLArrayBuffer {
    * @return {WebGLArrayBuffer} This
    */
   ofSize(size) {
-    this.array = new (getArrayClassForType(this.type))(size);
+    this.array_ = new (getArrayClassForType(this.type_))(size);
     return this;
   }
 
@@ -83,7 +83,7 @@ class WebGLArrayBuffer {
    * @return {WebGLArrayBuffer} This
    */
   fromArray(array) {
-    this.array = getArrayClassForType(this.type).from(array);
+    this.array_ = getArrayClassForType(this.type_).from(array);
     return this;
   }
 
@@ -94,7 +94,7 @@ class WebGLArrayBuffer {
    * @return {WebGLArrayBuffer} This
    */
   fromArrayBuffer(buffer) {
-    this.array = new (getArrayClassForType(this.type))(buffer);
+    this.array_ = new (getArrayClassForType(this.type_))(buffer);
     return this;
   }
 
@@ -102,22 +102,33 @@ class WebGLArrayBuffer {
    * @return {number} Buffer type.
    */
   getType() {
-    return this.type;
+    return this.type_;
   }
 
   /**
    * Will return null if the buffer was not initialized
-   * @return {Float32Array|Uint32Array} Array.
+   * @return {Float32Array|Uint32Array|null} Array.
    */
   getArray() {
-    return this.array;
+    return this.array_;
+  }
+
+  /**
+   * @param {Float32Array|Uint32Array} array Array.
+   */
+  setArray(array) {
+    const ArrayType = getArrayClassForType(this.type_);
+    if (!(array instanceof ArrayType)) {
+      throw new Error(`Expected ${ArrayType}`);
+    }
+    this.array_ = array;
   }
 
   /**
    * @return {number} Usage.
    */
   getUsage() {
-    return this.usage;
+    return this.usage_;
   }
 
   /**
@@ -125,7 +136,7 @@ class WebGLArrayBuffer {
    * @return {number} Array size
    */
   getSize() {
-    return this.array ? this.array.length : 0;
+    return this.array_ ? this.array_.length : 0;
   }
 }
 

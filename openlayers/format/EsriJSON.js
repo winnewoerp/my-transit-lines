@@ -2,7 +2,7 @@
  * @module ol/format/EsriJSON
  */
 import Feature from '../Feature.js';
-import JSONFeature from './JSONFeature.js';
+import {containsExtent} from '../extent.js';
 import LineString from '../geom/LineString.js';
 import LinearRing from '../geom/LinearRing.js';
 import MultiLineString from '../geom/MultiLineString.js';
@@ -10,12 +10,12 @@ import MultiPoint from '../geom/MultiPoint.js';
 import MultiPolygon from '../geom/MultiPolygon.js';
 import Point from '../geom/Point.js';
 import Polygon from '../geom/Polygon.js';
-import {containsExtent} from '../extent.js';
 import {deflateCoordinates} from '../geom/flat/deflate.js';
-import {get as getProjection} from '../proj.js';
-import {isEmpty} from '../obj.js';
 import {linearRingIsClockwise} from '../geom/flat/orient.js';
+import {isEmpty} from '../obj.js';
+import {get as getProjection} from '../proj.js';
 import {transformGeometryWithOptions} from './Feature.js';
+import JSONFeature from './JSONFeature.js';
 
 /**
  * @typedef {import("arcgis-rest-api").Feature} EsriJSONFeature
@@ -98,6 +98,7 @@ class EsriJSON extends JSONFeature {
    * @param {string} [idField] Name of the field where to get the id from.
    * @protected
    * @return {import("../Feature.js").default} Feature.
+   * @override
    */
   readFeatureFromObject(object, options, idField) {
     const esriJSONFeature = /** @type {EsriJSONFeature} */ (object);
@@ -122,6 +123,7 @@ class EsriJSON extends JSONFeature {
    * @param {import("./Feature.js").ReadOptions} [options] Read options.
    * @protected
    * @return {Array<Feature>} Features.
+   * @override
    */
   readFeaturesFromObject(object, options) {
     options = options ? options : {};
@@ -135,8 +137,8 @@ class EsriJSON extends JSONFeature {
           this.readFeatureFromObject(
             esriJSONFeatures[i],
             options,
-            object.objectIdFieldName
-          )
+            object.objectIdFieldName,
+          ),
         );
       }
       return features;
@@ -149,6 +151,7 @@ class EsriJSON extends JSONFeature {
    * @param {import("./Feature.js").ReadOptions} [options] Read options.
    * @protected
    * @return {import("../geom/Geometry.js").default} Geometry.
+   * @override
    */
   readGeometryFromObject(object, options) {
     return readGeometry(object, options);
@@ -158,6 +161,7 @@ class EsriJSON extends JSONFeature {
    * @param {Object} object Object.
    * @protected
    * @return {import("../proj/Projection.js").default} Projection.
+   * @override
    */
   readProjectionFromObject(object) {
     if (
@@ -180,6 +184,7 @@ class EsriJSON extends JSONFeature {
    * @param {import("./Feature.js").WriteOptions} [options] Write options.
    * @return {EsriJSONGeometry} Object.
    * @api
+   * @override
    */
   writeGeometryObject(geometry, options) {
     return writeGeometry(geometry, this.adaptOptions(options));
@@ -192,6 +197,7 @@ class EsriJSON extends JSONFeature {
    * @param {import("./Feature.js").WriteOptions} [options] Write options.
    * @return {Object} Object.
    * @api
+   * @override
    */
   writeFeatureObject(feature, options) {
     options = this.adaptOptions(options);
@@ -229,6 +235,7 @@ class EsriJSON extends JSONFeature {
    * @param {import("./Feature.js").WriteOptions} [options] Write options.
    * @return {EsriJSONFeatureSet} EsriJSON Object.
    * @api
+   * @override
    */
   writeFeaturesObject(features, options) {
     options = this.adaptOptions(options);
@@ -302,7 +309,7 @@ function convertRings(rings, layout) {
       flatRing,
       0,
       flatRing.length,
-      layout.length
+      layout.length,
     );
     if (clockwise) {
       outerRings.push([rings[i]]);
@@ -318,7 +325,7 @@ function convertRings(rings, layout) {
       const outerRing = outerRings[i][0];
       const containsHole = containsExtent(
         new LinearRing(outerRing).getExtent(),
-        new LinearRing(hole).getExtent()
+        new LinearRing(hole).getExtent(),
       );
       if (containsHole) {
         // the hole is contained push it into our polygon
@@ -563,7 +570,7 @@ function writeGeometry(geometry, options) {
   const geometryWriter = GEOMETRY_WRITERS[geometry.getType()];
   return geometryWriter(
     transformGeometryWithOptions(geometry, true, options),
-    options
+    options,
   );
 }
 

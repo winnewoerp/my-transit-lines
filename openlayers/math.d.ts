@@ -36,9 +36,9 @@ export function squaredDistance(x1: number, y1: number, x2: number, y2: number):
  *
  * @param {Array<Array<number>>} mat Augmented matrix (n x n + 1 column)
  *                                     in row-major order.
- * @return {Array<number>} The resulting vector.
+ * @return {Array<number>|null} The resulting vector.
  */
-export function solveLinearSystem(mat: Array<Array<number>>): Array<number>;
+export function solveLinearSystem(mat: Array<Array<number>>): Array<number> | null;
 /**
  * Converts radians to to degrees.
  *
@@ -101,4 +101,12 @@ export function floor(n: number, decimals: number): number;
  * @return {number} The next bigger integer.
  */
 export function ceil(n: number, decimals: number): number;
+/**
+ * Wraps a number between some minimum and maximum values.
+ * @param {number} n The number to wrap.
+ * @param {number} min The minimum of the range (inclusive).
+ * @param {number} max The maximum of the range (exclusive).
+ * @return {number} The wrapped number.
+ */
+export function wrap(n: number, min: number, max: number): number;
 //# sourceMappingURL=math.d.ts.map

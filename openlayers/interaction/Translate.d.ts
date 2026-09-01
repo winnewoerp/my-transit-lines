@@ -1,25 +1,25 @@
 /**
- * A function that takes an {@link module:ol/Feature~Feature} or
- * {@link module:ol/render/Feature~RenderFeature} and an
+ * A function that takes a {@link module:ol/Feature~Feature} or
+ * {@link module:ol/render/Feature~RenderFeature} and a
  * {@link module:ol/layer/Layer~Layer} and returns `true` if the feature may be
  * translated or `false` otherwise.
- * @typedef {function(Feature, import("../layer/Layer.js").default<import("../source/Source").default>):boolean} FilterFunction
+ * @typedef {function(Feature, import("../layer/Layer.js").default<import("../source/Source.js").default>):boolean} FilterFunction
  */
 /**
  * @typedef {Object} Options
  * @property {import("../events/condition.js").Condition} [condition] A function that
- * takes an {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
+ * takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
  * boolean to indicate whether that event should be handled.
  * Default is {@link module:ol/events/condition.always}.
  * @property {Collection<Feature>} [features] Features contained in this collection will be able to be translated together.
- * @property {Array<import("../layer/Layer.js").default>|function(import("../layer/Layer.js").default<import("../source/Source").default>): boolean} [layers] A list of layers from which features should be
+ * @property {Array<import("../layer/Layer.js").default>|function(import("../layer/Layer.js").default<import("../source/Source.js").default>): boolean} [layers] A list of layers from which features should be
  * translated. Alternatively, a filter function can be provided. The
  * function will be called for each layer in the map and should return
  * `true` for layers that you want to be translatable. If the option is
  * absent, all visible layers will be considered translatable.
  * Not used if `features` is provided.
  * @property {FilterFunction} [filter] A function
- * that takes an {@link module:ol/Feature~Feature} and an
+ * that takes a {@link module:ol/Feature~Feature} and an
  * {@link module:ol/layer/Layer~Layer} and returns `true` if the feature may be
  * translated or `false` otherwise. Not used if `features` is provided.
  * @property {number} [hitTolerance=0] Hit-detection tolerance. Pixels inside the radius around the given position
@@ -38,7 +38,7 @@ export class TranslateEvent extends Event {
      * @param {import("../coordinate.js").Coordinate} startCoordinate The original coordinates before.translation started
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
      */
-    constructor(type: TranslateEventType, features: Collection<Feature>, coordinate: import("../coordinate.js").Coordinate, startCoordinate: import("../coordinate.js").Coordinate, mapBrowserEvent: import("../MapBrowserEvent.js").default<any>);
+    constructor(type: TranslateEventType, features: Collection<Feature>, coordinate: import("../coordinate.js").Coordinate, startCoordinate: import("../coordinate.js").Coordinate, mapBrowserEvent: import("../MapBrowserEvent.js").default);
     /**
      * The features being translated.
      * @type {Collection<Feature>}
@@ -64,20 +64,20 @@ export class TranslateEvent extends Event {
      * @type {import("../MapBrowserEvent.js").default}
      * @api
      */
-    mapBrowserEvent: import("../MapBrowserEvent.js").default<any>;
+    mapBrowserEvent: import("../MapBrowserEvent.js").default;
 }
 export default Translate;
 /**
- * A function that takes an {@link module :ol/Feature~Feature} or
- * {@link module :ol/render/Feature~RenderFeature} and an
+ * A function that takes a {@link module :ol/Feature~Feature} or
+ * {@link module :ol/render/Feature~RenderFeature} and a
  * {@link module :ol/layer/Layer~Layer} and returns `true` if the feature may be
  * translated or `false` otherwise.
  */
-export type FilterFunction = (arg0: Feature, arg1: import("../layer/Layer.js").default<import("../source/Source").default>) => boolean;
+export type FilterFunction = (arg0: Feature, arg1: import("../layer/Layer.js").default<import("../source/Source.js").default>) => boolean;
 export type Options = {
     /**
      * A function that
-     * takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
+     * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
      * boolean to indicate whether that event should be handled.
      * Default is {@link module :ol/events/condition.always}.
      */
@@ -85,7 +85,9 @@ export type Options = {
     /**
      * Features contained in this collection will be able to be translated together.
      */
-    features?: Collection<Feature<import("../geom/Geometry.js").default>> | undefined;
+    features?: Collection<Feature<import("../geom.js").Geometry, {
+        [x: string]: any;
+    }>> | undefined;
     /**
      * A list of layers from which features should be
      * translated. Alternatively, a filter function can be provided. The
@@ -94,10 +96,12 @@ export type Options = {
      * absent, all visible layers will be considered translatable.
      * Not used if `features` is provided.
      */
-    layers?: import("../layer/Layer.js").default<import("../source/Source").default, import("../renderer/Layer.js").default<any>>[] | ((arg0: import("../layer/Layer.js").default<import("../source/Source").default>) => boolean) | undefined;
+    layers?: import("../layer/Layer.js").default<import("../source/Source.js").default, import("../renderer/Layer.js").default<any>, {
+        [x: string]: any;
+    }>[] | ((arg0: import("../layer/Layer.js").default<import("../source/Source.js").default>) => boolean) | undefined;
     /**
      * A function
-     * that takes an {@link module :ol/Feature~Feature} and an
+     * that takes a {@link module :ol/Feature~Feature} and an
      * {@link module :ol/layer/Layer~Layer} and returns `true` if the feature may be
      * translated or `false` otherwise. Not used if `features` is provided.
      */
@@ -111,7 +115,7 @@ export type Options = {
 /**
  * *
  */
-export type TranslateOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types | 'change:active', import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<'translateend' | 'translatestart' | 'translating', TranslateEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | 'change:active' | 'translateend' | 'translatestart' | 'translating', Return>;
+export type TranslateOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types | "change:active", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<"translateend" | "translatestart" | "translating", TranslateEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | "change:active" | "translateend" | "translatestart" | "translating", Return>;
 import Event from '../events/Event.js';
 import Collection from '../Collection.js';
 import Feature from '../Feature.js';
@@ -123,11 +127,11 @@ declare namespace TranslateEventType {
 }
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'translateend'|'translatestart'|'translating', TranslateEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'translateend'|'translatestart'|'translating', TranslateEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active'|'translateend'|'translatestart'|'translating', Return>} TranslateOnSignature
  */
 /**
@@ -144,15 +148,15 @@ declare class Translate extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /***
-     * @type {TranslateOnSignature<import("../events").EventsKey>}
+     * @type {TranslateOnSignature<import("../events.js").EventsKey>}
      */
-    on: TranslateOnSignature<import("../events").EventsKey>;
+    on: TranslateOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {TranslateOnSignature<import("../events").EventsKey>}
+     * @type {TranslateOnSignature<import("../events.js").EventsKey>}
      */
-    once: TranslateOnSignature<import("../events").EventsKey>;
+    once: TranslateOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {TranslateOnSignature<void>}
      */
@@ -176,7 +180,7 @@ declare class Translate extends PointerInteraction {
     private features_;
     /**
      * @private
-     * @type {function(import("../layer/Layer.js").default<import("../source/Source").default>): boolean}
+     * @type {function(import("../layer/Layer.js").default<import("../source/Source.js").default>): boolean}
      */
     private layerFilter_;
     /**
@@ -227,8 +231,9 @@ declare class Translate extends PointerInteraction {
      * Subclasses may set up event handlers to get notified about changes to
      * the map here.
      * @param {import("../Map.js").default} map Map.
+     * @override
      */
-    setMap(map: import("../Map.js").default): void;
+    override setMap(map: import("../Map.js").default): void;
     /**
      * @private
      */

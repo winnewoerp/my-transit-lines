@@ -2,11 +2,11 @@ export default Icon;
 /**
  * Anchor unit can be either a fraction of the icon size or in pixels.
  */
-export type IconAnchorUnits = 'fraction' | 'pixels';
+export type IconAnchorUnits = "fraction" | "pixels";
 /**
  * Icon origin. One of 'bottom-left', 'bottom-right', 'top-left', 'top-right'.
  */
-export type IconOrigin = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+export type IconOrigin = "bottom-left" | "bottom-right" | "top-left" | "top-right";
 export type Options = {
     /**
      * Anchor. Default value is the icon center.
@@ -41,9 +41,13 @@ export type Options = {
      */
     crossOrigin?: string | null | undefined;
     /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
      * Image object for the icon.
      */
-    img?: HTMLCanvasElement | HTMLImageElement | ImageBitmap | undefined;
+    img?: HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | ImageBitmap | undefined;
     /**
      * Displacement of the icon in pixels.
      * Positive values will shift the icon right and up.
@@ -95,7 +99,7 @@ export type Options = {
     /**
      * Declutter mode.
      */
-    declutterMode?: "declutter" | "obstacle" | "none" | undefined;
+    declutterMode?: import("./Style.js").DeclutterMode | undefined;
 };
 /**
  * @classdesc
@@ -106,7 +110,7 @@ declare class Icon extends ImageStyle {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {Array<number>}
@@ -137,6 +141,11 @@ declare class Icon extends ImageStyle {
      * @type {?string}
      */
     private crossOrigin_;
+    /**
+     * @private
+     * @type {ReferrerPolicy}
+     */
+    private referrerPolicy_;
     /**
      * @private
      * @type {import("../color.js").Color}
@@ -172,8 +181,9 @@ declare class Icon extends ImageStyle {
      * Clones the style. The underlying Image/HTMLCanvasElement is not cloned.
      * @return {Icon} The cloned style.
      * @api
+     * @override
      */
-    clone(): Icon;
+    override clone(): Icon;
     /**
      * Set the anchor point. The anchor determines the center point for the
      * symbolizer.
@@ -189,23 +199,41 @@ declare class Icon extends ImageStyle {
      */
     getColor(): import("../color.js").Color;
     /**
+     * Set the icon color.
+     *
+     * Warning: Repeatedly setting the color on an icon style
+     * causes the icon image to be re-created each time. This can have a
+     * severe performance impact.
+     *
+     * @param {import("../color.js").Color|string|null|undefined} color Color.
+     */
+    setColor(color: import("../color.js").Color | string | null | undefined): void;
+    /**
      * Get the image icon.
      * @param {number} pixelRatio Pixel ratio.
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element. If the Icon
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element. If the Icon
      * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
      * @api
+     * @override
      */
-    getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
     /**
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
+     * @override
      */
-    getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
     /**
      * Get the image URL.
      * @return {string|undefined} Image src.
      * @api
      */
     getSrc(): string | undefined;
+    /**
+     * Set the image URI
+     * @param {string} src Image source URI
+     * @api
+     */
+    setSrc(src: string): void;
     /**
      * Get the width of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
      * @return {number} Icon width (in pixels).

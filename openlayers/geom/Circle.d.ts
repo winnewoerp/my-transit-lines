@@ -13,13 +13,14 @@ declare class Circle extends SimpleGeometry {
      * @param {number} [radius] Radius in units of the projection.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(center: import("../coordinate.js").Coordinate, radius?: number | undefined, layout?: import("./Geometry.js").GeometryLayout | undefined);
+    constructor(center: import("../coordinate.js").Coordinate, radius?: number, layout?: import("./Geometry.js").GeometryLayout);
     /**
      * Make a complete copy of the geometry.
      * @return {!Circle} Clone.
      * @api
+     * @override
      */
-    clone(): Circle;
+    override clone(): Circle;
     /**
      * Return the center of the circle as {@link module:ol/coordinate~Coordinate coordinate}.
      * @return {import("../coordinate.js").Coordinate} Center.
@@ -51,9 +52,15 @@ declare class Circle extends SimpleGeometry {
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @api
      */
-    setCenterAndRadius(center: import("../coordinate.js").Coordinate, radius: number, layout?: import("./Geometry.js").GeometryLayout | undefined): void;
-    getCoordinates(): null;
-    setCoordinates(coordinates: any, layout: any): void;
+    setCenterAndRadius(center: import("../coordinate.js").Coordinate, radius: number, layout?: import("./Geometry.js").GeometryLayout): void;
+    /**
+     * @override
+     */
+    override getCoordinates(): null;
+    /**
+     * @override
+     */
+    override setCoordinates(coordinates: any, layout: any): void;
     /**
      * Set the radius of the circle. The radius is in the units of the projection.
      * @param {number} radius Radius.

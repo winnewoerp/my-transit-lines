@@ -1,8 +1,8 @@
 /**
  * @module ol/ImageCanvas
  */
-import ImageState from './ImageState.js';
 import ImageWrapper from './Image.js';
+import ImageState from './ImageState.js';
 
 /**
  * A function that is called to trigger asynchronous canvas drawing.  It is
@@ -18,7 +18,7 @@ class ImageCanvas extends ImageWrapper {
    * @param {import("./extent.js").Extent} extent Extent.
    * @param {number} resolution Resolution.
    * @param {number} pixelRatio Pixel ratio.
-   * @param {HTMLCanvasElement} canvas Canvas.
+   * @param {HTMLCanvasElement|OffscreenCanvas} canvas Canvas.
    * @param {Loader} [loader] Optional loader function to
    *     support asynchronous canvas drawing.
    */
@@ -36,7 +36,7 @@ class ImageCanvas extends ImageWrapper {
 
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     this.canvas_ = canvas;
 
@@ -72,6 +72,7 @@ class ImageCanvas extends ImageWrapper {
 
   /**
    * Load not yet loaded URI.
+   * @override
    */
   load() {
     if (this.state == ImageState.IDLE) {
@@ -82,7 +83,8 @@ class ImageCanvas extends ImageWrapper {
   }
 
   /**
-   * @return {HTMLCanvasElement} Canvas element.
+   * @return {HTMLCanvasElement|OffscreenCanvas} Canvas element.
+   * @override
    */
   getImage() {
     return this.canvas_;

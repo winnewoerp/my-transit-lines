@@ -1,14 +1,11 @@
 /**
  * @module ol/source/Image
  */
+import ImageWrapper from '../Image.js';
+import ImageState from '../ImageState.js';
+import {linearFindNearest} from '../array.js';
 import Event from '../events/Event.js';
 import EventType from '../events/EventType.js';
-import ImageState from '../ImageState.js';
-import ImageWrapper from '../Image.js';
-import ReprojImage from '../reproj/Image.js';
-import Source from './Source.js';
-import {DECIMALS} from './common.js';
-import {ceil} from '../math.js';
 import {
   containsExtent,
   equals,
@@ -17,9 +14,12 @@ import {
   getHeight,
   getWidth,
 } from '../extent.js';
+import {ceil} from '../math.js';
 import {equivalent} from '../proj.js';
+import ReprojImage from '../reproj/Image.js';
 import {fromResolutionLike} from '../resolution.js';
-import {linearFindNearest} from '../array.js';
+import Source from './Source.js';
+import {DECIMALS} from './common.js';
 
 /**
  * @enum {string}
@@ -75,10 +75,10 @@ export class ImageSourceEvent extends Event {
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types
  *     |ImageSourceEventTypes, Return>} ImageSourceOnSignature
  */
 
@@ -116,12 +116,12 @@ class ImageSource extends Source {
     });
 
     /***
-     * @type {ImageSourceOnSignature<import("../events").EventsKey>}
+     * @type {ImageSourceOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {ImageSourceOnSignature<import("../events").EventsKey>}
+     * @type {ImageSourceOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 
@@ -178,10 +178,17 @@ class ImageSource extends Source {
      * @type {boolean}
      */
     this.static_ = options.loader ? options.loader.length === 0 : false;
+
+    /**
+     * @private
+     * @type {import("../proj/Projection.js").default}
+     */
+    this.wantedProjection_ = null;
   }
 
   /**
    * @return {Array<number>|null} Resolutions.
+   * @override
    */
   getResolutions() {
     return this.resolutions_;
@@ -249,7 +256,7 @@ class ImageSource extends Source {
       pixelRatio,
       (extent, resolution, pixelRatio) =>
         this.getImageInternal(extent, resolution, pixelRatio, sourceProjection),
-      this.getInterpolate()
+      this.getInterpolate(),
     );
     this.reprojectedRevision_ = this.getRevision();
 
@@ -272,9 +279,10 @@ class ImageSource extends Source {
       if (
         this.image &&
         (this.static_ ||
-          (((this.wantedExtent_ &&
-            containsExtent(this.wantedExtent_, requestExtent)) ||
-            containsExtent(this.image.getExtent(), requestExtent)) &&
+          (this.wantedProjection_ === projection &&
+            ((this.wantedExtent_ &&
+              containsExtent(this.wantedExtent_, requestExtent)) ||
+              containsExtent(this.image.getExtent(), requestExtent)) &&
             ((this.wantedResolution_ &&
               fromResolutionLike(this.wantedResolution_) ===
                 requestResolution) ||
@@ -283,17 +291,18 @@ class ImageSource extends Source {
       ) {
         return this.image;
       }
+      this.wantedProjection_ = projection;
       this.wantedExtent_ = requestExtent;
       this.wantedResolution_ = requestResolution;
       this.image = new ImageWrapper(
         requestExtent,
         requestResolution,
         pixelRatio,
-        this.loader
+        this.loader,
       );
       this.image.addEventListener(
         EventType.CHANGE,
-        this.handleImageChange.bind(this)
+        this.handleImageChange.bind(this),
       );
     }
     return this.image;

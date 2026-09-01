@@ -27,6 +27,11 @@ export type Options = {
      */
     miterLimit?: number | undefined;
     /**
+     * Line offset in pixels along the normal. A positive value offsets the line to the right,
+     * relative to the direction of the line. Default is `undefined` (no offset).
+     */
+    offset?: number | undefined;
+    /**
      * Width.
      */
     width?: number | undefined;
@@ -44,6 +49,8 @@ export type Options = {
  * @property {Array<number>} [lineDash] Line dash pattern. Default is `null` (no dash).
  * @property {number} [lineDashOffset=0] Line dash offset.
  * @property {number} [miterLimit=10] Miter limit.
+ * @property {number} [offset] Line offset in pixels along the normal. A positive value offsets the line to the right,
+ * relative to the direction of the line. Default is `undefined` (no offset).
  * @property {number} [width] Width.
  */
 /**
@@ -58,7 +65,7 @@ declare class Stroke {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {import("../color.js").Color|import("../colorlike.js").ColorLike}
@@ -89,6 +96,11 @@ declare class Stroke {
      * @type {number|undefined}
      */
     private miterLimit_;
+    /**
+     * @private
+     * @type {number|undefined}
+     */
+    private offset_;
     /**
      * @private
      * @type {number|undefined}
@@ -137,6 +149,12 @@ declare class Stroke {
      */
     getMiterLimit(): number | undefined;
     /**
+     * Get the line offset in pixels.
+     * @return {number|undefined} Offset.
+     * @api
+     */
+    getOffset(): number | undefined;
+    /**
      * Get the stroke width.
      * @return {number|undefined} Width.
      * @api
@@ -184,6 +202,13 @@ declare class Stroke {
      * @api
      */
     setMiterLimit(miterLimit: number | undefined): void;
+    /**
+     * Set the line offset in pixels.
+     *
+     * @param {number|undefined} offset Offset.
+     * @api
+     */
+    setOffset(offset: number | undefined): void;
     /**
      * Set the width.
      *

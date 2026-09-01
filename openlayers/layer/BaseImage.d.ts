@@ -56,6 +56,11 @@ export type Options<ImageSourceType extends import("../source/Image.js").default
      */
     source?: ImageSourceType | undefined;
     /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: import("./Base.js").BackgroundColor | undefined;
+    /**
      * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
      */
     properties?: {
@@ -87,6 +92,8 @@ export type Options<ImageSourceType extends import("../source/Image.js").default
  * temporary layers. The standard way to add a layer to a map and have it managed by the map is to
  * use {@link import("../Map.js").default#addLayer map.addLayer()}.
  * @property {ImageSourceType} [source] Source for this layer.
+ * @property {import('./Base.js').BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
  * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  */
 /**
@@ -102,11 +109,13 @@ export type Options<ImageSourceType extends import("../source/Image.js").default
  * @extends {Layer<ImageSourceType, RendererType>}
  * @api
  */
-declare class BaseImageLayer<ImageSourceType extends import("../source/Image.js").default, RendererType extends import("../renderer/Layer.js").default<any>> extends Layer<ImageSourceType, RendererType> {
+declare class BaseImageLayer<ImageSourceType extends import("../source/Image.js").default, RendererType extends import("../renderer/Layer.js").default<any>> extends Layer<ImageSourceType, RendererType, {
+    [x: string]: any;
+}> {
     /**
      * @param {Options<ImageSourceType>} [options] Layer options.
      */
-    constructor(options?: Options<ImageSourceType> | undefined);
+    constructor(options?: Options<ImageSourceType>);
 }
 import Layer from './Layer.js';
 //# sourceMappingURL=BaseImage.d.ts.map

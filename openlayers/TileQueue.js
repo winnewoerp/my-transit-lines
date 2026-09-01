@@ -1,14 +1,21 @@
 /**
  * @module ol/TileQueue
  */
+import TileState from './TileState.js';
 import EventType from './events/EventType.js';
 import PriorityQueue, {DROP} from './structs/PriorityQueue.js';
-import TileState from './TileState.js';
 
 /**
- * @typedef {function(import("./Tile.js").default, string, import("./coordinate.js").Coordinate, number): number} PriorityFunction
+ * @typedef {function(import("./Tile.js").default, string, import('./tilecoord.js').TileCoord, number): number} PriorityFunction
  */
 
+/**
+ * @typedef {[import('./Tile.js').default, string, import('./tilecoord.js').TileCoord, number]} TileQueueElement
+ */
+
+/**
+ * @extends PriorityQueue<TileQueueElement>}
+ */
 class TileQueue extends PriorityQueue {
   /**
    * @param {PriorityFunction} tilePriorityFunction Tile priority function.
@@ -16,20 +23,8 @@ class TileQueue extends PriorityQueue {
    */
   constructor(tilePriorityFunction, tileChangeCallback) {
     super(
-      /**
-       * @param {Array} element Element.
-       * @return {number} Priority.
-       */
-      function (element) {
-        return tilePriorityFunction.apply(null, element);
-      },
-      /**
-       * @param {Array} element Element.
-       * @return {string} Key.
-       */
-      function (element) {
-        return /** @type {import("./Tile.js").default} */ (element[0]).getKey();
-      }
+      (element) => tilePriorityFunction.apply(null, element),
+      (element) => element[0].getKey(),
     );
 
     /** @private */
@@ -55,8 +50,9 @@ class TileQueue extends PriorityQueue {
   }
 
   /**
-   * @param {Array} element Element.
+   * @param {TileQueueElement} element Element.
    * @return {boolean} The element was added to the queue.
+   * @override
    */
   enqueue(element) {
     const added = super.enqueue(element);
@@ -104,15 +100,14 @@ class TileQueue extends PriorityQueue {
    */
   loadMoreTiles(maxTotalLoading, maxNewLoads) {
     let newLoads = 0;
-    let state, tile, tileKey;
     while (
       this.tilesLoading_ < maxTotalLoading &&
       newLoads < maxNewLoads &&
       this.getCount() > 0
     ) {
-      tile = /** @type {import("./Tile.js").default} */ (this.dequeue()[0]);
-      tileKey = tile.getKey();
-      state = tile.getState();
+      const tile = this.dequeue()[0];
+      const tileKey = tile.getKey();
+      const state = tile.getState();
       if (state === TileState.IDLE && !(tileKey in this.tilesLoadingKeys_)) {
         this.tilesLoadingKeys_[tileKey] = true;
         ++this.tilesLoading_;
@@ -138,7 +133,7 @@ export function getTilePriority(
   tile,
   tileSourceKey,
   tileCenter,
-  tileResolution
+  tileResolution,
 ) {
   // Filter out tiles at higher zoom levels than the current zoom level, or that
   // are outside the visible extent.

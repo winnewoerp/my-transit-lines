@@ -1,10 +1,10 @@
 /**
  * @module ol/control/Rotate
  */
-import Control from './Control.js';
-import EventType from '../events/EventType.js';
 import {CLASS_CONTROL, CLASS_HIDDEN, CLASS_UNSELECTABLE} from '../css.js';
 import {easeOut} from '../easing.js';
+import EventType from '../events/EventType.js';
+import Control from './Control.js';
 
 /**
  * @typedef {Object} Options
@@ -80,7 +80,7 @@ class Rotate extends Control {
     button.addEventListener(
       EventType.CLICK,
       this.handleClick_.bind(this),
-      false
+      false,
     );
 
     const cssClasses =
@@ -89,6 +89,9 @@ class Rotate extends Control {
     element.className = cssClasses;
     element.appendChild(button);
 
+    /**
+     * @private
+     */
     this.callResetNorth_ = options.resetNorth ? options.resetNorth : undefined;
 
     /**

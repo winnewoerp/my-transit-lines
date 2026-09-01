@@ -1,8 +1,8 @@
 /**
  * @module ol/interaction/Pointer
  */
-import Interaction from './Interaction.js';
 import MapBrowserEventType from '../MapBrowserEventType.js';
+import Interaction from './Interaction.js';
 
 /**
  * @typedef {Object} Options
@@ -50,7 +50,7 @@ class PointerInteraction extends Interaction {
     options = options ? options : {};
 
     super(
-      /** @type {import("./Interaction.js").InteractionOptions} */ (options)
+      /** @type {import("./Interaction.js").InteractionOptions} */ (options),
     );
 
     if (options.handleDownEvent) {
@@ -120,6 +120,7 @@ class PointerInteraction extends Interaction {
    * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
    * @return {boolean} `false` to stop event propagation.
    * @api
+   * @override
    */
   handleEvent(mapBrowserEvent) {
     if (!mapBrowserEvent.originalEvent) {

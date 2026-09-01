@@ -28,9 +28,12 @@ function the_map_output() {
 				</span>
 				&nbsp;
 				<span id="mtl-opacity-low-box">
-					<label for="mtl-opacity-low">
-						<input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()"> '.
+					<input type="checkbox" checked="checked" id="mtl-opacity-low" name="opacity-low" onclick="toggleMapOpacity()">
+					<label id="mtl-opacity-low-brighter" for="mtl-opacity-low">'.
 						__('brightened map','my-transit-lines').
+					'</label>
+					<label id="mtl-opacity-low-darker" for="mtl-opacity-low">'.
+						__('darkened map','my-transit-lines').
 					'</label>
 				</span>
 			</p>
@@ -39,16 +42,14 @@ function the_map_output() {
 					__('Fit proposition to map','my-transit-lines').
 				'</a>
 			</p>
-			<p id="toggle-fullscreen" class="alignright">
-				<a id="mtl-fullscreen-link" href="javascript:toggleFullscreen()" data-mtl-toggle-fullscreen>
-					<span class="fullscreen-closed">'.
-						__('Fullscreen view','my-transit-lines').
-					'</span>
-					<span class="fullscreen-open">'.
-						__('Close fullscreen view','my-transit-lines').
-					'</span>
-				</a>
-			</p>
+			<a id="toggle-fullscreen" href="javascript:toggleFullscreen()" data-mtl-toggle-fullscreen class="alignright">
+				<span class="fullscreen-closed">'.
+					__('Fullscreen view','my-transit-lines').
+				'</span>
+				<span class="fullscreen-open">'.
+					__('Close fullscreen view','my-transit-lines').
+				'</span>
+			</a>
 			<p class="alignright" id="mtl-toggle-labels">
 				<label>
 					<input type="checkbox" checked="checked" id="mtl-toggle-labels-link" onclick="toggleLabels()"> '.

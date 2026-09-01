@@ -4,7 +4,7 @@
  * @param {function():any} errorHandler Error callback function.
  * @return {function():void} Callback to stop listening.
  */
-export function listenImage(image: import('./DataTile.js').ImageLike, loadHandler: () => any, errorHandler: () => any): () => void;
+export function listenImage(image: import("./DataTile.js").ImageLike, loadHandler: () => any, errorHandler: () => any): () => void;
 /**
  * Loads an image.
  * @param {HTMLImageElement} image Image, not yet loaded.
@@ -12,13 +12,13 @@ export function listenImage(image: import('./DataTile.js').ImageLike, loadHandle
  * @return {Promise<HTMLImageElement>} Promise resolving to an `HTMLImageElement`.
  * @api
  */
-export function load(image: HTMLImageElement, src?: string | undefined): Promise<HTMLImageElement>;
+export function load(image: HTMLImageElement, src?: string): Promise<HTMLImageElement>;
 /**
  * @param {HTMLImageElement} image Image, not yet loaded.
  * @param {string} [src] `src` attribute of the image. Optional, not required if already present.
  * @return {Promise<HTMLImageElement>} Promise resolving to an `HTMLImageElement`.
  */
-export function decodeFallback(image: HTMLImageElement, src?: string | undefined): Promise<HTMLImageElement>;
+export function decodeFallback(image: HTMLImageElement, src?: string): Promise<HTMLImageElement>;
 /**
  * Loads an image and decodes it to an `ImageBitmap` if `createImageBitmap()` is supported. Returns
  * the loaded image otherwise.
@@ -28,7 +28,7 @@ export function decodeFallback(image: HTMLImageElement, src?: string | undefined
  * `HTMLImageElement` if `createImageBitmap()` is not supported.
  * @api
  */
-export function decode(image: HTMLImageElement, src?: string | undefined): Promise<ImageBitmap | HTMLImageElement>;
+export function decode(image: HTMLImageElement, src?: string): Promise<ImageBitmap | HTMLImageElement>;
 export default ImageWrapper;
 /**
  * A function that takes an {@link module :ol/Image~ImageWrapper} for the image and a
@@ -62,7 +62,7 @@ export type ImageObject = {
     /**
      * Image.
      */
-    image: import('./DataTile.js').ImageLike;
+    image: import("./DataTile.js").ImageLike;
 };
 /**
  * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
@@ -79,7 +79,7 @@ export type Loader = (arg0: import("./extent.js").Extent, arg1: number, arg2: nu
  * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
  * The function returns a promise for an  {@link import ("./Image.js").ImageObject image object}.
  */
-export type ImageObjectPromiseLoader = (arg0: import("./extent.js").Extent, arg1: number, arg2: number, arg3: ((arg0: HTMLImageElement, arg1: string) => void) | undefined) => import("./DataTile.js").ImageLike | ImageObject | Promise<import("./DataTile.js").ImageLike | ImageObject>;
+export type ImageObjectPromiseLoader = (arg0: import("./extent.js").Extent, arg1: number, arg2: number, arg3: ((arg0: HTMLImageElement, arg1: string) => void) | undefined) => Promise<import("./DataTile.js").ImageLike | ImageObject>;
 /**
  * A function that takes an {@link module:ol/Image~ImageWrapper} for the image and a
  * `{string}` for the src as arguments. It is supposed to make it so the
@@ -122,7 +122,7 @@ export type ImageObjectPromiseLoader = (arg0: import("./extent.js").Extent, arg1
  * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
  * The function returns a promise for an  {@link import("./Image.js").ImageObject image object}.
  *
- * @typedef {function(import("./extent.js").Extent, number, number, (function(HTMLImageElement, string): void)=): import("./DataTile.js").ImageLike|ImageObject|Promise<import("./DataTile.js").ImageLike|ImageObject>} ImageObjectPromiseLoader
+ * @typedef {function(import("./extent.js").Extent, number, number, (function(HTMLImageElement, string): void)=): Promise<import("./DataTile.js").ImageLike|ImageObject>} ImageObjectPromiseLoader
  */
 declare class ImageWrapper extends EventTarget {
     /**
@@ -130,9 +130,9 @@ declare class ImageWrapper extends EventTarget {
      * @param {number|Array<number>|undefined} resolution Resolution. If provided as array, x and y
      * resolution will be assumed.
      * @param {number} pixelRatio Pixel ratio.
-     * @param {import("./ImageState.js").default|import("./Image.js").Loader} stateOrLoader State.
+     * @param {import("./ImageState.js").default|Loader} stateOrLoader State.
      */
-    constructor(extent: import("./extent.js").Extent, resolution: number | Array<number> | undefined, pixelRatio: number, stateOrLoader: any | import("./Image.js").Loader);
+    constructor(extent: import("./extent.js").Extent, resolution: number | Array<number> | undefined, pixelRatio: number, stateOrLoader: any | Loader);
     /**
      * @protected
      * @type {import("./extent.js").Extent}
@@ -160,9 +160,9 @@ declare class ImageWrapper extends EventTarget {
     private image_;
     /**
      * @protected
-     * @type {import("./Image.js").Loader}
+     * @type {Loader|null}
      */
-    protected loader: import("./Image.js").Loader;
+    protected loader: Loader | null;
     /**
      * @protected
      */
@@ -174,7 +174,7 @@ declare class ImageWrapper extends EventTarget {
     /**
      * @return {import('./DataTile.js').ImageLike} Image.
      */
-    getImage(): import('./DataTile.js').ImageLike;
+    getImage(): import("./DataTile.js").ImageLike;
     /**
      * @return {number} PixelRatio.
      */
@@ -194,7 +194,7 @@ declare class ImageWrapper extends EventTarget {
     /**
      * @param {import('./DataTile.js').ImageLike} image The image.
      */
-    setImage(image: import('./DataTile.js').ImageLike): void;
+    setImage(image: import("./DataTile.js").ImageLike): void;
     /**
      * @param {number|Array<number>} resolution Resolution.
      */

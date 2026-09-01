@@ -7,11 +7,11 @@ export type Entry = {
     /**
      * Newer.
      */
-    newer: any;
+    newer: Entry | null;
     /**
      * Older.
      */
-    older: any;
+    older: Entry | null;
     /**
      * Value.
      */
@@ -20,8 +20,8 @@ export type Entry = {
 /**
  * @typedef {Object} Entry
  * @property {string} key_ Key.
- * @property {Object} newer Newer.
- * @property {Object} older Older.
+ * @property {Entry|null} newer Newer.
+ * @property {Entry|null} older Older.
  * @property {*} value_ Value.
  */
 /**
@@ -37,7 +37,7 @@ declare class LRUCache<T> {
     /**
      * @param {number} [highWaterMark] High water mark.
      */
-    constructor(highWaterMark?: number | undefined);
+    constructor(highWaterMark?: number);
     /**
      * Desired max cache size after expireCache(). If set to 0, no cache entries
      * will be pruned at all.
@@ -64,17 +64,19 @@ declare class LRUCache<T> {
      * @type {?Entry}
      */
     private newest_;
+    deleteOldest(): void;
     /**
      * @return {boolean} Can expire cache.
      */
     canExpireCache(): boolean;
     /**
-     * Expire the cache.
+     * Expire the cache. When the cache entry is a {@link module:ol/Disposable~Disposable},
+     * the entry will be disposed.
      * @param {!Object<string, boolean>} [keep] Keys to keep. To be implemented by subclasses.
      */
     expireCache(keep?: {
         [x: string]: boolean;
-    } | undefined): void;
+    }): void;
     /**
      * FIXME empty description for jsdoc
      */
@@ -131,9 +133,9 @@ declare class LRUCache<T> {
     /**
      * Return an entry without updating least recently used time.
      * @param {string} key Key.
-     * @return {T} Value.
+     * @return {T|undefined} Value.
      */
-    peek(key: string): T;
+    peek(key: string): T | undefined;
     /**
      * @return {T} value Value.
      */

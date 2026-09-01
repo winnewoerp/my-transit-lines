@@ -1,11 +1,12 @@
 /**
  * Sets the loader for a tile.
- * @param {import("../VectorTile.js").default} tile Vector tile.
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../render/Feature.js").default]
+ * @param {import("../VectorTile.js").default<FeatureType>} tile Vector tile.
  * @param {string} url URL.
  */
-export function defaultLoadFunction(tile: import("../VectorTile.js").default, url: string): void;
+export function defaultLoadFunction<FeatureType extends import("../Feature.js").FeatureLike = import("../render/Feature.js").default>(tile: import("../VectorTile.js").default<FeatureType>, url: string): void;
 export default VectorTile;
-export type Options = {
+export type Options<FeatureType extends import("../Feature.js").FeatureLike = import("../render/Feature.js").default> = {
     /**
      * Attributions.
      */
@@ -25,7 +26,7 @@ export type Options = {
     /**
      * Feature format for tiles. Used and required by the default.
      */
-    format?: import("../format/Feature.js").default | undefined;
+    format?: import("../format/Feature.js").default<FeatureType> | undefined;
     /**
      * This source may have overlapping geometries. Setting this
      * to `false` (e.g. for sources with polygons that represent administrative
@@ -34,7 +35,7 @@ export type Options = {
      */
     overlaps?: boolean | undefined;
     /**
-     * Projection of the tile grid.
+     * Projection of the tile source.
      */
     projection?: import("../proj.js").ProjectionLike;
     /**
@@ -42,7 +43,7 @@ export type Options = {
      */
     state?: import("./Source.js").State | undefined;
     /**
-     * Class used to instantiate image tiles.
+     * Class used to instantiate tiles.
      * Default is {@link module :ol/VectorTile~VectorTile}.
      */
     tileClass?: typeof Tile | undefined;
@@ -130,19 +131,20 @@ export type Options = {
     zDirection?: number | import("../array.js").NearestDirectionFunction | undefined;
 };
 /**
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../render/Feature.js").default]
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
  * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least twice the number of tiles in the viewport.
  * @property {import("../extent.js").Extent} [extent] Extent.
- * @property {import("../format/Feature.js").default} [format] Feature format for tiles. Used and required by the default.
+ * @property {import("../format/Feature.js").default<FeatureType>} [format] Feature format for tiles. Used and required by the default.
  * @property {boolean} [overlaps=true] This source may have overlapping geometries. Setting this
  * to `false` (e.g. for sources with polygons that represent administrative
  * boundaries or TopoJSON sources) allows the renderer to optimise fill and
  * stroke operations.
- * @property {import("../proj.js").ProjectionLike} [projection='EPSG:3857'] Projection of the tile grid.
+ * @property {import("../proj.js").ProjectionLike} [projection='EPSG:3857'] Projection of the tile source.
  * @property {import("./Source.js").State} [state] Source state.
- * @property {typeof import("../VectorTile.js").default} [tileClass] Class used to instantiate image tiles.
+ * @property {typeof import("../VectorTile.js").default} [tileClass] Class used to instantiate tiles.
  * Default is {@link module:ol/VectorTile~VectorTile}.
  * @property {number} [maxZoom=22] Optional max zoom level. Not used if `tileGrid` is provided.
  * @property {number} [minZoom] Optional min zoom level. Not used if `tileGrid` is provided.
@@ -205,22 +207,29 @@ export type Options = {
  *
  * @fires import("./Tile.js").TileSourceEvent
  * @api
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../render/Feature.js").default]
  */
-declare class VectorTile extends UrlTile {
+declare class VectorTile<FeatureType extends import("../Feature.js").FeatureLike = import("../render/Feature.js").default> extends UrlTile {
     /**
-     * @param {!Options} options Vector tile options.
+     * @param {!Options<FeatureType>} options Vector tile options.
      */
-    constructor(options: Options);
+    constructor(options: Options<FeatureType>);
     /**
      * @private
-     * @type {import("../format/Feature.js").default|null}
+     * @type {import("../format/Feature.js").default<FeatureType>|null}
      */
     private format_;
     /**
+     * @type {Object<string, Array<string>>}
      * @private
-     * @type {TileCache}
      */
-    private sourceTileCache;
+    private tileKeysBySourceTileUrl_;
+    /**
+     @type {Object<string, Tile<FeatureType>>}
+     */
+    sourceTiles_: {
+        [x: string]: Tile<FeatureType>;
+    };
     /**
      * @private
      * @type {boolean}
@@ -230,36 +239,28 @@ declare class VectorTile extends UrlTile {
      * @protected
      * @type {typeof import("../VectorTile.js").default}
      */
-    protected tileClass: typeof import("../VectorTile.js").default;
+    protected tileClass: typeof Tile;
     /**
      * @private
      * @type {Object<string, import("../tilegrid/TileGrid.js").default>}
      */
     private tileGrids_;
     /**
-     * Get features whose bounding box intersects the provided extent. Only features for cached
-     * tiles for the last rendered zoom level are available in the source. So this method is only
-     * suitable for requesting tiles for extents that are currently rendered.
-     *
-     * Features are returned in random tile order and as they are included in the tiles. This means
-     * they can be clipped, duplicated across tiles, and simplified to the render resolution.
-     *
-     * @param {import("../extent.js").Extent} extent Extent.
-     * @return {Array<import("../Feature.js").FeatureLike>} Features.
-     * @api
-     */
-    getFeaturesInExtent(extent: import("../extent.js").Extent): Array<import("../Feature.js").FeatureLike>;
-    /**
      * @return {boolean} The source can have overlapping geometries.
      */
     getOverlaps(): boolean;
     /**
      * @param {number} pixelRatio Pixel ratio.
-     * @param {import("../proj/Projection").default} projection Projection.
-     * @param {VectorRenderTile} tile Vector image tile.
-     * @return {Array<import("../VectorTile").default>} Tile keys.
+     * @param {import("../proj/Projection.js").default} projection Projection.
+     * @param {VectorRenderTile} tile Vector render tile.
+     * @param {import("../Tile.js").UrlFunction} [tileUrlFunction] Tile URL function.
+     * @return {Array<import("../VectorTile.js").default>} Tile keys.
      */
-    getSourceTiles(pixelRatio: number, projection: import("../proj/Projection").default, tile: VectorRenderTile): Array<import("../VectorTile").default>;
+    getSourceTiles(pixelRatio: number, projection: import("../proj/Projection.js").default, tile: VectorRenderTile, tileUrlFunction?: import("../Tile.js").UrlFunction): Array<Tile<any>>;
+    /**
+     * @param {VectorRenderTile} tile Vector render tile.
+     */
+    removeSourceTiles(tile: VectorRenderTile): void;
     /**
      * @param {number} z Tile coordinate z.
      * @param {number} x Tile coordinate x.
@@ -267,8 +268,13 @@ declare class VectorTile extends UrlTile {
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
      * @return {!VectorRenderTile} Tile.
+     * @override
      */
-    getTile(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default): VectorRenderTile;
+    override getTile(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default): VectorRenderTile;
+    /**
+     * @param {boolean} overlaps The source has overlapping geometries.
+     */
+    setOverlaps(overlaps: boolean): void;
 }
 import Tile from '../VectorTile.js';
 import TileGrid from '../tilegrid/TileGrid.js';

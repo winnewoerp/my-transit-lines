@@ -7,16 +7,19 @@ export default TileLayer;
  * property on the layer object; for example, setting `title: 'My Title'` in the
  * options means that `title` is observable, and has get/set accessors.
  *
- * @template {import("../source/Tile.js").default} TileSourceType
+ * @template {import("../source/Tile.js").default} [TileSourceType=import("../source/Tile.js").default]
  * @extends BaseTileLayer<TileSourceType, CanvasTileLayerRenderer>
  * @api
  */
-declare class TileLayer<TileSourceType extends import("../source/Tile.js").default> extends BaseTileLayer<TileSourceType, CanvasTileLayerRenderer<TileLayer<import("../source/Tile.js").default> | import("./VectorTile.js").default>> {
+declare class TileLayer<TileSourceType extends import("../source/Tile.js").default = import("../source/Tile.js").default<import("../Tile.js").default>> extends BaseTileLayer<TileSourceType, CanvasTileLayerRenderer<TileLayer<import("../source/Tile.js").default<import("../Tile.js").default>> | import("./VectorTile.js").default<import("../source.js").VectorTile<any>, any>>> {
     /**
      * @param {import("./BaseTile.js").Options<TileSourceType>} [options] Tile layer options.
      */
-    constructor(options?: import("./BaseTile.js").Options<TileSourceType> | undefined);
-    createRenderer(): CanvasTileLayerRenderer<this>;
+    constructor(options?: import("./BaseTile.js").Options<TileSourceType>);
+    /**
+     * @override
+     */
+    override createRenderer(): CanvasTileLayerRenderer<this>;
 }
 import CanvasTileLayerRenderer from '../renderer/canvas/TileLayer.js';
 import BaseTileLayer from './BaseTile.js';

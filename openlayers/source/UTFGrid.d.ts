@@ -68,7 +68,7 @@ export class CustomTile extends Tile {
      * @param {boolean} [request] If `true` the callback is always async.
      *                               The tile data is requested if not yet loaded.
      */
-    forDataAtCoordinate(coordinate: import("../coordinate.js").Coordinate, callback: (arg0: any) => void, request?: boolean | undefined): void;
+    forDataAtCoordinate(coordinate: import("../coordinate.js").Coordinate, callback: (arg0: any) => void, request?: boolean): void;
     /**
      * @private
      */
@@ -135,6 +135,10 @@ export type Options = {
      */
     url?: string | undefined;
     /**
+     * Whether to wrap the world horizontally.
+     */
+    wrapX?: boolean | undefined;
+    /**
      * Choose whether to use tiles with a higher or lower zoom level when between integer
      * zoom levels. See {@link module :ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
      */
@@ -155,6 +159,7 @@ import Tile from '../Tile.js';
  * If not provided, `url` must be configured.
  * @property {string} [url] TileJSON endpoint that provides the configuration for this source.
  * Request will be made through JSONP. If not provided, `tileJSON` must be configured.
+ * @property {boolean} [wrapX=true] Whether to wrap the world horizontally.
  * @property {number|import("../array.js").NearestDirectionFunction} [zDirection=0]
  * Choose whether to use tiles with a higher or lower zoom level when between integer
  * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
@@ -164,7 +169,7 @@ import Tile from '../Tile.js';
  * Layer source for UTFGrid interaction data loaded from TileJSON format.
  * @api
  */
-declare class UTFGrid extends TileSource {
+declare class UTFGrid extends TileSource<Tile> {
     /**
      * @param {Options} options Source options.
      */
@@ -189,6 +194,11 @@ declare class UTFGrid extends TileSource {
      * @type {boolean}
      */
     private jsonp_;
+    /**
+     * @private
+     * @type {LRUCache}
+     */
+    private tileCache_;
     /**
      * @private
      * @param {Event} event The load event.
@@ -216,7 +226,7 @@ declare class UTFGrid extends TileSource {
      *                               The tile data is requested if not yet loaded.
      * @api
      */
-    forDataAtCoordinateAndResolution(coordinate: import("../coordinate.js").Coordinate, resolution: number, callback: (arg0: any) => void, request?: boolean | undefined): void;
+    forDataAtCoordinateAndResolution(coordinate: import("../coordinate.js").Coordinate, resolution: number, callback: (arg0: any) => void, request?: boolean): void;
     /**
      * @protected
      */
@@ -234,15 +244,9 @@ declare class UTFGrid extends TileSource {
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
      * @return {!CustomTile} Tile.
+     * @override
      */
-    getTile(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default): CustomTile;
-    /**
-     * Marks a tile coord as being used, without triggering a load.
-     * @param {number} z Tile coordinate z.
-     * @param {number} x Tile coordinate x.
-     * @param {number} y Tile coordinate y.
-     */
-    useTile(z: number, x: number, y: number): void;
+    override getTile(z: number, x: number, y: number, pixelRatio: number, projection: import("../proj/Projection.js").default): CustomTile;
 }
 import TileSource from './Tile.js';
 //# sourceMappingURL=UTFGrid.d.ts.map

@@ -2,39 +2,39 @@
  * @module ol/style/IconImage
  */
 
-import EventTarget from '../events/Target.js';
-import EventType from '../events/EventType.js';
+import {decodeFallback} from '../Image.js';
 import ImageState from '../ImageState.js';
 import {asString} from '../color.js';
 import {createCanvasContext2D} from '../dom.js';
-import {decodeFallback} from '../Image.js';
+import EventType from '../events/EventType.js';
+import EventTarget from '../events/Target.js';
 import {shared as iconImageCache} from './IconImageCache.js';
 
 /**
- * @type {CanvasRenderingContext2D}
+ * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
  */
 let taintedTestContext = null;
 
 class IconImage extends EventTarget {
   /**
-   * @param {HTMLImageElement|HTMLCanvasElement|ImageBitmap} image Image.
+   * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap|null} image Image.
    * @param {string|undefined} src Src.
-   * @param {?string} crossOrigin Cross origin.
-   * @param {import("../ImageState.js").default} imageState Image state.
-   * @param {import("../color.js").Color} color Color.
+   * @param {import('../dom.js').ImageAttributes} imageAttributes Image attributes options.
+   * @param {import("../ImageState.js").default|undefined} imageState Image state.
+   * @param {import("../color.js").Color|string|null} color Color.
    */
-  constructor(image, src, crossOrigin, imageState, color) {
+  constructor(image, src, imageAttributes, imageState, color) {
     super();
 
     /**
      * @private
-     * @type {HTMLImageElement|HTMLCanvasElement|ImageBitmap}
+     * @type {HTMLImageElement|OffscreenCanvas|HTMLCanvasElement|ImageBitmap}
      */
     this.hitDetectionImage_ = null;
 
     /**
      * @private
-     * @type {HTMLImageElement|HTMLCanvasElement|ImageBitmap}
+     * @type {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap|null}
      */
     this.image_ = image;
 
@@ -42,17 +42,23 @@ class IconImage extends EventTarget {
      * @private
      * @type {string|null}
      */
-    this.crossOrigin_ = crossOrigin;
+    this.crossOrigin_ = imageAttributes?.crossOrigin;
 
     /**
      * @private
-     * @type {Object<number, HTMLCanvasElement>}
+     * @type {ReferrerPolicy}
+     */
+    this.referrerPolicy_ = imageAttributes?.referrerPolicy;
+
+    /**
+     * @private
+     * @type {Object<number, HTMLCanvasElement|OffscreenCanvas>}
      */
     this.canvas_ = {};
 
     /**
      * @private
-     * @type {import("../color.js").Color}
+     * @type {import("../color.js").Color|string|null}
      */
     this.color_ = color;
 
@@ -79,6 +85,12 @@ class IconImage extends EventTarget {
      * @private
      */
     this.tainted_;
+
+    /**
+     * @private
+     * @type {Promise<void>|null}
+     */
+    this.ready_ = null;
   }
 
   /**
@@ -88,6 +100,9 @@ class IconImage extends EventTarget {
     this.image_ = new Image();
     if (this.crossOrigin_ !== null) {
       this.image_.crossOrigin = this.crossOrigin_;
+    }
+    if (this.referrerPolicy_ !== undefined) {
+      this.image_.referrerPolicy = this.referrerPolicy_;
     }
   }
 
@@ -106,7 +121,7 @@ class IconImage extends EventTarget {
       try {
         taintedTestContext.getImageData(0, 0, 1, 1);
         this.tainted_ = false;
-      } catch (e) {
+      } catch {
         taintedTestContext = null;
         this.tainted_ = true;
       }
@@ -140,7 +155,7 @@ class IconImage extends EventTarget {
 
   /**
    * @param {number} pixelRatio Pixel ratio.
-   * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element or image bitmap.
+   * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element or image bitmap.
    */
   getImage(pixelRatio) {
     if (!this.image_) {
@@ -148,6 +163,13 @@ class IconImage extends EventTarget {
     }
     this.replaceColor_(pixelRatio);
     return this.canvas_[pixelRatio] ? this.canvas_[pixelRatio] : this.image_;
+  }
+
+  /**
+   * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} image Image.
+   */
+  setImage(image) {
+    this.image_ = image;
   }
 
   /**
@@ -167,7 +189,7 @@ class IconImage extends EventTarget {
   }
 
   /**
-   * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
+   * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
    */
   getHitDetectionImage() {
     if (!this.image_) {
@@ -218,7 +240,7 @@ class IconImage extends EventTarget {
       if (this.src_ !== undefined) {
         /** @type {HTMLImageElement} */ (this.image_).src = this.src_;
       }
-    } catch (e) {
+    } catch {
       this.handleImageError_();
     }
     if (this.image_ instanceof HTMLImageElement) {
@@ -245,11 +267,12 @@ class IconImage extends EventTarget {
     }
 
     const image = this.image_;
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.ceil(image.width * pixelRatio);
-    canvas.height = Math.ceil(image.height * pixelRatio);
+    const ctx = createCanvasContext2D(
+      Math.ceil(image.width * pixelRatio),
+      Math.ceil(image.height * pixelRatio),
+    );
+    const canvas = ctx.canvas;
 
-    const ctx = canvas.getContext('2d');
     ctx.scale(pixelRatio, pixelRatio);
     ctx.drawImage(image, 0, 0);
 
@@ -262,30 +285,60 @@ class IconImage extends EventTarget {
 
     this.canvas_[pixelRatio] = canvas;
   }
+
+  /**
+   * @return {Promise<void>} Promise that resolves when the image is loaded.
+   */
+  ready() {
+    if (!this.ready_) {
+      this.ready_ = new Promise((resolve) => {
+        if (
+          this.imageState_ === ImageState.LOADED ||
+          this.imageState_ === ImageState.ERROR
+        ) {
+          resolve();
+        } else {
+          const onChange = () => {
+            if (
+              this.imageState_ === ImageState.LOADED ||
+              this.imageState_ === ImageState.ERROR
+            ) {
+              this.removeEventListener(EventType.CHANGE, onChange);
+              resolve();
+            }
+          };
+          this.addEventListener(EventType.CHANGE, onChange);
+        }
+      });
+    }
+    return this.ready_;
+  }
 }
 
 /**
- * @param {HTMLImageElement|HTMLCanvasElement|ImageBitmap} image Image.
- * @param {string} cacheKey Src.
- * @param {?string} crossOrigin Cross origin.
- * @param {import("../ImageState.js").default} imageState Image state.
- * @param {import("../color.js").Color} color Color.
+ * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap|null} image Image.
+ * @param {string|undefined} src Src.
+ * @param {import('../dom.js').ImageAttributes} imageAttributes Image attributes options.
+ * @param {import("../ImageState.js").default|undefined} imageState Image state.
+ * @param {import("../color.js").Color|string|null} color Color.
+ * @param {boolean} [pattern] Also cache a `repeat` pattern with the icon image.
  * @return {IconImage} Icon image.
  */
-export function get(image, cacheKey, crossOrigin, imageState, color) {
+export function get(image, src, imageAttributes, imageState, color, pattern) {
   let iconImage =
-    cacheKey === undefined
-      ? undefined
-      : iconImageCache.get(cacheKey, crossOrigin, color);
+    src === undefined ? undefined : iconImageCache.get(src, color);
   if (!iconImage) {
     iconImage = new IconImage(
       image,
-      image instanceof HTMLImageElement ? image.src || undefined : cacheKey,
-      crossOrigin,
+      image && 'src' in image ? image.src || undefined : src,
+      imageAttributes,
       imageState,
-      color
+      color,
     );
-    iconImageCache.set(cacheKey, crossOrigin, color, iconImage);
+    iconImageCache.set(src, color, iconImage, pattern);
+  }
+  if (pattern && iconImage && !iconImageCache.getPattern(src, color)) {
+    iconImageCache.set(src, color, iconImage, pattern);
   }
   return iconImage;
 }

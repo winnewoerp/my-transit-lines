@@ -88,7 +88,7 @@ div.ol-rotate {
 	text-align: left;
 }
 
-#mtl-post-form #map-color-opacity label {
+#map-color-opacity label {
 	display: inline;
 }
 
@@ -217,7 +217,7 @@ div.success-message-block {
 
 #mtl-box #mtl-map {
 	height: 550px;
-	background: white;
+	background: var(--map-background-color);
 }
 
 #mtl-map .background-tilelayer {
@@ -239,7 +239,7 @@ div.success-message-block {
 		display: block;
 		position: fixed;
 		z-index: 101;
-		background: #cccccc;
+		background: var(--ol-partial-background-color);;
 		border: 1px solid #aaaaaa;
 		padding: 5px 10px;
 		font-size: 13px;
@@ -261,21 +261,16 @@ div.success-message-block {
 	}
 }
 
-@media (max-width: 499px) {
-	#mtl-fullscreen-link.fullscreen {
-		display: block;
-		position: fixed;
-		z-index: 101;
-		background: #cccccc;
-		border: 1px solid #aaaaaa;
-		padding: 5px 10px;
-		font-size: 13px;
-	}
-}
-
-#mtl-fullscreen-link.fullscreen {
-	bottom: calc(100% - 100vh + 4em);
-	right: calc(100% - 100vw + 10px);
+#toggle-fullscreen {
+	display: block;
+	position: absolute;
+	z-index: 101;
+	background: var(--ol-partial-background-color);
+	border: 1px solid #aaaaaa;
+	padding: 5px 10px;
+	font-size: 13px;
+	bottom: 4em;
+	right: 10px;
 }
 
 #mtl-box #mtl-map-box.fullscreen #mtl-map {
@@ -288,23 +283,23 @@ div.success-message-block {
 	margin-bottom: 0px;
 }
 
-#mtl-fullscreen-link .fullscreen-open {
+#toggle-fullscreen .fullscreen-open {
 	display: none;
 }
 
-#mtl-fullscreen-link.fullscreen .fullscreen-open {
+#toggle-fullscreen.fullscreen .fullscreen-open {
 	display: block;
 }
 
-#mtl-fullscreen-link .fullscreen-closed {
+#toggle-fullscreen .fullscreen-closed {
 	display: block;
 }
 
-#mtl-fullscreen-link.fullscreen .fullscreen-closed {
+#toggle-fullscreen.fullscreen .fullscreen-closed {
 	display: none;
 }
 
-.feature-textinput-box {
+#feature-textinput-box {
 	position: absolute;
 	top: 30px;
 	right: 8px;
@@ -313,25 +308,32 @@ div.success-message-block {
 	padding: 5px;
 	background: #cccccc;
 	border: 1px solid #aaaaaa;
-	display: none;
 	text-align: left;
+
+	visibility: none;
+	clip-path: inset(0% 0% 100% 0%);
+	transition: display 0.5s allow-discrete, clip-path 0.5s normal;
 }
 
-.feature-textinput-box * {
+#feature-textinput-box.shown {
+	visibility: block;
+	clip-path: inset(0% 0% 0% 0%);
+}
+
+#feature-textinput-box * {
 	font-size: 13px;
 }
 
-.feature-textinput-box label {
+#feature-textinput-box label {
 	display: inline;
 }
 
-.feature-textinput-box input {
+#feature-textinput-box input {
 	min-width: auto;
 	max-width: 222px;
 }
 
 .set-name {
-	display: none;
 	text-decoration: underline;
 	cursor: pointer;
 }

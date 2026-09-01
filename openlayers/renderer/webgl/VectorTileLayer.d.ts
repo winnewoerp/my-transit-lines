@@ -1,10 +1,49 @@
+export const Uniforms: {
+    TILE_MASK_TEXTURE: string;
+    TILE_ZOOM_LEVEL: string;
+    PATTERN_ORIGIN_X_DOUBLE: string;
+    PATTERN_ORIGIN_Y_DOUBLE: string;
+    PATTERN_SCALE_RATIO_DOUBLE: string;
+    ONE: string;
+    TILE_TRANSFORM: string;
+    TRANSITION_ALPHA: string;
+    DEPTH: string;
+    RENDER_EXTENT: string;
+    GLOBAL_ALPHA: string;
+    PROJECTION_MATRIX: string;
+    INVERT_PROJECTION_MATRIX: string;
+    TIME: string;
+    ZOOM: string;
+    RESOLUTION: string;
+    ROTATION: string;
+    VIEWPORT_SIZE_PX: string;
+    PIXEL_RATIO: string;
+    HIT_DETECTION: string;
+};
+export namespace Attributes {
+    let POSITION: string;
+}
 export default WebGLVectorTileLayerRenderer;
-export type VectorStyle = import('../../render/webgl/VectorStyleRenderer.js').VectorStyle;
+export type StyleShaders = import("../../render/webgl/VectorStyleRenderer.js").StyleShaders;
+export type LayerStyle = import("../../style/flat.js").FlatStyleLike | Array<StyleShaders> | StyleShaders;
 export type Options = {
     /**
-     * Vector style as literal style or shaders; can also accept an array of styles
+     * Flat vector style; also accepts shaders
      */
-    style: VectorStyle | Array<VectorStyle>;
+    style: LayerStyle;
+    /**
+     * Style variables. Each variable must hold a literal value (not
+     * an expression). These variables can be used as {@link import ("../../expr/expression.js").ExpressionValue expressions} in the styles properties
+     * using the `['var', 'varName']` operator.
+     */
+    variables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
+    /**
+     * Setting this to true will provide a slight performance boost, but will
+     * prevent all hit detection on the layer.
+     */
+    disableHitDetection?: boolean | undefined;
     /**
      * The vector tile cache size.
      */
@@ -12,11 +51,19 @@ export type Options = {
 };
 export type LayerType = import("../../layer/BaseTile.js").default<any, any>;
 /**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').VectorStyle} VectorStyle
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').StyleShaders} StyleShaders
+ */
+/**
+ * @typedef {import('../../style/flat.js').FlatStyleLike | Array<StyleShaders> | StyleShaders} LayerStyle
  */
 /**
  * @typedef {Object} Options
- * @property {VectorStyle|Array<VectorStyle>} style Vector style as literal style or shaders; can also accept an array of styles
+ * @property {LayerStyle} style Flat vector style; also accepts shaders
+ * @property {import('../../style/flat.js').StyleVariables} [variables] Style variables. Each variable must hold a literal value (not
+ * an expression). These variables can be used as {@link import("../../expr/expression.js").ExpressionValue expressions} in the styles properties
+ * using the `['var', 'varName']` operator.
+ * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
+ * prevent all hit detection on the layer.
  * @property {number} [cacheSize=512] The vector tile cache size.
  */
 /**
@@ -32,31 +79,56 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<im
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
      */
-    constructor(tileLayer: import("../../layer/BaseTile.js").default<any, any>, options: Options);
+    constructor(tileLayer: LayerType, options: Options);
     /**
-     * @type {Array<VectorStyle>}
+     * @type {boolean}
      * @private
      */
-    private styles_;
+    private hitDetectionEnabled_;
     /**
-     * @type {Array<VectorStyleRenderer>}
+     * @type {LayerStyle}
      * @private
      */
-    private styleRenderers_;
+    private style_;
     /**
-     * This transform is updated on every frame and is the composition of:
-     * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
-     * - current world->screen transform
-     * @type {import("../../transform.js").Transform}
+     * @type {import('../../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
+    /**
+     * @type {VectorStyleRenderer}
+     * @private
+     */
+    private styleRenderer_;
+    /**
+     * Transform that projects from world to viewport [-1,1]
      * @private
      */
     private currentFrameStateTransform_;
-    tmpTransform_: number[];
-    tmpMat4_: number[];
+    /**
+     * @type {WebGLRenderTarget}
+     * @private
+     */
+    private tileMaskTarget_;
+    /**
+     * @private
+     */
+    private tileMaskIndices_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private tileMaskAttributes_;
+    /**
+     * @type {WebGLProgram}
+     * @private
+     */
+    private tileMaskProgram_;
     /**
      * @param {Options} options Options.
+     * @override
      */
-    reset(options: Options): void;
+    override reset(options: Options): void;
     /**
      * @param {Options} options Options.
      * @private
@@ -66,16 +138,40 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<im
      * @private
      */
     private createRenderers_;
-    createTileRepresentation(options: any): TileGeometry;
-    beforeTilesRender(frameState: any, tilesWithAlpha: any): void;
+    /**
+     * @private
+     */
+    private initTileMask_;
+    /**
+     * @override
+     */
+    override createTileRepresentation(options: any): TileGeometry;
+    /**
+     * @override
+     */
+    override beforeTilesRender(frameState: any, tilesWithAlpha: any): void;
+    /**
+     * @override
+     */
+    override beforeTilesMaskRender(frameState: any): boolean;
+    /**
+     * @override
+     */
+    override renderTileMask(tileRepresentation: any, tileZ: any, extent: any, depth: any): void;
     /**
      * @param {number} alpha Alpha value of the tile
      * @param {import("../../extent.js").Extent} renderExtent Which extent to restrict drawing to
      * @param {import("../../transform.js").Transform} batchInvertTransform Inverse of the transformation in which tile geometries are expressed
+     * @param {number} tileZ Tile zoom level
+     * @param {number} depth Depth of the tile
+     * @param {import("../../Map.js").FrameState} frameState Frame state
      * @private
      */
     private applyUniforms_;
-    renderTile(tileRepresentation: any, tileTransform: any, frameState: any, renderExtent: any, tileResolution: any, tileSize: any, tileOrigin: any, tileExtent: any, depth: any, gutter: any, alpha: any): void;
+    /**
+     * @override
+     */
+    override renderTile(tileRepresentation: any, tileTransform: any, frameState: any, renderExtent: any, tileResolution: any, tileSize: any, tileOrigin: any, tileExtent: any, depth: any, gutter: any, alpha: any): void;
     /**
      * Render declutter items for this layer
      * @param {import("../../Map.js").FrameState} frameState Frame state.

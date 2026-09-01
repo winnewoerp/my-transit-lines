@@ -8,9 +8,9 @@ function addAllMetadata() {
 		return transportModeStyleData[cat].name;
 	});
 	addDynamicMeta('#mtl-metadata-line-length div', cat => {
-		return transportModeStyleData[cat].name + ": " + formatNumber(getLineLength(vectorSource.getFeatures().filter(elem => {
+		return transportModeStyleData[cat].name + ": " + formatMeters(getLineLength(vectorSource.getFeatures().filter(elem => {
 			return elem.get('category') == cat;
-		})), false) + "m";
+		}))) + "m";
 	});
 	addDynamicMeta('#mtl-metadata-count-stations div', cat => {
 		return transportModeStyleData[cat].name + ": " + getCountStations(vectorSource.getFeatures().filter(elem => {

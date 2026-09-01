@@ -1,7 +1,7 @@
 export default DragPan;
 export type Options = {
     /**
-     * A function that takes an {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
+     * A function that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
      * to indicate whether that event should be handled.
      * Default is {@link module :ol/events/condition.noModifierKeys} and {@link module :ol/events/condition.primaryAction}.
      */
@@ -18,7 +18,7 @@ export type Options = {
 };
 /**
  * @typedef {Object} Options
- * @property {import("../events/condition.js").Condition} [condition] A function that takes an {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
+ * @property {import("../events/condition.js").Condition} [condition] A function that takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
  * to indicate whether that event should be handled.
  * Default is {@link module:ol/events/condition.noModifierKeys} and {@link module:ol/events/condition.primaryAction}.
  * @property {boolean} [onFocusOnly=false] When the map's target has a `tabindex` attribute set,
@@ -34,7 +34,7 @@ declare class DragPan extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {import("../Kinetic.js").default|undefined}
@@ -46,12 +46,14 @@ declare class DragPan extends PointerInteraction {
     lastCentroid: import("../pixel.js").Pixel;
     /**
      * @type {number}
+     * @private
      */
-    lastPointersCount_: number;
+    private lastPointersCount_;
     /**
      * @type {boolean}
+     * @private
      */
-    panning_: boolean;
+    private panning_;
     /**
      * @private
      * @type {import("../events/condition.js").Condition}

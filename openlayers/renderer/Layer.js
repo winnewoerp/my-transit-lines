@@ -1,10 +1,12 @@
 /**
  * @module ol/renderer/Layer
  */
-import EventType from '../events/EventType.js';
 import ImageState from '../ImageState.js';
 import Observable from '../Observable.js';
+import EventType from '../events/EventType.js';
 import {abstract} from '../util.js';
+
+const maxStaleKeys = 5;
 
 /**
  * @template {import("../layer/Layer.js").default} LayerType
@@ -26,21 +28,45 @@ class LayerRenderer extends Observable {
     this.boundHandleImageChange_ = this.handleImageChange_.bind(this);
 
     /**
-     * @protected
+     * @private
      * @type {LayerType}
      */
     this.layer_ = layer;
 
     /**
-     * @type {import("../render/canvas/ExecutorGroup").default}
+     * @type {Array<string>}
+     * @private
      */
-    this.declutterExecutorGroup = null;
+    this.staleKeys_ = new Array();
+
+    /**
+     * @type {number}
+     * @protected
+     */
+    this.maxStaleKeys = maxStaleKeys;
+  }
+
+  /**
+   * @return {Array<string>} Get the list of stale keys.
+   */
+  getStaleKeys() {
+    return this.staleKeys_;
+  }
+
+  /**
+   * @param {string} key The new stale key.
+   */
+  prependStaleKey(key) {
+    this.staleKeys_.unshift(key);
+    if (this.staleKeys_.length > this.maxStaleKeys) {
+      this.staleKeys_.length = this.maxStaleKeys;
+    }
   }
 
   /**
    * Asynchronous layer level hit detection.
    * @param {import("../pixel.js").Pixel} pixel Pixel.
-   * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
+   * @return {Promise<Array<import("../Feature.js").FeatureLike>>} Promise that resolves with
    * an array of features.
    */
   getFeatures(pixel) {
@@ -70,48 +96,12 @@ class LayerRenderer extends Observable {
    * @abstract
    * @param {import("../Map.js").FrameState} frameState Frame state.
    * @param {HTMLElement|null} target Target that may be used to render content to.
-   * @return {HTMLElement|null} The rendered element.
+   * @return {HTMLElement} The rendered element.
    */
   renderFrame(frameState, target) {
     return abstract();
   }
 
-  /**
-   * @param {Object<number, Object<string, import("../Tile.js").default>>} tiles Lookup of loaded tiles by zoom level.
-   * @param {number} zoom Zoom level.
-   * @param {import("../Tile.js").default} tile Tile.
-   * @return {boolean|void} If `false`, the tile will not be considered loaded.
-   */
-  loadedTileCallback(tiles, zoom, tile) {
-    if (!tiles[zoom]) {
-      tiles[zoom] = {};
-    }
-    tiles[zoom][tile.tileCoord.toString()] = tile;
-    return undefined;
-  }
-
-  /**
-   * Create a function that adds loaded tiles to the tile lookup.
-   * @param {import("../source/Tile.js").default} source Tile source.
-   * @param {import("../proj/Projection.js").default} projection Projection of the tiles.
-   * @param {Object<number, Object<string, import("../Tile.js").default>>} tiles Lookup of loaded tiles by zoom level.
-   * @return {function(number, import("../TileRange.js").default):boolean} A function that can be
-   *     called with a zoom level and a tile range to add loaded tiles to the lookup.
-   * @protected
-   */
-  createLoadedTileFinder(source, projection, tiles) {
-    return (
-      /**
-       * @param {number} zoom Zoom level.
-       * @param {import("../TileRange.js").default} tileRange Tile range.
-       * @return {boolean} The tile range is fully loaded.
-       */
-      (zoom, tileRange) => {
-        const callback = this.loadedTileCallback.bind(this, tiles, zoom);
-        return source.forEachLoadedTile(projection, zoom, tileRange, callback);
-      }
-    );
-  }
   /**
    * @abstract
    * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
@@ -127,7 +117,7 @@ class LayerRenderer extends Observable {
     frameState,
     hitTolerance,
     callback,
-    matches
+    matches,
   ) {
     return undefined;
   }
@@ -190,7 +180,13 @@ class LayerRenderer extends Observable {
   }
 
   /**
+   * @param {import("../Map.js").FrameState} frameState Frame state.
+   */
+  renderDeferred(frameState) {}
+
+  /**
    * Clean up.
+   * @override
    */
   disposeInternal() {
     delete this.layer_;

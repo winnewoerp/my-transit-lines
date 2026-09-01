@@ -185,8 +185,8 @@ export function remove(arr, obj) {
 }
 
 /**
- * @param {Array|Uint8ClampedArray} arr1 The first array to compare.
- * @param {Array|Uint8ClampedArray} arr2 The second array to compare.
+ * @param {Array<any>|Uint8ClampedArray} arr1 The first array to compare.
+ * @param {Array<any>|Uint8ClampedArray} arr2 The second array to compare.
  * @return {boolean} Whether the two arrays are equal.
  */
 export function equals(arr1, arr2) {
@@ -208,6 +208,7 @@ export function equals(arr1, arr2) {
  * @param {Array<*>} arr The array to sort (modifies original).
  * @param {!function(*, *): number} compareFnc Comparison function.
  * @api
+ * @deprecated
  */
 export function stableSort(arr, compareFnc) {
   const length = arr.length;

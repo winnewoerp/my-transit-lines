@@ -38,11 +38,11 @@ export type Options = {
  * the main canvas that will then be sampled up (useful for saving resource on blur steps).
  * @property {string} [vertexShader] Vertex shader source
  * @property {string} [fragmentShader] Fragment shader source
- * @property {Object<string,import("../../webgl/Helper").UniformValue>} [uniforms] Uniform definitions for the post process step
+ * @property {Object<string,import("../../webgl/Helper.js").UniformValue>} [uniforms] Uniform definitions for the post process step
  */
 /**
  * @typedef {Object} Options
- * @property {Object<string,import("../../webgl/Helper").UniformValue>} [uniforms] Uniform definitions for the post process steps
+ * @property {Object<string,import("../../webgl/Helper.js").UniformValue>} [uniforms] Uniform definitions for the post process steps
  * @property {Array<PostProcessesOptions>} [postProcesses] Post-processes definitions
  */
 /**
@@ -52,12 +52,12 @@ export type Options = {
  * @template {import("../../layer/Layer.js").default} LayerType
  * @extends {LayerRenderer<LayerType>}
  */
-declare class WebGLLayerRenderer<LayerType extends import("../../layer/Layer.js").default<import("../../source/Source.js").default, LayerRenderer<any>>> extends LayerRenderer<LayerType> {
+declare class WebGLLayerRenderer<LayerType extends import("../../layer/Layer.js").default> extends LayerRenderer<LayerType> {
     /**
      * @param {LayerType} layer Layer.
      * @param {Options} [options] Options.
      */
-    constructor(layer: LayerType, options?: Options | undefined);
+    constructor(layer: LayerType, options?: Options);
     /**
      * The transform for viewport CSS pixels to rendered pixels.  This transform is only
      * set before dispatching rendering events.
@@ -65,11 +65,6 @@ declare class WebGLLayerRenderer<LayerType extends import("../../layer/Layer.js"
      * @type {import("../../transform.js").Transform}
      */
     private inversePixelTransform_;
-    /**
-     * @private
-     * @type {CanvasRenderingContext2D}
-     */
-    private pixelContext_;
     /**
      * @private
      */
@@ -83,6 +78,7 @@ declare class WebGLLayerRenderer<LayerType extends import("../../layer/Layer.js"
      * @protected
      */
     protected helper: WebGLHelper;
+    onMapChanged_: () => void;
     /**
      * @param {WebGLRenderingContext} context The WebGL rendering context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
@@ -115,6 +111,10 @@ declare class WebGLLayerRenderer<LayerType extends import("../../layer/Layer.js"
      * @protected
      */
     protected prepareFrameInternal(frameState: import("../../Map.js").FrameState): boolean;
+    /**
+     * @protected
+     */
+    protected clearCache(): void;
     /**
      * @param {import("../../render/EventType.js").default} type Event type.
      * @param {WebGLRenderingContext} context The rendering context.

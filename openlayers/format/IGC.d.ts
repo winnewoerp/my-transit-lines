@@ -2,7 +2,7 @@ export default IGC;
 /**
  * IGC altitude/z. One of 'barometric', 'gps', 'none'.
  */
-export type IGCZ = 'barometric' | 'gps' | 'none';
+export type IGCZ = "barometric" | "gps" | "none";
 export type Options = {
     /**
      * Altitude mode. Possible
@@ -29,12 +29,42 @@ declare class IGC extends TextFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {IGCZ}
      */
     private altitudeMode_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private lad_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private lod_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private ladStart_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private ladStop_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private lodStart_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private lodStop_;
 }
 import TextFeature from './TextFeature.js';
 //# sourceMappingURL=IGC.d.ts.map

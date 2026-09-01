@@ -10,7 +10,7 @@ export class DragAndDropEvent extends Event {
      * @param {Array<import("../Feature.js").default>} [features] Features.
      * @param {import("../proj/Projection.js").default} [projection] Projection.
      */
-    constructor(type: DragAndDropEventType, file: File, features?: import("../Feature.js").default<import("../geom/Geometry.js").default>[] | undefined, projection?: import("../proj/Projection.js").default | undefined);
+    constructor(type: DragAndDropEventType, file: File, features?: Array<import("../Feature.js").default>, projection?: import("../proj/Projection.js").default);
     /**
      * The features parsed from dropped data.
      * @type {Array<import("../Feature.js").FeatureLike>|undefined}
@@ -36,7 +36,9 @@ export type Options = {
      * Format constructors
      * (and/or formats pre-constructed with options).
      */
-    formatConstructors?: (import("../format/Feature.js").default | typeof import("../format/Feature.js").default)[] | undefined;
+    formatConstructors?: (typeof import("../format/Feature.js").default | import("../format/Feature.js").default<import("../Feature.js").default<import("../geom.js").Geometry, {
+        [x: string]: any;
+    }>>)[] | undefined;
     /**
      * Optional vector source where features will be added.  If a source is provided
      * all existing features will be removed and new features will be added when
@@ -44,7 +46,9 @@ export type Options = {
      * source without removing the existing features (append only), instead of
      * providing the source option listen for the "addfeatures" event.
      */
-    source?: import("../source/Vector.js").default<import("../geom/Geometry.js").default> | undefined;
+    source?: import("../source/Vector.js").default<import("../Feature.js").default<import("../geom.js").Geometry, {
+        [x: string]: any;
+    }>> | undefined;
     /**
      * Target projection. By default, the map's view's projection is used.
      */
@@ -57,7 +61,7 @@ export type Options = {
 /**
  * *
  */
-export type DragAndDropOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types | 'change:active', import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<'addfeatures', DragAndDropEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | 'change:active' | 'addfeatures', Return>;
+export type DragAndDropOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types | "change:active", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<"addfeatures", DragAndDropEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | "change:active" | "addfeatures", Return>;
 import Event from '../events/Event.js';
 type DragAndDropEventType = string;
 declare namespace DragAndDropEventType {
@@ -65,11 +69,11 @@ declare namespace DragAndDropEventType {
 }
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'addfeatures', DragAndDropEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<'addfeatures', DragAndDropEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active'|'addfeatures', Return>} DragAndDropOnSignature
  */
 /**
@@ -84,15 +88,15 @@ declare class DragAndDrop extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /***
-     * @type {DragAndDropOnSignature<import("../events").EventsKey>}
+     * @type {DragAndDropOnSignature<import("../events.js").EventsKey>}
      */
-    on: DragAndDropOnSignature<import("../events").EventsKey>;
+    on: DragAndDropOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {DragAndDropOnSignature<import("../events").EventsKey>}
+     * @type {DragAndDropOnSignature<import("../events.js").EventsKey>}
      */
-    once: DragAndDropOnSignature<import("../events").EventsKey>;
+    once: DragAndDropOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {DragAndDropOnSignature<void>}
      */
@@ -142,8 +146,9 @@ declare class DragAndDrop extends Interaction {
      * Subclasses may set up event handlers to get notified about changes to
      * the map here.
      * @param {import("../Map.js").default} map Map.
+     * @override
      */
-    setMap(map: import("../Map.js").default): void;
+    override setMap(map: import("../Map.js").default): void;
     /**
      * @param {import("../format/Feature.js").default} format Format.
      * @param {string} text Text.

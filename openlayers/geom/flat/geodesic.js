@@ -1,8 +1,8 @@
 /**
  * @module ol/geom/flat/geodesic
  */
-import {get as getProjection, getTransform} from '../../proj.js';
 import {squaredSegmentDistance, toDegrees, toRadians} from '../../math.js';
+import {get as getProjection, getTransform} from '../../proj.js';
 
 /**
  * @param {function(number): import("../../coordinate.js").Coordinate} interpolate Interpolate function.
@@ -94,7 +94,7 @@ export function greatCircleArc(
   lon2,
   lat2,
   projection,
-  squaredTolerance
+  squaredTolerance,
 ) {
   const geoProjection = getProjection('EPSG:4326');
 
@@ -126,12 +126,12 @@ export function greatCircleArc(
         toRadians(lon1) +
         Math.atan2(
           Math.sin(theta) * sinD * cosLat1,
-          cosD - sinLat1 * Math.sin(lat)
+          cosD - sinLat1 * Math.sin(lat),
         );
       return [toDegrees(lon), toDegrees(lat)];
     },
     getTransform(geoProjection, projection),
-    squaredTolerance
+    squaredTolerance,
   );
 }
 
@@ -155,7 +155,7 @@ export function meridian(lon, lat1, lat2, projection, squaredTolerance) {
       return [lon, lat1 + (lat2 - lat1) * frac];
     },
     getTransform(epsg4326Projection, projection),
-    squaredTolerance
+    squaredTolerance,
   );
 }
 
@@ -179,6 +179,6 @@ export function parallel(lat, lon1, lon2, projection, squaredTolerance) {
       return [lon1 + (lon2 - lon1) * frac, lat];
     },
     getTransform(epsg4326Projection, projection),
-    squaredTolerance
+    squaredTolerance,
   );
 }

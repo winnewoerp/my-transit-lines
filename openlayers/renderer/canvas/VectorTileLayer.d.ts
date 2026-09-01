@@ -3,13 +3,14 @@ export default CanvasVectorTileLayerRenderer;
  * @classdesc
  * Canvas renderer for vector tile layers.
  * @api
- * @extends {CanvasTileLayerRenderer<import("../../layer/VectorTile.js").default>}
+ * @extends {CanvasTileLayerRenderer<import("../../layer/VectorTile.js").default<import('../../source/VectorTile.js').default<import('../../Feature.js').FeatureLike>>>}
  */
-declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<import("../../layer/VectorTile.js").default> {
+declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<import("../../layer/VectorTile.js").default<import("../../source/VectorTile.js").default<import("../../Feature.js").FeatureLike>, import("../../Feature.js").FeatureLike>> {
     /**
      * @param {import("../../layer/VectorTile.js").default} layer VectorTile layer.
+     * @param {import("./TileLayer.js").Options} options Options.
      */
-    constructor(layer: import("../../layer/VectorTile.js").default);
+    constructor(layer: import("../../layer/VectorTile.js").default, options: import("./TileLayer.js").Options);
     /** @private */
     private boundHandleStyleImageChange_;
     /**
@@ -19,7 +20,7 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<impo
     private renderedLayerRevision_;
     /**
      * @private
-     * @type {import("../../transform").Transform}
+     * @type {import("../../transform.js").Transform}
      */
     private renderedPixelToCoordinateTransform_;
     /**
@@ -29,25 +30,31 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<impo
     private renderedRotation_;
     /**
      * @private
+     * @type {number}
+     */
+    private renderedOpacity_;
+    /**
+     * @private
      * @type {import("../../transform.js").Transform}
      */
     private tmpTransform_;
     /**
-     * @param {import("../../VectorRenderTile.js").default} tile Tile.
-     * @param {number} pixelRatio Pixel ratio.
-     * @param {import("../../proj/Projection").default} projection Projection.
-     * @return {boolean|undefined} Tile needs to be rendered.
+     * @private
+     * @type {Array<ZIndexContext>}
      */
-    prepareTile(tile: import("../../VectorRenderTile.js").default, pixelRatio: number, projection: import("../../proj/Projection").default): boolean | undefined;
+    private tileClipContexts_;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile Tile.
-     * @return {boolean} Tile is drawable.
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @param {number} x Left of the tile.
+     * @param {number} y Top of the tile.
+     * @param {number} w Width of the tile.
+     * @param {number} h Height of the tile.
+     * @param {number} gutter Tile gutter.
+     * @param {boolean} transition Apply an alpha transition.
+     * @override
      */
-    isDrawableTile(tile: import("../../VectorRenderTile.js").default): boolean;
-    /**
-     * @inheritDoc
-     */
-    getTileImage(tile: any): any;
+    override drawTile(tile: import("../../VectorRenderTile.js").default, frameState: import("../../Map.js").FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean): void;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile Tile.
      * @param {number} pixelRatio Pixel ratio.
@@ -55,6 +62,11 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<impo
      * @private
      */
     private updateExecutorGroup_;
+    /**
+     * @param {import("../../extent.js").Extent} extent Extent.
+     * @return {Array<import('../../Feature.js').FeatureLike>} Features.
+     */
+    getFeaturesInExtent(extent: import("../../extent.js").Extent): Array<import("../../Feature.js").FeatureLike>;
     /**
      * Handle changes in image style state.
      * @param {import("../../events/Event.js").default} event Image style change event.
@@ -64,18 +76,25 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<impo
     /**
      * Render declutter items for this layer
      * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @param {import("../../layer/Layer.js").State} layerState Layer state.
      */
-    renderDeclutter(frameState: import("../../Map.js").FrameState): void;
-    getTileRenderTransform(tile: any, frameState: any): number[];
+    renderDeclutter(frameState: import("../../Map.js").FrameState, layerState: import("../../layer/Layer.js").State): void;
+    /**
+     * @param {import("../../VectorRenderTile.js").default} tile The tile
+     * @param {import('../../Map.js').FrameState} frameState Current frame state
+     * @return {import('../../transform.js').Transform} Transform to use to render this tile
+     */
+    getTileRenderTransform(tile: import("../../VectorRenderTile.js").default, frameState: import("../../Map.js").FrameState): import("../../transform.js").Transform;
     /**
      * @param {import("../../Feature.js").FeatureLike} feature Feature.
      * @param {number} squaredTolerance Squared tolerance.
      * @param {import("../../style/Style.js").default|Array<import("../../style/Style.js").default>} styles The style or array of styles.
      * @param {import("../../render/canvas/BuilderGroup.js").default} builderGroup Replay group.
-     * @param {import("../../render/canvas/BuilderGroup.js").default} [declutterBuilderGroup] Builder group for decluttering.
+     * @param {boolean} [declutter] Enable decluttering.
+     * @param {number} [index] Render order index.
      * @return {boolean} `true` if an image is loading.
      */
-    renderFeature(feature: import("../../Feature.js").FeatureLike, squaredTolerance: number, styles: import("../../style/Style.js").default | Array<import("../../style/Style.js").default>, builderGroup: import("../../render/canvas/BuilderGroup.js").default, declutterBuilderGroup?: CanvasBuilderGroup | undefined): boolean;
+    renderFeature(feature: import("../../Feature.js").FeatureLike, squaredTolerance: number, styles: import("../../style/Style.js").default | Array<import("../../style/Style.js").default>, builderGroup: import("../../render/canvas/BuilderGroup.js").default, declutter?: boolean, index?: number): boolean;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile Tile.
      * @return {boolean} A new tile image was rendered.
@@ -84,11 +103,10 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<impo
     private tileImageNeedsRender_;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile Tile.
-     * @param {import("../../Map").FrameState} frameState Frame state.
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @private
      */
     private renderTileImage_;
 }
 import CanvasTileLayerRenderer from './TileLayer.js';
-import CanvasBuilderGroup from '../../render/canvas/BuilderGroup.js';
 //# sourceMappingURL=VectorTileLayer.d.ts.map

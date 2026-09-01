@@ -20,10 +20,9 @@ function mtl_login_register_widget($args) {
 		$widget_content = '';
 		echo $before_title . __('Login/Register','my-transit-lines') . $after_title;
 		echo $after_widget;
-		$link=get_bloginfo('wpurl').'/wp-login.php?action=register';
-		$widget_content .= '<ul><li><a href="'.wp_login_url().'">'.__('Login','my-transit-lines').'</a></li>';
-		if (get_option('users_can_register')) $widget_content .= '<li><a href="'.$link.'">'.__('Register','my-transit-lines').'</a></li></ul></li>';
-		else $widget_content .= '</ul></li>';
+		$widget_content .= '<li><a href="'.wp_login_url().'">'.__('Login','my-transit-lines').'</a></li>';
+		if (get_option('users_can_register')) $widget_content .= '<li><a href="'.wp_registration_url().'">'.__('Register','my-transit-lines').'</a></li></li>';
+		else $widget_content .= '</li>';
 		echo $widget_content;
 	}
 	else {
@@ -34,25 +33,28 @@ function mtl_login_register_widget($args) {
 		echo $after_widget;
 		$widget_content .= '<li><a href="'.get_permalink(pll_get_post($mtl_options['mtl-postlist-page'])).'?mtl-userid='.get_current_user_id().'&show-drafts=true">'.esc_html__('My proposals','my-transit-lines').'</a></li>';
 		$widget_content .= '<li><a href="'.get_permalink(pll_get_post($mtl_options['mtl-settings-page'])).'">'.esc_html__('Settings','my-transit-lines').'</a></li>';
-		$widget_content .= '<ul><li><a href="'.wp_logout_url().'">'.__('Logout','my-transit-lines').'</a></li>'."\n\r";
-		$link2=get_bloginfo('wpurl').'/wp-login.php?action=lostpassword';
-		$widget_content .= '<li><a href="'.$link2.'">'.__('Change password','my-transit-lines').'</a></li></ul></li>'."\n\r";
+		$widget_content .= '<li><a href="'.wp_logout_url().'">'.__('Logout','my-transit-lines').'</a></li>';
+		$widget_content .= '<li><a href="'.wp_lostpassword_url().'">'.__('Change password','my-transit-lines').'</a></li></li>';
 		echo $widget_content;
 		
 	}
 }
- 
+
+
 /**
  * register the widget for use in dashboard widget section
  */
-wp_register_sidebar_widget(
-    'mtl_login_register', // unique widget id
-    __('MTL Login/Register','my-transit-lines'), // widget name
-    'mtl_login_register_widget',  // callback function
-    array( // options
-        'description' => 'Showing login/register when not logged in, greeting+username/logout/change password when logged in'
-    )
-);
+function mtl_register_sidebar_widget() {
+	wp_register_sidebar_widget(
+		'mtl_login_register', // unique widget id
+		__('MTL Login/Register','my-transit-lines'), // widget name
+		'mtl_login_register_widget',  // callback function
+		array( // options
+			'description' => 'Showing login/register when not logged in, greeting+username/logout/change password when logged in'
+		)
+	);
+}
+add_action('init', 'mtl_register_sidebar_widget');
 
 /**
  * populate sidebar2 in top menu bar with the Login/Register widget by default

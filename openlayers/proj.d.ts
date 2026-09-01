@@ -1,20 +1,20 @@
 /**
- * @param {boolean} [disable = true] Disable console info about `useGeographic()`
+ * @param {boolean} [disable] Disable console info about `useGeographic()`
  */
-export function disableCoordinateWarning(disable?: boolean | undefined): void;
+export function disableCoordinateWarning(disable?: boolean): void;
 /**
  * @param {Array<number>} input Input coordinate array.
  * @param {Array<number>} [output] Output array of coordinate values.
  * @return {Array<number>} Output coordinate array (new array, same coordinate
  *     values).
  */
-export function cloneTransform(input: Array<number>, output?: number[] | undefined): Array<number>;
+export function cloneTransform(input: Array<number>, output?: Array<number>): Array<number>;
 /**
  * @param {Array<number>} input Input coordinate array.
  * @param {Array<number>} [output] Output array of coordinate values.
  * @return {Array<number>} Input coordinate array (same array as input).
  */
-export function identityTransform(input: Array<number>, output?: number[] | undefined): Array<number>;
+export function identityTransform(input: Array<number>, output?: Array<number>): Array<number>;
 /**
  * Add a Projection object to the list of supported projections that can be
  * looked up by their code.
@@ -57,7 +57,7 @@ export function get(projectionLike: ProjectionLike): Projection | null;
  * @return {number} Point resolution.
  * @api
  */
-export function getPointResolution(projection: ProjectionLike, resolution: number, point: import("./coordinate.js").Coordinate, units?: import("./proj/Units.js").Units | undefined): number;
+export function getPointResolution(projection: ProjectionLike, resolution: number, point: import("./coordinate.js").Coordinate, units?: import("./proj/Units.js").Units): number;
 /**
  * Registers transformation functions that don't alter coordinates. Those allow
  * to transform between projections with equal meaning.
@@ -156,12 +156,12 @@ export function equivalent(projection1: Projection, projection2: Projection): bo
  * Searches in the list of transform functions for the function for converting
  * coordinates from the source projection to the destination projection.
  *
- * @param {Projection} sourceProjection Source Projection object.
- * @param {Projection} destinationProjection Destination Projection
+ * @param {Projection} source Source Projection object.
+ * @param {Projection} destination Destination Projection
  *     object.
- * @return {TransformFunction} Transform function.
+ * @return {TransformFunction|null} Transform function.
  */
-export function getTransformFromProjections(sourceProjection: Projection, destinationProjection: Projection): TransformFunction;
+export function getTransformFromProjections(source: Projection, destination: Projection): TransformFunction | null;
 /**
  * Given the projection-like objects, searches for a transformation
  * function to convert a coordinates array from the source projection to the
@@ -175,7 +175,9 @@ export function getTransformFromProjections(sourceProjection: Projection, destin
 export function getTransform(source: ProjectionLike, destination: ProjectionLike): TransformFunction;
 /**
  * Transforms a coordinate from source projection to destination projection.
- * This returns a new coordinate (and does not modify the original).
+ * This returns a new coordinate (and does not modify the original). If there
+ * is no available transform between the two projection, the function will throw
+ * an error.
  *
  * See {@link module:ol/proj.transformExtent} for extent transformation.
  * See the transform method of {@link module:ol/geom/Geometry~Geometry} and its
@@ -200,7 +202,7 @@ export function transform(coordinate: import("./coordinate.js").Coordinate, sour
  * @return {import("./extent.js").Extent} The transformed extent.
  * @api
  */
-export function transformExtent(extent: import("./extent.js").Extent, source: ProjectionLike, destination: ProjectionLike, stops?: number | undefined): import("./extent.js").Extent;
+export function transformExtent(extent: import("./extent.js").Extent, source: ProjectionLike, destination: ProjectionLike, stops?: number): import("./extent.js").Extent;
 /**
  * Transforms the given point to the destination projection.
  *
@@ -308,13 +310,23 @@ export function addCommon(): void;
  * string or undefined.
  */
 export type ProjectionLike = Projection | string | undefined;
+export type Transforms = {
+    /**
+     * The forward transform (from geographic).
+     */
+    forward: TransformFunction;
+    /**
+     * The inverse transform (to geographic).
+     */
+    inverse: TransformFunction;
+};
 /**
  * A transform function accepts an array of input coordinate values, an optional
  * output array, and an optional dimension (default should be 2).  The function
  * transforms the input coordinate values, populates the output array, and
  * returns the output array.
  */
-export type TransformFunction = (arg0: Array<number>, arg1: Array<number> | undefined, arg2: number | undefined) => Array<number>;
+export type TransformFunction = (input: Array<number>, output?: number[] | undefined, dimension?: number | undefined, stride?: number | undefined) => Array<number>;
 import Projection from './proj/Projection.js';
 import { METERS_PER_UNIT } from './proj/Units.js';
 export { METERS_PER_UNIT, Projection };

@@ -22,3 +22,8 @@ ul#user-settings-form-success {
 	margin-bottom: 12px;
 	margin-left: 0px;
 }
+
+#mtl-user-settings-form #appearance-table label {
+	margin-left: 0.1em;
+	margin-right: 0.5em;
+}

@@ -1,9 +1,7 @@
 /**
  * @module ol/render/canvas/Builder
  */
-import CanvasInstruction from './Instruction.js';
-import Relationship from '../../extent/Relationship.js';
-import VectorContext from '../VectorContext.js';
+import {equals, reverseSubArray} from '../../array.js';
 import {asColorLike} from '../../colorlike.js';
 import {
   buffer,
@@ -11,6 +9,13 @@ import {
   containsCoordinate,
   coordinateRelationship,
 } from '../../extent.js';
+import Relationship from '../../extent/Relationship.js';
+import {
+  inflateCoordinates,
+  inflateCoordinatesArray,
+  inflateMultiCoordinatesArray,
+} from '../../geom/flat/inflate.js';
+import VectorContext from '../VectorContext.js';
 import {
   defaultFillStyle,
   defaultLineCap,
@@ -19,14 +24,10 @@ import {
   defaultLineJoin,
   defaultLineWidth,
   defaultMiterLimit,
+  defaultStrokeOffset,
   defaultStrokeStyle,
 } from '../canvas.js';
-import {equals, reverseSubArray} from '../../array.js';
-import {
-  inflateCoordinates,
-  inflateCoordinatesArray,
-  inflateMultiCoordinatesArray,
-} from '../../geom/flat/inflate.js';
+import CanvasInstruction from './Instruction.js';
 
 class CanvasBuilder extends VectorContext {
   /**
@@ -171,7 +172,7 @@ class CanvasBuilder extends VectorContext {
     end,
     stride,
     closed,
-    skipFirst
+    skipFirst,
   ) {
     const coordinates = this.coordinates;
     let myEnd = coordinates.length;
@@ -234,7 +235,7 @@ class CanvasBuilder extends VectorContext {
         end,
         stride,
         false,
-        false
+        false,
       );
       builderEnds.push(builderEnd);
       offset = end;
@@ -247,9 +248,11 @@ class CanvasBuilder extends VectorContext {
    * @param {import("../../Feature.js").FeatureLike} feature Feature.
    * @param {Function} renderer Renderer.
    * @param {Function} hitDetectionRenderer Renderer.
+   * @param {number} [index] Render order index.
+   * @override
    */
-  drawCustom(geometry, feature, renderer, hitDetectionRenderer) {
-    this.beginGeometry(geometry, feature);
+  drawCustom(geometry, feature, renderer, hitDetectionRenderer, index) {
+    this.beginGeometry(geometry, feature, index);
 
     const type = geometry.getType();
     const stride = geometry.getStride();
@@ -277,7 +280,7 @@ class CanvasBuilder extends VectorContext {
             offset,
             endss[i],
             stride,
-            myEnds
+            myEnds,
           );
           builderEndss.push(myEnds);
         }
@@ -288,6 +291,7 @@ class CanvasBuilder extends VectorContext {
           geometry,
           renderer,
           inflateMultiCoordinatesArray,
+          index,
         ]);
         this.hitDetectionInstructions.push([
           CanvasInstruction.CUSTOM,
@@ -296,6 +300,7 @@ class CanvasBuilder extends VectorContext {
           geometry,
           hitDetectionRenderer || renderer,
           inflateMultiCoordinatesArray,
+          index,
         ]);
         break;
       case 'Polygon':
@@ -314,7 +319,7 @@ class CanvasBuilder extends VectorContext {
             geometry
           ).getEnds(),
           stride,
-          builderEnds
+          builderEnds,
         );
         this.instructions.push([
           CanvasInstruction.CUSTOM,
@@ -323,6 +328,7 @@ class CanvasBuilder extends VectorContext {
           geometry,
           renderer,
           inflateCoordinatesArray,
+          index,
         ]);
         this.hitDetectionInstructions.push([
           CanvasInstruction.CUSTOM,
@@ -331,6 +337,7 @@ class CanvasBuilder extends VectorContext {
           geometry,
           hitDetectionRenderer || renderer,
           inflateCoordinatesArray,
+          index,
         ]);
         break;
       case 'LineString':
@@ -342,7 +349,7 @@ class CanvasBuilder extends VectorContext {
           flatCoordinates.length,
           stride,
           false,
-          false
+          false,
         );
         this.instructions.push([
           CanvasInstruction.CUSTOM,
@@ -351,6 +358,7 @@ class CanvasBuilder extends VectorContext {
           geometry,
           renderer,
           inflateCoordinates,
+          index,
         ]);
         this.hitDetectionInstructions.push([
           CanvasInstruction.CUSTOM,
@@ -359,6 +367,7 @@ class CanvasBuilder extends VectorContext {
           geometry,
           hitDetectionRenderer || renderer,
           inflateCoordinates,
+          index,
         ]);
         break;
       case 'MultiPoint':
@@ -373,6 +382,7 @@ class CanvasBuilder extends VectorContext {
             geometry,
             renderer,
             inflateCoordinates,
+            index,
           ]);
           this.hitDetectionInstructions.push([
             CanvasInstruction.CUSTOM,
@@ -381,6 +391,7 @@ class CanvasBuilder extends VectorContext {
             geometry,
             hitDetectionRenderer || renderer,
             inflateCoordinates,
+            index,
           ]);
         }
         break;
@@ -395,6 +406,8 @@ class CanvasBuilder extends VectorContext {
           builderEnd,
           geometry,
           renderer,
+          undefined,
+          index,
         ]);
         this.hitDetectionInstructions.push([
           CanvasInstruction.CUSTOM,
@@ -402,6 +415,8 @@ class CanvasBuilder extends VectorContext {
           builderEnd,
           geometry,
           hitDetectionRenderer || renderer,
+          undefined,
+          index,
         ]);
         break;
       default:
@@ -411,15 +426,17 @@ class CanvasBuilder extends VectorContext {
 
   /**
    * @protected
-   * @param {import("../../geom/Geometry").default|import("../Feature.js").default} geometry The geometry.
+   * @param {import("../../geom/Geometry.js").default|import("../Feature.js").default} geometry The geometry.
    * @param {import("../../Feature.js").FeatureLike} feature Feature.
+   * @param {number} index Render order index
    */
-  beginGeometry(geometry, feature) {
+  beginGeometry(geometry, feature, index) {
     this.beginGeometryInstruction1_ = [
       CanvasInstruction.BEGIN_GEOMETRY,
       feature,
       0,
       geometry,
+      index,
     ];
     this.instructions.push(this.beginGeometryInstruction1_);
     this.beginGeometryInstruction2_ = [
@@ -427,6 +444,7 @@ class CanvasBuilder extends VectorContext {
       feature,
       0,
       geometry,
+      index,
     ];
     this.hitDetectionInstructions.push(this.beginGeometryInstruction2_);
   }
@@ -470,22 +488,43 @@ class CanvasBuilder extends VectorContext {
 
   /**
    * @param {import("../../style/Fill.js").default} fillStyle Fill style.
-   * @param {import("../../style/Stroke.js").default} strokeStyle Stroke style.
+   * @param {import('../canvas.js').FillStrokeState} [state] State.
+   * @return {import('../canvas.js').FillStrokeState} State.
    */
-  setFillStrokeStyle(fillStyle, strokeStyle) {
-    const state = this.state;
+  fillStyleToState(
+    fillStyle,
+    state = /** @type {import('../canvas.js').FillStrokeState} */ ({}),
+  ) {
     if (fillStyle) {
       const fillStyleColor = fillStyle.getColor();
-      state.fillStyle = asColorLike(
-        fillStyleColor ? fillStyleColor : defaultFillStyle
-      );
+      state.fillPatternScale =
+        fillStyleColor &&
+        typeof fillStyleColor === 'object' &&
+        'src' in fillStyleColor
+          ? this.pixelRatio
+          : 1;
+      state.fillStyle =
+        asColorLike(fillStyleColor ? fillStyleColor : defaultFillStyle) ??
+        undefined;
     } else {
       state.fillStyle = undefined;
     }
+    return state;
+  }
+
+  /**
+   * @param {import("../../style/Stroke.js").default} strokeStyle Stroke style.
+   * @param {import("../canvas.js").FillStrokeState} state State.
+   * @return {import("../canvas.js").FillStrokeState} State.
+   */
+  strokeStyleToState(
+    strokeStyle,
+    state = /** @type {import('../canvas.js').FillStrokeState} */ ({}),
+  ) {
     if (strokeStyle) {
       const strokeStyleColor = strokeStyle.getColor();
       state.strokeStyle = asColorLike(
-        strokeStyleColor ? strokeStyleColor : defaultStrokeStyle
+        strokeStyleColor ? strokeStyleColor : defaultStrokeStyle,
       );
       const strokeStyleLineCap = strokeStyle.getLineCap();
       state.lineCap =
@@ -511,6 +550,8 @@ class CanvasBuilder extends VectorContext {
         strokeStyleMiterLimit !== undefined
           ? strokeStyleMiterLimit
           : defaultMiterLimit;
+      const strokeStyleOffset = strokeStyle.getOffset();
+      state.strokeOffset = strokeStyleOffset ?? defaultStrokeOffset;
 
       if (state.lineWidth > this.maxLineWidth) {
         this.maxLineWidth = state.lineWidth;
@@ -525,7 +566,20 @@ class CanvasBuilder extends VectorContext {
       state.lineJoin = undefined;
       state.lineWidth = undefined;
       state.miterLimit = undefined;
+      state.strokeOffset = undefined;
     }
+    return state;
+  }
+
+  /**
+   * @param {import("../../style/Fill.js").default} fillStyle Fill style.
+   * @param {import("../../style/Stroke.js").default} strokeStyle Stroke style.
+   * @override
+   */
+  setFillStrokeStyle(fillStyle, strokeStyle) {
+    const state = this.state;
+    this.fillStyleToState(fillStyle, state);
+    this.strokeStyleToState(strokeStyle, state);
   }
 
   /**
@@ -537,8 +591,8 @@ class CanvasBuilder extends VectorContext {
     /** @type {Array<*>} */
     const fillInstruction = [CanvasInstruction.SET_FILL_STYLE, fillStyle];
     if (typeof fillStyle !== 'string') {
-      // Fill is a pattern or gradient - align it!
-      fillInstruction.push(true);
+      // Fill is a pattern or gradient - align and scale it!
+      fillInstruction.push(state.fillPatternScale);
     }
     return fillInstruction;
   }
@@ -562,7 +616,7 @@ class CanvasBuilder extends VectorContext {
       state.lineCap,
       state.lineJoin,
       state.miterLimit,
-      this.applyPixelRatio(state.lineDash),
+      state.lineDash ? this.applyPixelRatio(state.lineDash) : null,
       state.lineDashOffset * this.pixelRatio,
     ];
   }
@@ -573,10 +627,11 @@ class CanvasBuilder extends VectorContext {
    */
   updateFillStyle(state, createFill) {
     const fillStyle = state.fillStyle;
-    if (typeof fillStyle !== 'string' || state.currentFillStyle != fillStyle) {
-      if (fillStyle !== undefined) {
-        this.instructions.push(createFill.call(this, state));
-      }
+    if (
+      (fillStyle !== undefined && typeof fillStyle !== 'string') ||
+      state.currentFillStyle != fillStyle
+    ) {
+      this.instructions.push(createFill.call(this, state));
       state.currentFillStyle = fillStyle;
     }
   }
@@ -593,6 +648,7 @@ class CanvasBuilder extends VectorContext {
     const lineJoin = state.lineJoin;
     const lineWidth = state.lineWidth;
     const miterLimit = state.miterLimit;
+    const strokeOffset = state.strokeOffset;
     if (
       state.currentStrokeStyle != strokeStyle ||
       state.currentLineCap != lineCap ||
@@ -601,11 +657,10 @@ class CanvasBuilder extends VectorContext {
       state.currentLineDashOffset != lineDashOffset ||
       state.currentLineJoin != lineJoin ||
       state.currentLineWidth != lineWidth ||
-      state.currentMiterLimit != miterLimit
+      state.currentMiterLimit != miterLimit ||
+      state.currentStrokeOffset != strokeOffset
     ) {
-      if (strokeStyle !== undefined) {
-        applyStroke.call(this, state);
-      }
+      applyStroke.call(this, state);
       state.currentStrokeStyle = strokeStyle;
       state.currentLineCap = lineCap;
       state.currentLineDash = lineDash;
@@ -613,6 +668,7 @@ class CanvasBuilder extends VectorContext {
       state.currentLineJoin = lineJoin;
       state.currentLineWidth = lineWidth;
       state.currentMiterLimit = miterLimit;
+      state.currentStrokeOffset = strokeOffset;
     }
   }
 

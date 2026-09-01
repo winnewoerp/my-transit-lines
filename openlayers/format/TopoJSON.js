@@ -2,7 +2,6 @@
  * @module ol/format/TopoJSON
  */
 import Feature from '../Feature.js';
-import JSONFeature from './JSONFeature.js';
 import LineString from '../geom/LineString.js';
 import MultiLineString from '../geom/MultiLineString.js';
 import MultiPoint from '../geom/MultiPoint.js';
@@ -11,6 +10,7 @@ import Point from '../geom/Point.js';
 import Polygon from '../geom/Polygon.js';
 import {get as getProjection} from '../proj.js';
 import {transformGeometryWithOptions} from './Feature.js';
+import JSONFeature from './JSONFeature.js';
 
 /**
  * @typedef {import("topojson-specification").Topology} TopoJSONTopology
@@ -79,7 +79,7 @@ class TopoJSON extends JSONFeature {
      * @type {import("../proj/Projection.js").default}
      */
     this.dataProjection = getProjection(
-      options.dataProjection ? options.dataProjection : 'EPSG:4326'
+      options.dataProjection ? options.dataProjection : 'EPSG:4326',
     );
   }
 
@@ -88,6 +88,7 @@ class TopoJSON extends JSONFeature {
    * @param {import("./Feature.js").ReadOptions} [options] Read options.
    * @protected
    * @return {Array<Feature>} Features.
+   * @override
    */
   readFeaturesFromObject(object, options) {
     if (object.type == 'Topology') {
@@ -126,8 +127,8 @@ class TopoJSON extends JSONFeature {
               translate,
               property,
               objectName,
-              options
-            )
+              options,
+            ),
           );
         } else {
           feature = /** @type {TopoJSONGeometry} */ (
@@ -141,8 +142,8 @@ class TopoJSON extends JSONFeature {
               translate,
               property,
               objectName,
-              options
-            )
+              options,
+            ),
           );
         }
       }
@@ -155,6 +156,7 @@ class TopoJSON extends JSONFeature {
    * @param {Object} object Object.
    * @protected
    * @return {import("../proj/Projection.js").default} Projection.
+   * @override
    */
   readProjectionFromObject(object) {
     return this.dataProjection;
@@ -328,7 +330,7 @@ function readFeaturesFromGeometryCollection(
   translate,
   property,
   name,
-  options
+  options,
 ) {
   const geometries = collection['geometries'];
   const features = [];
@@ -340,7 +342,7 @@ function readFeaturesFromGeometryCollection(
       translate,
       property,
       name,
-      options
+      options,
     );
   }
   return features;
@@ -366,7 +368,7 @@ function readFeatureFromGeometry(
   translate,
   property,
   name,
-  options
+  options,
 ) {
   let geometry = null;
   const type = object.type;

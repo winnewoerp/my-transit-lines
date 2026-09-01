@@ -7,7 +7,10 @@ export default TextFeature;
  *
  * @abstract
  */
-declare class TextFeature extends FeatureFormat {
+declare class TextFeature extends FeatureFormat<import("../Feature.js").default<import("../geom/Geometry.js").default, {
+    [x: string]: any;
+}>> {
+    constructor();
     /**
      * Read the feature from the source.
      *
@@ -15,8 +18,9 @@ declare class TextFeature extends FeatureFormat {
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
      * @return {import("../Feature.js").default} Feature.
      * @api
+     * @override
      */
-    readFeature(source: Document | Element | any | string, options?: import("../format/Feature.js").ReadOptions | undefined): import("../Feature.js").default;
+    override readFeature(source: Document | Element | any | string, options?: import("./Feature.js").ReadOptions): import("../Feature.js").default;
     /**
      * @abstract
      * @param {string} text Text.
@@ -24,16 +28,7 @@ declare class TextFeature extends FeatureFormat {
      * @protected
      * @return {import("../Feature.js").default} Feature.
      */
-    protected readFeatureFromText(text: string, options?: import("../format/Feature.js").ReadOptions | undefined): import("../Feature.js").default;
-    /**
-     * Read the features from the source.
-     *
-     * @param {Document|Element|Object|string} source Source.
-     * @param {import("./Feature.js").ReadOptions} [options] Read options.
-     * @return {Array<import("../Feature.js").default>} Features.
-     * @api
-     */
-    readFeatures(source: Document | Element | any | string, options?: import("../format/Feature.js").ReadOptions | undefined): Array<import("../Feature.js").default>;
+    protected readFeatureFromText(text: string, options?: import("./Feature.js").ReadOptions): import("../Feature.js").default;
     /**
      * @abstract
      * @param {string} text Text.
@@ -41,7 +36,7 @@ declare class TextFeature extends FeatureFormat {
      * @protected
      * @return {Array<import("../Feature.js").default>} Features.
      */
-    protected readFeaturesFromText(text: string, options?: import("../format/Feature.js").ReadOptions | undefined): Array<import("../Feature.js").default>;
+    protected readFeaturesFromText(text: string, options?: import("./Feature.js").ReadOptions): Array<import("../Feature.js").default>;
     /**
      * @abstract
      * @param {string} text Text.
@@ -49,7 +44,7 @@ declare class TextFeature extends FeatureFormat {
      * @protected
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    protected readGeometryFromText(text: string, options?: import("../format/Feature.js").ReadOptions | undefined): import("../geom/Geometry.js").default;
+    protected readGeometryFromText(text: string, options?: import("./Feature.js").ReadOptions): import("../geom/Geometry.js").default;
     /**
      * @param {string} text Text.
      * @protected
@@ -63,8 +58,9 @@ declare class TextFeature extends FeatureFormat {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {string} Encoded feature.
      * @api
+     * @override
      */
-    writeFeature(feature: import("../Feature.js").default, options?: import("../format/Feature.js").WriteOptions | undefined): string;
+    override writeFeature(feature: import("../Feature.js").default, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @abstract
      * @param {import("../Feature.js").default} feature Features.
@@ -72,7 +68,7 @@ declare class TextFeature extends FeatureFormat {
      * @protected
      * @return {string} Text.
      */
-    protected writeFeatureText(feature: import("../Feature.js").default, options?: import("../format/Feature.js").WriteOptions | undefined): string;
+    protected writeFeatureText(feature: import("../Feature.js").default, options?: import("./Feature.js").WriteOptions): string;
     /**
      * Encode an array of features as string.
      *
@@ -80,8 +76,9 @@ declare class TextFeature extends FeatureFormat {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {string} Encoded features.
      * @api
+     * @override
      */
-    writeFeatures(features: Array<import("../Feature.js").default>, options?: import("../format/Feature.js").WriteOptions | undefined): string;
+    override writeFeatures(features: Array<import("../Feature.js").default>, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @abstract
      * @param {Array<import("../Feature.js").default>} features Features.
@@ -89,7 +86,7 @@ declare class TextFeature extends FeatureFormat {
      * @protected
      * @return {string} Text.
      */
-    protected writeFeaturesText(features: Array<import("../Feature.js").default>, options?: import("../format/Feature.js").WriteOptions | undefined): string;
+    protected writeFeaturesText(features: Array<import("../Feature.js").default>, options?: import("./Feature.js").WriteOptions): string;
     /**
      * Write a single geometry.
      *
@@ -97,8 +94,9 @@ declare class TextFeature extends FeatureFormat {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {string} Geometry.
      * @api
+     * @override
      */
-    writeGeometry(geometry: import("../geom/Geometry.js").default, options?: import("../format/Feature.js").WriteOptions | undefined): string;
+    override writeGeometry(geometry: import("../geom/Geometry.js").default, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @abstract
      * @param {import("../geom/Geometry.js").default} geometry Geometry.
@@ -106,7 +104,7 @@ declare class TextFeature extends FeatureFormat {
      * @protected
      * @return {string} Text.
      */
-    protected writeGeometryText(geometry: import("../geom/Geometry.js").default, options?: import("../format/Feature.js").WriteOptions | undefined): string;
+    protected writeGeometryText(geometry: import("../geom/Geometry.js").default, options?: import("./Feature.js").WriteOptions): string;
 }
 import FeatureFormat from '../format/Feature.js';
 //# sourceMappingURL=TextFeature.d.ts.map

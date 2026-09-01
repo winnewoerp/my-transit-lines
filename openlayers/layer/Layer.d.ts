@@ -8,12 +8,16 @@
 export function inView(layerState: State, viewState: import("../View.js").State): boolean;
 export default Layer;
 export type RenderFunction = (arg0: import("../Map.js").FrameState) => HTMLElement;
-export type LayerEventType = 'sourceready' | 'change:source';
+export type LayerEventType = "sourceready" | "change:source";
 /**
  * *
  */
-export type LayerOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes | LayerEventType, import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("./Base").BaseLayerObjectEventTypes | LayerEventType | import("../render/EventType").LayerRenderEventTypes, Return>;
-export type Options<SourceType extends import("../source/Source.js").default = import("../source/Source.js").default> = {
+export type LayerOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("./Base.js").BaseLayerObjectEventTypes | LayerEventType, import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<import("../render/EventType.js").LayerRenderEventTypes, import("../render/Event.js").default, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("./Base.js").BaseLayerObjectEventTypes | LayerEventType | import("../render/EventType.js").LayerRenderEventTypes, Return>;
+export type Options<SourceType extends import("../source/Source.js").default = import("../source/Source.js").default, Properties extends {
+    [x: string]: any;
+} = {
+    [x: string]: any;
+}> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -76,9 +80,7 @@ export type Options<SourceType extends import("../source/Source.js").default = i
     /**
      * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
      */
-    properties?: {
-        [x: string]: any;
-    } | undefined;
+    properties?: Properties | undefined;
 };
 export type State = {
     /**
@@ -104,7 +106,7 @@ export type State = {
     /**
      * ZIndex.
      */
-    zIndex: number | undefined;
+    zIndex: number;
     /**
      * Maximum resolution.
      */
@@ -130,15 +132,16 @@ export type State = {
  */
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes|
- *     LayerEventType, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("./Base").BaseLayerObjectEventTypes|LayerEventType|
- *     import("../render/EventType").LayerRenderEventTypes, Return>} LayerOnSignature
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("./Base.js").BaseLayerObjectEventTypes|
+ *     LayerEventType, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<import("../render/EventType.js").LayerRenderEventTypes, import("../render/Event.js").default, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("./Base.js").BaseLayerObjectEventTypes|LayerEventType|
+ *     import("../render/EventType.js").LayerRenderEventTypes, Return>} LayerOnSignature
  */
 /**
  * @template {import("../source/Source.js").default} [SourceType=import("../source/Source.js").default]
+ * @template {Object<string, *>} [Properties=Object<string, *>]
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
@@ -163,7 +166,7 @@ export type State = {
  * @property {import("../Map.js").default|null} [map] Map.
  * @property {RenderFunction} [render] Render function. Takes the frame state as input and is expected to return an
  * HTML element. Will overwrite the default rendering for the layer.
- * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ * @property {Properties} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  */
 /**
  * @typedef {Object} State
@@ -172,7 +175,7 @@ export type State = {
  * @property {boolean} visible Visible.
  * @property {boolean} managed Managed.
  * @property {import("../extent.js").Extent} [extent] Extent.
- * @property {number | undefined} zIndex ZIndex.
+ * @property {number} zIndex ZIndex.
  * @property {number} maxResolution Maximum resolution.
  * @property {number} minResolution Minimum resolution.
  * @property {number} minZoom Minimum zoom.
@@ -202,21 +205,27 @@ export type State = {
  *
  * @template {import("../source/Source.js").default} [SourceType=import("../source/Source.js").default]
  * @template {import("../renderer/Layer.js").default} [RendererType=import("../renderer/Layer.js").default]
+ * @template {Object<string, *>} [Properties=Object<string, *>]
+ * @extends {BaseLayer<NoInfer<Properties>>}
  * @api
  */
-declare class Layer<SourceType extends import("../source/Source.js").default = import("../source/Source.js").default, RendererType extends import("../renderer/Layer.js").default<any> = import("../renderer/Layer.js").default<any>> extends BaseLayer {
+declare class Layer<SourceType extends import("../source/Source.js").default = import("../source/Source.js").default, RendererType extends import("../renderer/Layer.js").default<any> = import("../renderer/Layer.js").default<any>, Properties extends {
+    [x: string]: any;
+} = {
+    [x: string]: any;
+}> extends BaseLayer<NoInfer<Properties>> {
     /**
-     * @param {Options<SourceType>} options Layer options.
+     * @param {Options<SourceType, NoInfer<Properties>>} options Layer options.
      */
-    constructor(options: Options<SourceType>);
+    constructor(options: Options<SourceType, NoInfer<Properties>>);
     /***
-     * @type {LayerOnSignature<import("../events").EventsKey>}
+     * @type {LayerOnSignature<import("../events.js").EventsKey>}
      */
-    on: LayerOnSignature<import("../events").EventsKey>;
+    on: LayerOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {LayerOnSignature<import("../events").EventsKey>}
+     * @type {LayerOnSignature<import("../events.js").EventsKey>}
      */
-    once: LayerOnSignature<import("../events").EventsKey>;
+    once: LayerOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {LayerOnSignature<void>}
      */
@@ -280,16 +289,16 @@ declare class Layer<SourceType extends import("../source/Source.js").default = i
      */
     private handleSourcePropertyChange_;
     /**
-     * @param {import("../pixel").Pixel} pixel Pixel.
-     * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
+     * @param {import("../pixel.js").Pixel} pixel Pixel.
+     * @return {Promise<Array<import("../Feature.js").FeatureLike>>} Promise that resolves with
      * an array of features.
      */
-    getFeatures(pixel: import("../pixel").Pixel): Promise<Array<import("../Feature").FeatureLike>>;
+    getFeatures(pixel: import("../pixel.js").Pixel): Promise<Array<import("../Feature.js").FeatureLike>>;
     /**
-     * @param {import("../pixel").Pixel} pixel Pixel.
+     * @param {import("../pixel.js").Pixel} pixel Pixel.
      * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
      */
-    getData(pixel: import("../pixel").Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView | null;
+    getData(pixel: import("../pixel.js").Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView | null;
     /**
      * The layer is visible on the map view, i.e. within its min/max resolution or zoom and
      * extent, not set to `visible: false`, and not inside a layer group that is set
@@ -299,7 +308,7 @@ declare class Layer<SourceType extends import("../source/Source.js").default = i
      * @return {boolean} The layer is visible in the map view.
      * @api
      */
-    isVisible(view?: View | import("../View.js").ViewStateLayerStateExtent | undefined): boolean;
+    isVisible(view?: View | import("../View.js").ViewStateLayerStateExtent): boolean;
     /**
      * Get the attributions of the source of this layer for the given view.
      * @param {View|import("../View.js").ViewStateLayerStateExtent} [view] View or {@link import("../Map.js").FrameState}.
@@ -307,11 +316,23 @@ declare class Layer<SourceType extends import("../source/Source.js").default = i
      * @return {Array<string>} Attributions for this layer at the given view.
      * @api
      */
-    getAttributions(view?: View | import("../View.js").ViewStateLayerStateExtent | undefined): Array<string>;
+    getAttributions(view?: View | import("../View.js").ViewStateLayerStateExtent): Array<string>;
     /**
      * Called when a layer is not visible during a map render.
      */
     unrender(): void;
+    /** @return {string} Declutter */
+    getDeclutter(): string;
+    /**
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     * @param {import("../layer/Layer.js").State} layerState Layer state.
+     */
+    renderDeclutter(frameState: import("../Map.js").FrameState, layerState: import("../layer/Layer.js").State): void;
+    /**
+     * When the renderer follows a layout -> render approach, do the final rendering here.
+     * @param {import('../Map.js').FrameState} frameState Frame state
+     */
+    renderDeferred(frameState: import("../Map.js").FrameState): void;
     /**
      * For use inside the library only.
      * @param {import("../Map.js").default|null} map Map.
@@ -335,6 +356,11 @@ declare class Layer<SourceType extends import("../source/Source.js").default = i
      */
     setMap(map: import("../Map.js").default | null): void;
     /**
+     * @param {import("../events/Event.js").default} renderEvent Render event
+     * @private
+     */
+    private handlePrecompose_;
+    /**
      * Set the layer source.
      * @param {SourceType|null} source The layer source.
      * @observable
@@ -356,6 +382,10 @@ declare class Layer<SourceType extends import("../source/Source.js").default = i
      * @protected
      */
     protected createRenderer(): RendererType;
+    /**
+     * This will clear the renderer so that a new one can be created next time it is needed
+     */
+    clearRenderer(): void;
 }
 import BaseLayer from './Base.js';
 import View from '../View.js';

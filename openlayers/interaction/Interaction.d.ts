@@ -3,19 +3,19 @@
  * @param {import("../coordinate.js").Coordinate} delta Delta.
  * @param {number} [duration] Duration.
  */
-export function pan(view: import("../View.js").default, delta: import("../coordinate.js").Coordinate, duration?: number | undefined): void;
+export function pan(view: import("../View.js").default, delta: import("../coordinate.js").Coordinate, duration?: number): void;
 /**
  * @param {import("../View.js").default} view View.
  * @param {number} delta Delta from previous zoom level.
  * @param {import("../coordinate.js").Coordinate} [anchor] Anchor coordinate in the user projection.
  * @param {number} [duration] Duration.
  */
-export function zoomByDelta(view: import("../View.js").default, delta: number, anchor?: import("../coordinate.js").Coordinate | undefined, duration?: number | undefined): void;
+export function zoomByDelta(view: import("../View.js").default, delta: number, anchor?: import("../coordinate.js").Coordinate, duration?: number): void;
 export default Interaction;
 /**
  * *
  */
-export type InteractionOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types | 'change:active', import("../Object").ObjectEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | 'change:active', Return>;
+export type InteractionOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types | "change:active", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | "change:active", Return>;
 /**
  * Object literal with config options for interactions.
  */
@@ -27,20 +27,20 @@ export type InteractionOptions = {
      * prevented (this includes functions with no explicit return). The interactions
      * are traversed in reverse order of the interactions collection of the map.
      */
-    handleEvent: (arg0: import("../MapBrowserEvent.js").default<any>) => boolean;
+    handleEvent?: ((arg0: import("../MapBrowserEvent.js").default) => boolean) | undefined;
 };
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
- *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types|
+ *     'change:active', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types|
  *     'change:active', Return>} InteractionOnSignature
  */
 /**
  * Object literal with config options for interactions.
  * @typedef {Object} InteractionOptions
- * @property {function(import("../MapBrowserEvent.js").default):boolean} handleEvent
+ * @property {function(import("../MapBrowserEvent.js").default):boolean} [handleEvent]
  * Method called by the map to notify the interaction that a browser event was
  * dispatched to the map. If the function returns a falsy value, propagation of
  * the event to other interactions in the map's interactions chain will be
@@ -60,19 +60,21 @@ export type InteractionOptions = {
  * vectors and so are visible on the screen.
  * @api
  */
-declare class Interaction extends BaseObject {
+declare class Interaction extends BaseObject<{
+    [x: string]: any;
+}> {
     /**
      * @param {InteractionOptions} [options] Options.
      */
-    constructor(options?: InteractionOptions | undefined);
+    constructor(options?: InteractionOptions);
     /***
-     * @type {InteractionOnSignature<import("../events").EventsKey>}
+     * @type {InteractionOnSignature<import("../events.js").EventsKey>}
      */
-    on: InteractionOnSignature<import("../events").EventsKey>;
+    on: InteractionOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {InteractionOnSignature<import("../events").EventsKey>}
+     * @type {InteractionOnSignature<import("../events.js").EventsKey>}
      */
-    once: InteractionOnSignature<import("../events").EventsKey>;
+    once: InteractionOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {InteractionOnSignature<void>}
      */
@@ -83,7 +85,7 @@ declare class Interaction extends BaseObject {
      * @return {boolean} `false` to stop event propagation.
      * @api
      */
-    handleEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<any>): boolean;
+    handleEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default): boolean;
     /**
      * @private
      * @type {import("../Map.js").default|null}

@@ -109,10 +109,11 @@ declare class CanvasBuilder extends VectorContext {
     drawCustomCoordinates_(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, builderEnds: Array<number>): number;
     /**
      * @protected
-     * @param {import("../../geom/Geometry").default|import("../Feature.js").default} geometry The geometry.
+     * @param {import("../../geom/Geometry.js").default|import("../Feature.js").default} geometry The geometry.
      * @param {import("../../Feature.js").FeatureLike} feature Feature.
+     * @param {number} index Render order index
      */
-    protected beginGeometry(geometry: import("../../geom/Geometry").default | import("../Feature.js").default, feature: import("../../Feature.js").FeatureLike): void;
+    protected beginGeometry(geometry: import("../../geom/Geometry.js").default | import("../Feature.js").default, feature: import("../../Feature.js").FeatureLike, index: number): void;
     /**
      * @return {import("../canvas.js").SerializableInstructions} the serializable instructions.
      */
@@ -121,6 +122,18 @@ declare class CanvasBuilder extends VectorContext {
      * Reverse the hit detection instructions.
      */
     reverseHitDetectionInstructions(): void;
+    /**
+     * @param {import("../../style/Fill.js").default} fillStyle Fill style.
+     * @param {import('../canvas.js').FillStrokeState} [state] State.
+     * @return {import('../canvas.js').FillStrokeState} State.
+     */
+    fillStyleToState(fillStyle: import("../../style/Fill.js").default, state?: import("../canvas.js").FillStrokeState): import("../canvas.js").FillStrokeState;
+    /**
+     * @param {import("../../style/Stroke.js").default} strokeStyle Stroke style.
+     * @param {import("../canvas.js").FillStrokeState} state State.
+     * @return {import("../canvas.js").FillStrokeState} State.
+     */
+    strokeStyleToState(strokeStyle: import("../../style/Stroke.js").default, state?: import("../canvas.js").FillStrokeState): import("../canvas.js").FillStrokeState;
     /**
      * @param {import("../canvas.js").FillStrokeState} state State.
      * @return {Array<*>} Fill instruction.

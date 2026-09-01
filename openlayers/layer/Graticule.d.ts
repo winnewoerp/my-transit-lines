@@ -273,19 +273,25 @@ export type Options = {
  * Layer that renders a grid for a coordinate system (currently only EPSG:4326 is supported).
  * Note that the view projection must define both extent and worldExtent.
  *
- * @fires import("../render/Event.js").RenderEvent
- * @extends {VectorLayer<import("../source/Vector.js").default>}
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
+ * @extends {VectorLayer<VectorSource<Feature>>}
  * @api
  */
-declare class Graticule extends VectorLayer<VectorSource<import("../geom/Geometry.js").default>> {
+declare class Graticule extends VectorLayer<VectorSource<Feature<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>>, Feature<import("../geom.js").Geometry, {
+    [x: string]: any;
+}>> {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @type {import("../proj/Projection.js").default}
+     * @private
      */
-    projection_: import("../proj/Projection.js").default;
+    private projection_;
     /**
      * @type {number}
      * @private
@@ -427,7 +433,7 @@ declare class Graticule extends VectorLayer<VectorSource<import("../geom/Geometr
     private lonLabelStyleBase_;
     /**
      * @private
-     * @param {import("../Feature").default} feature Feature
+     * @param {import("../Feature.js").default} feature Feature
      * @return {Style} style
      */
     private lonLabelStyle_;
@@ -438,7 +444,7 @@ declare class Graticule extends VectorLayer<VectorSource<import("../geom/Geometr
     private latLabelStyleBase_;
     /**
      * @private
-     * @param {import("../Feature").default} feature Feature
+     * @param {import("../Feature.js").default} feature Feature
      * @return {Style} style
      */
     private latLabelStyle_;
@@ -483,11 +489,11 @@ declare class Graticule extends VectorLayer<VectorSource<import("../geom/Geometr
     strategyFunction(extent: import("../extent.js").Extent, resolution: number): Array<import("../extent.js").Extent>;
     /**
      * Update geometries in the source based on current view
-     * @param {import("../extent").Extent} extent Extent
+     * @param {import("../extent.js").Extent} extent Extent
      * @param {number} resolution Resolution
      * @param {import("../proj/Projection.js").default} projection Projection
      */
-    loaderFunction(extent: import("../extent").Extent, resolution: number, projection: import("../proj/Projection.js").default): void;
+    loaderFunction(extent: import("../extent.js").Extent, resolution: number, projection: import("../proj/Projection.js").default): void;
     /**
      * @param {number} lon Longitude.
      * @param {number} minLat Minimal latitude.
@@ -586,6 +592,7 @@ declare class Graticule extends VectorLayer<VectorSource<import("../geom/Geometr
 import Point from '../geom/Point.js';
 import Stroke from '../style/Stroke.js';
 import Text from '../style/Text.js';
+import Feature from '../Feature.js';
 import VectorSource from '../source/Vector.js';
 import VectorLayer from './Vector.js';
 import LineString from '../geom/LineString.js';

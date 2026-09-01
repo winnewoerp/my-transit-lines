@@ -1,12 +1,12 @@
 export default MVT;
-export type Options = {
+export type Options<FeatureType extends import("../Feature.js").FeatureLike = RenderFeature> = {
     /**
      * Class for features returned by
      * {@link module :ol/format/MVT~MVT#readFeatures}. Set to {@link module :ol/Feature~Feature} to get full editing and geometry
      * support at the cost of decreased rendering performance. The default is
      * {@link module :ol/render/Feature~RenderFeature}, which is optimized for rendering and hit detection.
      */
-    featureClass?: import("../Feature.js").FeatureClass | undefined;
+    featureClass?: import("./Feature.js").FeatureToFeatureClass<FeatureType> | undefined;
     /**
      * Geometry name to use when creating features.
      */
@@ -26,8 +26,9 @@ export type Options = {
     idProperty?: string | undefined;
 };
 /**
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../render/Feature.js").default]
  * @typedef {Object} Options
- * @property {import("../Feature.js").FeatureClass} [featureClass] Class for features returned by
+ * @property {import('./Feature.js').FeatureToFeatureClass<FeatureType>} [featureClass] Class for features returned by
  * {@link module:ol/format/MVT~MVT#readFeatures}. Set to {@link module:ol/Feature~Feature} to get full editing and geometry
  * support at the cost of decreased rendering performance. The default is
  * {@link module:ol/render/Feature~RenderFeature}, which is optimized for rendering and hit detection.
@@ -41,19 +42,15 @@ export type Options = {
  * @classdesc
  * Feature format for reading data in the Mapbox MVT format.
  *
- * @param {Options} [options] Options.
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=RenderFeature]
+ * @extends {FeatureFormat<FeatureType>}
  * @api
  */
-declare class MVT extends FeatureFormat {
+declare class MVT<FeatureType extends import("../Feature.js").FeatureLike = RenderFeature> extends FeatureFormat<FeatureType> {
     /**
-     * @param {Options} [options] Options.
+     * @param {Options<FeatureType>} [options] Options.
      */
-    constructor(options?: Options | undefined);
-    /**
-     * @private
-     * @type {import("../Feature.js").FeatureClass}
-     */
-    private featureClass_;
+    constructor(options?: Options<FeatureType>);
     /**
      * @private
      * @type {string|undefined}
@@ -89,7 +86,7 @@ declare class MVT extends FeatureFormat {
      * @param {PBF} pbf PBF
      * @param {Object} rawFeature Raw Mapbox feature.
      * @param {import("./Feature.js").ReadOptions} options Read options.
-     * @return {import("../Feature.js").FeatureLike|null} Feature.
+     * @return {FeatureType|null} Feature.
      */
     private createFeature_;
     /**
@@ -97,18 +94,20 @@ declare class MVT extends FeatureFormat {
      *
      * @param {ArrayBuffer} source Source.
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
-     * @return {Array<import("../Feature.js").FeatureLike>} Features.
+     * @return {Array<FeatureType>} Features.
      * @api
+     * @override
      */
-    readFeatures(source: ArrayBuffer, options?: import("./Feature.js").ReadOptions | undefined): Array<import("../Feature.js").FeatureLike>;
+    override readFeatures(source: ArrayBuffer, options?: import("./Feature.js").ReadOptions): Array<FeatureType>;
     /**
      * Read the projection from the source.
      *
      * @param {Document|Element|Object|string} source Source.
      * @return {import("../proj/Projection.js").default} Projection.
      * @api
+     * @override
      */
-    readProjection(source: Document | Element | any | string): import("../proj/Projection.js").default;
+    override readProjection(source: Document | Element | any | string): import("../proj/Projection.js").default;
     /**
      * Sets the layers that features will be read from.
      * @param {Array<string>} layers Layers.
@@ -116,5 +115,6 @@ declare class MVT extends FeatureFormat {
      */
     setLayers(layers: Array<string>): void;
 }
+import RenderFeature from '../render/Feature.js';
 import FeatureFormat from './Feature.js';
 //# sourceMappingURL=MVT.d.ts.map

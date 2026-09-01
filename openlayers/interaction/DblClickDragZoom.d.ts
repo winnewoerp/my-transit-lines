@@ -32,7 +32,7 @@ declare class DblClickDragZoom extends Interaction {
     /**
      * @param {Options} [opt_options] Options.
      */
-    constructor(opt_options?: Options | undefined);
+    constructor(opt_options?: Options);
     /**
      * This function is used to determine if "down" events should be propagated
      * to other interactions or should be stopped.
@@ -71,33 +71,47 @@ declare class DblClickDragZoom extends Interaction {
      */
     private trackedPointers_;
     /**
+     * @type {PointerEvent|null}
+     * @private
+     */
+    private down_;
+    /**
      * @type {Array<PointerEvent>}
      * @protected
      */
     protected targetPointers: Array<PointerEvent>;
     /**
-     * Handle pointer drag events.
-     * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
+     * Handles the {@link module:ol/MapBrowserEvent~MapBrowserEvent  map browser event} and may call into
+     * other functions, if event sequences like e.g. 'drag' or 'down-up' etc. are
+     * detected.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Map browser event.
+     * @return {boolean} `false` to stop event propagation.
+     * @api
+     * @override
      */
-    handleDragEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<any>): void;
+    override handleEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<PointerEvent>): boolean;
+    /**
+     * Handle pointer drag events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Event.
+     */
+    handleDragEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<PointerEvent>): void;
     lastDistance_: number | undefined;
     lastScaleDelta_: number | undefined;
     /**
      * Handle pointer down events.
-     * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Event.
      * @return {boolean} If the event was consumed.
      */
-    handleDownEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<any>): boolean;
+    handleDownEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<PointerEvent>): boolean;
     anchor_: any;
-    down_: import("../MapBrowserEvent.js").default<any> | undefined;
     /**
      * Handle pointer up events zooming out.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
      * @return {boolean} If the event was consumed.
      */
-    handleUpEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default<any>): boolean;
+    handleUpEvent(mapBrowserEvent: import("../MapBrowserEvent.js").default): boolean;
     /**
-     * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Event.
      * @private
      */
     private updateTrackedPointers_;

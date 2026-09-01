@@ -2,13 +2,13 @@
  * @module ol/interaction/defaults
  */
 import Collection from '../Collection.js';
+import Kinetic from '../Kinetic.js';
 import DoubleClickZoom from './DoubleClickZoom.js';
 import DragPan from './DragPan.js';
 import DragRotate from './DragRotate.js';
 import DragZoom from './DragZoom.js';
 import KeyboardPan from './KeyboardPan.js';
 import KeyboardZoom from './KeyboardZoom.js';
-import Kinetic from '../Kinetic.js';
 import MouseWheelZoom from './MouseWheelZoom.js';
 import PinchRotate from './PinchRotate.js';
 import PinchZoom from './PinchZoom.js';
@@ -44,15 +44,15 @@ import PinchZoom from './PinchZoom.js';
  * before creating your {@link module:ol/Map~Map} instance. Changing the order can
  * be of interest if the event propagation needs to be stopped at a point.
  * The default set of interactions, in sequence, is:
- * * {@link module:ol/interaction/DragRotate~DragRotate}
- * * {@link module:ol/interaction/DoubleClickZoom~DoubleClickZoom}
- * * {@link module:ol/interaction/DragPan~DragPan}
- * * {@link module:ol/interaction/PinchRotate~PinchRotate}
- * * {@link module:ol/interaction/PinchZoom~PinchZoom}
- * * {@link module:ol/interaction/KeyboardPan~KeyboardPan}
- * * {@link module:ol/interaction/KeyboardZoom~KeyboardZoom}
- * * {@link module:ol/interaction/MouseWheelZoom~MouseWheelZoom}
- * * {@link module:ol/interaction/DragZoom~DragZoom}
+ * {@link module:ol/interaction/DragRotate~DragRotate}
+ * {@link module:ol/interaction/DoubleClickZoom~DoubleClickZoom}
+ * {@link module:ol/interaction/DragPan~DragPan}
+ * {@link module:ol/interaction/PinchRotate~PinchRotate}
+ * {@link module:ol/interaction/PinchZoom~PinchZoom}
+ * {@link module:ol/interaction/KeyboardPan~KeyboardPan}
+ * {@link module:ol/interaction/KeyboardZoom~KeyboardZoom}
+ * {@link module:ol/interaction/MouseWheelZoom~MouseWheelZoom}
+ * {@link module:ol/interaction/DragZoom~DragZoom}
  *
  * @param {DefaultsOptions} [options] Defaults options.
  * @return {Collection<import("./Interaction.js").default>}
@@ -83,7 +83,7 @@ export function defaults(options) {
       new DoubleClickZoom({
         delta: options.zoomDelta,
         duration: options.zoomDuration,
-      })
+      }),
     );
   }
 
@@ -93,7 +93,7 @@ export function defaults(options) {
       new DragPan({
         onFocusOnly: options.onFocusOnly,
         kinetic: kinetic,
-      })
+      }),
     );
   }
 
@@ -108,7 +108,7 @@ export function defaults(options) {
     interactions.push(
       new PinchZoom({
         duration: options.zoomDuration,
-      })
+      }),
     );
   }
 
@@ -119,7 +119,7 @@ export function defaults(options) {
       new KeyboardZoom({
         delta: options.zoomDelta,
         duration: options.zoomDuration,
-      })
+      }),
     );
   }
 
@@ -130,7 +130,7 @@ export function defaults(options) {
       new MouseWheelZoom({
         onFocusOnly: options.onFocusOnly,
         duration: options.zoomDuration,
-      })
+      }),
     );
   }
 
@@ -140,7 +140,7 @@ export function defaults(options) {
     interactions.push(
       new DragZoom({
         duration: options.zoomDuration,
-      })
+      }),
     );
   }
 

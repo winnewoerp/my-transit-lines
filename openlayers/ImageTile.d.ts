@@ -4,16 +4,21 @@ declare class ImageTile extends Tile {
      * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("./TileState.js").default} state State.
      * @param {string} src Image source URI.
-     * @param {?string} crossOrigin Cross origin.
+     * @param {import('./dom.js').ImageAttributes} imageAttributes Image attributes options.
      * @param {import("./Tile.js").LoadFunction} tileLoadFunction Tile load function.
      * @param {import("./Tile.js").Options} [options] Tile options.
      */
-    constructor(tileCoord: import("./tilecoord.js").TileCoord, state: any, src: string, crossOrigin: string | null, tileLoadFunction: import("./Tile.js").LoadFunction, options?: import("./Tile.js").Options | undefined);
+    constructor(tileCoord: import("./tilecoord.js").TileCoord, state: any, src: string, imageAttributes: import("./dom.js").ImageAttributes, tileLoadFunction: import("./Tile.js").LoadFunction, options?: import("./Tile.js").Options);
     /**
      * @private
      * @type {?string}
      */
     private crossOrigin_;
+    /**
+     * @private
+     * @type {ReferrerPolicy}
+     */
+    private referrerPolicy_;
     /**
      * Image URI
      *
@@ -23,7 +28,7 @@ declare class ImageTile extends Tile {
     private src_;
     /**
      * @private
-     * @type {HTMLImageElement|HTMLCanvasElement}
+     * @type {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas}
      */
     private image_;
     /**
@@ -37,16 +42,26 @@ declare class ImageTile extends Tile {
      */
     private tileLoadFunction_;
     /**
-     * Get the HTML image element for this tile (may be a Canvas, Image, or Video).
-     * @return {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} Image.
+     * Get the HTML image element for this tile (may be a Canvas, OffscreenCanvas, Image, or Video).
+     * @return {HTMLCanvasElement|OffscreenCanvas|HTMLImageElement|HTMLVideoElement} Image.
      * @api
      */
-    getImage(): HTMLCanvasElement | HTMLImageElement | HTMLVideoElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | HTMLVideoElement;
     /**
      * Sets an HTML image element for this tile (may be a Canvas or preloaded Image).
-     * @param {HTMLCanvasElement|HTMLImageElement} element Element.
+     * @param {HTMLCanvasElement|OffscreenCanvas|HTMLImageElement} element Element.
      */
-    setImage(element: HTMLCanvasElement | HTMLImageElement): void;
+    setImage(element: HTMLCanvasElement | OffscreenCanvas | HTMLImageElement): void;
+    /**
+     * Get the cross origin of the ImageTile.
+     * @return {string} Cross origin.
+     */
+    getCrossOrigin(): string;
+    /**
+     * Get the referrer policy of the ImageTile.
+     * @return {ReferrerPolicy} Referrer policy.
+     */
+    getReferrerPolicy(): ReferrerPolicy;
     /**
      * Tracks loading or read errors.
      *

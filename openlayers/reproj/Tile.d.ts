@@ -1,7 +1,27 @@
 export default ReprojTile;
 export type FunctionType = (arg0: number, arg1: number, arg2: number, arg3: number) => (import("../ImageTile.js").default);
+export type TileOffset = {
+    /**
+     * Tile.
+     */
+    tile?: import("../ImageTile.js").default | undefined;
+    /**
+     * Tile getter.
+     */
+    getTile: () => import("../ImageTile.js").default;
+    /**
+     * Offset.
+     */
+    offset: number;
+};
 /**
  * @typedef {function(number, number, number, number) : (import("../ImageTile.js").default)} FunctionType
+ */
+/**
+ * @typedef {Object} TileOffset
+ * @property {import("../ImageTile.js").default} [tile] Tile.
+ * @property {function(): import("../ImageTile.js").default} getTile Tile getter.
+ * @property {number} offset Offset.
  */
 /**
  * @classdesc
@@ -23,9 +43,9 @@ declare class ReprojTile extends Tile {
      *     Function returning source tiles (z, x, y, pixelRatio).
      * @param {number} [errorThreshold] Acceptable reprojection error (in px).
      * @param {boolean} [renderEdges] Render reprojection edges.
-     * @param {boolean} [interpolate] Use linear interpolation when resampling.
+     * @param {import("../Tile.js").Options} [options] Tile options.
      */
-    constructor(sourceProj: import("../proj/Projection.js").default, sourceTileGrid: import("../tilegrid/TileGrid.js").default, targetProj: import("../proj/Projection.js").default, targetTileGrid: import("../tilegrid/TileGrid.js").default, tileCoord: import("../tilecoord.js").TileCoord, wrappedTileCoord: import("../tilecoord.js").TileCoord, pixelRatio: number, gutter: number, getTileFunction: FunctionType, errorThreshold?: number | undefined, renderEdges?: boolean | undefined, interpolate?: boolean | undefined);
+    constructor(sourceProj: import("../proj/Projection.js").default, sourceTileGrid: import("../tilegrid/TileGrid.js").default, targetProj: import("../proj/Projection.js").default, targetTileGrid: import("../tilegrid/TileGrid.js").default, tileCoord: import("../tilecoord.js").TileCoord, wrappedTileCoord: import("../tilecoord.js").TileCoord, pixelRatio: number, gutter: number, getTileFunction: FunctionType, errorThreshold?: number, renderEdges?: boolean, options?: import("../Tile.js").Options);
     /**
      * @private
      * @type {boolean}
@@ -43,7 +63,7 @@ declare class ReprojTile extends Tile {
     private gutter_;
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     private canvas_;
     /**
@@ -63,7 +83,7 @@ declare class ReprojTile extends Tile {
     private wrappedTileCoord_;
     /**
      * @private
-     * @type {!Array<import("../ImageTile.js").default>}
+     * @type {!Array<TileOffset>}
      */
     private sourceTiles_;
     /**
@@ -78,14 +98,19 @@ declare class ReprojTile extends Tile {
     private sourceZ_;
     /**
      * @private
+     * @type {import("../extent.js").Extent}
+     */
+    private clipExtent_;
+    /**
+     * @private
      * @type {!import("./Triangulation.js").default}
      */
     private triangulation_;
     /**
      * Get the HTML Canvas element for this tile.
-     * @return {HTMLCanvasElement} Canvas.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Canvas.
      */
-    getImage(): HTMLCanvasElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * @private
      */

@@ -1,24 +1,31 @@
 /**
  * @module ol/reproj/Tile
  */
-import {ERROR_THRESHOLD} from './common.js';
 
-import EventType from '../events/EventType.js';
 import Tile from '../Tile.js';
 import TileState from '../TileState.js';
-import Triangulation from './Triangulation.js';
+import {releaseCanvas} from '../dom.js';
+import {listen, unlistenByKey} from '../events.js';
+import EventType from '../events/EventType.js';
+import {getArea, getIntersection, getWidth, wrapAndSliceX} from '../extent.js';
+import {clamp} from '../math.js';
 import {
   calculateSourceExtentResolution,
   canvasPool,
   render as renderReprojected,
 } from '../reproj.js';
-import {clamp} from '../math.js';
-import {getArea, getIntersection} from '../extent.js';
-import {listen, unlistenByKey} from '../events.js';
-import {releaseCanvas} from '../dom.js';
+import Triangulation from './Triangulation.js';
+import {ERROR_THRESHOLD} from './common.js';
 
 /**
  * @typedef {function(number, number, number, number) : (import("../ImageTile.js").default)} FunctionType
+ */
+
+/**
+ * @typedef {Object} TileOffset
+ * @property {import("../ImageTile.js").default} [tile] Tile.
+ * @property {function(): import("../ImageTile.js").default} getTile Tile getter.
+ * @property {number} offset Offset.
  */
 
 /**
@@ -41,7 +48,7 @@ class ReprojTile extends Tile {
    *     Function returning source tiles (z, x, y, pixelRatio).
    * @param {number} [errorThreshold] Acceptable reprojection error (in px).
    * @param {boolean} [renderEdges] Render reprojection edges.
-   * @param {boolean} [interpolate] Use linear interpolation when resampling.
+   * @param {import("../Tile.js").Options} [options] Tile options.
    */
   constructor(
     sourceProj,
@@ -55,9 +62,9 @@ class ReprojTile extends Tile {
     getTileFunction,
     errorThreshold,
     renderEdges,
-    interpolate
+    options,
   ) {
-    super(tileCoord, TileState.IDLE, {interpolate: !!interpolate});
+    super(tileCoord, TileState.IDLE, options);
 
     /**
      * @private
@@ -79,7 +86,7 @@ class ReprojTile extends Tile {
 
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     this.canvas_ = null;
 
@@ -103,7 +110,7 @@ class ReprojTile extends Tile {
 
     /**
      * @private
-     * @type {!Array<import("../ImageTile.js").default>}
+     * @type {!Array<TileOffset>}
      */
     this.sourceTiles_ = [];
 
@@ -119,8 +126,16 @@ class ReprojTile extends Tile {
      */
     this.sourceZ_ = 0;
 
+    /**
+     * @private
+     * @type {import("../extent.js").Extent}
+     */
+    this.clipExtent_ = sourceProj.canWrapX()
+      ? sourceProj.getExtent()
+      : undefined;
+
     const targetExtent = targetTileGrid.getTileCoordExtent(
-      this.wrappedTileCoord_
+      this.wrappedTileCoord_,
     );
     const maxTargetExtent = this.targetTileGrid_.getExtent();
     let maxSourceExtent = this.sourceTileGrid_.getExtent();
@@ -146,14 +161,14 @@ class ReprojTile extends Tile {
     }
 
     const targetResolution = targetTileGrid.getResolution(
-      this.wrappedTileCoord_[0]
+      this.wrappedTileCoord_[0],
     );
 
     const sourceResolution = calculateSourceExtentResolution(
       sourceProj,
       targetProj,
       limitedTargetExtent,
-      targetResolution
+      targetResolution,
     );
 
     if (!isFinite(sourceResolution) || sourceResolution <= 0) {
@@ -176,7 +191,7 @@ class ReprojTile extends Tile {
       limitedTargetExtent,
       maxSourceExtent,
       sourceResolution * errorThresholdInPixels,
-      targetResolution
+      targetResolution,
     );
 
     if (this.triangulation_.getTriangles().length === 0) {
@@ -193,12 +208,12 @@ class ReprojTile extends Tile {
         sourceExtent[1] = clamp(
           sourceExtent[1],
           maxSourceExtent[1],
-          maxSourceExtent[3]
+          maxSourceExtent[3],
         );
         sourceExtent[3] = clamp(
           sourceExtent[3],
           maxSourceExtent[1],
-          maxSourceExtent[3]
+          maxSourceExtent[3],
         );
       } else {
         sourceExtent = getIntersection(sourceExtent, maxSourceExtent);
@@ -208,19 +223,38 @@ class ReprojTile extends Tile {
     if (!getArea(sourceExtent)) {
       this.state = TileState.EMPTY;
     } else {
-      const sourceRange = sourceTileGrid.getTileRangeForExtentAndZ(
-        sourceExtent,
-        this.sourceZ_
-      );
+      let worldWidth = 0;
+      let worldsAway = 0;
+      if (sourceProj.canWrapX()) {
+        worldWidth = getWidth(sourceProjExtent);
+        worldsAway = Math.floor(
+          (sourceExtent[0] - sourceProjExtent[0]) / worldWidth,
+        );
+      }
 
-      for (let srcX = sourceRange.minX; srcX <= sourceRange.maxX; srcX++) {
-        for (let srcY = sourceRange.minY; srcY <= sourceRange.maxY; srcY++) {
-          const tile = getTileFunction(this.sourceZ_, srcX, srcY, pixelRatio);
-          if (tile) {
-            this.sourceTiles_.push(tile);
+      const sourceExtents = wrapAndSliceX(
+        sourceExtent.slice(),
+        sourceProj,
+        true,
+      );
+      sourceExtents.forEach((extent) => {
+        const sourceRange = sourceTileGrid.getTileRangeForExtentAndZ(
+          extent,
+          this.sourceZ_,
+        );
+
+        for (let srcX = sourceRange.minX; srcX <= sourceRange.maxX; srcX++) {
+          for (let srcY = sourceRange.minY; srcY <= sourceRange.maxY; srcY++) {
+            const offset = worldsAway * worldWidth;
+            this.sourceTiles_.push({
+              getTile: () =>
+                getTileFunction(this.sourceZ_, srcX, srcY, pixelRatio),
+              offset,
+            });
           }
         }
-      }
+        ++worldsAway;
+      });
 
       if (this.sourceTiles_.length === 0) {
         this.state = TileState.EMPTY;
@@ -230,7 +264,7 @@ class ReprojTile extends Tile {
 
   /**
    * Get the HTML Canvas element for this tile.
-   * @return {HTMLCanvasElement} Canvas.
+   * @return {HTMLCanvasElement|OffscreenCanvas} Canvas.
    */
   getImage() {
     return this.canvas_;
@@ -241,10 +275,20 @@ class ReprojTile extends Tile {
    */
   reproject_() {
     const sources = [];
-    this.sourceTiles_.forEach((tile) => {
+    this.sourceTiles_.forEach((source) => {
+      const tile = source.tile;
       if (tile && tile.getState() == TileState.LOADED) {
+        const extent = this.sourceTileGrid_.getTileCoordExtent(tile.tileCoord);
+        extent[0] += source.offset;
+        extent[2] += source.offset;
+        const clipExtent = this.clipExtent_?.slice();
+        if (clipExtent) {
+          clipExtent[0] += source.offset;
+          clipExtent[2] += source.offset;
+        }
         sources.push({
-          extent: this.sourceTileGrid_.getTileCoordExtent(tile.tileCoord),
+          extent: extent,
+          clipExtent: clipExtent,
           image: tile.getImage(),
         });
       }
@@ -260,11 +304,11 @@ class ReprojTile extends Tile {
       const height = typeof size === 'number' ? size : size[1];
       const targetResolution = this.targetTileGrid_.getResolution(z);
       const sourceResolution = this.sourceTileGrid_.getResolution(
-        this.sourceZ_
+        this.sourceZ_,
       );
 
       const targetExtent = this.targetTileGrid_.getTileCoordExtent(
-        this.wrappedTileCoord_
+        this.wrappedTileCoord_,
       );
 
       this.canvas_ = renderReprojected(
@@ -279,7 +323,7 @@ class ReprojTile extends Tile {
         sources,
         this.gutter_,
         this.renderEdges_,
-        this.interpolate
+        this.interpolate,
       );
 
       this.state = TileState.LOADED;
@@ -289,8 +333,12 @@ class ReprojTile extends Tile {
 
   /**
    * Load not yet loaded URI.
+   * @override
    */
   load() {
+    for (const sourceTile of this.sourceTiles_) {
+      sourceTile.tile = sourceTile.getTile();
+    }
     if (this.state == TileState.IDLE) {
       this.state = TileState.LOADING;
       this.changed();
@@ -298,31 +346,26 @@ class ReprojTile extends Tile {
       let leftToLoad = 0;
 
       this.sourcesListenerKeys_ = [];
-      this.sourceTiles_.forEach((tile) => {
+      this.sourceTiles_.forEach(({tile}) => {
         const state = tile.getState();
         if (state == TileState.IDLE || state == TileState.LOADING) {
           leftToLoad++;
 
-          const sourceListenKey = listen(
-            tile,
-            EventType.CHANGE,
-            function (e) {
-              const state = tile.getState();
-              if (
-                state == TileState.LOADED ||
-                state == TileState.ERROR ||
-                state == TileState.EMPTY
-              ) {
-                unlistenByKey(sourceListenKey);
-                leftToLoad--;
-                if (leftToLoad === 0) {
-                  this.unlistenSources_();
-                  this.reproject_();
-                }
+          const sourceListenKey = listen(tile, EventType.CHANGE, (e) => {
+            const state = tile.getState();
+            if (
+              state == TileState.LOADED ||
+              state == TileState.ERROR ||
+              state == TileState.EMPTY
+            ) {
+              unlistenByKey(sourceListenKey);
+              leftToLoad--;
+              if (leftToLoad === 0) {
+                this.unlistenSources_();
+                this.reproject_();
               }
-            },
-            this
-          );
+            }
+          });
           this.sourcesListenerKeys_.push(sourceListenKey);
         }
       });
@@ -330,7 +373,7 @@ class ReprojTile extends Tile {
       if (leftToLoad === 0) {
         setTimeout(this.reproject_.bind(this), 0);
       } else {
-        this.sourceTiles_.forEach(function (tile, i, arr) {
+        this.sourceTiles_.forEach(function ({tile}, i, arr) {
           const state = tile.getState();
           if (state == TileState.IDLE) {
             tile.load();
@@ -350,13 +393,19 @@ class ReprojTile extends Tile {
 
   /**
    * Remove from the cache due to expiry
+   * @override
    */
   release() {
     if (this.canvas_) {
-      releaseCanvas(this.canvas_.getContext('2d'));
+      releaseCanvas(
+        /** @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} */ (
+          this.canvas_.getContext('2d')
+        ),
+      );
       canvasPool.push(this.canvas_);
       this.canvas_ = null;
     }
+    this.sourceTiles_.length = 0;
     super.release();
   }
 }

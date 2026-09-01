@@ -69,13 +69,16 @@ declare class Rotate extends Control {
     /**
      * @param {Options} [options] Rotate options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @type {HTMLElement}
      * @private
      */
     private label_;
-    callResetNorth_: (() => void) | undefined;
+    /**
+     * @private
+     */
+    private callResetNorth_;
     /**
      * @type {number}
      * @private

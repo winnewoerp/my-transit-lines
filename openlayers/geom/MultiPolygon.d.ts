@@ -12,7 +12,7 @@ declare class MultiPolygon extends SimpleGeometry {
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @param {Array<Array<number>>} [endss] Array of ends for internal use with flat coordinates.
      */
-    constructor(coordinates: Array<Array<Array<import("../coordinate.js").Coordinate>> | Polygon> | Array<number>, layout?: import("./Geometry.js").GeometryLayout | undefined, endss?: number[][] | undefined);
+    constructor(coordinates: Array<Array<Array<import("../coordinate.js").Coordinate>> | Polygon> | Array<number>, layout?: import("./Geometry.js").GeometryLayout, endss?: Array<Array<number>>);
     /**
      * @type {Array<Array<number>>}
      * @private
@@ -25,7 +25,7 @@ declare class MultiPolygon extends SimpleGeometry {
     private flatInteriorPointsRevision_;
     /**
      * @private
-     * @type {Array<number>}
+     * @type {Array<number>|null}
      */
     private flatInteriorPoints_;
     /**
@@ -45,7 +45,7 @@ declare class MultiPolygon extends SimpleGeometry {
     private orientedRevision_;
     /**
      * @private
-     * @type {Array<number>}
+     * @type {Array<number>|null}
      */
     private orientedFlatCoordinates_;
     /**
@@ -58,8 +58,9 @@ declare class MultiPolygon extends SimpleGeometry {
      * Make a complete copy of the geometry.
      * @return {!MultiPolygon} Clone.
      * @api
+     * @override
      */
-    clone(): MultiPolygon;
+    override clone(): MultiPolygon;
     /**
      * Return the area of the multipolygon on projected plane.
      * @return {number} Area (on projected plane).
@@ -78,8 +79,9 @@ declare class MultiPolygon extends SimpleGeometry {
      *     constructed.
      * @return {Array<Array<Array<import("../coordinate.js").Coordinate>>>} Coordinates.
      * @api
+     * @override
      */
-    getCoordinates(right?: boolean | undefined): Array<Array<Array<import("../coordinate.js").Coordinate>>>;
+    override getCoordinates(right?: boolean): Array<Array<Array<import("../coordinate.js").Coordinate>>>;
     /**
      * @return {Array<Array<number>>} Endss.
      */
@@ -103,8 +105,9 @@ declare class MultiPolygon extends SimpleGeometry {
      * @param {number} squaredTolerance Squared tolerance.
      * @return {MultiPolygon} Simplified MultiPolygon.
      * @protected
+     * @override
      */
-    protected getSimplifiedGeometryInternal(squaredTolerance: number): MultiPolygon;
+    protected override getSimplifiedGeometryInternal(squaredTolerance: number): MultiPolygon;
     /**
      * Return the polygon at the specified index.
      * @param {number} index Index.
@@ -123,8 +126,9 @@ declare class MultiPolygon extends SimpleGeometry {
      * @param {!Array<Array<Array<import("../coordinate.js").Coordinate>>>} coordinates Coordinates.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @api
+     * @override
      */
-    setCoordinates(coordinates: Array<Array<Array<import("../coordinate.js").Coordinate>>>, layout?: import("./Geometry.js").GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Array<Array<import("../coordinate.js").Coordinate>>>, layout?: import("./Geometry.js").GeometryLayout): void;
 }
 import SimpleGeometry from './SimpleGeometry.js';
 import Polygon from './Polygon.js';

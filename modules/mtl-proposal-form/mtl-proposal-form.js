@@ -8,7 +8,7 @@ const districtFeatures = typeof(districtSource) != 'undefined' && districtSource
 
 var selectedFeatureIndex = -1;
 var snapping = true;
-var warningMessage = '';
+var has_changed = false;
 
 class InteractionControl extends ol.control.Control {
 	constructor(opt_options) {
@@ -29,6 +29,7 @@ class InteractionControl extends ol.control.Control {
 		this.polygonButton = this.createButton('Polygon', themeUrl + '/images/drawPolygon.png');
 		this.circleButton = this.createButton('Circle', themeUrl + '/images/drawCircle.png');
 		this.modifyButton = this.createButton('Modify', themeUrl + '/images/modifyFeature.png');
+		this.scissorsButton = this.createButton('Scissors', themeUrl + '/images/cut.png');
 		this.selectButton = this.createButton('Select', themeUrl + '/images/selectFeatureAddName.png');
 		this.deleteButton = this.createButton('Delete', themeUrl + '/images/deleteFeatures.png');
 		this.deleteButton.classList.add('unselectable');
@@ -41,6 +42,7 @@ class InteractionControl extends ol.control.Control {
 		this.element.appendChild(this.polygonButton);
 		this.element.appendChild(this.circleButton);
 		this.element.appendChild(this.modifyButton);
+		this.element.appendChild(this.scissorsButton);
 		this.element.appendChild(this.selectButton);
 		this.element.appendChild(this.deleteButton);
 		this.element.appendChild(this.navigateButton);
@@ -63,6 +65,10 @@ class InteractionControl extends ol.control.Control {
 
 	handleButtonClick(event) {
 		let target = event.target;
+
+		if (target.classList.contains('unselectable')) {
+			return;
+		}
 
 		if (target == this.deleteButton) {
 			deleteSelected();
@@ -87,8 +93,10 @@ class InteractionControl extends ol.control.Control {
 			node.classList.remove('selected');
 		}
 
-		$('.mtl-tool-hint').css('display', 'none');
-		$('.mtl-tool-hint.' + target.value).css('display', 'inline');
+		document.querySelectorAll('.mtl-tool-hint').forEach((elem) => {
+			elem.style.display = 'none';
+		});
+		document.querySelector('.mtl-tool-hint.' + target.value).style.display = 'inline';
 
 		target.classList.add('selected');
 
@@ -158,18 +166,180 @@ class InteractionControl extends ol.control.Control {
 	}
 }
 
+class ScissorsInteraction extends ol.interaction.Pointer {
+	constructor(options) {
+		super({
+			handleDownEvent: ScissorsInteraction.handleDownEvent,
+			handleMoveEvent: ScissorsInteraction.handleMoveEvent,
+		});
+
+		/**
+		 * @type {string|undefined}
+		 * @private
+		 */
+		this.cursor_ = 'url("' + themeUrl + '/images/cut.png' + '") 10 1, pointer';
+
+		/**
+		 * @type {string|undefined}
+		 * @private
+		 */
+		this.previousCursor_ = undefined;
+
+		/**
+		 * @type {VectorSource}
+		 * @private
+		 */
+		this.source_ = options.source || vectorSource;
+	}
+
+	/**
+	 * @param {import('ol/MapBrowserEvent.js').default} evt Map browser event.
+	 * @return {boolean} `false` to avoid a drag sequence.
+	 */
+	handleDownEvent(evt) {
+		const map = evt.map;
+
+		const features = map.getFeaturesAtPixel(evt.pixel);
+
+		for (let i = 0; i < features.length; i++) {
+			const feature = features[i];
+			
+			if (feature.getGeometry() instanceof ol.geom.LineString) {
+				const coords = feature.getGeometry().getCoordinates();
+
+				let found_coords = false;
+
+				for (let j = 0; j < coords.length; j++) {
+					const coord = coords[j];
+
+					if (coord[0] == evt.coordinate[0] && coord[1] == evt.coordinate[1]) {
+						if (j != 0 && j != coords.length - 1) {
+							const clone = feature.clone();
+
+							feature.getGeometry().setCoordinates(coords.slice(0, j+1));
+							clone.getGeometry().setCoordinates(coords.slice(j));
+
+							vectorSource.addFeature(clone);
+						}
+
+						found_coords = true;
+						break;
+					}
+				}
+
+				if (found_coords)
+					break;
+
+				for (let j = 0; j < coords.length - 1; j++) {
+					const start = coords[j];
+					const end = coords[j+1];
+					const length = Math.sqrt((start[0]-end[0])*(start[0]-end[0]) + (start[1]-end[1])*(start[1]-end[1]));
+
+					const t = ((end[0]-start[0])*(evt.coordinate[0]-start[0]) + (end[1]-start[1])*(evt.coordinate[1]-start[1])) / ((end[0]-start[0])*(end[0]-start[0]) + (end[1]-start[1])*(end[1]-start[1]));
+					const s = (evt.coordinate[1] - start[1] - (end[1] - start[1]) * t) / (end[0] - start[0]);
+
+					if (0 <= t && t <= 1 && Math.abs(s * length) < 10E-8) {
+						const cut_coords = [start[0] + t * (end[0] - start[0]), start[1] + t * (end[1] - start[1])];
+
+						const clone = feature.clone();
+
+						feature.getGeometry().setCoordinates(coords.slice(0, j+1));
+						feature.getGeometry().appendCoordinate(cut_coords);
+						clone.getGeometry().setCoordinates(Array.of(cut_coords, ...coords.slice(j+1)));
+
+						vectorSource.addFeature(clone);
+
+						break;
+					}
+				}
+
+				break;
+			} else if (feature.getGeometry() instanceof ol.geom.Polygon) {
+				// TODO split along a line
+
+				break;
+			} else {
+				continue;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param {import('ol/MapBrowserEvent.js').default} evt Event.
+	 */
+	handleMoveEvent(evt) {
+		// TODO: show where the cut will happen
+
+		if (this.cursor_) {
+			const map = evt.map;
+			const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+				if (feature.getGeometry() instanceof ol.geom.Point) {
+					return undefined;
+				} else {
+					return feature;
+				}
+			});
+			const element = evt.map.getTargetElement();
+			if (feature) {
+				if (element.style.cursor != this.cursor_) {
+					this.previousCursor_ = element.style.cursor;
+					element.style.cursor = this.cursor_;
+				}
+			} else if (this.previousCursor_ !== undefined) {
+				element.style.cursor = this.previousCursor_;
+				this.previousCursor_ = undefined;
+			}
+		}
+	}
+}
+
 const attributionLayer = new ol.layer.Layer({
 	source: new ol.source.Source({ attributions: objectL10n.attributionIcons }),
 	render: function () { return null; }
 });
 map.addLayer(attributionLayer);
 
+const point_source = new ol.source.Vector();
+const point_layer = new ol.layer.Vector({
+	source: point_source,
+	style: new ol.style.Style({
+		image: new ol.style.Circle({
+			fill: new ol.style.Fill({
+				color: 'rgba(255,255,255,0.4)',
+			}),
+			stroke: new ol.style.Stroke({
+				color: '#3399CC',
+				width: 1.25,
+			}),
+			radius: 5,
+		})
+	}),
+});
+update_point_source();
+
+vectorSource.on('change', update_point_source);
+
 // global so we can remove them later
 let drawInteraction;
-const modifyInteraction = new ol.interaction.Modify({ source: vectorSource });
+const modifyInteraction = new ol.interaction.Modify({ source: vectorSource, deleteCondition: (event) => {
+	if (event.type != 'pointerdown' || event.dragging) {
+		return false;
+	}
+	if ((event.originalEvent.buttons & 2) != 2) {
+		return false;
+	}
+
+	// Pointer isn't updated by default when not using the primary mouse button
+	modifyInteraction.updatePointer_(event.coordinate_);
+
+	return true;
+}});
 const dragBoxInteraction = new ol.interaction.DragBox();
 const selectInteraction = new ol.interaction.Select({ layers: [vectorLayer], multi: true, style: selectedStyleFunction });
 const snapInteraction = new ol.interaction.Snap({ source: vectorSource });
+const scissorsInteraction = new ScissorsInteraction({ source: vectorSource });
 
 const selectedFeatures = selectInteraction.getFeatures();
 
@@ -180,7 +350,13 @@ window.addEventListener('DOMContentLoaded', addSaveEventListeners);
 window.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('feature-textinput').addEventListener('keydown', e => {
 		if(e.key === "Enter") {
+			unselectAllFeatures();
+
 			e.preventDefault();
+		} else if (e.key === "Escape") {
+			// TODO: close without saving changes
+
+			e.stopPropagation();
 		}
 	});
 });
@@ -206,25 +382,60 @@ selectedFeatures.on('add', handleFeatureSelected);
 selectedFeatures.on('remove', handleFeatureUnselected);
 
 //Notify the user when about to leave page without saving changes
-$(window).on('beforeunload', function () {
-	if (warningMessage != '') return warningMessage;
+window.addEventListener('beforeunload', (e) => {
+	if (has_changed) {
+		e.preventDefault();
+	}
 });
 
-$('#title, #description').on('input propertychange paste', function () {
-	warningMessage = objectL10n.confirmLeaveWebsite;
+const has_changed_handler = () => { has_changed = true };
+document.querySelectorAll('#title, #description').forEach(elem => {
+	elem.addEventListener('input', has_changed_handler);
+	elem.addEventListener('propertychange', has_changed_handler);
+	elem.addEventListener('paste', has_changed_handler);
 });
-$('input.cat-select').on("change", function () {
-	warningMessage = objectL10n.confirmLeaveWebsite;
 
-	const new_allowed_cats = [getSelectedCategory()].concat(transportModeStyleData[getSelectedCategory()]['allow-others'].split(','));
+const cat_change_handler = () => {
+	has_changed = true;
+
+	const selected_category = getSelectedCategory();
+	const new_allowed_cats = [selected_category].concat(transportModeStyleData[selected_category]['allow-others'].split(','));
 	for (let feature of vectorSource.getFeatures()) {
 		if (!new_allowed_cats.includes(feature.get('category'))) {
-			feature.set('category', getSelectedCategory());
+			feature.set('category', selected_category);
 		}
 	}
 
 	interactionControl.updateCategorySelector();
+};
+document.querySelectorAll('input.cat-select').forEach(elem => {
+	elem.addEventListener('change', cat_change_handler);
 });
+
+// updates the points displayed by the point_layer
+function update_point_source() {
+	// TODO only update when no feature is currently being modified by dragging
+
+	point_source.clear();
+
+	vectorSource.getFeatures().forEach(feature => {
+		const geometry = feature.getGeometry();
+
+		if (geometry instanceof ol.geom.LineString) {
+			geometry.getCoordinates().forEach(coordinate => {
+				point_source.addFeature(new ol.Feature({geometry: new ol.geom.Point(coordinate)}));
+			});
+		} else if (geometry instanceof ol.geom.Polygon) {
+			geometry.getCoordinates().forEach(array => {
+				array.forEach(coordinate => {
+					point_source.addFeature(new ol.Feature({geometry: new ol.geom.Point(coordinate)}));
+				});
+			});
+		} else if (geometry instanceof ol.geom.Circle) {
+			point_source.addFeature(new ol.Feature({geometry: new ol.geom.Point(geometry.getCenter())}));
+		}
+	});
+}
 
 // returns the style for the given feature while being drawn
 function drawStyleFunction(feature) {
@@ -270,12 +481,9 @@ function handleFeatureSelected(event) {
 
 	interactionControl.updateSelectedCategory(getCategoryOf(event.element));
 
-	$('#feature-textinput').val(event.element.get('name'));
-	$('.feature-textinput-box').slideDown();
-	$('.set-name').css('display', 'block');
-	$('.set-name').click(function () {
-		unselectAllFeatures();
-	});
+	document.getElementById('feature-textinput').value = event.element.get('name') ?? "";
+	document.getElementById('feature-textinput-box').classList.add('shown');
+
 	selectedFeatureIndex = vectorSource.getFeatures().indexOf(event.element);
 
 	event.element.set('size', getFeatureSize(event.element));
@@ -287,11 +495,11 @@ function handleFeatureUnselected(event) {
 		interactionControl.deleteButton.classList.add('unselectable');
 
 	if (vectorSource.getFeatures().indexOf(event.element) == selectedFeatureIndex) {
-		vectorSource.getFeatures()[selectedFeatureIndex].set('name', $('#feature-textinput').val());
+		vectorSource.getFeatures()[selectedFeatureIndex].set('name', document.getElementById('feature-textinput').value);
 		selectedFeatureIndex = -1;
-		$('#feature-textinput').val('');
-		$('.feature-textinput-box').slideUp();
-		$('.set-name').css('display', 'none');
+
+		document.getElementById('feature-textinput').value = '';
+		document.getElementById('feature-textinput-box').classList.remove('shown');
 	}
 
 	event.element.unset('size');
@@ -332,7 +540,6 @@ function handleBoxSelect() {
 			.getFeaturesInExtent(extent)
 			.filter(
 				(feature) =>
-					!selectedFeatures.getArray().includes(feature) &&
 					feature.getGeometry().intersectsExtent(extent)
 			);
 
@@ -360,11 +567,21 @@ function handleBoxSelect() {
 				const geometry = feature.getGeometry().clone();
 				geometry.rotate(-rotation, anchor);
 				if (geometry.intersectsExtent(extent)) {
-					selectedFeatures.push(feature);
+					if (selectedFeatures.getArray().includes(feature)) {
+						selectedFeatures.remove(feature);
+					} else {
+						selectedFeatures.push(feature);
+					}
 				}
 			});
 		} else {
-			selectedFeatures.extend(boxFeatures);
+			boxFeatures.forEach(function (feature) {
+				if (selectedFeatures.getArray().includes(feature)) {
+					selectedFeatures.remove(feature);
+				} else {
+					selectedFeatures.push(feature);
+				}
+			});
 		}
 	}
 }
@@ -400,6 +617,12 @@ function setInteraction(interactionType) {
 		case 'Modify':
 			map.addInteraction(modifyInteraction);
 			map.addInteraction(snapInteraction);
+			point_layer.setMap(map);
+			break;
+		case 'Scissors':
+			map.addInteraction(scissorsInteraction);
+			map.addInteraction(snapInteraction);
+			point_layer.setMap(map);
 			break;
 		case 'Navigate':
 			break;
@@ -416,8 +639,11 @@ function removeInteractions() {
 	selectedFeatures.clear();
 	map.removeInteraction(selectInteraction);
 	map.removeInteraction(modifyInteraction);
+	map.getTargetElement().style.cursor = null;
+	map.removeInteraction(scissorsInteraction);
 	map.removeInteraction(snapInteraction);
 	map.removeInteraction(dragBoxInteraction);
+	point_layer.setMap(null);
 }
 
 /**
@@ -517,14 +743,14 @@ function getSelectedDrawCategory() {
  * @param {FeatureLike[]} features the array of features to save
  */
 function saveToHTML(features = vectorSource.getFeatures()) {
-	warningMessage = objectL10n.confirmLeaveWebsite;
+	has_changed = true;
 
 	// write JSON features data to html element (will be saved to database on form submit)
-	$('#mtl-features').val(exportToJSON());
-	$('#mtl-count-stations').val(getCountStations(features));
-	$('#mtl-line-length').val(getLineLength(features));
-	$('#mtl-tags').val(getStationLocations(features));
-	$('#mtl-costs').val(getLineCost(features));
+	document.getElementById('mtl-features').value = exportToJSON();
+	document.getElementById('mtl-count-stations').value = getCountStations(features);
+	document.getElementById('mtl-line-length').value = getLineLength(features);
+	document.getElementById('mtl-tags').value = getStationLocations(features);
+	document.getElementById('mtl-costs').value = getLineCost(features);
 }
 
 /**

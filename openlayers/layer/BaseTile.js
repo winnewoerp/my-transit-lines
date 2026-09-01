@@ -6,12 +6,12 @@ import TileProperty from './TileProperty.js';
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes|
- *     import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("./Base").BaseLayerObjectEventTypes|
- *   import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError'|import("../render/EventType").LayerRenderEventTypes, Return>} BaseTileLayerOnSignature
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("./Base.js").BaseLayerObjectEventTypes|
+ *     import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<import("../render/EventType.js").LayerRenderEventTypes, import("../render/Event.js").default, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("./Base.js").BaseLayerObjectEventTypes|
+ *   import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError'|import("../render/EventType.js").LayerRenderEventTypes, Return>} BaseTileLayerOnSignature
  */
 
 /**
@@ -41,8 +41,12 @@ import TileProperty from './TileProperty.js';
  * this layer in its layers collection, and the layer will be rendered on top. This is useful for
  * temporary layers. The standard way to add a layer to a map and have it managed by the map is to
  * use {@link import("../Map.js").default#addLayer map.addLayer()}.
- * @property {boolean} [useInterimTilesOnError=true] Use interim tiles on error.
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
+ * @property {boolean} [useInterimTilesOnError=true] Deprecated.  Use interim tiles on error.
  * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ * @property {number} [cacheSize=512] The internal tile cache size.  This needs to be large enough to render
+ * two zoom levels worth of tiles.
  */
 
 /**
@@ -67,17 +71,20 @@ class BaseTileLayer extends Layer {
 
     const baseOptions = Object.assign({}, options);
 
+    const cacheSize = options.cacheSize;
+    delete options.cacheSize;
+
     delete baseOptions.preload;
     delete baseOptions.useInterimTilesOnError;
     super(baseOptions);
 
     /***
-     * @type {BaseTileLayerOnSignature<import("../events").EventsKey>}
+     * @type {BaseTileLayerOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {BaseTileLayerOnSignature<import("../events").EventsKey>}
+     * @type {BaseTileLayerOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 
@@ -86,12 +93,26 @@ class BaseTileLayer extends Layer {
      */
     this.un;
 
+    /**
+     * @type {number|undefined}
+     * @private
+     */
+    this.cacheSize_ = cacheSize;
+
     this.setPreload(options.preload !== undefined ? options.preload : 0);
     this.setUseInterimTilesOnError(
       options.useInterimTilesOnError !== undefined
         ? options.useInterimTilesOnError
-        : true
+        : true,
     );
+  }
+
+  /**
+   * @return {number|undefined} The suggested cache size
+   * @protected
+   */
+  getCacheSize() {
+    return this.cacheSize_;
   }
 
   /**
@@ -115,7 +136,7 @@ class BaseTileLayer extends Layer {
   }
 
   /**
-   * Whether we use interim tiles on error.
+   * Deprecated.  Whether we use interim tiles on error.
    * @return {boolean} Use interim tiles on error.
    * @observable
    * @api
@@ -127,7 +148,7 @@ class BaseTileLayer extends Layer {
   }
 
   /**
-   * Set whether we use interim tiles on error.
+   * Deprecated.  Set whether we use interim tiles on error.
    * @param {boolean} useInterimTilesOnError Use interim tiles on error.
    * @observable
    * @api
@@ -148,9 +169,10 @@ class BaseTileLayer extends Layer {
    *   console.log(layer.getData(event.pixel));
    * });
    * ```
-   * @param {import("../pixel").Pixel} pixel Pixel.
+   * @param {import("../pixel.js").Pixel} pixel Pixel.
    * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
    * @api
+   * @override
    */
   getData(pixel) {
     return super.getData(pixel);

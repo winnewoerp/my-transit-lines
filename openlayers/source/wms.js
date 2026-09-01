@@ -2,20 +2,26 @@
  * @module ol/source/wms
  */
 
-import {DECIMALS} from './common.js';
-import {appendParams} from '../uri.js';
-import {compareVersions} from '../string.js';
 import {decode} from '../Image.js';
-import {getHeight, getWidth} from '../extent.js';
+import {getForViewAndSize, getHeight, getWidth} from '../extent.js';
+import {floor, round} from '../math.js';
 import {get as getProjection} from '../proj.js';
+import {compareVersions} from '../string.js';
+import {appendParams} from '../uri.js';
 import {getRequestExtent} from './Image.js';
-import {round} from '../math.js';
+import {DECIMALS} from './common.js';
 
 /**
  * Default WMS version.
  * @type {string}
  */
 export const DEFAULT_VERSION = '1.3.0';
+
+/**
+ * @const
+ * @type {import("../size.js").Size}
+ */
+const GETFEATUREINFO_IMAGE_SIZE = [101, 101];
 
 /**
  * @api
@@ -40,21 +46,19 @@ export function getRequestUrl(baseUrl, extent, size, projection, params) {
   params['HEIGHT'] = size[1];
 
   const axisOrientation = projection.getAxisOrientation();
-  let bbox;
   const v13 = compareVersions(params['VERSION'], '1.3') >= 0;
   params[v13 ? 'CRS' : 'SRS'] = projection.getCode();
-  if (v13 && axisOrientation.substr(0, 2) == 'ne') {
-    bbox = [extent[1], extent[0], extent[3], extent[2]];
-  } else {
-    bbox = extent;
-  }
+  const bbox =
+    v13 && axisOrientation.startsWith('ne')
+      ? [extent[1], extent[0], extent[3], extent[2]]
+      : extent;
   params['BBOX'] = bbox.join(',');
 
-  return appendParams(/** @type {string} */ (baseUrl), params);
+  return appendParams(baseUrl, params);
 }
 
 /**
- * @param {import("../extent").Extent} extent Extent.
+ * @param {import("../extent.js").Extent} extent Extent.
  * @param {number} resolution Resolution.
  * @param {number} pixelRatio pixel ratio.
  * @param {import("../proj.js").Projection} projection Projection.
@@ -70,7 +74,7 @@ export function getImageSrc(
   projection,
   url,
   params,
-  serverType
+  serverType,
 ) {
   params = Object.assign({REQUEST: 'GetMap'}, params);
 
@@ -120,9 +124,9 @@ export function getRequestParams(params, request) {
       'VERSION': DEFAULT_VERSION,
       'FORMAT': 'image/png',
       'STYLES': '',
-      'TRANSPARENT': true,
+      'TRANSPARENT': 'TRUE',
     },
-    params
+    params,
   );
 }
 
@@ -131,6 +135,7 @@ export function getRequestParams(params, request) {
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting
  * the image from the remote server.
  * @property {Object<string,*>} [params] WMS request parameters.
@@ -160,10 +165,9 @@ export function createLoader(options) {
   const projection = getProjection(options.projection || 'EPSG:3857');
   const ratio = options.ratio || 1.5;
   const load = options.load || decode;
+  const crossOrigin = options.crossOrigin ?? null;
+  const referrerPolicy = options.referrerPolicy;
 
-  /**
-   * @type {import("../Image.js").Loader}
-   */
   return (extent, resolution, pixelRatio) => {
     extent = getRequestExtent(extent, resolution, pixelRatio, ratio);
     if (pixelRatio != 1 && (!hidpi || options.serverType === undefined)) {
@@ -176,12 +180,108 @@ export function createLoader(options) {
       projection,
       options.url,
       getRequestParams(options.params, 'GetMap'),
-      options.serverType
+      options.serverType,
     );
     const image = new Image();
-    if (options.crossOrigin !== null) {
-      image.crossOrigin = options.crossOrigin;
+    image.crossOrigin = crossOrigin;
+    if (referrerPolicy !== undefined) {
+      image.referrerPolicy = referrerPolicy;
     }
     return load(image, src).then((image) => ({image, extent, pixelRatio}));
   };
+}
+
+/**
+ * Get the GetFeatureInfo URL for the passed coordinate and resolution. Returns `undefined` if the
+ * GetFeatureInfo URL cannot be constructed.
+ * @param {LoaderOptions} options Options passed the `createWMSLoader()` function. In addition to
+ * the params required by the loader, `INFO_FORMAT` should be specified, it defaults to
+ * `application/json`. If `QUERY_LAYERS` is not provided, then the layers specified in the `LAYERS`
+ * parameter will be used.
+ * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
+ * @param {number} resolution Resolution.
+ * @return {string|undefined} GetFeatureInfo URL.
+ * @api
+ */
+export function getFeatureInfoUrl(options, coordinate, resolution) {
+  if (options.url === undefined) {
+    return undefined;
+  }
+
+  const projectionObj = getProjection(options.projection || 'EPSG:3857');
+
+  const extent = getForViewAndSize(
+    coordinate,
+    resolution,
+    0,
+    GETFEATUREINFO_IMAGE_SIZE,
+  );
+
+  const baseParams = {
+    'QUERY_LAYERS': options.params['LAYERS'],
+    'INFO_FORMAT': 'application/json',
+  };
+  Object.assign(
+    baseParams,
+    getRequestParams(options.params, 'GetFeatureInfo'),
+    options.params,
+  );
+
+  const x = floor((coordinate[0] - extent[0]) / resolution, DECIMALS);
+  const y = floor((extent[3] - coordinate[1]) / resolution, DECIMALS);
+  const v13 = compareVersions(baseParams['VERSION'], '1.3') >= 0;
+  baseParams[v13 ? 'I' : 'X'] = x;
+  baseParams[v13 ? 'J' : 'Y'] = y;
+
+  return getRequestUrl(
+    options.url,
+    extent,
+    GETFEATUREINFO_IMAGE_SIZE,
+    projectionObj,
+    baseParams,
+  );
+}
+
+/**
+ * Get the GetLegendGraphic URL, optionally optimized for the passed resolution and possibly
+ * including any passed specific parameters. Returns `undefined` if the GetLegendGraphic URL
+ * cannot be constructed.
+ *
+ * @param {LoaderOptions} options Options passed the `createWMSLoader()` function.
+ * @param {number} [resolution] Resolution. If not provided, `SCALE` will not be calculated and
+ * included in URL.
+ * @return {string|undefined} GetLegendGraphic URL.
+ * @api
+ */
+export function getLegendUrl(options, resolution) {
+  if (options.url === undefined) {
+    return undefined;
+  }
+
+  const baseParams = {
+    'SERVICE': 'WMS',
+    'VERSION': DEFAULT_VERSION,
+    'REQUEST': 'GetLegendGraphic',
+    'FORMAT': 'image/png',
+  };
+
+  if (resolution !== undefined) {
+    const mpu =
+      getProjection(options.projection || 'EPSG:3857').getMetersPerUnit() || 1;
+    const pixelSize = 0.00028;
+    baseParams['SCALE'] = (resolution * mpu) / pixelSize;
+  }
+
+  Object.assign(baseParams, options.params);
+
+  if (options.params !== undefined && baseParams['LAYER'] === undefined) {
+    const layers = baseParams['LAYERS'];
+    const isSingleLayer = !Array.isArray(layers) || layers.length !== 1;
+    if (!isSingleLayer) {
+      return undefined;
+    }
+    baseParams['LAYER'] = layers;
+  }
+
+  return appendParams(options.url, baseParams);
 }

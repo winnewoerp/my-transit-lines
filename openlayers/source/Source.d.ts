@@ -2,7 +2,7 @@ export default Source;
 /**
  * State of the source, one of 'undefined', 'loading', 'ready' or 'error'.
  */
-export type State = 'undefined' | 'loading' | 'ready' | 'error';
+export type State = "undefined" | "loading" | "ready" | "error";
 /**
  * A function that takes a {@link import ("../View.js").ViewStateLayerStateExtent} and returns a string or
  * an array of strings representing source attributions.
@@ -12,9 +12,9 @@ export type Attribution = (arg0: import("../View.js").ViewStateLayerStateExtent)
  * A type that can be used to provide attribution information for data sources.
  *
  * It represents either
- * * a simple string (e.g. `'© Acme Inc.'`)
- * * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
- * * a function that returns a string or array of strings ({@link module :ol/source/Source~Attribution})
+ * a simple string (e.g. `'© Acme Inc.'`)
+ * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
+ * a function that returns a string or array of strings ({@link module :ol/source/Source~Attribution})
  */
 export type AttributionLike = string | Array<string> | Attribution;
 export type Options = {
@@ -58,9 +58,9 @@ export type Options = {
  * A type that can be used to provide attribution information for data sources.
  *
  * It represents either
- * * a simple string (e.g. `'© Acme Inc.'`)
- * * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
- * * a function that returns a string or array of strings ({@link module:ol/source/Source~Attribution})
+ * a simple string (e.g. `'© Acme Inc.'`)
+ * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
+ * a function that returns a string or array of strings ({@link module:ol/source/Source~Attribution})
  *
  * @typedef {string|Array<string>|Attribution} AttributionLike
  */
@@ -84,7 +84,9 @@ export type Options = {
  * @abstract
  * @api
  */
-declare class Source extends BaseObject {
+declare class Source extends BaseObject<{
+    [x: string]: any;
+}> {
     /**
      * @param {Options} options Source options.
      */
@@ -106,10 +108,10 @@ declare class Source extends BaseObject {
     private attributionsCollapsible_;
     /**
      * This source is currently loading data. Sources that defer loading to the
-     * map's tile queue never set this to `true`.
-     * @type {boolean}
+     * map's tile queue never set this to a `truthy` value.
+     * @type {boolean|number}
      */
-    loading: boolean;
+    loading: boolean | number;
     /**
      * @private
      * @type {import("./Source.js").State}
@@ -158,10 +160,10 @@ declare class Source extends BaseObject {
      */
     getProjection(): import("../proj/Projection.js").default | null;
     /**
-     * @param {import("../proj/Projection").default} [projection] Projection.
+     * @param {import("../proj/Projection.js").default} [projection] Projection.
      * @return {Array<number>|null} Resolutions.
      */
-    getResolutions(projection?: import("../proj/Projection.js").default | undefined): Array<number> | null;
+    getResolutions(projection?: import("../proj/Projection.js").default): Array<number> | null;
     /**
      * @return {Promise<import("../View.js").ViewOptions>} A promise for view-related properties.
      */

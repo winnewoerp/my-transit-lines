@@ -1,6 +1,6 @@
 export default BaseTileRepresentation;
 export type BaseTileType = import("../Tile.js").default;
-export type TileRepresentationOptions<TileType extends import("../Tile.js").default> = {
+export type TileRepresentationOptions<TileType extends BaseTileType> = {
     /**
      * The tile.
      */
@@ -49,12 +49,12 @@ declare class BaseTileRepresentation<TileType extends import("../Tile.js").defau
      * @type {number}
      * @protected
      */
-    protected gutter_: number;
+    protected gutter: number;
     /**
      * @type {import("../webgl/Helper.js").default}
      * @protected
      */
-    protected helper_: import("../webgl/Helper.js").default;
+    protected helper: import("../webgl/Helper.js").default;
     loaded: boolean;
     ready: boolean;
     /**
@@ -67,6 +67,10 @@ declare class BaseTileRepresentation<TileType extends import("../Tile.js").defau
      */
     protected uploadTile(): void;
     setReady(): void;
+    /**
+     * @param {import("./Helper.js").default} helper The WebGL helper.
+     */
+    setHelper(helper: import("./Helper.js").default): void;
 }
 import EventTarget from '../events/Target.js';
 //# sourceMappingURL=BaseTileRepresentation.d.ts.map

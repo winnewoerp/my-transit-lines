@@ -1,6 +1,6 @@
 export default Tile;
 /**
- * A function that takes an {@link module :ol/Tile~Tile} for the tile and a
+ * A function that takes a {@link module :ol/Tile~Tile} for the tile and a
  * `{string}` for the url as arguments. The default is
  * ```js
  * source.setTileLoadFunction(function(tile, src) {
@@ -37,7 +37,7 @@ export type LoadFunction = (arg0: Tile, arg1: string) => void;
  * {@link module :ol/source/Tile~TileSource} sources use a function of this type to get
  * the url that provides a tile for a given tile coordinate.
  *
- * This function takes an {@link module :ol/tilecoord~TileCoord} for the tile
+ * This function takes a {@link module :ol/tilecoord~TileCoord} for the tile
  * coordinate, a `{number}` representing the pixel ratio and a
  * {@link module :ol/proj/Projection~Projection} for the projection  as arguments
  * and returns a `{string}` representing the tile URL, or undefined if no tile
@@ -57,7 +57,7 @@ export type Options = {
     interpolate?: boolean | undefined;
 };
 /**
- * A function that takes an {@link module:ol/Tile~Tile} for the tile and a
+ * A function that takes a {@link module:ol/Tile~Tile} for the tile and a
  * `{string}` for the url as arguments. The default is
  * ```js
  * source.setTileLoadFunction(function(tile, src) {
@@ -96,7 +96,7 @@ export type Options = {
  * {@link module:ol/source/Tile~TileSource} sources use a function of this type to get
  * the url that provides a tile for a given tile coordinate.
  *
- * This function takes an {@link module:ol/tilecoord~TileCoord} for the tile
+ * This function takes a {@link module:ol/tilecoord~TileCoord} for the tile
  * coordinate, a `{number}` representing the pixel ratio and a
  * {@link module:ol/proj/Projection~Projection} for the projection  as arguments
  * and returns a `{string}` representing the tile URL, or undefined if no tile
@@ -126,7 +126,7 @@ declare class Tile extends EventTarget {
      * @param {import("./TileState.js").default} state State.
      * @param {Options} [options] Tile options.
      */
-    constructor(tileCoord: import("./tilecoord.js").TileCoord, state: any, options?: Options | undefined);
+    constructor(tileCoord: import("./tilecoord.js").TileCoord, state: any, options?: Options);
     /**
      * @type {import("./tilecoord.js").TileCoord}
      */
@@ -137,32 +137,24 @@ declare class Tile extends EventTarget {
      */
     protected state: any;
     /**
-     * An "interim" tile for this tile. The interim tile may be used while this
-     * one is loading, for "smooth" transitions when changing params/dimensions
-     * on the source.
-     * @type {Tile}
-     */
-    interimTile: Tile;
-    /**
-     * A key assigned to the tile. This is used by the tile source to determine
-     * if this tile can effectively be used, or if a new tile should be created
-     * and this one be used as an interim tile for this new tile.
+     * A key assigned to the tile. This is used in conjunction with a source key
+     * to determine if a cached version of this tile may be used by the renderer.
      * @type {string}
      */
     key: string;
     /**
      * The duration for the opacity transition.
+     * @private
      * @type {number}
      */
-    transition_: number;
+    private transition_;
     /**
      * Lookup of start times for rendering transitions.  If the start time is
      * equal to -1, the transition is complete.
+     * @private
      * @type {Object<string, number>}
      */
-    transitionStarts_: {
-        [x: string]: number;
-    };
+    private transitionStarts_;
     /**
      * @type {boolean}
      */
@@ -179,18 +171,6 @@ declare class Tile extends EventTarget {
      * @return {string} Key.
      */
     getKey(): string;
-    /**
-     * Get the interim tile most suitable for rendering using the chain of interim
-     * tiles. This corresponds to the  most recent tile that has been loaded, if no
-     * such tile exists, the original tile is returned.
-     * @return {!Tile} Best tile for rendering.
-     */
-    getInterimTile(): Tile;
-    /**
-     * Goes through the chain of interim tiles and discards sections of the chain
-     * that are no longer relevant.
-     */
-    refreshInterimChain(): void;
     /**
      * Get the tile coordinate for this tile.
      * @return {import("./tilecoord.js").TileCoord} The tile coordinate.

@@ -81,6 +81,7 @@ function mtl_user_settings_output( $atts ) {
 	}
 
 	global $user_login;
+	$theme = get_user_meta( get_current_user_id(), 'theme', true );
 
 	return $submit_message.
 	'<form id="mtl-user-settings-form" method="post" action="">
@@ -88,7 +89,7 @@ function mtl_user_settings_output( $atts ) {
 		<h2>'.
 			__('Profile settings','my-transit-lines').
 		'</h2>
-		<table class="form-table" role="presentation"><tbody>
+		<table id="profile-table" class="form-table" role="presentation"><tbody>
 			<tr>
 				<th scope="row">'.
 					__('Profile name','my-transit-lines').
@@ -119,7 +120,7 @@ function mtl_user_settings_output( $atts ) {
 		<h2>'.
 			__('Contact settings','my-transit-lines').
 		'</h2>
-		<table class="form-table" role="presentation"><tbody>
+		<table id="contact-table" class="form-table" role="presentation"><tbody>
 			<tr>
 				<th scope="row">'.
 					__('Contact button','my-transit-lines').
@@ -133,6 +134,57 @@ function mtl_user_settings_output( $atts ) {
 					<small>'.
 						esc_html__('This enables a contact button within your proposals linked to a contact form where interested people can contact you. On submit, an email with the form data is being sent to you (and in copy to the admin team). Your email address is not visible to the respective person until you reply to her/him.','my-transit-lines').
 					'</small>
+				</td>
+			</tr>
+		</tbody></table>
+		<h2>'.
+			__('Notification settings','my-transit-lines').
+		'</h2>
+		<table id="notification-table" class="form-table" role="presentation"><tbody>
+			<tr>
+				<th scope="row">'.
+					__('Forum notifications','my-transit-lines').
+				'</th>
+				<td>
+					<p>
+						<a href="'.get_permalink(pll_get_post(get_option('mtl-option-name')['mtl-forum-page'])).'subscriptions/">'.
+							__('You can change forum notifications on their own page', 'my-transit-lines').
+						'</a>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">'.
+					__('Comment notifications','my-transit-lines').
+				'</th>
+				<td>
+					<p>
+						<a href="'.get_option('subscribe_reloaded_manager_page').'">'.
+							__('You can change comment notifications on their own page', 'my-transit-lines').
+						'</a>
+					</p>
+				</td>
+			</tr>
+		</tbody></table>
+		<h2>'.
+			__('Appearance settings','my-transit-lines').
+		'</h2>
+		<table id="appearance-table" class="form-table" role="presentation"><tbody>
+			<tr>
+				<th scope="row">'.
+					__('Theme','my-transit-lines').
+				'</th>
+				<td>
+					<p>
+						<input type="radio" id="system-theme" name="theme" value="system"'.($theme == 'system' || $theme == '' ? 'checked' : '').'>
+						<label for="system-theme">'.__('System', 'my-transit-lines').'</label>
+						
+						<input type="radio" id="light-theme" name="theme" value="light"'.($theme == 'light' ? 'checked' : '').'>
+						<label for="light-theme">'.__('Light', 'my-transit-lines').'</label>
+						
+						<input type="radio" id="dark-theme" name="theme" value="dark"'.($theme == 'dark' ? 'checked' : '').'>
+						<label for="dark-theme">'.__('Dark', 'my-transit-lines').'</label>
+					</p>
 				</td>
 			</tr>
 		</tbody></table>
@@ -151,4 +203,5 @@ add_shortcode( 'mtl-user-settings', 'mtl_user_settings_output' );
  */
 function mtl_user_settings_post( $atts ) {
 	update_user_meta( get_current_user_id(), 'enable-contact-button', isset( $_POST['enable-contact-button'] ) );
+	update_user_meta( get_current_user_id(), 'theme', $_POST['theme'] ?? 'system' );
 }

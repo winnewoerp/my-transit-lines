@@ -1,11 +1,11 @@
 /**
  * @module ol/interaction/MouseWheelZoom
  */
+import {listen, unlistenByKey} from '../events.js';
 import EventType from '../events/EventType.js';
-import Interaction, {zoomByDelta} from './Interaction.js';
-import {DEVICE_PIXEL_RATIO, FIREFOX} from '../has.js';
 import {all, always, focusWithTabindex} from '../events/condition.js';
 import {clamp} from '../math.js';
+import Interaction, {zoomByDelta} from './Interaction.js';
 
 /**
  * @typedef {'trackpad' | 'wheel'} Mode
@@ -14,7 +14,7 @@ import {clamp} from '../math.js';
 /**
  * @typedef {Object} Options
  * @property {import("../events/condition.js").Condition} [condition] A function that
- * takes an {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
+ * takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
  * boolean to indicate whether that event should be handled. Default is
  * {@link module:ol/events/condition.always}.
  * @property {boolean} [onFocusOnly=false] When the map's target has a `tabindex` attribute set,
@@ -31,6 +31,23 @@ import {clamp} from '../math.js';
  */
 
 /**
+ * Mutliplier for the DOM_DELTA_LINE delta value.
+ * @type {number}
+ */
+const DELTA_LINE_MULTIPLIER = 40;
+
+/**
+ * Mutliplier for the DOM_DELTA_PAGE delta value.
+ * @type {number}
+ */
+const DELTA_PAGE_MULTIPLIER = 300;
+
+/**
+ * Mutliplier for the delta value when using pinch-to-zoom
+ * @type {number}
+ */
+const DELTA_TRACKPAD_PINCH_TO_ZOOM_MULTIPLIER = 3; // 5 = google maps. 3 = apple maps, MapLibre.
+/**
  * @classdesc
  * Allows the user to zoom the map by scrolling the mouse wheel.
  * @api
@@ -43,7 +60,7 @@ class MouseWheelZoom extends Interaction {
     options = options ? options : {};
 
     super(
-      /** @type {import("./Interaction.js").InteractionOptions} */ (options)
+      /** @type {import("./Interaction.js").InteractionOptions} */ (options),
     );
 
     /**
@@ -104,7 +121,7 @@ class MouseWheelZoom extends Interaction {
 
     /**
      * @private
-     * @type {?import("../coordinate.js").Coordinate}
+     * @type {?import("../pixel.js").Pixel}
      */
     this.lastAnchor_ = null;
 
@@ -146,6 +163,46 @@ class MouseWheelZoom extends Interaction {
      * @type {number}
      */
     this.deltaPerZoom_ = 300;
+
+    /**
+     * Tracks whether the Ctrl key is physically held down (as opposed to the
+     * browser synthesizing ctrlKey=true for pinch-to-zoom trackpad gestures).
+     * @private
+     * @type {boolean}
+     */
+    this.ctrlKeyPressed_ = false;
+
+    /**
+     * @private
+     * @type {Array<import('../events.js').EventsKey>}
+     */
+    this.ctrlKeyListenerKeys_ = [];
+  }
+
+  /**
+   * @param {import('../Map.js').default|null} map Map.
+   * @override
+   */
+  setMap(map) {
+    this.ctrlKeyListenerKeys_.forEach(unlistenByKey);
+    this.ctrlKeyListenerKeys_.length = 0;
+    this.ctrlKeyPressed_ = false;
+    super.setMap(map);
+    if (map) {
+      const doc = map.getOwnerDocument();
+      this.ctrlKeyListenerKeys_.push(
+        listen(doc, 'keydown', (/** @type {KeyboardEvent} */ e) => {
+          if (e.key === 'Control') {
+            this.ctrlKeyPressed_ = true;
+          }
+        }),
+        listen(doc, 'keyup', (/** @type {KeyboardEvent} */ e) => {
+          if (e.key === 'Control') {
+            this.ctrlKeyPressed_ = false;
+          }
+        }),
+      );
+    }
   }
 
   /**
@@ -158,10 +215,13 @@ class MouseWheelZoom extends Interaction {
       return;
     }
     const view = map.getView();
+    const direction = this.lastDelta_ ? (this.lastDelta_ > 0 ? 1 : -1) : 0;
     view.endInteraction(
-      undefined,
-      this.lastDelta_ ? (this.lastDelta_ > 0 ? 1 : -1) : 0,
-      this.lastAnchor_
+      this.constrainResolution_ || view.getConstrainResolution()
+        ? 100
+        : undefined,
+      direction,
+      this.lastAnchor_ ? map.getCoordinateFromPixel(this.lastAnchor_) : null,
     );
   }
 
@@ -170,6 +230,7 @@ class MouseWheelZoom extends Interaction {
    * zooms the map.
    * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
    * @return {boolean} `false` to stop event propagation.
+   * @override
    */
   handleEvent(mapBrowserEvent) {
     if (!this.condition_(mapBrowserEvent)) {
@@ -186,21 +247,28 @@ class MouseWheelZoom extends Interaction {
     );
     wheelEvent.preventDefault();
 
+    const isPinchToZoom = wheelEvent.ctrlKey && !this.ctrlKeyPressed_;
+    if (!wheelEvent.ctrlKey) {
+      this.ctrlKeyPressed_ = false;
+    }
+
     if (this.useAnchor_) {
-      this.lastAnchor_ = mapBrowserEvent.coordinate;
+      this.lastAnchor_ = mapBrowserEvent.pixel;
     }
 
     // Delta normalisation inspired by
     // https://github.com/mapbox/mapbox-gl-js/blob/001c7b9/js/ui/handler/scroll_zoom.js
-    let delta;
-    if (mapBrowserEvent.type == EventType.WHEEL) {
-      delta = wheelEvent.deltaY;
-      if (FIREFOX && wheelEvent.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-        delta /= DEVICE_PIXEL_RATIO;
-      }
-      if (wheelEvent.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-        delta *= 40;
-      }
+    let delta = wheelEvent.deltaY;
+
+    switch (wheelEvent.deltaMode) {
+      case WheelEvent.DOM_DELTA_LINE:
+        delta *= DELTA_LINE_MULTIPLIER;
+        break;
+      case WheelEvent.DOM_DELTA_PAGE:
+        delta *= DELTA_PAGE_MULTIPLIER;
+        break;
+      default:
+      // pass
     }
 
     if (delta === 0) {
@@ -219,10 +287,7 @@ class MouseWheelZoom extends Interaction {
     }
 
     const view = map.getView();
-    if (
-      this.mode_ === 'trackpad' &&
-      !(view.getConstrainResolution() || this.constrainResolution_)
-    ) {
+    if (this.mode_ === 'trackpad') {
       if (this.trackpadTimeoutId_) {
         clearTimeout(this.trackpadTimeoutId_);
       } else {
@@ -233,9 +298,15 @@ class MouseWheelZoom extends Interaction {
       }
       this.trackpadTimeoutId_ = setTimeout(
         this.endInteraction_.bind(this),
-        this.timeout_
+        this.timeout_,
       );
-      view.adjustZoom(-delta / this.deltaPerZoom_, this.lastAnchor_);
+      if (isPinchToZoom) {
+        delta = delta * DELTA_TRACKPAD_PINCH_TO_ZOOM_MULTIPLIER;
+      }
+      view.adjustZoom(
+        -delta / this.deltaPerZoom_,
+        this.lastAnchor_ ? map.getCoordinateFromPixel(this.lastAnchor_) : null,
+      );
       this.startTime_ = now;
       return false;
     }
@@ -247,7 +318,7 @@ class MouseWheelZoom extends Interaction {
     clearTimeout(this.timeoutId_);
     this.timeoutId_ = setTimeout(
       this.handleWheelZoom_.bind(this, map),
-      timeLeft
+      timeLeft,
     );
 
     return false;
@@ -266,13 +337,18 @@ class MouseWheelZoom extends Interaction {
       -clamp(
         this.totalDelta_,
         -this.maxDelta_ * this.deltaPerZoom_,
-        this.maxDelta_ * this.deltaPerZoom_
+        this.maxDelta_ * this.deltaPerZoom_,
       ) / this.deltaPerZoom_;
     if (view.getConstrainResolution() || this.constrainResolution_) {
       // view has a zoom constraint, zoom by 1
       delta = delta ? (delta > 0 ? 1 : -1) : 0;
     }
-    zoomByDelta(view, delta, this.lastAnchor_, this.duration_);
+    zoomByDelta(
+      view,
+      delta,
+      this.lastAnchor_ ? map.getCoordinateFromPixel(this.lastAnchor_) : null,
+      this.duration_,
+    );
 
     this.mode_ = undefined;
     this.totalDelta_ = 0;

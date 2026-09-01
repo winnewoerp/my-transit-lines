@@ -13,13 +13,15 @@ export type FeatureLike = Feature | import("./render/Feature.js").default;
 /**
  * *
  */
-export type FeatureOnSignature<Return> = import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> & import("./Observable").OnSignature<import("./ObjectEventType").Types | 'change:geometry', import("./Object").ObjectEvent, Return> & import("./Observable").CombinedOnSignature<import("./Observable").EventTypes | import("./ObjectEventType").Types | 'change:geometry', Return>;
+export type FeatureOnSignature<Return> = import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> & import("./Observable.js").OnSignature<import("./ObjectEventType.js").Types | "change:geometry", import("./Object.js").ObjectEvent, Return> & import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes | import("./ObjectEventType.js").Types | "change:geometry", Return>;
 /**
  * *
  */
-export type ObjectWithGeometry<Geometry> = {
+export type ObjectWithGeometry<Geometry extends import("./geom/Geometry.js").default = import("./geom/Geometry.js").default, Properties extends {
     [x: string]: any;
-} & {
+} = {
+    [x: string]: any;
+}> = Properties & {
     geometry?: Geometry;
 };
 /**
@@ -30,14 +32,15 @@ export type ObjectWithGeometry<Geometry> = {
  */
 /***
  * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *   import("./Observable").OnSignature<import("./ObjectEventType").Types|'change:geometry', import("./Object").ObjectEvent, Return> &
- *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|import("./ObjectEventType").Types
+ * @typedef {import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> &
+ *   import("./Observable.js").OnSignature<import("./ObjectEventType.js").Types|'change:geometry', import("./Object.js").ObjectEvent, Return> &
+ *   import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes|import("./ObjectEventType.js").Types
  *     |'change:geometry', Return>} FeatureOnSignature
  */
 /***
- * @template Geometry
- * @typedef {Object<string, *> & { geometry?: Geometry }} ObjectWithGeometry
+ * @template {import("./geom/Geometry.js").default} [Geometry=import("./geom/Geometry.js").default]
+ * @template {Object<string, *>} [Properties=Object<string, *>]
+ * @typedef {Properties & { geometry?: Geometry }} ObjectWithGeometry
  */
 /**
  * @classdesc
@@ -83,23 +86,29 @@ export type ObjectWithGeometry<Geometry> = {
  *
  * @api
  * @template {import("./geom/Geometry.js").default} [Geometry=import("./geom/Geometry.js").default]
+ * @template {Object<string, *>} [Properties=Object<string, *>]
+ * @extends {BaseObject<NoInfer<Properties>>}
  */
-declare class Feature<Geometry extends import("./geom/Geometry.js").default = import("./geom/Geometry.js").default> extends BaseObject {
+declare class Feature<Geometry extends import("./geom/Geometry.js").default = import("./geom/Geometry.js").default, Properties extends {
+    [x: string]: any;
+} = {
+    [x: string]: any;
+}> extends BaseObject<NoInfer<Properties>> {
     /**
-     * @param {Geometry|ObjectWithGeometry<Geometry>} [geometryOrProperties]
+     * @param {Geometry|ObjectWithGeometry<Geometry, NoInfer<Properties>>} [geometryOrProperties]
      *     You may pass a Geometry object directly, or an object literal containing
      *     properties. If you pass an object literal, you may include a Geometry
      *     associated with a `geometry` key.
      */
-    constructor(geometryOrProperties?: Geometry | ObjectWithGeometry<Geometry> | undefined);
+    constructor(geometryOrProperties?: Geometry | ObjectWithGeometry<Geometry, NoInfer<Properties>>);
     /***
-     * @type {FeatureOnSignature<import("./events").EventsKey>}
+     * @type {FeatureOnSignature<import("./events.js").EventsKey>}
      */
-    on: FeatureOnSignature<import("./events").EventsKey>;
+    on: FeatureOnSignature<import("./events.js").EventsKey>;
     /***
-     * @type {FeatureOnSignature<import("./events").EventsKey>}
+     * @type {FeatureOnSignature<import("./events.js").EventsKey>}
      */
-    once: FeatureOnSignature<import("./events").EventsKey>;
+    once: FeatureOnSignature<import("./events.js").EventsKey>;
     /***
      * @type {FeatureOnSignature<void>}
      */
@@ -201,7 +210,7 @@ declare class Feature<Geometry extends import("./geom/Geometry.js").default = im
      * @api
      * @fires module:ol/events/Event~BaseEvent#event:change
      */
-    setStyle(style?: import("./style/Style.js").StyleLike | undefined): void;
+    setStyle(style?: import("./style/Style.js").StyleLike): void;
     /**
      * Set the feature id.  The feature id is considered stable and may be used when
      * requesting features or comparing identifiers returned from a remote source.

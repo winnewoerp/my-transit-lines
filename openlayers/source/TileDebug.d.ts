@@ -19,10 +19,20 @@ export type Options = {
      */
     zDirection?: number | import("../array.js").NearestDirectionFunction | undefined;
     /**
+     * Tile source.
+     * This allows `projection`, `tileGrid`, `wrapX` and `zDirection` to be copied from another source.
+     * If both `source` and individual options are specified the individual options will have precedence.
+     */
+    source?: import("./Tile.js").default<import("../Tile.js").default> | undefined;
+    /**
      * Template for labeling the tiles.
      * Should include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
      */
     template?: string | undefined;
+    /**
+     * CSS color to fill text and stroke grid lines of each tile.
+     */
+    color?: string | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -33,8 +43,12 @@ export type Options = {
  * Set to `1` when debugging `VectorTile` sources with a default configuration.
  * Choose whether to use tiles with a higher or lower zoom level when between integer
  * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
+ * @property {import("./Tile.js").default} [source] Tile source.
+ * This allows `projection`, `tileGrid`, `wrapX` and `zDirection` to be copied from another source.
+ * If both `source` and individual options are specified the individual options will have precedence.
  * @property {string} [template='z:{z} x:{x} y:{y}'] Template for labeling the tiles.
  * Should include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
+ * @property {string} [color='grey'] CSS color to fill text and stroke grid lines of each tile.
  */
 /**
  * @classdesc
@@ -43,11 +57,11 @@ export type Options = {
  * each tile. See examples/canvas-tiles for an example.
  * @api
  */
-declare class TileDebug extends XYZ {
+declare class TileDebug extends ImageTile {
     /**
      * @param {Options} [options] Debug tile options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
 }
-import XYZ from './XYZ.js';
+import ImageTile from './ImageTile.js';
 //# sourceMappingURL=TileDebug.d.ts.map

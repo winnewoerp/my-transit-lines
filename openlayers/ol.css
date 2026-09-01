@@ -113,7 +113,7 @@
 }
 
 .ol-viewport {
-  touch-action: none;
+  touch-action: pan-x pan-y;
 }
 
 .ol-selectable {
@@ -228,6 +228,7 @@
   text-align: right;
   bottom: .5em;
   right: .5em;
+  max-width: calc(100% - 1.3em);
   display: flex;
   flex-flow: row-reverse;
   align-items: center;
@@ -346,4 +347,8 @@
 
 .ol-overviewmap .ol-overviewmap-box:hover {
   cursor: move;
+}
+
+.ol-overviewmap .ol-viewport:hover {
+  cursor: pointer;
 }

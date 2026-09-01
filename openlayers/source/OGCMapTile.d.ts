@@ -25,7 +25,7 @@ export type Options = {
      */
     attributions?: import("./Source.js").AttributionLike | undefined;
     /**
-     * Tile cache size. The default depends on the screen size. Will be ignored if too small.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -34,6 +34,10 @@ export type Options = {
      * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
      */
     crossOrigin?: string | null | undefined;
+    /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
     /**
      * Use interpolated values when resampling.  By default,
      * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
@@ -62,6 +66,11 @@ export type Options = {
      * To disable the opacity transition, pass `transition: 0`.
      */
     transition?: number | undefined;
+    /**
+     * A list of geospatial data sub-resources to include. If not provided, the entire dataset will
+     * be included. This option is not applicable when requesting the tileset for a single collection.
+     */
+    collections?: string[] | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -74,10 +83,11 @@ export type Options = {
  * will be derived from the `crs` of the `tileMatrixSet`.  You can override this by supplying
  * a projection to the constructor.
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
- * @property {number} [cacheSize] Tile cache size. The default depends on the screen size. Will be ignored if too small.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {number} [reprojectionErrorThreshold=0.5] Maximum allowed reprojection error (in pixels).
@@ -91,12 +101,16 @@ export type Options = {
  * @property {boolean} [wrapX=true] Whether to wrap the world horizontally.
  * @property {number} [transition] Duration of the opacity transition for rendering.
  * To disable the opacity transition, pass `transition: 0`.
+ * @property {Array<string>} [collections] A list of geospatial data sub-resources to include. If not provided, the entire dataset will
+ * be included. This option is not applicable when requesting the tileset for a single collection.
  */
 /**
  * @classdesc
  * Layer source for map tiles from an [OGC API - Tiles](https://ogcapi.ogc.org/tiles/) service that provides "map" type tiles.
  * The service must conform to at least the core (http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core)
- * and tileset (http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset) conformance classes.
+ * and tileset (http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset) conformance classes. For supporting the `collections`
+ * option, the service must conform to the collections selection
+ * (http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/collections-selection) conformance class.
  * @api
  */
 declare class OGCMapTile extends TileImage {

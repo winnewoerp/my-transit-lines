@@ -27,13 +27,13 @@ export default BaseObject;
 /**
  * *
  */
-export type ObjectOnSignature<Return> = import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> & import("./Observable").OnSignature<import("./ObjectEventType").Types, ObjectEvent, Return> & import("./Observable").CombinedOnSignature<import("./Observable").EventTypes | import("./ObjectEventType").Types, Return>;
+export type ObjectOnSignature<Return> = import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> & import("./Observable.js").OnSignature<import("./ObjectEventType.js").Types, ObjectEvent, Return> & import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes | import("./ObjectEventType.js").Types, Return>;
 import Event from './events/Event.js';
 /***
  * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *    import("./Observable").OnSignature<import("./ObjectEventType").Types, ObjectEvent, Return> &
- *    import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|import("./ObjectEventType").Types, Return>} ObjectOnSignature
+ * @typedef {import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> &
+ *    import("./Observable.js").OnSignature<import("./ObjectEventType.js").Types, ObjectEvent, Return> &
+ *    import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes|import("./ObjectEventType.js").Types, Return>} ObjectOnSignature
  */
 /**
  * @classdesc
@@ -76,30 +76,33 @@ import Event from './events/Event.js';
  * object.unset('foo').
  *
  * @fires ObjectEvent
+ * @template {Object<string, *>} [Properties=Object<string, *>]
  * @api
  */
-declare class BaseObject extends Observable {
+declare class BaseObject<Properties extends {
+    [x: string]: any;
+} = {
+    [x: string]: any;
+}> extends Observable {
     /**
-     * @param {Object<string, *>} [values] An object with key-value pairs.
+     * @param {NoInfer<Properties>} [values] An object with key-value pairs.
      */
-    constructor(values?: {
-        [x: string]: any;
-    } | undefined);
+    constructor(values?: NoInfer<Properties>);
     /***
-     * @type {ObjectOnSignature<import("./events").EventsKey>}
+     * @type {ObjectOnSignature<import("./events.js").EventsKey>}
      */
-    on: ObjectOnSignature<import("./events").EventsKey>;
+    on: ObjectOnSignature<import("./events.js").EventsKey>;
     /***
-     * @type {ObjectOnSignature<import("./events").EventsKey>}
+     * @type {ObjectOnSignature<import("./events.js").EventsKey>}
      */
-    once: ObjectOnSignature<import("./events").EventsKey>;
+    once: ObjectOnSignature<import("./events.js").EventsKey>;
     /***
      * @type {ObjectOnSignature<void>}
      */
     un: ObjectOnSignature<void>;
     /**
      * @private
-     * @type {Object<string, *>}
+     * @type {Partial<NoInfer<Properties>>|null}
      */
     private values_;
     /**
@@ -117,19 +120,15 @@ declare class BaseObject extends Observable {
     getKeys(): Array<string>;
     /**
      * Get an object of all property names and values.
-     * @return {Object<string, *>} Object.
+     * @return {NoInfer<Properties>} Object.
      * @api
      */
-    getProperties(): {
-        [x: string]: any;
-    };
+    getProperties(): NoInfer<Properties>;
     /**
      * Get an object of all property names and values.
-     * @return {Object<string, *>?} Object.
+     * @return {Partial<NoInfer<Properties>>?} Object.
      */
-    getPropertiesInternal(): {
-        [x: string]: any;
-    } | null;
+    getPropertiesInternal(): Partial<NoInfer<Properties>> | null;
     /**
      * @return {boolean} The object has properties.
      */
@@ -156,17 +155,15 @@ declare class BaseObject extends Observable {
      * @param {boolean} [silent] Update without triggering an event.
      * @api
      */
-    set(key: string, value: any, silent?: boolean | undefined): void;
+    set(key: string, value: any, silent?: boolean): void;
     /**
      * Sets a collection of key-value pairs.  Note that this changes any existing
      * properties and adds new ones (it does not remove any existing properties).
-     * @param {Object<string, *>} values Values.
+     * @param {Partial<NoInfer<Properties>>} values Values.
      * @param {boolean} [silent] Update without triggering an event.
      * @api
      */
-    setProperties(values: {
-        [x: string]: any;
-    }, silent?: boolean | undefined): void;
+    setProperties(values: Partial<NoInfer<Properties>>, silent?: boolean): void;
     /**
      * Apply any properties from another object without triggering events.
      * @param {BaseObject} source The source object.
@@ -179,7 +176,7 @@ declare class BaseObject extends Observable {
      * @param {boolean} [silent] Unset without triggering an event.
      * @api
      */
-    unset(key: string, silent?: boolean | undefined): void;
+    unset(key: string, silent?: boolean): void;
 }
 import Observable from './Observable.js';
 //# sourceMappingURL=Object.d.ts.map

@@ -24,27 +24,31 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
  * @param {Boolean} step The step size to use instead of 1000, for example for squared or cubed units
  * @returns A string containing the number and its unit prefix separated by a space 
  */
-function formatNumber(number, word_prefix, step = 1E3) {
+function formatMeters(number, step = 1e3) {
+	if (number >= Math.pow(step, 4)) {
+		return (number / Math.pow(step, 4)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' '+objectL10n.billion+' k';
+	}
 	if (number >= Math.pow(step, 3)) {
-		return (number / Math.pow(step, 3)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + (word_prefix ? ' '+objectL10n.billion+' ' : ' G');
+		return (number / Math.pow(step, 3)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' '+objectL10n.million+' k';
 	}
 	if (number >= Math.pow(step, 2)) {
-		return (number / Math.pow(step, 2)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + (word_prefix ? ' '+objectL10n.million+' ' : ' M');
+		return (number / Math.pow(step, 2)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' '+objectL10n.thousand+' k';
 	}
 	if (number >= Math.pow(step, 1)) {
-		return (number / Math.pow(step, 1)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + (word_prefix ? ' '+objectL10n.thousand+' ' : ' k');
+		return (number / Math.pow(step, 1)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + 'k';
 	}
-	if (number == 0) {
-		return '0 ';
+	return number.toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' ';
+}
+
+function formatNumber(number, step = 1e3) {
+	if (number >= Math.pow(step, 3)) {
+		return (number / Math.pow(step, 3)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' '+objectL10n.billion+' ';
 	}
-	if (number < Math.pow(step, -2)) {
-		return (number / Math.pow(step, -2)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' n';
+	if (number >= Math.pow(step, 2)) {
+		return (number / Math.pow(step, 2)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' '+objectL10n.million+' ';
 	}
-	if (number < Math.pow(step, -1)) {
-		return (number / Math.pow(step, -1)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' µ';
-	}
-	if (number < Math.pow(step, 0)) {
-		return (number / Math.pow(step, 0)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' m';
+	if (number >= Math.pow(step, 1)) {
+		return (number / Math.pow(step, 1)).toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' '+objectL10n.thousand+' ';
 	}
 	return number.toPrecision(3).replace('.', objectL10n.decimalSeparator) + ' ';
 }

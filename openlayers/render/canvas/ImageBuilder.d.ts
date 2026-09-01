@@ -67,7 +67,7 @@ declare class CanvasImageBuilder extends CanvasBuilder {
     private width_;
     /**
      * @private
-     * @type {"declutter"|"obstacle"|"none"|undefined}
+     * @type {import('../../style/Style.js').DeclutterMode}
      */
     private declutterMode_;
     /**
@@ -79,8 +79,9 @@ declare class CanvasImageBuilder extends CanvasBuilder {
     /**
      * @param {import("../../style/Image.js").default} imageStyle Image style.
      * @param {Object} [sharedData] Shared data.
+     * @override
      */
-    setImageStyle(imageStyle: import("../../style/Image.js").default, sharedData?: any): void;
+    override setImageStyle(imageStyle: import("../../style/Image.js").default, sharedData?: any): void;
 }
 import CanvasBuilder from './Builder.js';
 //# sourceMappingURL=ImageBuilder.d.ts.map

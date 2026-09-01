@@ -2,12 +2,12 @@
  * @module ol/source/WMTS
  */
 
-import TileImage from './TileImage.js';
-import {appendParams} from '../uri.js';
 import {containsExtent} from '../extent.js';
-import {createFromCapabilitiesMatrixSet} from '../tilegrid/WMTS.js';
-import {createFromTileUrlFunctions, expandUrl} from '../tileurlfunction.js';
 import {equivalent, get as getProjection, transformExtent} from '../proj.js';
+import {createFromCapabilitiesMatrixSet} from '../tilegrid/WMTS.js';
+import {createFromTileUrlFunctions} from '../tileurlfunction.js';
+import {appendParams, expandUrl} from '../uri.js';
+import TileImage from './TileImage.js';
 
 /**
  * Request encoding. One of 'KVP', 'REST'.
@@ -18,10 +18,11 @@ import {equivalent, get as getProjection, transformExtent} from '../proj.js';
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {import("../tilegrid/WMTS.js").default} tileGrid Tile grid.
@@ -91,6 +92,7 @@ class WMTS extends TileImage {
       attributionsCollapsible: options.attributionsCollapsible,
       cacheSize: options.cacheSize,
       crossOrigin: options.crossOrigin,
+      referrerPolicy: options.referrerPolicy,
       interpolate: options.interpolate,
       projection: options.projection,
       reprojectionErrorThreshold: options.reprojectionErrorThreshold,
@@ -154,7 +156,7 @@ class WMTS extends TileImage {
 
     if (urls && urls.length > 0) {
       this.tileUrlFunction = createFromTileUrlFunctions(
-        urls.map(this.createFromWMTSTemplate.bind(this))
+        urls.map(this.createFromWMTSTemplate.bind(this)),
       );
     }
   }
@@ -163,15 +165,16 @@ class WMTS extends TileImage {
    * Set the URLs to use for requests.
    * URLs may contain OGC conform URL Template Variables: {TileMatrix}, {TileRow}, {TileCol}.
    * @param {Array<string>} urls URLs.
+   * @override
    */
   setUrls(urls) {
     this.urls = urls;
     const key = urls.join('\n');
     this.setTileUrlFunction(
       createFromTileUrlFunctions(
-        urls.map(this.createFromWMTSTemplate.bind(this))
+        urls.map(this.createFromWMTSTemplate.bind(this)),
       ),
-      key
+      key,
     );
   }
 
@@ -324,7 +327,7 @@ class WMTS extends TileImage {
           url = appendParams(url, localContext);
         } else {
           url = url.replace(/\{(\w+?)\}/g, function (m, p) {
-            return localContext[p];
+            return encodeURIComponent(localContext[p]);
           });
         }
         return url;
@@ -361,7 +364,7 @@ export default WMTS;
  */
 export function optionsFromCapabilities(wmtsCap, config) {
   const layers = wmtsCap['Contents']['Layer'];
-  const l = layers.find(function (elt) {
+  const l = layers?.find(function (elt) {
     return elt['Identifier'] == config['layer'];
   });
   if (!l) {
@@ -448,7 +451,7 @@ export function optionsFromCapabilities(wmtsCap, config) {
   }
 
   let wrapX = false;
-  const switchXY = projection.getAxisOrientation().substr(0, 2) == 'ne';
+  const switchXY = projection.getAxisOrientation().startsWith('ne');
 
   let matrix = matrixSetObj.TileMatrix[0];
 
@@ -468,12 +471,18 @@ export function optionsFromCapabilities(wmtsCap, config) {
       (tileMatrixValue) =>
         tileMatrixValue.Identifier === selectedMatrixLimit.TileMatrix ||
         matrixSetObj.Identifier + ':' + tileMatrixValue.Identifier ===
-          selectedMatrixLimit.TileMatrix
+          selectedMatrixLimit.TileMatrix,
     );
     if (m) {
       matrix = m;
     }
   }
+
+  const layerExtent = l['BoundingBox']?.find(
+    (bbox) =>
+      getProjection(bbox.crs) &&
+      equivalent(getProjection(bbox.crs), projection),
+  );
 
   const resolution =
     (matrix.ScaleDenominator * 0.00028) / projection.getMetersPerUnit(); // WMTS 1.0.0: standardized rendering pixel size
@@ -482,7 +491,7 @@ export function optionsFromCapabilities(wmtsCap, config) {
     : matrix.TopLeftCorner;
   const tileSpanX = matrix.TileWidth * resolution;
   const tileSpanY = matrix.TileHeight * resolution;
-  let matrixSetExtent = matrixSetObj['BoundingBox'];
+  let matrixSetExtent = layerExtent?.extent ?? matrixSetObj['BoundingBox'];
   if (matrixSetExtent && switchXY) {
     matrixSetExtent = [
       matrixSetExtent[1],
@@ -514,7 +523,7 @@ export function optionsFromCapabilities(wmtsCap, config) {
       const wgs84MatrixSetExtent = transformExtent(
         matrixSetExtent,
         matrixSetObj['SupportedCRS'],
-        'EPSG:4326'
+        'EPSG:4326',
       );
       // Ignore slight deviation from the correct x limits
       wrapX =
@@ -526,7 +535,7 @@ export function optionsFromCapabilities(wmtsCap, config) {
   const tileGrid = createFromCapabilitiesMatrixSet(
     matrixSetObj,
     extent,
-    matrixLimits
+    matrixLimits,
   );
 
   /** @type {!Array<string>} */

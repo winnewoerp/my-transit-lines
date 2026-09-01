@@ -1,8 +1,8 @@
 /**
  * @module ol/layer/Image
  */
-import BaseImageLayer from './BaseImage.js';
 import CanvasImageLayerRenderer from '../renderer/canvas/ImageLayer.js';
+import BaseImageLayer from './BaseImage.js';
 
 /**
  * @classdesc
@@ -24,6 +24,9 @@ class ImageLayer extends BaseImageLayer {
     super(options);
   }
 
+  /**
+   * @override
+   */
   createRenderer() {
     return new CanvasImageLayerRenderer(this);
   }
@@ -39,9 +42,10 @@ class ImageLayer extends BaseImageLayer {
    *   console.log(layer.getData(event.pixel));
    * });
    * ```
-   * @param {import("../pixel").Pixel} pixel Pixel.
+   * @param {import("../pixel.js").Pixel} pixel Pixel.
    * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
    * @api
+   * @override
    */
   getData(pixel) {
     return super.getData(pixel);

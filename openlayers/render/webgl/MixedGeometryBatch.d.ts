@@ -1,6 +1,5 @@
 export default MixedGeometryBatch;
-export type RenderFeature = import("../../render/Feature").default;
-export type Feature = import("../../Feature").default;
+export type Feature = import("../../Feature.js").default;
 export type GeometryType = import("../../geom/Geometry.js").Type;
 /**
  * Object that holds a reference to a feature as well as the raw coordinates of its various geometries
@@ -26,6 +25,10 @@ export type GeometryBatchItem = {
      * Array of vertices counts in each ring for each geometry; only defined for polygons batches
      */
     ringsVerticesCounts?: number[][] | undefined;
+    /**
+     * The reference in the global batch (used for hit detection)
+     */
+    ref?: number | undefined;
 };
 export type GeometryBatch = PointGeometryBatch | LineStringGeometryBatch | PolygonGeometryBatch;
 /**
@@ -89,10 +92,7 @@ export type PointGeometryBatch = {
     geometriesCount: number;
 };
 /**
- * @typedef {import("../../render/Feature").default} RenderFeature
- */
-/**
- * @typedef {import("../../Feature").default} Feature
+ * @typedef {import("../../Feature.js").default} Feature
  */
 /**
  * @typedef {import("../../geom/Geometry.js").Type} GeometryType
@@ -104,6 +104,7 @@ export type PointGeometryBatch = {
  * @property {number} [verticesCount] Only defined for linestring and polygon batches
  * @property {number} [ringsCount] Only defined for polygon batches
  * @property {Array<Array<number>>} [ringsVerticesCounts] Array of vertices counts in each ring for each geometry; only defined for polygons batches
+ * @property {number} [ref] The reference in the global batch (used for hit detection)
  */
 /**
  * @typedef {PointGeometryBatch|LineStringGeometryBatch|PolygonGeometryBatch} GeometryBatch
@@ -150,6 +151,29 @@ export type PointGeometryBatch = {
  */
 declare class MixedGeometryBatch {
     /**
+     * @private
+     */
+    private globalCounter_;
+    /**
+     * Refs are used as keys for hit detection.
+     * @type {Map<number, Feature|RenderFeature>}
+     * @private
+     */
+    private refToFeature_;
+    /**
+     * Features are split in "entries", which are individual geometries. We use the following map to share a single ref for all those entries.
+     * @type {Map<string, number>}
+     * @private
+     */
+    private uidToRef_;
+    /**
+     * The precision in WebGL shaders is limited.
+     * To keep the refs as small as possible we maintain an array of freed up references.
+     * @type {Array<number>}
+     * @private
+     */
+    private freeGlobalRef_;
+    /**
      * @type {PolygonGeometryBatch}
      */
     polygonBatch: PolygonGeometryBatch;
@@ -163,29 +187,34 @@ declare class MixedGeometryBatch {
     lineStringBatch: LineStringGeometryBatch;
     /**
      * @param {Array<Feature|RenderFeature>} features Array of features to add to the batch
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
      */
-    addFeatures(features: Array<Feature | RenderFeature>): void;
+    addFeatures(features: Array<Feature | RenderFeature>, projectionTransform?: import("../../proj.js").TransformFunction): void;
     /**
      * @param {Feature|RenderFeature} feature Feature to add to the batch
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
      */
-    addFeature(feature: Feature | RenderFeature): void;
+    addFeature(feature: Feature | RenderFeature, projectionTransform?: import("../../proj.js").TransformFunction): void;
     /**
      * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
      * @private
      */
     private clearFeatureEntryInPointBatch_;
     /**
      * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
      * @private
      */
     private clearFeatureEntryInLineStringBatch_;
     /**
      * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
      * @private
      */
     private clearFeatureEntryInPolygonBatch_;
     /**
-     * @param {import("../../geom").Geometry|RenderFeature} geometry Geometry
+     * @param {import("../../geom.js").Geometry|RenderFeature} geometry Geometry
      * @param {Feature|RenderFeature} feature Feature
      * @private
      */
@@ -197,17 +226,48 @@ declare class MixedGeometryBatch {
      * @param {Feature|RenderFeature} feature Feature
      * @param {string} featureUid Feature uid
      * @param {number} stride Stride
+     * @param {import('../../geom/Geometry.js').GeometryLayout} [layout] Layout
      * @private
      */
     private addCoordinates_;
     /**
-     * @param {Feature|RenderFeature} feature Feature
+     * @param {string} featureUid Feature uid
+     * @param {GeometryBatchItem} entry The entry to add
+     * @return {GeometryBatchItem} the added entry
+     * @private
      */
-    changeFeature(feature: Feature | RenderFeature): void;
+    private addRefToEntry_;
+    /**
+     * Return a ref to the pool of available refs.
+     * @param {number} ref the ref to return
+     * @param {string} featureUid the feature uid
+     * @private
+     */
+    private removeRef_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
+     */
+    changeFeature(feature: Feature | RenderFeature, projectionTransform?: import("../../proj.js").TransformFunction): void;
     /**
      * @param {Feature|RenderFeature} feature Feature
      */
     removeFeature(feature: Feature | RenderFeature): void;
     clear(): void;
+    /**
+     * Resolve the feature associated to a ref.
+     * @param {number} ref Hit detected ref
+     * @return {Feature|RenderFeature} feature
+     */
+    getFeatureFromRef(ref: number): Feature | RenderFeature;
+    isEmpty(): boolean;
+    /**
+     * Will return a new instance of this class that only contains the features
+     * for which the provided callback returned true
+     * @param {function((Feature|RenderFeature)): boolean} featureFilter Feature filter callback
+     * @return {MixedGeometryBatch} Filtered geometry batch
+     */
+    filter(featureFilter: (arg0: (Feature | RenderFeature)) => boolean): MixedGeometryBatch;
 }
+import RenderFeature from '../../render/Feature.js';
 //# sourceMappingURL=MixedGeometryBatch.d.ts.map

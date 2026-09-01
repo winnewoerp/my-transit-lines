@@ -1,16 +1,29 @@
 /**
- * @param {import("../geom/Geometry.js").default} geometry Geometry.
+ * @template {import("../geom/Geometry.js").default|RenderFeature} T
+ * @param {T} geometry Geometry.
  * @param {boolean} write Set to true for writing, false for reading.
  * @param {WriteOptions|ReadOptions} [options] Options.
- * @return {import("../geom/Geometry.js").default} Transformed geometry.
+ * @return {T} Transformed geometry.
  */
-export function transformGeometryWithOptions(geometry: import("../geom/Geometry.js").default, write: boolean, options?: ReadOptions | WriteOptions | undefined): import("../geom/Geometry.js").default;
+export function transformGeometryWithOptions<T extends import("../geom/Geometry.js").default | RenderFeature>(geometry: T, write: boolean, options?: WriteOptions | ReadOptions): T;
 /**
  * @param {import("../extent.js").Extent} extent Extent.
  * @param {ReadOptions} [options] Read options.
  * @return {import("../extent.js").Extent} Transformed extent.
  */
-export function transformExtentWithOptions(extent: import("../extent.js").Extent, options?: ReadOptions | undefined): import("../extent.js").Extent;
+export function transformExtentWithOptions(extent: import("../extent.js").Extent, options?: ReadOptions): import("../extent.js").Extent;
+/**
+ * @param {FeatureObject} object Feature object.
+ * @param {WriteOptions|ReadOptions} [options] Options.
+ * @return {RenderFeature|Array<RenderFeature>} Render feature.
+ */
+export function createRenderFeature(object: FeatureObject, options?: WriteOptions | ReadOptions): RenderFeature | Array<RenderFeature>;
+/**
+ * @param {GeometryObject|null} object Geometry object.
+ * @param {WriteOptions|ReadOptions} [options] Options.
+ * @return {import("../geom/Geometry.js").default} Geometry.
+ */
+export function createGeometry(object: GeometryObject | null, options?: WriteOptions | ReadOptions): import("../geom/Geometry.js").default;
 export default FeatureFormat;
 export type ReadOptions = {
     /**
@@ -70,7 +83,52 @@ export type WriteOptions = {
      */
     decimals?: number | undefined;
 };
-export type Type = 'arraybuffer' | 'json' | 'text' | 'xml';
+export type Type = "arraybuffer" | "json" | "text" | "xml";
+export type SimpleGeometryObject = {
+    /**
+     * Type.
+     */
+    type: import("../geom/Geometry.js").Type;
+    /**
+     * Flat coordinates.
+     */
+    flatCoordinates: Array<number>;
+    /**
+     * Ends or endss.
+     */
+    ends?: number[] | number[][] | undefined;
+    /**
+     * Layout.
+     */
+    layout?: import("../geom/Geometry.js").GeometryLayout | undefined;
+};
+export type GeometryCollectionObject = Array<GeometryObject>;
+export type GeometryObject = SimpleGeometryObject | GeometryCollectionObject;
+export type FeatureObject = {
+    /**
+     * Id.
+     */
+    id?: string | number | undefined;
+    /**
+     * Geometry.
+     */
+    geometry?: GeometryObject | undefined;
+    /**
+     * Properties.
+     */
+    properties?: {
+        [x: string]: any;
+    } | undefined;
+};
+/**
+ * *
+ */
+export type FeatureToFeatureClass<T extends import("../Feature.js").FeatureLike> = T extends RenderFeature ? typeof RenderFeature : typeof Feature;
+/**
+ * *
+ */
+export type FeatureClassToFeature<T extends import("../Feature.js").FeatureClass> = T[keyof T] extends RenderFeature ? RenderFeature : Feature;
+import RenderFeature from '../render/Feature.js';
 /**
  * @typedef {Object} ReadOptions
  * @property {import("../proj.js").ProjectionLike} [dataProjection] Projection of the data we are reading.
@@ -114,6 +172,33 @@ export type Type = 'arraybuffer' | 'json' | 'text' | 'xml';
  * @typedef {'arraybuffer' | 'json' | 'text' | 'xml'} Type
  */
 /**
+ * @typedef {Object} SimpleGeometryObject
+ * @property {import('../geom/Geometry.js').Type} type Type.
+ * @property {Array<number>} flatCoordinates Flat coordinates.
+ * @property {Array<number>|Array<Array<number>>} [ends] Ends or endss.
+ * @property {import('../geom/Geometry.js').GeometryLayout} [layout] Layout.
+ */
+/**
+ * @typedef {Array<GeometryObject>} GeometryCollectionObject
+ */
+/**
+ * @typedef {SimpleGeometryObject|GeometryCollectionObject} GeometryObject
+ */
+/**
+ * @typedef {Object} FeatureObject
+ * @property {string|number} [id] Id.
+ * @property {GeometryObject} [geometry] Geometry.
+ * @property {Object<string, *>} [properties] Properties.
+ */
+/***
+ * @template {import('../Feature.js').FeatureLike} T
+ * @typedef {T extends RenderFeature ? typeof RenderFeature : typeof Feature} FeatureToFeatureClass
+ */
+/***
+ * @template {import("../Feature.js").FeatureClass} T
+ * @typedef {T[keyof T] extends RenderFeature ? RenderFeature : Feature} FeatureClassToFeature
+ */
+/**
  * @classdesc
  * Abstract base class; normally only used for creating subclasses and not
  * instantiated in apps.
@@ -122,10 +207,13 @@ export type Type = 'arraybuffer' | 'json' | 'text' | 'xml';
  * {@link module:ol/Feature~Feature} objects from a variety of commonly used geospatial
  * file formats.  See the documentation for each format for more details.
  *
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("../Feature.js").default]
  * @abstract
  * @api
  */
-declare class FeatureFormat {
+declare class FeatureFormat<FeatureType extends import("../Feature.js").FeatureLike = Feature<import("../geom/Geometry.js").default, {
+    [x: string]: any;
+}>> {
     /**
      * @protected
      * @type {import("../proj/Projection.js").default|undefined}
@@ -136,6 +224,11 @@ declare class FeatureFormat {
      * @type {import("../proj/Projection.js").default|undefined}
      */
     protected defaultFeatureProjection: import("../proj/Projection.js").default | undefined;
+    /**
+     * @protected
+     * @type {FeatureToFeatureClass<FeatureType>}
+     */
+    protected featureClass: FeatureToFeatureClass<FeatureType>;
     /**
      * A list media types supported by the format in descending order of preference.
      * @type {Array<string>}
@@ -148,7 +241,7 @@ declare class FeatureFormat {
      * @return {ReadOptions|undefined} Options.
      * @protected
      */
-    protected getReadOptions(source: Document | Element | any | string, options?: ReadOptions | undefined): ReadOptions | undefined;
+    protected getReadOptions(source: Document | Element | any | string, options?: ReadOptions): ReadOptions | undefined;
     /**
      * Sets the `dataProjection` on the options, if no `dataProjection`
      * is set.
@@ -170,18 +263,18 @@ declare class FeatureFormat {
      * @abstract
      * @param {Document|Element|Object|string} source Source.
      * @param {ReadOptions} [options] Read options.
-     * @return {import("../Feature.js").FeatureLike} Feature.
+     * @return {FeatureType|Array<FeatureType>} Feature.
      */
-    readFeature(source: Document | Element | any | string, options?: ReadOptions | undefined): import("../Feature.js").FeatureLike;
+    readFeature(source: Document | Element | any | string, options?: ReadOptions): FeatureType | Array<FeatureType>;
     /**
      * Read all features from a source.
      *
      * @abstract
      * @param {Document|Element|ArrayBuffer|Object|string} source Source.
      * @param {ReadOptions} [options] Read options.
-     * @return {Array<import("../Feature.js").FeatureLike>} Features.
+     * @return {Array<FeatureType>} Features.
      */
-    readFeatures(source: Document | Element | ArrayBuffer | any | string, options?: ReadOptions | undefined): Array<import("../Feature.js").FeatureLike>;
+    readFeatures(source: Document | Element | ArrayBuffer | any | string, options?: ReadOptions): Array<FeatureType>;
     /**
      * Read a single geometry from a source.
      *
@@ -190,7 +283,7 @@ declare class FeatureFormat {
      * @param {ReadOptions} [options] Read options.
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    readGeometry(source: Document | Element | any | string, options?: ReadOptions | undefined): import("../geom/Geometry.js").default;
+    readGeometry(source: Document | Element | any | string, options?: ReadOptions): import("../geom/Geometry.js").default;
     /**
      * Read the projection from a source.
      *
@@ -203,20 +296,20 @@ declare class FeatureFormat {
      * Encode a feature in this format.
      *
      * @abstract
-     * @param {import("../Feature.js").default} feature Feature.
+     * @param {Feature} feature Feature.
      * @param {WriteOptions} [options] Write options.
      * @return {string|ArrayBuffer} Result.
      */
-    writeFeature(feature: import("../Feature.js").default, options?: WriteOptions | undefined): string | ArrayBuffer;
+    writeFeature(feature: Feature, options?: WriteOptions): string | ArrayBuffer;
     /**
      * Encode an array of features in this format.
      *
      * @abstract
-     * @param {Array<import("../Feature.js").default>} features Features.
+     * @param {Array<Feature>} features Features.
      * @param {WriteOptions} [options] Write options.
      * @return {string|ArrayBuffer} Result.
      */
-    writeFeatures(features: Array<import("../Feature.js").default>, options?: WriteOptions | undefined): string | ArrayBuffer;
+    writeFeatures(features: Array<Feature>, options?: WriteOptions): string | ArrayBuffer;
     /**
      * Write a single geometry in this format.
      *
@@ -225,6 +318,7 @@ declare class FeatureFormat {
      * @param {WriteOptions} [options] Write options.
      * @return {string|ArrayBuffer} Result.
      */
-    writeGeometry(geometry: import("../geom/Geometry.js").default, options?: WriteOptions | undefined): string | ArrayBuffer;
+    writeGeometry(geometry: import("../geom/Geometry.js").default, options?: WriteOptions): string | ArrayBuffer;
 }
+import Feature from '../Feature.js';
 //# sourceMappingURL=Feature.d.ts.map

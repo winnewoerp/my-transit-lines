@@ -20,9 +20,9 @@ import {get as getProjection} from '../proj.js';
  * A type that can be used to provide attribution information for data sources.
  *
  * It represents either
- * * a simple string (e.g. `'© Acme Inc.'`)
- * * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
- * * a function that returns a string or array of strings ({@link module:ol/source/Source~Attribution})
+ * a simple string (e.g. `'© Acme Inc.'`)
+ * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
+ * a function that returns a string or array of strings ({@link module:ol/source/Source~Attribution})
  *
  * @typedef {string|Array<string>|Attribution} AttributionLike
  */
@@ -71,15 +71,12 @@ class Source extends BaseObject {
      * @private
      * @type {boolean}
      */
-    this.attributionsCollapsible_ =
-      options.attributionsCollapsible !== undefined
-        ? options.attributionsCollapsible
-        : true;
+    this.attributionsCollapsible_ = options.attributionsCollapsible ?? true;
 
     /**
      * This source is currently loading data. Sources that defer loading to the
-     * map's tile queue never set this to `true`.
-     * @type {boolean}
+     * map's tile queue never set this to a `truthy` value.
+     * @type {boolean|number}
      */
     this.loading = false;
 
@@ -151,7 +148,7 @@ class Source extends BaseObject {
   }
 
   /**
-   * @param {import("../proj/Projection").default} [projection] Projection.
+   * @param {import("../proj/Projection.js").default} [projection] Projection.
    * @return {Array<number>|null} Resolutions.
    */
   getResolutions(projection) {
@@ -227,19 +224,13 @@ function adaptAttributions(attributionLike) {
   if (!attributionLike) {
     return null;
   }
-  if (Array.isArray(attributionLike)) {
-    return function (frameState) {
-      return attributionLike;
-    };
-  }
-
   if (typeof attributionLike === 'function') {
     return attributionLike;
   }
-
-  return function (frameState) {
-    return [attributionLike];
-  };
+  if (!Array.isArray(attributionLike)) {
+    attributionLike = [attributionLike];
+  }
+  return (frameState) => attributionLike;
 }
 
 export default Source;

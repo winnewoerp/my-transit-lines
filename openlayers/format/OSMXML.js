@@ -3,15 +3,15 @@
  */
 // FIXME add typedef for stack state objects
 import Feature from '../Feature.js';
+import {extend} from '../array.js';
 import LineString from '../geom/LineString.js';
 import Point from '../geom/Point.js';
 import Polygon from '../geom/Polygon.js';
-import XMLFeature from './XMLFeature.js';
-import {extend} from '../array.js';
-import {get as getProjection} from '../proj.js';
 import {isEmpty} from '../obj.js';
+import {get as getProjection} from '../proj.js';
 import {makeStructureNS, pushParseAndPop} from '../xml.js';
 import {transformGeometryWithOptions} from './Feature.js';
+import XMLFeature from './XMLFeature.js';
 
 /**
  * @const
@@ -61,6 +61,7 @@ class OSMXML extends XMLFeature {
    * @param {Element} node Node.
    * @param {import("./Feature.js").ReadOptions} [options] Options.
    * @return {Array<import("../Feature.js").default>} Features.
+   * @override
    */
   readFeaturesFromNode(node, options) {
     options = this.getReadOptions(node, options);
@@ -73,7 +74,7 @@ class OSMXML extends XMLFeature {
         },
         PARSERS,
         node,
-        [options]
+        [options],
       );
       // parse nodes in ways
       for (let j = 0; j < state.ways.length; j++) {
@@ -143,7 +144,7 @@ function readNode(node, objectStack) {
     },
     NODE_PARSERS,
     node,
-    objectStack
+    objectStack,
   );
   if (!isEmpty(values.tags)) {
     const geometry = new Point(coordinates);
@@ -172,7 +173,7 @@ function readWay(node, objectStack) {
     },
     WAY_PARSERS,
     node,
-    objectStack
+    objectStack,
   );
   const state = /** @type {Object} */ (objectStack[objectStack.length - 1]);
   state.ways.push(values);

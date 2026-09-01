@@ -1,13 +1,13 @@
 /**
  * @module ol/style/Icon
  */
-import EventType from '../events/EventType.js';
 import ImageState from '../ImageState.js';
-import ImageStyle from './Image.js';
-import {asArray} from '../color.js';
 import {assert} from '../asserts.js';
-import {get as getIconImage} from './IconImage.js';
+import {asArray} from '../color.js';
+import EventType from '../events/EventType.js';
 import {getUid} from '../util.js';
+import {get as getIconImage} from './IconImage.js';
+import ImageStyle from './Image.js';
 
 /**
  * @typedef {'fraction' | 'pixels'} IconAnchorUnits
@@ -35,7 +35,8 @@ import {getUid} from '../util.js';
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images. Note that you must provide a
  * `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
- * @property {HTMLImageElement|HTMLCanvasElement|ImageBitmap} [img] Image object for the icon.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
+ * @property {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} [img] Image object for the icon.
  * @property {Array<number>} [displacement=[0, 0]] Displacement of the icon in pixels.
  * Positive values will shift the icon right and up.
  * @property {number} [opacity=1] Opacity of the icon.
@@ -51,7 +52,7 @@ import {getUid} from '../util.js';
  * @property {import("../size.js").Size} [size] Icon size in pixels. Used together with `offset` to define the
  * sub-rectangle to use from the original (sprite) image.
  * @property {string} [src] Image source URI.
- * @property {"declutter"|"obstacle"|"none"|undefined} [declutterMode] Declutter mode.
+ * @property {import("./Style.js").DeclutterMode} [declutterMode] Declutter mode.
  */
 
 /**
@@ -157,13 +158,19 @@ class Icon extends ImageStyle {
     this.crossOrigin_ =
       options.crossOrigin !== undefined ? options.crossOrigin : null;
 
+    /**
+     * @private
+     * @type {ReferrerPolicy}
+     */
+    this.referrerPolicy_ = options.referrerPolicy;
+
     const image = options.img !== undefined ? options.img : null;
 
     let cacheKey = options.src;
 
     assert(
       !(cacheKey !== undefined && image),
-      '`image` and `src` cannot be provided at the same time'
+      '`image` and `src` cannot be provided at the same time',
     );
 
     if ((cacheKey === undefined || cacheKey.length === 0) && image) {
@@ -171,7 +178,7 @@ class Icon extends ImageStyle {
     }
     assert(
       cacheKey !== undefined && cacheKey.length > 0,
-      'A defined and non-empty `src` or `image` must be provided'
+      'A defined and non-empty `src` or `image` must be provided',
     );
 
     assert(
@@ -179,14 +186,14 @@ class Icon extends ImageStyle {
         (options.width !== undefined || options.height !== undefined) &&
         options.scale !== undefined
       ),
-      '`width` or `height` cannot be provided together with `scale`'
+      '`width` or `height` cannot be provided together with `scale`',
     );
 
     let imageState;
     if (options.src !== undefined) {
       imageState = ImageState.IDLE;
     } else if (image !== undefined) {
-      if (image instanceof HTMLImageElement) {
+      if ('complete' in image) {
         if (image.complete) {
           imageState = image.src ? ImageState.LOADED : ImageState.IDLE;
         } else {
@@ -210,9 +217,12 @@ class Icon extends ImageStyle {
     this.iconImage_ = getIconImage(
       image,
       /** @type {string} */ (cacheKey),
-      this.crossOrigin_,
+      {
+        crossOrigin: this.crossOrigin_,
+        referrerPolicy: this.referrerPolicy_,
+      },
       imageState,
-      this.color_
+      this.color_,
     );
 
     /**
@@ -240,6 +250,11 @@ class Icon extends ImageStyle {
     this.size_ = options.size !== undefined ? options.size : null;
 
     /**
+     * @private
+     */
+    this.initialOptions_;
+
+    /**
      * Calculate the scale if width or height were given.
      */
     if (options.width !== undefined || options.height !== undefined) {
@@ -264,8 +279,8 @@ class Icon extends ImageStyle {
                 imageSize[0],
                 imageSize[1],
                 options.width,
-                options.height
-              )
+                options.height,
+              ),
             );
           };
           this.listenImageChange(onload);
@@ -274,7 +289,7 @@ class Icon extends ImageStyle {
       }
       if (width !== undefined) {
         this.setScale(
-          calculateScale(width, height, options.width, options.height)
+          calculateScale(width, height, options.width, options.height),
         );
       }
     }
@@ -284,6 +299,7 @@ class Icon extends ImageStyle {
    * Clones the style. The underlying Image/HTMLCanvasElement is not cloned.
    * @return {Icon} The cloned style.
    * @api
+   * @override
    */
   clone() {
     let scale, width, height;
@@ -304,6 +320,7 @@ class Icon extends ImageStyle {
           ? this.color_.slice()
           : this.color_ || undefined,
       crossOrigin: this.crossOrigin_,
+      referrerPolicy: this.referrerPolicy_,
       offset: this.offset_.slice(),
       offsetOrigin: this.offsetOrigin_,
       opacity: this.getOpacity(),
@@ -324,6 +341,7 @@ class Icon extends ImageStyle {
    * symbolizer.
    * @return {Array<number>} Anchor.
    * @api
+   * @override
    */
   getAnchor() {
     let anchor = this.normalizedAnchor_;
@@ -400,11 +418,51 @@ class Icon extends ImageStyle {
   }
 
   /**
+   * Set the icon color.
+   *
+   * Warning: Repeatedly setting the color on an icon style
+   * causes the icon image to be re-created each time. This can have a
+   * severe performance impact.
+   *
+   * @param {import("../color.js").Color|string|null|undefined} color Color.
+   */
+  setColor(color) {
+    const nextColor = color ? asArray(color) : null;
+    if (
+      this.color_ === nextColor ||
+      (this.color_ &&
+        nextColor &&
+        this.color_.length === nextColor.length &&
+        this.color_.every((value, index) => value === nextColor[index]))
+    ) {
+      // Discard if the color hasn't changed.
+      return;
+    }
+
+    this.color_ = nextColor;
+    const src = this.getSrc();
+    const image = src !== undefined ? null : this.getHitDetectionImage();
+    const imageState =
+      src !== undefined ? ImageState.IDLE : this.iconImage_.getImageState();
+    this.iconImage_ = getIconImage(
+      image,
+      src,
+      {
+        crossOrigin: this.crossOrigin_,
+        referrerPolicy: this.referrerPolicy_,
+      },
+      imageState,
+      this.color_,
+    );
+  }
+
+  /**
    * Get the image icon.
    * @param {number} pixelRatio Pixel ratio.
-   * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element. If the Icon
+   * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element. If the Icon
    * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
    * @api
+   * @override
    */
   getImage(pixelRatio) {
     return this.iconImage_.getImage(pixelRatio);
@@ -415,6 +473,7 @@ class Icon extends ImageStyle {
    * @param {number} pixelRatio Pixel ratio.
    * @return {number} The pixel ratio of the image.
    * @api
+   * @override
    */
   getPixelRatio(pixelRatio) {
     return this.iconImage_.getPixelRatio(pixelRatio);
@@ -422,6 +481,7 @@ class Icon extends ImageStyle {
 
   /**
    * @return {import("../size.js").Size} Image size.
+   * @override
    */
   getImageSize() {
     return this.iconImage_.getSize();
@@ -429,13 +489,15 @@ class Icon extends ImageStyle {
 
   /**
    * @return {import("../ImageState.js").default} Image state.
+   * @override
    */
   getImageState() {
     return this.iconImage_.getImageState();
   }
 
   /**
-   * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
+   * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
+   * @override
    */
   getHitDetectionImage() {
     return this.iconImage_.getHitDetectionImage();
@@ -445,6 +507,7 @@ class Icon extends ImageStyle {
    * Get the origin of the symbolizer.
    * @return {Array<number>} Origin.
    * @api
+   * @override
    */
   getOrigin() {
     if (this.origin_) {
@@ -486,9 +549,28 @@ class Icon extends ImageStyle {
   }
 
   /**
+   * Set the image URI
+   * @param {string} src Image source URI
+   * @api
+   */
+  setSrc(src) {
+    this.iconImage_ = getIconImage(
+      null,
+      src,
+      {
+        crossOrigin: this.crossOrigin_,
+        referrerPolicy: this.referrerPolicy_,
+      },
+      ImageState.IDLE,
+      this.color_,
+    );
+  }
+
+  /**
    * Get the size of the icon (in pixels).
    * @return {import("../size.js").Size} Image size.
    * @api
+   * @override
    */
   getSize() {
     return !this.size_ ? this.iconImage_.getSize() : this.size_;
@@ -531,6 +613,7 @@ class Icon extends ImageStyle {
    *
    * @param {number|import("../size.js").Size} scale Scale.
    * @api
+   * @override
    */
   setScale(scale) {
     delete this.initialOptions_;
@@ -539,6 +622,7 @@ class Icon extends ImageStyle {
 
   /**
    * @param {function(import("../events/Event.js").default): void} listener Listener function.
+   * @override
    */
   listenImageChange(listener) {
     this.iconImage_.addEventListener(EventType.CHANGE, listener);
@@ -550,6 +634,7 @@ class Icon extends ImageStyle {
    * automatically call this method. However, you might want to call this
    * method yourself for preloading or other purposes.
    * @api
+   * @override
    */
   load() {
     this.iconImage_.load();
@@ -557,9 +642,17 @@ class Icon extends ImageStyle {
 
   /**
    * @param {function(import("../events/Event.js").default): void} listener Listener function.
+   * @override
    */
   unlistenImageChange(listener) {
     this.iconImage_.removeEventListener(EventType.CHANGE, listener);
+  }
+
+  /**
+   * @override
+   */
+  ready() {
+    return this.iconImage_.ready();
   }
 }
 

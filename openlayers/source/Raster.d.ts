@@ -1,11 +1,4 @@
 /**
- * @param {Uint8ClampedArray} data Image data.
- * @param {number} width Number of columns.
- * @param {number} height Number of rows.
- * @return {ImageData} Image data.
- */
-export function newImageData(data: Uint8ClampedArray, width: number, height: number): ImageData;
-/**
  * @typedef {function(Error, ImageData, (Object|Array<Object>)): void} JobCallback
  */
 /**
@@ -31,25 +24,41 @@ export class Processor extends Disposable {
      * @param {ProcessorOptions} config Configuration.
      */
     constructor(config: ProcessorOptions);
-    _imageOps: boolean;
-    _workers: Worker[];
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private imageOps_;
+    /**
+     * @type {Array<Worker>}
+     * @private
+     */
+    private workers_;
     /**
      * @type {Array<Job>}
      * @private
      */
-    private _queue;
-    _maxQueueLength: number;
-    _running: number;
+    private queue_;
+    /**
+     * @type {number}
+     * @private
+     */
+    private maxQueueLength_;
+    /**
+     * @type {number}
+     * @private
+     */
+    private running_;
     /**
      * @type {Object<number, any>}
      * @private
      */
-    private _dataLookup;
+    private dataLookup_;
     /**
-     * @type {Job}
+     * @type {Job|null}
      * @private
      */
-    private _job;
+    private job_;
     /**
      * Run operation on input data.
      * @param {Array<ImageData>} inputs Array of image data.
@@ -64,22 +73,22 @@ export class Processor extends Disposable {
      * Add a job to the queue.
      * @param {Job} job The job.
      */
-    _enqueue(job: Job): void;
+    enqueue_(job: Job): void;
     /**
      * Dispatch a job.
      */
-    _dispatch(): void;
+    dispatch_(): void;
     /**
      * Handle messages from the worker.
      * @param {number} index The worker index.
      * @param {MessageEvent} event The message event.
      */
-    _onWorkerMessage(index: number, event: MessageEvent): void;
+    onWorkerMessage_(index: number, event: MessageEvent): void;
     /**
      * Resolve a job.  If there are no more worker threads, the processor callback
      * will be called.
      */
-    _resolveJob(): void;
+    resolveJob_(): void;
 }
 /**
  * @typedef {'pixel' | 'image'} RasterOperationType
@@ -208,12 +217,12 @@ export type Operation = (arg0: (Array<Array<number>> | Array<ImageData>), arg1: 
 /**
  * Raster operation type. Supported values are `'pixel'` and `'image'`.
  */
-export type RasterOperationType = 'pixel' | 'image';
-export type RasterSourceEventTypes = import("./Image.js").ImageSourceEventTypes | 'beforeoperations' | 'afteroperations';
+export type RasterOperationType = "pixel" | "image";
+export type RasterSourceEventTypes = import("./Image.js").ImageSourceEventTypes | "beforeoperations" | "afteroperations";
 export type Options = {
     /**
      * Input
-     * sources or layers.  For vector data, use an VectorImage layer.
+     * sources or layers.
      */
     sources: Array<import("./Source.js").default | import("../layer/Layer.js").default>;
     /**
@@ -252,13 +261,13 @@ export type Options = {
 /**
  * *
  */
-export type RasterSourceOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<import("./Image.js").ImageSourceEventTypes, import("./Image.js").ImageSourceEvent, Return> & import("../Observable").OnSignature<RasterSourceEventTypes, RasterSourceEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("../ObjectEventType").Types | RasterSourceEventTypes, Return>;
+export type RasterSourceOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<import("./Image.js").ImageSourceEventTypes, import("./Image.js").ImageSourceEvent, Return> & import("../Observable.js").OnSignature<RasterSourceEventTypes, RasterSourceEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("../ObjectEventType.js").Types | RasterSourceEventTypes, Return>;
 import Disposable from '../Disposable.js';
 import Event from '../events/Event.js';
 /**
  * @typedef {Object} Options
  * @property {Array<import("./Source.js").default|import("../layer/Layer.js").default>} sources Input
- * sources or layers.  For vector data, use an VectorImage layer.
+ * sources or layers.
  * @property {Operation} [operation] Raster operation.
  * The operation will be called with data from input sources
  * and the output will be assigned to the raster source.
@@ -279,11 +288,11 @@ import Event from '../events/Event.js';
  */
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("./Image.js").ImageSourceEventTypes, import("./Image.js").ImageSourceEvent, Return> &
- *   import("../Observable").OnSignature<RasterSourceEventTypes, RasterSourceEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<import("./Image.js").ImageSourceEventTypes, import("./Image.js").ImageSourceEvent, Return> &
+ *   import("../Observable.js").OnSignature<RasterSourceEventTypes, RasterSourceEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("../ObjectEventType.js").Types
  *     |RasterSourceEventTypes, Return>} RasterSourceOnSignature
  */
 /**
@@ -301,13 +310,13 @@ declare class RasterSource extends ImageSource {
      */
     constructor(options: Options);
     /***
-     * @type {RasterSourceOnSignature<import("../events").EventsKey>}
+     * @type {RasterSourceOnSignature<import("../events.js").EventsKey>}
      */
-    on: RasterSourceOnSignature<import("../events").EventsKey>;
+    on: RasterSourceOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {RasterSourceOnSignature<import("../events").EventsKey>}
+     * @type {RasterSourceOnSignature<import("../events.js").EventsKey>}
      */
-    once: RasterSourceOnSignature<import("../events").EventsKey>;
+    once: RasterSourceOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {RasterSourceOnSignature<void>}
      */
@@ -332,8 +341,11 @@ declare class RasterSource extends ImageSource {
      * @type {Array<import("../layer/Layer.js").default>}
      */
     private layers_;
-    /** @type {boolean} */
-    useResolutions_: boolean;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private useResolutions_;
     /**
      * @private
      * @type {import("../TileQueue.js").default}
@@ -354,8 +366,9 @@ declare class RasterSource extends ImageSource {
     /**
      * The most recently rendered revision.
      * @type {number}
+     * @private
      */
-    renderedRevision_: number;
+    private renderedRevision_;
     /**
      * @private
      * @type {import("../Map.js").FrameState}
@@ -390,8 +403,9 @@ declare class RasterSource extends ImageSource {
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
      * @return {import("../ImageCanvas.js").default} Single image.
+     * @override
      */
-    getImage(extent: import("../extent.js").Extent, resolution: number, pixelRatio: number, projection: import("../proj/Projection.js").default): import("../ImageCanvas.js").default;
+    override getImage(extent: import("../extent.js").Extent, resolution: number, pixelRatio: number, projection: import("../proj/Projection.js").default): import("../ImageCanvas.js").default;
     /**
      * Start processing source data.
      * @private
@@ -407,10 +421,11 @@ declare class RasterSource extends ImageSource {
      */
     private onWorkerComplete_;
     /**
-     * @param {import("../proj/Projection").default} [projection] Projection.
+     * @param {import("../proj/Projection.js").default} [projection] Projection.
      * @return {Array<number>|null} Resolutions.
+     * @override
      */
-    getResolutions(projection?: import("../proj/Projection.js").default | undefined): Array<number> | null;
+    override getResolutions(projection?: import("../proj/Projection.js").default): Array<number> | null;
 }
 import ImageSource from './Image.js';
 //# sourceMappingURL=Raster.d.ts.map

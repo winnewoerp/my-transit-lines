@@ -13,7 +13,7 @@ export type Options = {
      */
     attributions?: import("./Source.js").AttributionLike | undefined;
     /**
-     * Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -23,6 +23,10 @@ export type Options = {
      */
     crossOrigin?: string | null | undefined;
     /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
      * Use interpolated values when resampling.  By default,
      * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
      */
@@ -31,10 +35,6 @@ export type Options = {
      * Max zoom.
      */
     maxZoom?: number | undefined;
-    /**
-     * Whether the layer is opaque.
-     */
-    opaque?: boolean | undefined;
     /**
      * Maximum allowed reprojection error (in pixels).
      * Higher values can increase reprojection performance, but decrease precision.
@@ -72,14 +72,14 @@ export type Options = {
 /**
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin='anonymous'] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy='origin-when-cross-origin'] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {number} [maxZoom=19] Max zoom.
- * @property {boolean} [opaque=true] Whether the layer is opaque.
  * @property {number} [reprojectionErrorThreshold=0.5] Maximum allowed reprojection error (in pixels).
  * Higher values can increase reprojection performance, but decrease precision.
  * @property {import("../Tile.js").LoadFunction} [tileLoadFunction] Optional function to load a tile given a URL. The default is
@@ -106,7 +106,7 @@ declare class OSM extends XYZ {
     /**
      * @param {Options} [options] Open Street Map options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
 }
 import XYZ from './XYZ.js';
 //# sourceMappingURL=OSM.d.ts.map

@@ -2,12 +2,12 @@
  * @module ol/source/ImageStatic
  */
 
-import EventType from '../events/EventType.js';
-import ImageSource, {defaultImageLoadFunction} from './Image.js';
 import ImageWrapper, {decode} from '../Image.js';
-import {createLoader} from './static.js';
-import {get as getProjection} from '../proj.js';
+import EventType from '../events/EventType.js';
 import {intersects} from '../extent.js';
+import {get as getProjection} from '../proj.js';
+import ImageSource, {defaultImageLoadFunction} from './Image.js';
+import {createLoader} from './static.js';
 
 /**
  * @typedef {Object} Options
@@ -15,6 +15,7 @@ import {intersects} from '../extent.js';
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {import("../extent.js").Extent} imageExtent Extent of the image in map coordinates.
  * This is the [left, bottom, right, top] map coordinates of your image.
  * @property {import("../Image.js").LoadFunction} [imageLoadFunction] Optional function to load an image given a URL.
@@ -74,17 +75,18 @@ class Static extends ImageSource {
         url: options.url,
         imageExtent: options.imageExtent,
         crossOrigin,
+        referrerPolicy: options.referrerPolicy,
         load: (image, src) => {
           this.image.setImage(image);
           imageLoadFunction(this.image, src);
           return decode(image);
         },
-      })
+      }),
     );
 
     this.image.addEventListener(
       EventType.CHANGE,
-      this.handleImageChange.bind(this)
+      this.handleImageChange.bind(this),
     );
   }
 
@@ -103,6 +105,7 @@ class Static extends ImageSource {
    * @param {number} pixelRatio Pixel ratio.
    * @param {import("../proj/Projection.js").default} projection Projection.
    * @return {import("../Image.js").default} Single image.
+   * @override
    */
   getImageInternal(extent, resolution, pixelRatio, projection) {
     if (intersects(extent, this.image.getExtent())) {

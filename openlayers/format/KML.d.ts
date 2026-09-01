@@ -96,6 +96,10 @@ export type Options = {
      */
     crossOrigin?: string | null | undefined;
     /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
      * Function that takes a url string and returns a url string.
      * Might be used to change an icon path or to substitute a data url obtained from a KMZ array buffer.
      */
@@ -114,6 +118,7 @@ import Style from '../style/Style.js';
  * @property {boolean} [writeStyles=true] Write styles into KML.
  * @property {null|string} [crossOrigin='anonymous'] The `crossOrigin` attribute for loaded images. Note that you must provide a
  * `crossOrigin` value if you want to access pixel data with the Canvas renderer.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {IconUrlFunction} [iconUrlFunction] Function that takes a url string and returns a url string.
  * Might be used to change an icon path or to substitute a data url obtained from a KMZ array buffer.
  */
@@ -134,7 +139,7 @@ declare class KML extends XMLFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {Array<Style>}
@@ -163,6 +168,10 @@ declare class KML extends XMLFeature {
      * @type {null|string}
      */
     crossOrigin_: null | string;
+    /**
+     * @type {ReferrerPolicy}
+     */
+    referrerPolicy_: ReferrerPolicy;
     /**
      * @type {IconUrlFunction}
      */
@@ -265,7 +274,7 @@ declare class KML extends XMLFeature {
      * @return {Array<KMLCamera>} Cameras.
      * @api
      */
-    readCamera(source: Document | Element | string): {
+    readCamera(source: Document | Element | string): Array<{
         /**
          * Latitude of the camera.
          */
@@ -294,12 +303,12 @@ declare class KML extends XMLFeature {
          * Vertical camera rotation.
          */
         Roll?: number | undefined;
-    }[];
+    }>;
     /**
      * @param {Document} doc Document.
      * @return {Array<KMLCamera>} Cameras.
      */
-    readCameraFromDocument(doc: Document): {
+    readCameraFromDocument(doc: Document): Array<{
         /**
          * Latitude of the camera.
          */
@@ -328,13 +337,13 @@ declare class KML extends XMLFeature {
          * Vertical camera rotation.
          */
         Roll?: number | undefined;
-    }[];
+    }>;
     /**
      * @param {Element} node Node.
      * @return {Array<KMLCamera>} Cameras.
      * @api
      */
-    readCameraFromNode(node: Element): {
+    readCameraFromNode(node: Element): Array<{
         /**
          * Latitude of the camera.
          */
@@ -363,7 +372,7 @@ declare class KML extends XMLFeature {
          * Vertical camera rotation.
          */
         Roll?: number | undefined;
-    }[];
+    }>;
 }
 import XMLFeature from './XMLFeature.js';
 //# sourceMappingURL=KML.d.ts.map

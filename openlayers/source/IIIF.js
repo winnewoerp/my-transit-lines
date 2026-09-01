@@ -2,20 +2,20 @@
  * @module ol/source/IIIF
  */
 
-import TileGrid from '../tilegrid/TileGrid.js';
-import TileImage from './TileImage.js';
-import {CustomTile} from './Zoomify.js';
-import {DEFAULT_TILE_SIZE} from '../tilegrid/common.js';
-import {Versions} from '../format/IIIFInfo.js';
 import {assert} from '../asserts.js';
 import {getTopLeft} from '../extent.js';
+import {Versions} from '../format/IIIFInfo.js';
 import {toSize} from '../size.js';
+import TileGrid from '../tilegrid/TileGrid.js';
+import {DEFAULT_TILE_SIZE} from '../tilegrid/common.js';
+import TileImage from './TileImage.js';
+import {CustomTile} from './Zoomify.js';
 
 /**
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
  * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {number} [cacheSize] Size of the cache.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The value for the crossOrigin option of the request.
  * @property {import("../extent.js").Extent} [extent=[0, -height, width, 0]] The extent.
  * @property {string} [format='jpg'] Requested image format.
@@ -86,7 +86,7 @@ class IIIF extends TileImage {
         size[0] > 0 &&
         !isNaN(size[1]) &&
         size[1] > 0,
-      'Missing or invalid `size`'
+      'Missing or invalid `size`',
     );
     const width = size[0];
     const height = size[1];
@@ -164,7 +164,7 @@ class IIIF extends TileImage {
       if (resolutions.length == 0) {
         maxZoom = Math.max(
           Math.ceil(Math.log(width / tileWidth) / Math.LN2),
-          Math.ceil(Math.log(height / tileHeight) / Math.LN2)
+          Math.ceil(Math.log(height / tileHeight) / Math.LN2),
         );
         for (let i = maxZoom; i >= 0; i--) {
           resolutions.push(Math.pow(2, i));
@@ -325,7 +325,7 @@ class IIIF extends TileImage {
       null,
       toSize(tileSize || 256).map(function (size) {
         return size * tilePixelRatio;
-      })
+      }),
     );
 
     super({

@@ -2,6 +2,21 @@
 
 /* created by Johannes Bouchain, 2015-04-11 */
 
+/* User content tags */
+
+#mtl-content {
+	overflow: hidden;
+}
+
+#mtl-content table {
+	border-collapse: collapse;
+}
+
+#mtl-content td {
+	padding: 5px;
+	border: 2px gray solid;
+}
+
 /* tag list */
 
 #content div.post-tags {

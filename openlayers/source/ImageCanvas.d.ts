@@ -92,7 +92,7 @@ declare class ImageCanvasSource extends ImageSource {
     /**
      * @param {Options} [options] ImageCanvas options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {FunctionType}
@@ -119,8 +119,9 @@ declare class ImageCanvasSource extends ImageSource {
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
      * @return {import("../ImageCanvas.js").default} Single image.
+     * @override
      */
-    getImageInternal(extent: import("../extent.js").Extent, resolution: number, pixelRatio: number, projection: import("../proj/Projection.js").default): import("../ImageCanvas.js").default;
+    override getImageInternal(extent: import("../extent.js").Extent, resolution: number, pixelRatio: number, projection: import("../proj/Projection.js").default): import("../ImageCanvas.js").default;
 }
 import ImageSource from './Image.js';
 //# sourceMappingURL=ImageCanvas.d.ts.map

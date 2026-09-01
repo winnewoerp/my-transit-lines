@@ -1,7 +1,6 @@
 /**
  * @module ol/transform
  */
-import {WORKER_OFFSCREEN_CANVAS} from './has.js';
 import {assert} from './asserts.js';
 
 /**
@@ -266,24 +265,44 @@ export function determinant(mat) {
 }
 
 /**
- * @type {HTMLElement}
- * @private
+ * @type {Array}
  */
-let transformStringDiv;
+const matrixPrecision = [1e5, 1e5, 1e5, 1e5, 2, 2];
 
 /**
- * A rounded string version of the transform.  This can be used
+ * A matrix string version of the transform.  This can be used
  * for CSS transforms.
  * @param {!Transform} mat Matrix.
  * @return {string} The transform as a string.
  */
 export function toString(mat) {
   const transformString = 'matrix(' + mat.join(', ') + ')';
-  if (WORKER_OFFSCREEN_CANVAS) {
-    return transformString;
+  return transformString;
+}
+
+/**
+ * Create a transform from a CSS transform matrix string.
+ * @param {string} cssTransform The CSS string to parse.
+ * @return {!Transform} The transform.
+ */
+export function fromString(cssTransform) {
+  const values = cssTransform.substring(7, cssTransform.length - 1).split(',');
+  return values.map(parseFloat);
+}
+
+/**
+ * Compare two matrices for equality.
+ * @param {!string} cssTransform1 A CSS transform matrix string.
+ * @param {!string} cssTransform2 A CSS transform matrix string.
+ * @return {boolean} The two matrices are equal.
+ */
+export function equivalent(cssTransform1, cssTransform2) {
+  const mat1 = fromString(cssTransform1);
+  const mat2 = fromString(cssTransform2);
+  for (let i = 0; i < 6; ++i) {
+    if (Math.round((mat1[i] - mat2[i]) * matrixPrecision[i]) !== 0) {
+      return false;
+    }
   }
-  const node =
-    transformStringDiv || (transformStringDiv = document.createElement('div'));
-  node.style.transform = transformString;
-  return node.style.transform;
+  return true;
 }

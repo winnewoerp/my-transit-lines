@@ -7,30 +7,31 @@ export class CustomTile extends ImageTile {
      * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("../TileState.js").default} state State.
      * @param {string} src Image source URI.
-     * @param {?string} crossOrigin Cross origin.
+     * @param {import('../dom.js').ImageAttributes} imageAttributes Image attributes options.
      * @param {import("../Tile.js").LoadFunction} tileLoadFunction Tile load function.
      * @param {import("../Tile.js").Options} [options] Tile options.
      */
-    constructor(tileSize: import("../size.js").Size, tileCoord: import("../tilecoord.js").TileCoord, state: any, src: string, crossOrigin: string | null, tileLoadFunction: import("../Tile.js").LoadFunction, options?: import("../Tile.js").Options | undefined);
+    constructor(tileSize: import("../size.js").Size, tileCoord: import("../tilecoord.js").TileCoord, state: any, src: string, imageAttributes: import("../dom.js").ImageAttributes, tileLoadFunction: import("../Tile.js").LoadFunction, options?: import("../Tile.js").Options);
     /**
      * @private
-     * @type {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas|HTMLImageElement|HTMLVideoElement}
      */
     private zoomifyImage_;
     /**
+     * @private
      * @type {import("../size.js").Size}
      */
-    tileSize_: import("../size.js").Size;
+    private tileSize_;
 }
 export default Zoomify;
-export type TierSizeCalculation = 'default' | 'truncated';
+export type TierSizeCalculation = "default" | "truncated";
 export type Options = {
     /**
      * Attributions.
      */
     attributions?: import("./Source.js").AttributionLike | undefined;
     /**
-     * Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+     * Deprecated.  Use the cacheSize option on the layer instead.
      */
     cacheSize?: number | undefined;
     /**
@@ -39,6 +40,10 @@ export type Options = {
      * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
      */
     crossOrigin?: string | null | undefined;
+    /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
     /**
      * Use interpolated values when resampling.  By default,
      * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
@@ -106,10 +111,11 @@ import ImageTile from '../ImageTile.js';
 /**
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
- * @property {number} [cacheSize] Initial tile cache size. Will auto-grow to hold at least the number of tiles in the viewport.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value  you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {import("../proj.js").ProjectionLike} [projection] Projection.

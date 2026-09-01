@@ -3,13 +3,13 @@ export default Geometry;
  * The coordinate layout for geometries, indicating whether a 3rd or 4th z ('Z')
  * or measure ('M') coordinate is available.
  */
-export type GeometryLayout = 'XY' | 'XYZ' | 'XYM' | 'XYZM';
+export type GeometryLayout = "XY" | "XYZ" | "XYM" | "XYZM";
 /**
  * The geometry type.  One of `'Point'`, `'LineString'`, `'LinearRing'`,
  * `'Polygon'`, `'MultiPoint'`, `'MultiLineString'`, `'MultiPolygon'`,
  * `'GeometryCollection'`, or `'Circle'`.
  */
-export type Type = 'Point' | 'LineString' | 'LinearRing' | 'Polygon' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon' | 'GeometryCollection' | 'Circle';
+export type Type = "Point" | "LineString" | "LinearRing" | "Polygon" | "MultiPoint" | "MultiLineString" | "MultiPolygon" | "GeometryCollection" | "Circle";
 /**
  * @classdesc
  * Abstract base class; normally only used for creating subclasses and not
@@ -22,7 +22,9 @@ export type Type = 'Point' | 'LineString' | 'LinearRing' | 'Polygon' | 'MultiPoi
  * @abstract
  * @api
  */
-declare class Geometry extends BaseObject {
+declare class Geometry extends BaseObject<{
+    [x: string]: any;
+}> {
     constructor();
     /**
      * @private
@@ -52,7 +54,7 @@ declare class Geometry extends BaseObject {
      * @param {import("../proj.js").TransformFunction} [transform] Optional transform function.
      * @return {Geometry} Simplified geometry.
      */
-    simplifyTransformedInternal: (...arg0: any[]) => any;
+    simplifyTransformedInternal: (...arg0: any[]) => Geometry;
     /**
      * Get a transformed and simplified version of the geometry.
      * @abstract
@@ -60,7 +62,7 @@ declare class Geometry extends BaseObject {
      * @param {import("../proj.js").TransformFunction} [transform] Optional transform function.
      * @return {Geometry} Simplified geometry.
      */
-    simplifyTransformed(squaredTolerance: number, transform?: import("../proj.js").TransformFunction | undefined): Geometry;
+    simplifyTransformed(squaredTolerance: number, transform?: import("../proj.js").TransformFunction): Geometry;
     /**
      * Make a complete copy of the geometry.
      * @abstract
@@ -90,7 +92,7 @@ declare class Geometry extends BaseObject {
      * @return {import("../coordinate.js").Coordinate} Closest point.
      * @api
      */
-    getClosestPoint(point: import("../coordinate.js").Coordinate, closestPoint?: import("../coordinate.js").Coordinate | undefined): import("../coordinate.js").Coordinate;
+    getClosestPoint(point: import("../coordinate.js").Coordinate, closestPoint?: import("../coordinate.js").Coordinate): import("../coordinate.js").Coordinate;
     /**
      * Returns true if this geometry includes the specified coordinate. If the
      * coordinate is on the boundary of the geometry, returns false.
@@ -112,7 +114,7 @@ declare class Geometry extends BaseObject {
      * @return {import("../extent.js").Extent} extent Extent.
      * @api
      */
-    getExtent(extent?: import("../extent.js").Extent | undefined): import("../extent.js").Extent;
+    getExtent(extent?: import("../extent.js").Extent): import("../extent.js").Extent;
     /**
      * Rotate the geometry around a given coordinate. This modifies the geometry
      * coordinates in place.
@@ -132,7 +134,7 @@ declare class Geometry extends BaseObject {
      *     of the geometry extent).
      * @api
      */
-    scale(sx: number, sy?: number | undefined, anchor?: import("../coordinate.js").Coordinate | undefined): void;
+    scale(sx: number, sy?: number, anchor?: import("../coordinate.js").Coordinate): void;
     /**
      * Create a simplified version of this geometry.  For linestrings, this uses
      * the [Douglas Peucker](https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm)
@@ -195,11 +197,11 @@ declare class Geometry extends BaseObject {
      *     string identifier or a {@link module:ol/proj/Projection~Projection} object.
      * @param {import("../proj.js").ProjectionLike} destination The desired projection.  Can be a
      *     string identifier or a {@link module:ol/proj/Projection~Projection} object.
-     * @return {Geometry} This geometry.  Note that original geometry is
+     * @return {this} This geometry.  Note that original geometry is
      *     modified in place.
      * @api
      */
-    transform(source: import("../proj.js").ProjectionLike, destination: import("../proj.js").ProjectionLike): Geometry;
+    transform(source: import("../proj.js").ProjectionLike, destination: import("../proj.js").ProjectionLike): this;
 }
 import BaseObject from '../Object.js';
 //# sourceMappingURL=Geometry.d.ts.map

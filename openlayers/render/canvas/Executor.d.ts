@@ -1,26 +1,5 @@
 export default Executor;
-export type BBox = {
-    /**
-     * Minimal x.
-     */
-    minX: number;
-    /**
-     * Minimal y.
-     */
-    minY: number;
-    /**
-     * Maximal x.
-     */
-    maxX: number;
-    /**
-     * Maximal y
-     */
-    maxY: number;
-    /**
-     * Value.
-     */
-    value: any;
-};
+export type DeclutterEntry = import("../../structs/RBush.js").Entry<import("../../Feature.js").FeatureLike>;
 export type ImageOrLabelDimensions = {
     /**
      * DrawImageX.
@@ -53,30 +32,31 @@ export type ImageOrLabelDimensions = {
     /**
      * DeclutterBox.
      */
-    declutterBox: BBox;
+    declutterBox: DeclutterEntry;
     /**
      * CanvasTransform.
      */
     canvasTransform: import("../../transform.js").Transform;
 };
 export type ReplayImageOrLabelArgs = {
-    0: CanvasRenderingContext2D;
-    1: number;
+    0: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+    1: import("../../size.js").Size;
     2: import("../canvas.js").Label | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
     3: ImageOrLabelDimensions;
     4: number;
     5: Array<any>;
     6: Array<any>;
 };
-export type FeatureCallback<T> = (arg0: import("../../Feature.js").FeatureLike, arg1: import("../../geom/SimpleGeometry.js").default) => T;
+export type FeatureCallback<T> = (arg0: import("../../Feature.js").FeatureLike, arg1: import("../../geom/SimpleGeometry.js").default, arg2: import("../../style/Style.js").DeclutterMode) => T;
 declare class Executor {
     /**
      * @param {number} resolution Resolution.
      * @param {number} pixelRatio Pixel ratio.
      * @param {boolean} overlaps The replay can have overlapping geometries.
-     * @param {import("../canvas.js").SerializableInstructions} instructions The serializable instructions
+     * @param {import("../canvas.js").SerializableInstructions} instructions The serializable instructions.
+     * @param {boolean} [deferredRendering] Enable deferred rendering.
      */
-    constructor(resolution: number, pixelRatio: number, overlaps: boolean, instructions: import("../canvas.js").SerializableInstructions);
+    constructor(resolution: number, pixelRatio: number, overlaps: boolean, instructions: import("../canvas.js").SerializableInstructions, deferredRendering?: boolean);
     /**
      * @protected
      * @type {boolean}
@@ -95,9 +75,9 @@ declare class Executor {
     protected resolution: number;
     /**
      * @private
-     * @type {boolean}
+     * @type {number}
      */
-    private alignFill_;
+    private alignAndScaleFill_;
     /**
      * @protected
      * @type {Array<*>}
@@ -162,6 +142,15 @@ declare class Executor {
      */
     private labels_;
     /**
+     * @private
+     * @type {import("../canvas/ZIndexContext.js").default}
+     */
+    private zIndexContext_;
+    /**
+     * @return {ZIndexContext} ZIndex context.
+     */
+    getZIndexContext(): ZIndexContext;
+    /**
      * @param {string|Array<string>} text Text.
      * @param {string} textKey Text style key.
      * @param {string} fillKey Fill style key.
@@ -203,7 +192,7 @@ declare class Executor {
     /**
      * @private
      * @param {CanvasRenderingContext2D} context Context.
-     * @param {number} contextScale Scale of the context.
+     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
      * @param {import("../canvas.js").Label|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} imageOrLabel Image.
      * @param {ImageOrLabelDimensions} dimensions Dimensions.
      * @param {number} opacity Opacity.
@@ -214,12 +203,12 @@ declare class Executor {
     private replayImageOrLabel_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      */
     private fill_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {Array<*>} instruction Instruction.
      */
     private setStrokeStyle_;
@@ -234,30 +223,30 @@ declare class Executor {
     private drawLabelWithPointPlacement_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {number} contextScale Scale of the context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
+     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {Array<*>} instructions Instructions array.
      * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
      * @param {FeatureCallback<T>} [featureCallback] Feature callback.
      * @param {import("../../extent.js").Extent} [hitExtent] Only check
      *     features that intersect this extent.
-     * @param {import("rbush").default} [declutterTree] Declutter tree.
+     * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
      * @return {T|undefined} Callback result.
      * @template T
      */
     private execute_;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {number} contextScale Scale of the context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
+     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {number} viewRotation View rotation.
      * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
-     * @param {import("rbush").default} [declutterTree] Declutter tree.
+     * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
      */
-    execute(context: CanvasRenderingContext2D, contextScale: number, transform: import("../../transform.js").Transform, viewRotation: number, snapToPixel: boolean, declutterTree?: any): void;
+    execute(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, scaledCanvasSize: import("../../size.js").Size, transform: import("../../transform.js").Transform, viewRotation: number, snapToPixel: boolean, declutterTree?: import("rbush").default<DeclutterEntry>): void;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {number} viewRotation View rotation.
      * @param {FeatureCallback<T>} [featureCallback] Feature callback.
@@ -266,6 +255,7 @@ declare class Executor {
      * @return {T|undefined} Callback result.
      * @template T
      */
-    executeHitDetection<T>(context: CanvasRenderingContext2D, transform: import("../../transform.js").Transform, viewRotation: number, featureCallback?: FeatureCallback<T> | undefined, hitExtent?: import("../../extent.js").Extent | undefined): T | undefined;
+    executeHitDetection<T>(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, transform: import("../../transform.js").Transform, viewRotation: number, featureCallback?: FeatureCallback<T>, hitExtent?: import("../../extent.js").Extent): T | undefined;
 }
+import ZIndexContext from '../canvas/ZIndexContext.js';
 //# sourceMappingURL=Executor.d.ts.map

@@ -2,9 +2,13 @@ export default VectorTileLayer;
 /**
  * *
  */
-export type VectorTileLayerOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes | import("./Layer.js").LayerEventType | 'change:preload' | 'change:useInterimTilesOnError', import("../Object").ObjectEvent, Return> & import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | import("./Base").BaseLayerObjectEventTypes | import("./Layer.js").LayerEventType | 'change:preload' | 'change:useInterimTilesOnError' | import("../render/EventType").LayerRenderEventTypes, Return>;
-export type VectorTileRenderType = 'hybrid' | 'vector';
-export type Options = {
+export type VectorTileLayerOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<import("./Base.js").BaseLayerObjectEventTypes | import("./Layer.js").LayerEventType | "change:preload" | "change:useInterimTilesOnError", import("../Object.js").ObjectEvent, Return> & import("../Observable.js").OnSignature<import("../render/EventType.js").LayerRenderEventTypes, import("../render/Event.js").default, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | import("./Base.js").BaseLayerObjectEventTypes | import("./Layer.js").LayerEventType | "change:preload" | "change:useInterimTilesOnError" | import("../render/EventType.js").LayerRenderEventTypes, Return>;
+export type VectorTileRenderType = "hybrid" | "vector";
+/**
+ * *
+ */
+export type ExtractedFeatureType<T> = T extends import("../source/VectorTile.js").default<infer U extends import("../Feature.js").FeatureLike> ? U : never;
+export type Options<VectorTileSourceType extends import("../source/VectorTile.js").default<FeatureType> = import("../source/VectorTile.js").default<any>, FeatureType extends import("../Feature.js").FeatureLike = ExtractedFeatureType<VectorTileSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -65,18 +69,19 @@ export type Options = {
     renderBuffer?: number | undefined;
     /**
      * Render mode for vector tiles:
-     * * `'hybrid'`: Polygon and line elements are rendered as images, so pixels are scaled during zoom
+     * `'hybrid'`: Polygon and line elements are rendered as images, so pixels are scaled during zoom
      * animations. Point symbols and texts are accurately rendered as vectors and can stay upright on
-     * rotated views.
-     * * `'vector'`: Everything is rendered as vectors. Use this mode for improved performance on vector
-     * tile layers with only a few rendered features (e.g. for highlighting a subset of features of
-     * another layer with the same source).
+     * rotated views, but get lifted above all polygon and line elements.
+     * `'vector'`: Everything is rendered as vectors and the original render order is maintained. Use
+     * this mode for improved performance and visual epxerience on vector tile layers with not too many
+     * rendered features (e.g. for highlighting a subset of features of another layer with the same
+     * source).
      */
     renderMode?: VectorTileRenderType | undefined;
     /**
      * Source.
      */
-    source?: import("../source/VectorTile.js").default | undefined;
+    source?: VectorTileSourceType | undefined;
     /**
      * Sets the layer as overlay on a map. The map will not manage
      * this layer in its layers collection, and the layer will be rendered on top. This is useful for
@@ -85,29 +90,25 @@ export type Options = {
      */
     map?: import("../Map.js").default | undefined;
     /**
-     * Declutter images and text. Decluttering is applied to all
-     * image and text styles of all Vector and VectorTile layers that have set this to `true`. The priority
-     * is defined by the z-index of the layer, the `zIndex` of the style and the render order of features.
-     * Higher z-index means higher priority. Within the same z-index, a feature rendered before another has
-     * higher priority.
-     *
-     * As an optimization decluttered features from layers with the same `className` are rendered above
-     * the fill and stroke styles of all of those layers regardless of z-index.  To opt out of this
-     * behavior and place declutterd features with their own layer configure the layer with a `className`
-     * other than `ol-layer`.
+     * Declutter images and text. Any truthy value will enable
+     * decluttering. Within a layer, a feature rendered before another has higher priority. All layers with the
+     * same `declutter` value will be decluttered together. The priority is determined by the drawing order of the
+     * layers with the same `declutter` value. Higher in the layer stack means higher priority. To declutter distinct
+     * layers or groups of layers separately, use different truthy values for `declutter`.
      */
-    declutter?: boolean | undefined;
+    declutter?: string | number | boolean | undefined;
     /**
-     * Layer style. When set to `null`, only
+     * Layer
+     * style. When set to `null`, only
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: import("../style/Style.js").StyleLike | null | undefined;
+    style?: import("../style/Style.js").StyleLike | import("../style/flat.js").FlatStyleLike | null | undefined;
     /**
      * Background color for the layer. If not specified, no
      * background will be rendered.
      */
-    background?: false | import("./Base").BackgroundColor | undefined;
+    background?: import("./Base.js").BackgroundColor | undefined;
     /**
      * When set to `true`, feature batches will be
      * recreated during animations. This means that no vectors will be shown clipped, but the setting
@@ -126,7 +127,7 @@ export type Options = {
      */
     preload?: number | undefined;
     /**
-     * Use interim tiles on error.
+     * Deprecated.  Use interim tiles on error.
      */
     useInterimTilesOnError?: boolean | undefined;
     /**
@@ -135,20 +136,31 @@ export type Options = {
     properties?: {
         [x: string]: any;
     } | undefined;
+    /**
+     * The internal tile cache size.  If too small, this will auto-grow to hold
+     * two zoom levels worth of tiles.
+     */
+    cacheSize?: number | undefined;
 };
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes|
- *     import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("./Base").BaseLayerObjectEventTypes|
- *     import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError'|import("../render/EventType").LayerRenderEventTypes, Return>} VectorTileLayerOnSignature
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<import("./Base.js").BaseLayerObjectEventTypes|
+ *     import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError', import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").OnSignature<import("../render/EventType.js").LayerRenderEventTypes, import("../render/Event.js").default, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|import("./Base.js").BaseLayerObjectEventTypes|
+ *     import("./Layer.js").LayerEventType|'change:preload'|'change:useInterimTilesOnError'|import("../render/EventType.js").LayerRenderEventTypes, Return>} VectorTileLayerOnSignature
  */
 /**
  * @typedef {'hybrid' | 'vector'} VectorTileRenderType
  */
+/***
+ * @template T
+ * @typedef {T extends import("../source/VectorTile.js").default<infer U extends import("../Feature.js").FeatureLike> ? U : never} ExtractedFeatureType
+ */
 /**
+ * @template {import("../source/VectorTile.js").default<FeatureType>} [VectorTileSourceType=import("../source/VectorTile.js").default<*>]
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=ExtractedFeatureType<VectorTileSourceType>]
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
@@ -176,31 +188,28 @@ export type Options = {
  * the largest possible buffer of the used tiles. It should be at least the size of the largest
  * point symbol or line width.
  * @property {VectorTileRenderType} [renderMode='hybrid'] Render mode for vector tiles:
- *  * `'hybrid'`: Polygon and line elements are rendered as images, so pixels are scaled during zoom
+ *  `'hybrid'`: Polygon and line elements are rendered as images, so pixels are scaled during zoom
  *    animations. Point symbols and texts are accurately rendered as vectors and can stay upright on
- *    rotated views.
- *  * `'vector'`: Everything is rendered as vectors. Use this mode for improved performance on vector
- *    tile layers with only a few rendered features (e.g. for highlighting a subset of features of
- *    another layer with the same source).
- * @property {import("../source/VectorTile.js").default} [source] Source.
+ *    rotated views, but get lifted above all polygon and line elements.
+ *  `'vector'`: Everything is rendered as vectors and the original render order is maintained. Use
+ *    this mode for improved performance and visual epxerience on vector tile layers with not too many
+ *    rendered features (e.g. for highlighting a subset of features of another layer with the same
+ *    source).
+ * @property {VectorTileSourceType} [source] Source.
  * @property {import("../Map.js").default} [map] Sets the layer as overlay on a map. The map will not manage
  * this layer in its layers collection, and the layer will be rendered on top. This is useful for
  * temporary layers. The standard way to add a layer to a map and have it managed by the map is to
  * use [map.addLayer()]{@link import("../Map.js").default#addLayer}.
- * @property {boolean} [declutter=false] Declutter images and text. Decluttering is applied to all
- * image and text styles of all Vector and VectorTile layers that have set this to `true`. The priority
- * is defined by the z-index of the layer, the `zIndex` of the style and the render order of features.
- * Higher z-index means higher priority. Within the same z-index, a feature rendered before another has
- * higher priority.
- *
- * As an optimization decluttered features from layers with the same `className` are rendered above
- * the fill and stroke styles of all of those layers regardless of z-index.  To opt out of this
- * behavior and place declutterd features with their own layer configure the layer with a `className`
- * other than `ol-layer`.
- * @property {import("../style/Style.js").StyleLike|null} [style] Layer style. When set to `null`, only
+ * @property {boolean|string|number} [declutter=false] Declutter images and text. Any truthy value will enable
+ * decluttering. Within a layer, a feature rendered before another has higher priority. All layers with the
+ * same `declutter` value will be decluttered together. The priority is determined by the drawing order of the
+ * layers with the same `declutter` value. Higher in the layer stack means higher priority. To declutter distinct
+ * layers or groups of layers separately, use different truthy values for `declutter`.
+ * @property {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike|null} [style] Layer
+ * style. When set to `null`, only
  * features that have their own style will be rendered. See {@link module:ol/style/Style~Style} for the default style
  * which will be used if this is not set.
- * @property {import("./Base.js").BackgroundColor|false} [background] Background color for the layer. If not specified, no
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no
  * background will be rendered.
  * @property {boolean} [updateWhileAnimating=false] When set to `true`, feature batches will be
  * recreated during animations. This means that no vectors will be shown clipped, but the setting
@@ -210,8 +219,10 @@ export type Options = {
  * recreated during interactions. See also `updateWhileAnimating`.
  * @property {number} [preload=0] Preload. Load low-resolution tiles up to `preload` levels. `0`
  * means no preloading.
- * @property {boolean} [useInterimTilesOnError=true] Use interim tiles on error.
+ * @property {boolean} [useInterimTilesOnError=true] Deprecated.  Use interim tiles on error.
  * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ * @property {number} [cacheSize=0] The internal tile cache size.  If too small, this will auto-grow to hold
+ * two zoom levels worth of tiles.
  */
 /**
  * @classdesc
@@ -220,32 +231,51 @@ export type Options = {
  * property on the layer object; for example, setting `title: 'My Title'` in the
  * options means that `title` is observable, and has get/set accessors.
  *
- * @param {Options} [options] Options.
- * @extends {BaseVectorLayer<import("../source/VectorTile.js").default, CanvasVectorTileLayerRenderer>}
+ * @template {import("../source/VectorTile.js").default<FeatureType>} [VectorTileSourceType=import("../source/VectorTile.js").default<*>]
+ * @template {import("../Feature.js").FeatureLike} [FeatureType=ExtractedFeatureType<VectorTileSourceType>]
+ * @extends {BaseVectorLayer<FeatureType, VectorTileSourceType, CanvasVectorTileLayerRenderer>}
  * @api
  */
-declare class VectorTileLayer extends BaseVectorLayer<import("../source/VectorTile.js").default, CanvasVectorTileLayerRenderer> {
+declare class VectorTileLayer<VectorTileSourceType extends import("../source/VectorTile.js").default<FeatureType> = import("../source/VectorTile.js").default<any>, FeatureType extends import("../Feature.js").FeatureLike = ExtractedFeatureType<VectorTileSourceType>> extends BaseVectorLayer<FeatureType, VectorTileSourceType, CanvasVectorTileLayerRenderer> {
     /**
-     * @param {Options} [options] Options.
+     * @param {Options<VectorTileSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options<VectorTileSourceType, FeatureType>);
     /***
-     * @type {VectorTileLayerOnSignature<import("../events").EventsKey>}
+     * @type {VectorTileLayerOnSignature<import("../events.js").EventsKey>}
      */
-    on: VectorTileLayerOnSignature<import("../events").EventsKey>;
+    on: VectorTileLayerOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {VectorTileLayerOnSignature<import("../events").EventsKey>}
+     * @type {VectorTileLayerOnSignature<import("../events.js").EventsKey>}
      */
-    once: VectorTileLayerOnSignature<import("../events").EventsKey>;
+    once: VectorTileLayerOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {VectorTileLayerOnSignature<void>}
      */
     un: VectorTileLayerOnSignature<void>;
     /**
+     * @type {number|undefined}
+     * @private
+     */
+    private cacheSize_;
+    /**
      * @private
      * @type {VectorTileRenderType}
      */
     private renderMode_;
+    /**
+     * Get features whose bounding box intersects the provided extent. Only features for cached
+     * tiles for the last rendered zoom level are available in the source. So this method is only
+     * suitable for requesting tiles for extents that are currently rendered.
+     *
+     * Features are returned in random tile order and as they are included in the tiles. This means
+     * they can be clipped, duplicated across tiles, and simplified to the render resolution.
+     *
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @return {Array<FeatureType>} Features.
+     * @api
+     */
+    getFeaturesInExtent(extent: import("../extent.js").Extent): Array<FeatureType>;
     /**
      * @return {VectorTileRenderType} The render mode.
      */
@@ -258,7 +288,7 @@ declare class VectorTileLayer extends BaseVectorLayer<import("../source/VectorTi
      */
     getPreload(): number;
     /**
-     * Whether we use interim tiles on error.
+     * Deprecated.  Whether we use interim tiles on error.
      * @return {boolean} Use interim tiles on error.
      * @observable
      * @api
@@ -272,7 +302,7 @@ declare class VectorTileLayer extends BaseVectorLayer<import("../source/VectorTi
      */
     setPreload(preload: number): void;
     /**
-     * Set whether we use interim tiles on error.
+     * Deprecated.  Set whether we use interim tiles on error.
      * @param {boolean} useInterimTilesOnError Use interim tiles on error.
      * @observable
      * @api

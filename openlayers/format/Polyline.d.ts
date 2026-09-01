@@ -10,8 +10,9 @@
  *     Default is `1e5`.
  * @return {string} The encoded string.
  * @api
+ * @deprecated
  */
-export function encodeDeltas(numbers: Array<number>, stride: number, factor?: number | undefined): string;
+export function encodeDeltas(numbers: Array<number>, stride: number, factor?: number): string;
 /**
  * Decode a list of n-dimensional points from an encoded string
  *
@@ -22,8 +23,9 @@ export function encodeDeltas(numbers: Array<number>, stride: number, factor?: nu
  *     be divided. Default is `1e5`.
  * @return {Array<number>} A list of n-dimensional points.
  * @api
+ * @deprecated
  */
-export function decodeDeltas(encoded: string, stride: number, factor?: number | undefined): Array<number>;
+export function decodeDeltas(encoded: string, stride: number, factor?: number): Array<number>;
 /**
  * Encode a list of floating point numbers and return an encoded string
  *
@@ -34,9 +36,10 @@ export function decodeDeltas(encoded: string, stride: number, factor?: number | 
  *     multiplied. The remaining decimal places will get rounded away.
  *     Default is `1e5`.
  * @return {string} The encoded string.
+ * @deprecated
  * @api
  */
-export function encodeFloats(numbers: Array<number>, factor?: number | undefined): string;
+export function encodeFloats(numbers: Array<number>, factor?: number): string;
 /**
  * Decode a list of floating point numbers from an encoded string
  *
@@ -44,9 +47,10 @@ export function encodeFloats(numbers: Array<number>, factor?: number | undefined
  * @param {number} [factor] The factor by which the result will be divided.
  *     Default is `1e5`.
  * @return {Array<number>} A list of floating point numbers.
+ * @deprecated
  * @api
  */
-export function decodeFloats(encoded: string, factor?: number | undefined): Array<number>;
+export function decodeFloats(encoded: string, factor?: number): Array<number>;
 /**
  * Encode a list of signed integers and return an encoded string
  *
@@ -120,7 +124,7 @@ declare class Polyline extends TextFeature {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     /**
      * @private
      * @type {number}
@@ -136,22 +140,25 @@ declare class Polyline extends TextFeature {
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @protected
      * @return {string} Text.
+     * @override
      */
-    protected writeFeatureText(feature: import("../Feature.js").default<LineString>, options?: import("./Feature.js").WriteOptions | undefined): string;
+    protected override writeFeatureText(feature: import("../Feature.js").default<LineString>, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @param {Array<import("../Feature.js").default<LineString>>} features Features.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @protected
      * @return {string} Text.
+     * @override
      */
-    protected writeFeaturesText(features: Array<import("../Feature.js").default<LineString>>, options?: import("./Feature.js").WriteOptions | undefined): string;
+    protected override writeFeaturesText(features: Array<import("../Feature.js").default<LineString>>, options?: import("./Feature.js").WriteOptions): string;
     /**
      * @param {LineString} geometry Geometry.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @protected
      * @return {string} Text.
+     * @override
      */
-    protected writeGeometryText(geometry: LineString, options?: import("./Feature.js").WriteOptions | undefined): string;
+    protected override writeGeometryText(geometry: LineString, options?: import("./Feature.js").WriteOptions): string;
 }
 import TextFeature from './TextFeature.js';
 import LineString from '../geom/LineString.js';

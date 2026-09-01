@@ -1,5 +1,5 @@
 export default WebGLTileLayer;
-export type SourceType = import("../source/DataTile.js").default | import("../source/TileImage.js").default;
+export type SourceType = import("../source/DataTile.js").default<import("../DataTile.js").default | import("../ImageTile.js").default>;
 /**
  * Translates tile data to rendered pixels.
  */
@@ -7,7 +7,7 @@ export type Style = {
     /**
      * Style variables.  Each variable must hold a number or string.  These
      * variables can be used in the `color`, `brightness`, `contrast`, `exposure`, `saturation` and `gamma`
-     * {@link import ("../style/expressions.js").ExpressionValue expressions}, using the `['var', 'varName']` operator.
+     * {@link import ("../expr/expression.js").ExpressionValue expressions}, using the `['var', 'varName']` operator.
      * To update style variables, use the {@link import ("./WebGLTile.js").default#updateStyleVariables} method.
      */
     variables?: {
@@ -16,32 +16,32 @@ export type Style = {
     /**
      * An expression applied to color values.
      */
-    color?: import("../style/expressions.js").ExpressionValue | undefined;
+    color?: import("../expr/expression.js").ExpressionValue | undefined;
     /**
      * Value used to decrease or increase
      * the layer brightness.  Values range from -1 to 1.
      */
-    brightness?: import("../style/expressions.js").ExpressionValue | undefined;
+    brightness?: import("../expr/expression.js").ExpressionValue | undefined;
     /**
      * Value used to decrease or increase
      * the layer contrast.  Values range from -1 to 1.
      */
-    contrast?: import("../style/expressions.js").ExpressionValue | undefined;
+    contrast?: import("../expr/expression.js").ExpressionValue | undefined;
     /**
      * Value used to decrease or increase
      * the layer exposure.  Values range from -1 to 1.
      */
-    exposure?: import("../style/expressions.js").ExpressionValue | undefined;
+    exposure?: import("../expr/expression.js").ExpressionValue | undefined;
     /**
      * Value used to decrease or increase
      * the layer saturation.  Values range from -1 to 1.
      */
-    saturation?: import("../style/expressions.js").ExpressionValue | undefined;
+    saturation?: import("../expr/expression.js").ExpressionValue | undefined;
     /**
      * Apply a gamma correction to the layer.
      * Values range from 0 to infinity.
      */
-    gamma?: import("../style/expressions.js").ExpressionValue | undefined;
+    gamma?: import("../expr/expression.js").ExpressionValue | undefined;
 };
 export type Options = {
     /**
@@ -100,7 +100,7 @@ export type Options = {
     /**
      * Source for this layer.
      */
-    source?: SourceType | undefined;
+    source?: import("../source/DataTile.js").default<import("../ImageTile.js").default | import("../DataTile.js").default> | undefined;
     /**
      * Array
      * of sources for this layer. Takes precedence over `source`. Can either be an array of sources, or a function that
@@ -108,7 +108,7 @@ export type Options = {
      * {@link module :ol/source.sourcesFromTileGrid} for a helper function to generate sources that are organized in a
      * pyramid following the same pattern as a tile grid. **Note:** All sources must have the same band count and content.
      */
-    sources?: SourceType[] | ((arg0: import("../extent.js").Extent, arg1: number) => Array<SourceType>) | undefined;
+    sources?: import("../source/DataTile.js").default<import("../ImageTile.js").default | import("../DataTile.js").default>[] | ((arg0: import("../extent.js").Extent, arg1: number) => Array<SourceType>) | undefined;
     /**
      * Sets the layer as overlay on a map. The map will not manage
      * this layer in its layers collection, and the layer will be rendered on top. This is useful for
@@ -117,7 +117,7 @@ export type Options = {
      */
     map?: import("../Map.js").default | undefined;
     /**
-     * Use interim tiles on error.
+     * Deprecated.  Use interim tiles on error.
      */
     useInterimTilesOnError?: boolean | undefined;
     /**
@@ -125,6 +125,12 @@ export type Options = {
      * two zoom levels worth of tiles.
      */
     cacheSize?: number | undefined;
+    /**
+     * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+     */
+    properties?: {
+        [x: string]: any;
+    } | undefined;
 };
 export type ParsedStyle = {
     /**
@@ -155,14 +161,15 @@ export type ParsedStyle = {
  * options means that `title` is observable, and has get/set accessors.
  *
  * @extends BaseTileLayer<SourceType, WebGLTileLayerRenderer>
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  * @api
  */
-declare class WebGLTileLayer extends BaseTileLayer<SourceType, WebGLTileLayerRenderer> {
+declare class WebGLTileLayer extends BaseTileLayer<import("../source/DataTile.js").default<import("../ImageTile.js").default | import("../DataTile.js").default>, WebGLTileLayerRenderer<any>> {
     /**
-     * @param {Options} options Tile layer options.
+     * @param {Options} [options] Tile layer options.
      */
-    constructor(options: Options);
+    constructor(options?: Options);
     /**
      * @type {Array<SourceType>|function(import("../extent.js").Extent, number):Array<SourceType>}
      * @private
@@ -184,11 +191,6 @@ declare class WebGLTileLayer extends BaseTileLayer<SourceType, WebGLTileLayerRen
      */
     private style_;
     /**
-     * @type {number}
-     * @private
-     */
-    private cacheSize_;
-    /**
      * @type {Object<string, (string|number)>}
      * @private
      */
@@ -202,8 +204,9 @@ declare class WebGLTileLayer extends BaseTileLayer<SourceType, WebGLTileLayerRen
     getSources(extent: import("../extent.js").Extent, resolution: number): Array<SourceType>;
     /**
      * @return {SourceType} The source being rendered.
+     * @override
      */
-    getRenderSource(): SourceType;
+    override getRenderSource(): SourceType;
     /**
      * @private
      */
@@ -214,18 +217,28 @@ declare class WebGLTileLayer extends BaseTileLayer<SourceType, WebGLTileLayerRen
      */
     private getSourceBandCount_;
     /**
-     * @param {import("../Map").FrameState} frameState Frame state.
+     * @private
+     * @return {number|undefined} The 1-based band index for the nodata alpha band.
+     */
+    private getSourceNodataBandIndex_;
+    /**
+     * @override
+     */
+    override createRenderer(): WebGLTileLayerRenderer<this>;
+    /**
+     * @param {import("../Map.js").FrameState} frameState Frame state.
      * @param {Array<SourceType>} sources Sources.
      * @return {HTMLElement} Canvas.
      */
-    renderSources(frameState: import("../Map").FrameState, sources: Array<SourceType>): HTMLElement;
+    renderSources(frameState: import("../Map.js").FrameState, sources: Array<SourceType>): HTMLElement;
     /**
      * @param {?import("../Map.js").FrameState} frameState Frame state.
      * @param {HTMLElement} target Target which the renderer may (but need not) use
      * for rendering its content.
      * @return {HTMLElement} The rendered element.
+     * @override
      */
-    render(frameState: import("../Map.js").FrameState | null, target: HTMLElement): HTMLElement;
+    override render(frameState: import("../Map.js").FrameState | null, target: HTMLElement): HTMLElement;
     /**
      * Update the layer style.  The `updateStyleVariables` function is a more efficient
      * way to update layer rendering.  In cases where the whole style needs to be updated,

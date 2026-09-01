@@ -8,12 +8,6 @@ const ua =
     : '';
 
 /**
- * User agent string says we are dealing with Firefox as browser.
- * @type {boolean}
- */
-export const FIREFOX = ua.includes('firefox');
-
-/**
  * User agent string says we are dealing with Safari as browser.
  * @type {boolean}
  */
@@ -85,9 +79,11 @@ export const PASSIVE_EVENT_LISTENERS = (function () {
       },
     });
 
+    // @ts-ignore Ignore invalid event type '_'
     window.addEventListener('_', null, options);
+    // @ts-ignore Ignore invalid event type '_'
     window.removeEventListener('_', null, options);
-  } catch (error) {
+  } catch {
     // passive not supported
   }
   return passive;

@@ -2,13 +2,13 @@
  * @module ol/source/arcgisRest
  */
 
-import {DECIMALS} from './common.js';
-import {appendParams} from '../uri.js';
 import {decode} from '../Image.js';
 import {getHeight, getWidth} from '../extent.js';
-import {get as getProjection} from '../proj.js';
-import {getRequestExtent} from './Image.js';
 import {round} from '../math.js';
+import {get as getProjection} from '../proj.js';
+import {appendParams} from '../uri.js';
+import {getRequestExtent} from './Image.js';
+import {DECIMALS} from './common.js';
 
 /**
  * @param {string} baseUrl Base URL for the ArcGIS Rest service.
@@ -25,7 +25,7 @@ export function getRequestUrl(
   resolution,
   pixelRatio,
   projection,
-  params
+  params,
 ) {
   // ArcGIS Server only wants the numeric portion of the projection ID.
   // (if there is no numeric portion the entire projection code must
@@ -47,15 +47,12 @@ export function getRequestUrl(
   params['BBOXSR'] = srid;
   params['IMAGESR'] = srid;
   params['DPI'] = Math.round(
-    params['DPI'] ? params['DPI'] * pixelRatio : 90 * pixelRatio
+    params['DPI'] ? params['DPI'] * pixelRatio : 90 * pixelRatio,
   );
 
   const modifiedUrl = baseUrl
     .replace(/MapServer\/?$/, 'MapServer/export')
     .replace(/ImageServer\/?$/, 'ImageServer/exportImage');
-  if (modifiedUrl == baseUrl) {
-    throw new Error('`options.featureTypes` should be an Array');
-  }
   return appendParams(modifiedUrl, params);
 }
 
@@ -64,6 +61,7 @@ export function getRequestUrl(
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting the image from
  * the remote server.
  * @property {Object<string,*>} [params] ArcGIS Rest parameters. This field is optional. Service
@@ -77,7 +75,7 @@ export function getRequestUrl(
  * or the entire code must form a valid ArcGIS SpatialReference definition.
  * @property {number} [ratio=1.5] Ratio. `1` means image requests are the size of the map viewport,
  * `2` means twice the size of the map viewport, and so on.
- * @property {string} [url] ArcGIS Rest service URL for a Map Service or Image Service. The url
+ * @property {string} url ArcGIS Rest service URL for a Map Service or Image Service. The url
  * should include /MapServer or /ImageServer.
  * @property {function(HTMLImageElement, string): Promise<import('../DataTile.js').ImageLike>} [load] Function
  * to perform loading of the image. Receives the created `HTMLImageElement` and the desired `src` as argument and
@@ -93,8 +91,10 @@ export function getRequestUrl(
 export function createLoader(options) {
   const load = options.load ? options.load : decode;
   const projection = getProjection(options.projection || 'EPSG:3857');
+  const ratio = options.ratio ?? 1.5;
+  const crossOrigin = options.crossOrigin ?? null;
+  const referrerPolicy = options.referrerPolicy;
 
-  /** @type {import('../Image.js').ImageObjectPromiseLoader} */
   return function (extent, resolution, pixelRatio) {
     pixelRatio = options.hidpi ? pixelRatio : 1;
 
@@ -105,7 +105,7 @@ export function createLoader(options) {
     };
     Object.assign(params, options.params);
 
-    extent = getRequestExtent(extent, resolution, pixelRatio, options.ratio);
+    extent = getRequestExtent(extent, resolution, pixelRatio, ratio);
 
     const src = getRequestUrl(
       options.url,
@@ -113,12 +113,13 @@ export function createLoader(options) {
       resolution,
       pixelRatio,
       projection,
-      params
+      params,
     );
 
     const image = new Image();
-    if (options.crossOrigin !== null) {
-      image.crossOrigin = options.crossOrigin;
+    image.crossOrigin = crossOrigin;
+    if (referrerPolicy !== undefined) {
+      image.referrerPolicy = referrerPolicy;
     }
 
     return load(image, src).then((image) => {

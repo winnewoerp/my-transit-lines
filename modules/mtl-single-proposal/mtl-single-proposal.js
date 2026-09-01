@@ -95,7 +95,7 @@ function add_event_listeners() {
 	});
 
 	document.querySelectorAll('a[data-mtl-no-reload]').forEach(link => link.addEventListener('click', e => {
-		load_proposal(e.target.href);
+		load_proposal(link.href);
 
 		history.pushState(null, "", link);
 

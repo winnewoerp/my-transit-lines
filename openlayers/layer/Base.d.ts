@@ -3,12 +3,16 @@ export default BaseLayer;
  * A css color, or a function called with a view resolution returning a css color.
  */
 export type BackgroundColor = string | ((arg0: number) => string);
-export type BaseLayerObjectEventTypes = import("../ObjectEventType").Types | 'change:extent' | 'change:maxResolution' | 'change:maxZoom' | 'change:minResolution' | 'change:minZoom' | 'change:opacity' | 'change:visible' | 'change:zIndex';
+export type BaseLayerObjectEventTypes = import("../ObjectEventType.js").Types | "change:extent" | "change:maxResolution" | "change:maxZoom" | "change:minResolution" | "change:minZoom" | "change:opacity" | "change:visible" | "change:zIndex";
 /**
  * *
  */
-export type BaseLayerOnSignature<Return> = import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> & import("../Observable").OnSignature<BaseLayerObjectEventTypes, import("../Object").ObjectEvent, Return> & import("../Observable").CombinedOnSignature<import("../Observable").EventTypes | BaseLayerObjectEventTypes, Return>;
-export type Options = {
+export type BaseLayerOnSignature<Return> = import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> & import("../Observable.js").OnSignature<BaseLayerObjectEventTypes, import("../Object.js").ObjectEvent, Return> & import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes | BaseLayerObjectEventTypes, Return>;
+export type Options<Properties extends {
+    [x: string]: any;
+} = {
+    [x: string]: any;
+}> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -61,9 +65,7 @@ export type Options = {
     /**
      * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
      */
-    properties?: {
-        [x: string]: any;
-    } | undefined;
+    properties?: Properties | undefined;
 };
 /**
  * A css color, or a function called with a view resolution returning a css color.
@@ -72,16 +74,17 @@ export type Options = {
  * @api
  */
 /**
- * @typedef {import("../ObjectEventType").Types|'change:extent'|'change:maxResolution'|'change:maxZoom'|
+ * @typedef {import("../ObjectEventType.js").Types|'change:extent'|'change:maxResolution'|'change:maxZoom'|
  *    'change:minResolution'|'change:minZoom'|'change:opacity'|'change:visible'|'change:zIndex'} BaseLayerObjectEventTypes
  */
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<BaseLayerObjectEventTypes, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|BaseLayerObjectEventTypes, Return>} BaseLayerOnSignature
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable.js").OnSignature<BaseLayerObjectEventTypes, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|BaseLayerObjectEventTypes, Return>} BaseLayerOnSignature
  */
 /**
+ * @template {Object<string, *>} [Properties=Object<string, *>]
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
@@ -102,7 +105,7 @@ export type Options = {
  * be visible.
  * @property {BackgroundColor} [background] Background color for the layer. If not specified, no background
  * will be rendered.
- * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ * @property {Properties} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  */
 /**
  * @classdesc
@@ -113,20 +116,28 @@ export type Options = {
  * is observable, and has get/set accessors.
  *
  * @api
+ * @template {Object<string, *>} [Properties=Object<string, *>]
+ * @extends {BaseObject<NoInfer<Properties> & Object<string, *>>}
  */
-declare class BaseLayer extends BaseObject {
+declare class BaseLayer<Properties extends {
+    [x: string]: any;
+} = {
+    [x: string]: any;
+}> extends BaseObject<NoInfer<Properties> & {
+    [x: string]: any;
+}> {
     /**
-     * @param {Options} options Layer options.
+     * @param {Options<NoInfer<Properties>>} options Layer options.
      */
-    constructor(options: Options);
+    constructor(options: Options<NoInfer<Properties>>);
     /***
-     * @type {BaseLayerOnSignature<import("../events").EventsKey>}
+     * @type {BaseLayerOnSignature<import("../events.js").EventsKey>}
      */
-    on: BaseLayerOnSignature<import("../events").EventsKey>;
+    on: BaseLayerOnSignature<import("../events.js").EventsKey>;
     /***
-     * @type {BaseLayerOnSignature<import("../events").EventsKey>}
+     * @type {BaseLayerOnSignature<import("../events.js").EventsKey>}
      */
-    once: BaseLayerOnSignature<import("../events").EventsKey>;
+    once: BaseLayerOnSignature<import("../events.js").EventsKey>;
     /***
      * @type {BaseLayerOnSignature<void>}
      */
@@ -162,21 +173,21 @@ declare class BaseLayer extends BaseObject {
      * @param {boolean} [managed] Layer is managed.
      * @return {import("./Layer.js").State} Layer state.
      */
-    getLayerState(managed?: boolean | undefined): import("./Layer.js").State;
+    getLayerState(managed?: boolean): import("./Layer.js").State;
     /**
      * @abstract
      * @param {Array<import("./Layer.js").default>} [array] Array of layers (to be
      *     modified in place).
      * @return {Array<import("./Layer.js").default>} Array of layers.
      */
-    getLayersArray(array?: import("./Layer.js").default<import("../source/Source.js").default, import("../renderer/Layer.js").default<any>>[] | undefined): Array<import("./Layer.js").default>;
+    getLayersArray(array?: Array<import("./Layer.js").default>): Array<import("./Layer.js").default>;
     /**
      * @abstract
      * @param {Array<import("./Layer.js").State>} [states] Optional list of layer
      *     states (to be modified in place).
      * @return {Array<import("./Layer.js").State>} List of layer states.
      */
-    getLayerStatesArray(states?: import("./Layer.js").State[] | undefined): Array<import("./Layer.js").State>;
+    getLayerStatesArray(states?: Array<import("./Layer.js").State>): Array<import("./Layer.js").State>;
     /**
      * Return the {@link module:ol/extent~Extent extent} of the layer or `undefined` if it
      * will be visible regardless of extent.
@@ -249,7 +260,7 @@ declare class BaseLayer extends BaseObject {
      * Sets the background color.
      * @param {BackgroundColor} [background] Background color.
      */
-    setBackground(background?: BackgroundColor | undefined): void;
+    setBackground(background?: BackgroundColor): void;
     /**
      * Set the extent at which the layer is visible.  If `undefined`, the layer
      * will be visible at all extents.

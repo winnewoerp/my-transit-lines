@@ -2,9 +2,9 @@
  * @module ol/source/ImageArcGISRest
  */
 
+import {decode} from '../Image.js';
 import ImageSource, {defaultImageLoadFunction} from './Image.js';
 import {createLoader} from './arcgisRest.js';
-import {decode} from '../Image.js';
 
 /**
  * @typedef {Object} Options
@@ -12,6 +12,7 @@ import {decode} from '../Image.js';
  * @property {null|string} [crossOrigin] The `crossOrigin` attribute for loaded images.  Note that
  * you must provide a `crossOrigin` value if you want to access pixel data with the Canvas renderer.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {ReferrerPolicy} [referrerPolicy] The `referrerPolicy` property for loaded images.
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting the image from
  * the remote server.
  * @property {import("../Image.js").LoadFunction} [imageLoadFunction] Optional function to load an image given
@@ -70,6 +71,12 @@ class ImageArcGISRest extends ImageSource {
 
     /**
      * @private
+     * @type {ReferrerPolicy}
+     */
+    this.referrerPolicy_ = options.referrerPolicy;
+
+    /**
+     * @private
      * @type {boolean}
      */
     this.hidpi_ = options.hidpi !== undefined ? options.hidpi : true;
@@ -93,13 +100,7 @@ class ImageArcGISRest extends ImageSource {
      * @private
      * @type {!Object}
      */
-    this.params_ = options.params || {};
-
-    /**
-     * @private
-     * @type {import("../Image.js").default}
-     */
-    this.image_ = null;
+    this.params_ = Object.assign({}, options.params);
 
     /**
      * @private
@@ -118,6 +119,12 @@ class ImageArcGISRest extends ImageSource {
      * @type {number}
      */
     this.ratio_ = options.ratio !== undefined ? options.ratio : 1.5;
+
+    /**
+     * @private
+     * @type {import("../proj/Projection.js").default}
+     */
+    this.loaderProjection_ = null;
   }
 
   /**
@@ -136,15 +143,18 @@ class ImageArcGISRest extends ImageSource {
    * @param {number} pixelRatio Pixel ratio.
    * @param {import("../proj/Projection.js").default} projection Projection.
    * @return {import("../Image.js").default} Single image.
+   * @override
    */
   getImageInternal(extent, resolution, pixelRatio, projection) {
     if (this.url_ === undefined) {
       return null;
     }
-    if (!this.loader) {
+    if (!this.loader || this.loaderProjection_ !== projection) {
       // Lazily create loader to pick up the view projection and to allow `params` updates
+      this.loaderProjection_ = projection;
       this.loader = createLoader({
         crossOrigin: this.crossOrigin_,
+        referrerPolicy: this.referrerPolicy_,
         params: this.params_,
         projection: projection,
         hidpi: this.hidpi_,
@@ -185,7 +195,6 @@ class ImageArcGISRest extends ImageSource {
    * @api
    */
   setImageLoadFunction(imageLoadFunction) {
-    this.image_ = null;
     this.imageLoadFunction_ = imageLoadFunction;
     this.changed();
   }
@@ -198,9 +207,19 @@ class ImageArcGISRest extends ImageSource {
   setUrl(url) {
     if (url != this.url_) {
       this.url_ = url;
-      this.image_ = null;
+      this.loader = null;
       this.changed();
     }
+  }
+
+  /**
+   * Set the user-provided params.
+   * @param {Object} params Params.
+   * @api
+   */
+  setParams(params) {
+    this.params_ = Object.assign({}, params);
+    this.changed();
   }
 
   /**
@@ -210,8 +229,15 @@ class ImageArcGISRest extends ImageSource {
    */
   updateParams(params) {
     Object.assign(this.params_, params);
-    this.image_ = null;
     this.changed();
+  }
+
+  /**
+   * @override
+   */
+  changed() {
+    this.image = null;
+    super.changed();
   }
 }
 

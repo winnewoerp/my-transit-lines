@@ -1,32 +1,26 @@
 /**
  * @module ol/Map
  */
-import BaseObject from './Object.js';
 import Collection from './Collection.js';
 import CollectionEventType from './CollectionEventType.js';
-import CompositeMapRenderer from './renderer/Composite.js';
-import EventType from './events/EventType.js';
-import Layer from './layer/Layer.js';
-import LayerGroup, {GroupEvent} from './layer/Group.js';
 import MapBrowserEvent from './MapBrowserEvent.js';
 import MapBrowserEventHandler from './MapBrowserEventHandler.js';
 import MapBrowserEventType from './MapBrowserEventType.js';
 import MapEvent from './MapEvent.js';
 import MapEventType from './MapEventType.js';
 import MapProperty from './MapProperty.js';
+import BaseObject from './Object.js';
 import ObjectEventType from './ObjectEventType.js';
-import PointerEventType from './pointer/EventType.js';
-import RenderEventType from './render/EventType.js';
 import TileQueue, {getTilePriority} from './TileQueue.js';
 import View from './View.js';
 import ViewHint from './ViewHint.js';
-import {DEVICE_PIXEL_RATIO, PASSIVE_EVENT_LISTENERS} from './has.js';
-import {TRUE} from './functions.js';
-import {
-  apply as applyTransform,
-  create as createTransform,
-} from './transform.js';
+import {equals} from './array.js';
 import {assert} from './asserts.js';
+import {warn} from './console.js';
+import {defaults as defaultControls} from './control/defaults.js';
+import {isCanvas} from './dom.js';
+import {listen, unlistenByKey} from './events.js';
+import EventType from './events/EventType.js';
 import {
   clone,
   createOrUpdateEmpty,
@@ -34,15 +28,25 @@ import {
   getForViewAndSize,
   isEmpty,
 } from './extent.js';
-import {defaults as defaultControls} from './control/defaults.js';
+import {TRUE} from './functions.js';
+import {
+  DEVICE_PIXEL_RATIO,
+  PASSIVE_EVENT_LISTENERS,
+  WORKER_OFFSCREEN_CANVAS,
+} from './has.js';
 import {defaults as defaultInteractions} from './interaction/defaults.js';
-import {equals} from './array.js';
+import LayerGroup, {GroupEvent} from './layer/Group.js';
+import Layer from './layer/Layer.js';
+import PointerEventType from './pointer/EventType.js';
 import {fromUserCoordinate, toUserCoordinate} from './proj.js';
-import {getUid} from './util.js';
+import RenderEventType from './render/EventType.js';
+import CompositeMapRenderer from './renderer/Composite.js';
 import {hasArea} from './size.js';
-import {listen, unlistenByKey} from './events.js';
-import {removeNode} from './dom.js';
-import {warn} from './console.js';
+import {
+  apply as applyTransform,
+  create as createTransform,
+} from './transform.js';
+import {getUid} from './util.js';
 
 /**
  * State of the current frame. Only `pixelRatio`, `time` and `viewState` should
@@ -53,7 +57,9 @@ import {warn} from './console.js';
  * @property {import("./View.js").State} viewState The state of the current view.
  * @property {boolean} animate Animate.
  * @property {import("./transform.js").Transform} coordinateToPixelTransform CoordinateToPixelTransform.
- * @property {import("rbush").default} declutterTree DeclutterTree.
+ * @property {Object<string, import("rbush").default<import('./render/canvas/Executor.js').DeclutterEntry>>|null} declutter
+ * Declutter trees by declutter group.
+ * When null, no decluttering is needed because no layers have decluttering enabled.
  * @property {null|import("./extent.js").Extent} extent Extent (in view projection coordinates).
  * @property {import("./extent.js").Extent} [nextExtent] Next extent during an animation series.
  * @property {number} index Index.
@@ -71,12 +77,12 @@ import {warn} from './console.js';
  */
 
 /**
- * @typedef {function(Map, ?FrameState): any} PostRenderFunction
+ * @typedef {function(Map, FrameState): any} PostRenderFunction
  */
 
 /**
  * @typedef {Object} AtPixelOptions
- * @property {undefined|function(import("./layer/Layer.js").default<import("./source/Source").default>): boolean} [layerFilter] Layer filter
+ * @property {undefined|function(import("./layer/Layer.js").default<import("./source/Source.js").default>): boolean} [layerFilter] Layer filter
  * function. The filter function will receive one argument, the
  * {@link module:ol/layer/Layer~Layer layer-candidate} and it should return a boolean value.
  * Only layers which are visible and for which this function returns `true`
@@ -97,19 +103,19 @@ import {warn} from './console.js';
  */
 
 /**
- * @typedef {import("./ObjectEventType").Types|'change:layergroup'|'change:size'|'change:target'|'change:view'} MapObjectEventTypes
+ * @typedef {import("./ObjectEventType.js").Types|'change:layergroup'|'change:size'|'change:target'|'change:view'} MapObjectEventTypes
  */
 
 /***
  * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *    import("./Observable").OnSignature<MapObjectEventTypes, import("./Object").ObjectEvent, Return> &
- *    import("./Observable").OnSignature<import("./MapBrowserEventType").Types, import("./MapBrowserEvent").default, Return> &
- *    import("./Observable").OnSignature<import("./MapEventType").Types, import("./MapEvent").default, Return> &
- *    import("./Observable").OnSignature<import("./render/EventType").MapRenderEventTypes, import("./render/Event").default, Return> &
- *    import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|MapObjectEventTypes|
- *      import("./MapBrowserEventType").Types|import("./MapEventType").Types|
- *      import("./render/EventType").MapRenderEventTypes, Return>} MapEventHandler
+ * @typedef {import("./Observable.js").OnSignature<import("./Observable.js").EventTypes, import("./events/Event.js").default, Return> &
+ *    import("./Observable.js").OnSignature<MapObjectEventTypes, import("./Object.js").ObjectEvent, Return> &
+ *    import("./Observable.js").OnSignature<import("./MapBrowserEventType.js").Types, import("./MapBrowserEvent.js").default, Return> &
+ *    import("./Observable.js").OnSignature<import("./MapEventType.js").Types, import("./MapEvent.js").default, Return> &
+ *    import("./Observable.js").OnSignature<import("./render/EventType.js").MapRenderEventTypes, import("./render/Event.js").default, Return> &
+ *    import("./Observable.js").CombinedOnSignature<import("./Observable.js").EventTypes|MapObjectEventTypes|
+ *      import("./MapBrowserEventType.js").Types|import("./MapEventType.js").Types|
+ *      import("./render/EventType.js").MapRenderEventTypes, Return>} MapEventHandler
  */
 
 /**
@@ -117,12 +123,12 @@ import {warn} from './console.js';
  * @typedef {Object} MapOptions
  * @property {Collection<import("./control/Control.js").default>|Array<import("./control/Control.js").default>} [controls]
  * Controls initially added to the map. If not specified,
- * {@link module:ol/control/defaults.defaults} is used.
+ * {@link module:ol/control/defaults.defaults} is used. In a worker, no controls are added by default.
  * @property {number} [pixelRatio=window.devicePixelRatio] The ratio between
  * physical pixels and device-independent pixels (dips) on the device.
  * @property {Collection<import("./interaction/Interaction.js").default>|Array<import("./interaction/Interaction.js").default>} [interactions]
  * Interactions that are initially added to the map. If not specified,
- * {@link module:ol/interaction/defaults.defaults} is used.
+ * {@link module:ol/interaction/defaults.defaults} is used. In a worker, no interactions are added by default.
  * @property {HTMLElement|Document|string} [keyboardEventTarget] The element to
  * listen to keyboard events on. This determines when the `KeyboardPan` and
  * `KeyboardZoom` interactions trigger. For example, if this option is set to
@@ -143,10 +149,16 @@ import {warn} from './console.js';
  * Increasing this value can make it easier to click on the map.
  * @property {Collection<import("./Overlay.js").default>|Array<import("./Overlay.js").default>} [overlays]
  * Overlays initially added to the map. By default, no overlays are added.
- * @property {HTMLElement|string} [target] The container for the map, either the
+ * @property {HTMLElement|string|HTMLCanvasElement|OffscreenCanvas} [target] The container for the map, either the
  * element itself or the `id` of the element. If not specified at construction
  * time, {@link module:ol/Map~Map#setTarget} must be called for the map to be
  * rendered. If passed by element, the container can be in a secondary document.
+ * For use in workers or when exporting a map, use an `OffscreenCanvas` or `HTMLCanvasElement` as target,
+ * with a width and height in physical pixels, optionally multiplied by and a scale transform matching
+ * the map's pixel ratio.
+ * For accessibility (focus and keyboard events for map navigation), the `target` element must have a
+ *  properly configured `tabindex` attribute. If the `target` element is inside a Shadow DOM, the
+ *  `tabindex` atribute must be set on the custom element's host element.
  * **Note:** CSS `transform` support for the target element is limited to `scale`.
  * @property {View|Promise<import("./View.js").ViewOptions>} [view] The map's view.  No layer sources will be
  * fetched unless this is specified at construction time or through
@@ -245,12 +257,12 @@ class Map extends BaseObject {
     options = options || {};
 
     /***
-     * @type {MapEventHandler<import("./events").EventsKey>}
+     * @type {MapEventHandler<import("./events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {MapEventHandler<import("./events").EventsKey>}
+     * @type {MapEventHandler<import("./events.js").EventsKey>}
      */
     this.once;
 
@@ -263,9 +275,9 @@ class Map extends BaseObject {
 
     /**
      * @private
-     * @type {boolean|undefined}
+     * @type {boolean}
      */
-    this.renderComplete_;
+    this.renderComplete_ = false;
 
     /**
      * @private
@@ -362,39 +374,42 @@ class Map extends BaseObject {
      * @private
      * @type {!HTMLElement}
      */
-    this.viewport_ = document.createElement('div');
-    this.viewport_.className =
-      'ol-viewport' + ('ontouchstart' in window ? ' ol-touch' : '');
-    this.viewport_.style.position = 'relative';
-    this.viewport_.style.overflow = 'hidden';
-    this.viewport_.style.width = '100%';
-    this.viewport_.style.height = '100%';
+    if (!WORKER_OFFSCREEN_CANVAS) {
+      this.viewport_ = document.createElement('div');
+      this.viewport_.className =
+        'ol-viewport' + ('ontouchstart' in window ? ' ol-touch' : '');
+      this.viewport_.style.position = 'relative';
+      this.viewport_.style.overflow = 'hidden';
+      this.viewport_.style.width = '100%';
+      this.viewport_.style.height = '100%';
 
-    /**
-     * @private
-     * @type {!HTMLElement}
-     */
-    this.overlayContainer_ = document.createElement('div');
-    this.overlayContainer_.style.position = 'absolute';
-    this.overlayContainer_.style.zIndex = '0';
-    this.overlayContainer_.style.width = '100%';
-    this.overlayContainer_.style.height = '100%';
-    this.overlayContainer_.style.pointerEvents = 'none';
-    this.overlayContainer_.className = 'ol-overlaycontainer';
-    this.viewport_.appendChild(this.overlayContainer_);
+      /**
+       * @private
+       * @type {!HTMLElement}
+       */
+      this.overlayContainer_ = document.createElement('div');
+      this.overlayContainer_.style.position = 'absolute';
+      this.overlayContainer_.style.zIndex = '0';
+      this.overlayContainer_.style.width = '100%';
+      this.overlayContainer_.style.height = '100%';
+      this.overlayContainer_.style.pointerEvents = 'none';
+      this.overlayContainer_.className = 'ol-overlaycontainer';
+      this.viewport_.appendChild(this.overlayContainer_);
 
-    /**
-     * @private
-     * @type {!HTMLElement}
-     */
-    this.overlayContainerStopEvent_ = document.createElement('div');
-    this.overlayContainerStopEvent_.style.position = 'absolute';
-    this.overlayContainerStopEvent_.style.zIndex = '0';
-    this.overlayContainerStopEvent_.style.width = '100%';
-    this.overlayContainerStopEvent_.style.height = '100%';
-    this.overlayContainerStopEvent_.style.pointerEvents = 'none';
-    this.overlayContainerStopEvent_.className = 'ol-overlaycontainer-stopevent';
-    this.viewport_.appendChild(this.overlayContainerStopEvent_);
+      /**
+       * @private
+       * @type {!HTMLElement}
+       */
+      this.overlayContainerStopEvent_ = document.createElement('div');
+      this.overlayContainerStopEvent_.style.position = 'absolute';
+      this.overlayContainerStopEvent_.style.zIndex = '0';
+      this.overlayContainerStopEvent_.style.width = '100%';
+      this.overlayContainerStopEvent_.style.height = '100%';
+      this.overlayContainerStopEvent_.style.pointerEvents = 'none';
+      this.overlayContainerStopEvent_.className =
+        'ol-overlaycontainer-stopevent';
+      this.viewport_.appendChild(this.overlayContainerStopEvent_);
+    }
 
     /**
      * @private
@@ -426,16 +441,21 @@ class Map extends BaseObject {
      */
     this.targetElement_ = null;
 
-    /**
-     * @type {ResizeObserver}
-     */
-    this.resizeObserver_ = new ResizeObserver(() => this.updateSize());
+    if (!WORKER_OFFSCREEN_CANVAS) {
+      /**
+       * @private
+       * @type {ResizeObserver}
+       */
+      this.resizeObserver_ = new ResizeObserver(() => this.updateSize());
+    }
 
     /**
      * @type {Collection<import("./control/Control.js").default>}
      * @protected
      */
-    this.controls = optionsInternal.controls || defaultControls();
+    this.controls =
+      optionsInternal.controls ||
+      (WORKER_OFFSCREEN_CANVAS ? new Collection() : defaultControls());
 
     /**
      * @type {Collection<import("./interaction/Interaction.js").default>}
@@ -443,9 +463,11 @@ class Map extends BaseObject {
      */
     this.interactions =
       optionsInternal.interactions ||
-      defaultInteractions({
-        onFocusOnly: true,
-      });
+      (WORKER_OFFSCREEN_CANVAS
+        ? new Collection()
+        : defaultInteractions({
+            onFocusOnly: true,
+          }));
 
     /**
      * @type {Collection<import("./Overlay.js").default>}
@@ -478,12 +500,12 @@ class Map extends BaseObject {
      */
     this.tileQueue_ = new TileQueue(
       this.getTilePriority.bind(this),
-      this.handleTileChange_.bind(this)
+      this.handleTileChange_.bind(this),
     );
 
     this.addChangeListener(
       MapProperty.LAYERGROUP,
-      this.handleLayerGroupChanged_
+      this.handleLayerGroupChanged_,
     );
     this.addChangeListener(MapProperty.VIEW, this.handleViewChanged_);
     this.addChangeListener(MapProperty.SIZE, this.handleSizeChanged_);
@@ -507,7 +529,7 @@ class Map extends BaseObject {
        */
       (event) => {
         event.element.setMap(this);
-      }
+      },
     );
 
     this.controls.addEventListener(
@@ -517,7 +539,7 @@ class Map extends BaseObject {
        */
       (event) => {
         event.element.setMap(null);
-      }
+      },
     );
 
     this.interactions.addEventListener(
@@ -527,7 +549,7 @@ class Map extends BaseObject {
        */
       (event) => {
         event.element.setMap(this);
-      }
+      },
     );
 
     this.interactions.addEventListener(
@@ -537,7 +559,7 @@ class Map extends BaseObject {
        */
       (event) => {
         event.element.setMap(null);
-      }
+      },
     );
 
     this.overlays_.addEventListener(
@@ -547,7 +569,7 @@ class Map extends BaseObject {
        */
       (event) => {
         this.addOverlayInternal_(event.element);
-      }
+      },
     );
 
     this.overlays_.addEventListener(
@@ -561,7 +583,7 @@ class Map extends BaseObject {
           delete this.overlayIdIndex_[id.toString()];
         }
         event.element.setMap(null);
-      }
+      },
     );
 
     this.controls.forEach(
@@ -570,7 +592,7 @@ class Map extends BaseObject {
        */
       (control) => {
         control.setMap(this);
-      }
+      },
     );
 
     this.interactions.forEach(
@@ -579,7 +601,7 @@ class Map extends BaseObject {
        */
       (interaction) => {
         interaction.setMap(this);
-      }
+      },
     );
 
     this.overlays_.forEach(this.addOverlayInternal_.bind(this));
@@ -652,12 +674,13 @@ class Map extends BaseObject {
   /**
    *
    * Clean up.
+   * @override
    */
   disposeInternal() {
     this.controls.clear();
     this.interactions.clear();
     this.overlays_.clear();
-    this.resizeObserver_.disconnect();
+    this.resizeObserver_?.disconnect();
     this.setTarget(null);
     super.disposeInternal();
   }
@@ -666,8 +689,11 @@ class Map extends BaseObject {
    * Detect features that intersect a pixel on the viewport, and execute a
    * callback with each intersecting feature. Layers included in the detection can
    * be configured through the `layerFilter` option in `options`.
+   * For polygons without a fill, only the stroke will be used for hit detection.
+   * Polygons must have a fill style applied to ensure that pixels inside a polygon are detected.
+   * The fill can be transparent.
    * @param {import("./pixel.js").Pixel} pixel Pixel.
-   * @param {function(import("./Feature.js").FeatureLike, import("./layer/Layer.js").default<import("./source/Source").default>, import("./geom/SimpleGeometry.js").default): T} callback Feature callback. The callback will be
+   * @param {function(import("./Feature.js").FeatureLike, import("./layer/Layer.js").default<import("./source/Source.js").default>, import("./geom/SimpleGeometry.js").default): T} callback Feature callback. The callback will be
    *     called with two arguments. The first argument is one
    *     {@link module:ol/Feature~Feature feature} or
    *     {@link module:ol/render/Feature~RenderFeature render feature} at the pixel, the second is
@@ -699,12 +725,15 @@ class Map extends BaseObject {
       callback,
       null,
       layerFilter,
-      null
+      null,
     );
   }
 
   /**
    * Get all features that intersect a pixel on the viewport.
+   * For polygons without a fill, only the stroke will be used for hit detection.
+   * Polygons must have a fill style applied to ensure that pixels inside a polygon are detected.
+   * The fill can be transparent.
    * @param {import("./pixel.js").Pixel} pixel Pixel.
    * @param {AtPixelOptions} [options] Optional options.
    * @return {Array<import("./Feature.js").FeatureLike>} The detected features or
@@ -718,7 +747,7 @@ class Map extends BaseObject {
       function (feature) {
         features.push(feature);
       },
-      options
+      options,
     );
     return features;
   }
@@ -746,6 +775,9 @@ class Map extends BaseObject {
   /**
    * Detect if features intersect a pixel on the viewport. Layers included in the
    * detection can be configured through the `layerFilter` option.
+   * For polygons without a fill, only the stroke will be used for hit detection.
+   * Polygons must have a fill style applied to ensure that pixels inside a polygon are detected.
+   * The fill can be transparent.
    * @param {import("./pixel.js").Pixel} pixel Pixel.
    * @param {AtPixelOptions} [options] Optional options.
    * @return {boolean} Is there a feature at the given pixel?
@@ -768,7 +800,7 @@ class Map extends BaseObject {
       hitTolerance,
       checkWrapped,
       layerFilter,
-      null
+      null,
     );
   }
 
@@ -851,7 +883,7 @@ class Map extends BaseObject {
   getCoordinateFromPixel(pixel) {
     return toUserCoordinate(
       this.getCoordinateFromPixelInternal(pixel),
-      this.getView().getProjection()
+      this.getView().getProjection(),
     );
   }
 
@@ -894,7 +926,7 @@ class Map extends BaseObject {
    * Note that the index treats string and numeric identifiers as the same. So
    * `map.getOverlayById(2)` will return an overlay with id `'2'` or `2`.
    * @param {string|number} id Overlay identifier.
-   * @return {import("./Overlay.js").default} Overlay.
+   * @return {import("./Overlay.js").default|null} Overlay.
    * @api
    */
   getOverlayById(id) {
@@ -983,7 +1015,7 @@ class Map extends BaseObject {
   getPixelFromCoordinate(coordinate) {
     const viewCoordinate = fromUserCoordinate(
       coordinate,
-      this.getView().getProjection()
+      this.getView().getProjection(),
     );
     return this.getPixelFromCoordinateInternal(viewCoordinate);
   }
@@ -1001,8 +1033,30 @@ class Map extends BaseObject {
     }
     return applyTransform(
       frameState.coordinateToPixelTransform,
-      coordinate.slice(0, 2)
+      coordinate.slice(0, 2),
     );
+  }
+
+  /**
+   * Get the pixel ratio of the rendered map.
+   * @return {number} Pixel ratio.
+   * @api
+   */
+  getPixelRatio() {
+    return this.pixelRatio_;
+  }
+
+  /**
+   * Set the pixel ratio of the rendered map.
+   * @param {number} pixelRatio Pixel ratio.
+   * @api
+   */
+  setPixelRatio(pixelRatio) {
+    if (this.pixelRatio_ === pixelRatio) {
+      return;
+    }
+    this.pixelRatio_ = pixelRatio;
+    this.render();
   }
 
   /**
@@ -1088,12 +1142,12 @@ class Map extends BaseObject {
       tile,
       tileSourceKey,
       tileCenter,
-      tileResolution
+      tileResolution,
     );
   }
 
   /**
-   * @param {UIEvent} browserEvent Browser event.
+   * @param {PointerEvent|KeyboardEvent|WheelEvent} browserEvent Browser event.
    * @param {string} [type] Type.
    */
   handleBrowserEvent(browserEvent, type) {
@@ -1111,9 +1165,7 @@ class Map extends BaseObject {
       // coordinates so interactions cannot be used.
       return;
     }
-    const originalEvent = /** @type {PointerEvent} */ (
-      mapBrowserEvent.originalEvent
-    );
+    const originalEvent = mapBrowserEvent.originalEvent;
     const eventType = originalEvent.type;
     if (
       eventType === PointerEventType.POINTERDOWN ||
@@ -1125,6 +1177,15 @@ class Map extends BaseObject {
         ? this.viewport_.getRootNode()
         : doc;
       const target = /** @type {Node} */ (originalEvent.target);
+
+      const currentDoc =
+        rootNode instanceof ShadowRoot
+          ? rootNode.host === target
+            ? rootNode.host.ownerDocument
+            : rootNode
+          : rootNode === doc
+            ? doc.documentElement
+            : rootNode;
       if (
         // Abort if the target is a child of the container for elements whose events are not meant
         // to be handled by map interactions.
@@ -1133,7 +1194,7 @@ class Map extends BaseObject {
         // It's possible for the target to no longer be in the page if it has been removed in an
         // event listener, this might happen in a Control that recreates it's content based on
         // user interaction either manually or via a render in something like https://reactjs.org/
-        !(rootNode === doc ? doc.documentElement : rootNode).contains(target)
+        !currentDoc.contains(target)
       ) {
         return;
       }
@@ -1177,45 +1238,50 @@ class Map extends BaseObject {
     if (!tileQueue.isEmpty()) {
       let maxTotalLoading = this.maxTilesLoading_;
       let maxNewLoads = maxTotalLoading;
-      if (frameState) {
-        const hints = frameState.viewHints;
-        if (hints[ViewHint.ANIMATING] || hints[ViewHint.INTERACTING]) {
-          const lowOnFrameBudget = Date.now() - frameState.time > 8;
-          maxTotalLoading = lowOnFrameBudget ? 0 : 8;
-          maxNewLoads = lowOnFrameBudget ? 0 : 2;
-        }
+      const hints = frameState ? frameState.viewHints : undefined;
+      const animatingOrInteracting = hints
+        ? hints[ViewHint.ANIMATING] || hints[ViewHint.INTERACTING]
+        : false;
+      if (animatingOrInteracting) {
+        const lowOnFrameBudget = Date.now() - frameState.time > 8;
+        maxTotalLoading = lowOnFrameBudget ? 0 : 8;
+        maxNewLoads = lowOnFrameBudget ? 0 : 2;
       }
       if (tileQueue.getTilesLoading() < maxTotalLoading) {
-        tileQueue.reprioritize(); // FIXME only call if view has changed
+        if (animatingOrInteracting) {
+          tileQueue.reprioritize();
+        }
         tileQueue.loadMoreTiles(maxTotalLoading, maxNewLoads);
       }
     }
 
     if (frameState && this.renderer_ && !frameState.animate) {
-      if (this.renderComplete_ === true) {
+      if (this.renderComplete_) {
         if (this.hasListener(RenderEventType.RENDERCOMPLETE)) {
           this.renderer_.dispatchRenderEvent(
             RenderEventType.RENDERCOMPLETE,
-            frameState
+            frameState,
           );
         }
         if (this.loaded_ === false) {
           this.loaded_ = true;
           this.dispatchEvent(
-            new MapEvent(MapEventType.LOADEND, this, frameState)
+            new MapEvent(MapEventType.LOADEND, this, frameState),
           );
         }
       } else if (this.loaded_ === true) {
         this.loaded_ = false;
         this.dispatchEvent(
-          new MapEvent(MapEventType.LOADSTART, this, frameState)
+          new MapEvent(MapEventType.LOADSTART, this, frameState),
         );
       }
     }
 
     const postRenderFunctions = this.postRenderFunctions_;
-    for (let i = 0, ii = postRenderFunctions.length; i < ii; ++i) {
-      postRenderFunctions[i](this, frameState);
+    if (frameState) {
+      for (let i = 0, ii = postRenderFunctions.length; i < ii; ++i) {
+        postRenderFunctions[i](this, frameState);
+      }
     }
     postRenderFunctions.length = 0;
   }
@@ -1242,19 +1308,19 @@ class Map extends BaseObject {
       this.targetChangeHandlerKeys_ = null;
       this.viewport_.removeEventListener(
         EventType.CONTEXTMENU,
-        this.boundHandleBrowserEvent_
+        this.boundHandleBrowserEvent_,
       );
       this.viewport_.removeEventListener(
         EventType.WHEEL,
-        this.boundHandleBrowserEvent_
+        this.boundHandleBrowserEvent_,
       );
       this.mapBrowserEventHandler_.dispose();
       this.mapBrowserEventHandler_ = null;
-      removeNode(this.viewport_);
+      this.viewport_.remove();
     }
 
-    if (this.targetElement_) {
-      this.resizeObserver_.unobserve(this.targetElement_);
+    if (this.targetElement_ && !isCanvas(this.targetElement_)) {
+      this.resizeObserver_?.unobserve(this.targetElement_);
       const rootNode = this.targetElement_.getRootNode();
       if (rootNode instanceof ShadowRoot) {
         this.resizeObserver_.unobserve(rootNode.host);
@@ -1284,57 +1350,71 @@ class Map extends BaseObject {
         this.animationDelayKey_ = undefined;
       }
     } else {
-      targetElement.appendChild(this.viewport_);
+      if (!isCanvas(targetElement)) {
+        targetElement.appendChild(this.viewport_);
+      }
       if (!this.renderer_) {
         this.renderer_ = new CompositeMapRenderer(this);
       }
 
-      this.mapBrowserEventHandler_ = new MapBrowserEventHandler(
-        this,
-        this.moveTolerance_
-      );
-      for (const key in MapBrowserEventType) {
-        this.mapBrowserEventHandler_.addEventListener(
-          MapBrowserEventType[key],
-          this.handleMapBrowserEvent.bind(this)
+      if (!isCanvas(targetElement)) {
+        this.mapBrowserEventHandler_ = new MapBrowserEventHandler(
+          this,
+          this.moveTolerance_,
         );
-      }
-      this.viewport_.addEventListener(
-        EventType.CONTEXTMENU,
-        this.boundHandleBrowserEvent_,
-        false
-      );
-      this.viewport_.addEventListener(
-        EventType.WHEEL,
-        this.boundHandleBrowserEvent_,
-        PASSIVE_EVENT_LISTENERS ? {passive: false} : false
-      );
+        for (const key in MapBrowserEventType) {
+          this.mapBrowserEventHandler_.addEventListener(
+            MapBrowserEventType[key],
+            this.handleMapBrowserEvent.bind(this),
+          );
+        }
+        this.viewport_.addEventListener(
+          EventType.CONTEXTMENU,
+          this.boundHandleBrowserEvent_,
+          false,
+        );
+        this.viewport_.addEventListener(
+          EventType.WHEEL,
+          this.boundHandleBrowserEvent_,
+          PASSIVE_EVENT_LISTENERS ? {passive: false} : false,
+        );
 
-      const keyboardEventTarget = !this.keyboardEventTarget_
-        ? targetElement
-        : this.keyboardEventTarget_;
-      this.targetChangeHandlerKeys_ = [
-        listen(
-          keyboardEventTarget,
-          EventType.KEYDOWN,
-          this.handleBrowserEvent,
-          this
-        ),
-        listen(
-          keyboardEventTarget,
-          EventType.KEYPRESS,
-          this.handleBrowserEvent,
-          this
-        ),
-      ];
-      const rootNode = targetElement.getRootNode();
-      if (rootNode instanceof ShadowRoot) {
-        this.resizeObserver_.observe(rootNode.host);
+        let keyboardEventTarget;
+        if (!this.keyboardEventTarget_) {
+          // check if map target is in shadowDOM, if yes use host element as target
+          const targetRoot = targetElement.getRootNode();
+          const targetCandidate =
+            targetRoot instanceof ShadowRoot ? targetRoot.host : targetElement;
+          keyboardEventTarget = targetCandidate;
+        } else {
+          keyboardEventTarget = this.keyboardEventTarget_;
+        }
+
+        this.targetChangeHandlerKeys_ = [
+          listen(
+            keyboardEventTarget,
+            EventType.KEYDOWN,
+            this.handleBrowserEvent,
+            this,
+          ),
+          listen(
+            keyboardEventTarget,
+            EventType.KEYPRESS,
+            this.handleBrowserEvent,
+            this,
+          ),
+        ];
+        if (targetElement instanceof HTMLElement) {
+          const rootNode = targetElement.getRootNode();
+          if (rootNode instanceof ShadowRoot) {
+            this.resizeObserver_.observe(rootNode.host);
+          }
+          this.resizeObserver_?.observe(targetElement);
+        }
       }
-      this.resizeObserver_.observe(targetElement);
+
+      this.updateSize();
     }
-
-    this.updateSize();
     // updateSize calls setSize, so no need to call this.render
     // ourselves here.
   }
@@ -1367,19 +1447,19 @@ class Map extends BaseObject {
     }
     const view = this.getView();
     if (view) {
-      this.updateViewportSize_();
+      this.updateViewportSize_(this.getSize());
 
       this.viewPropertyListenerKey_ = listen(
         view,
         ObjectEventType.PROPERTYCHANGE,
         this.handleViewPropertyChanged_,
-        this
+        this,
       );
       this.viewChangeListenerKey_ = listen(
         view,
         EventType.CHANGE,
         this.handleViewPropertyChanged_,
-        this
+        this,
       );
 
       view.resolveConstraints(0);
@@ -1438,7 +1518,10 @@ class Map extends BaseObject {
    * Redraws all text after new fonts have loaded
    */
   redrawText() {
-    const layerStates = this.getLayerGroup().getLayerStatesArray();
+    if (!this.frameState_) {
+      return;
+    }
+    const layerStates = this.frameState_.layerStatesArray;
     for (let i = 0, ii = layerStates.length; i < ii; ++i) {
       const layer = layerStates[i].layer;
       if (layer.hasRenderer()) {
@@ -1455,21 +1538,6 @@ class Map extends BaseObject {
     if (this.renderer_ && this.animationDelayKey_ === undefined) {
       this.animationDelayKey_ = requestAnimationFrame(this.animationDelay_);
     }
-  }
-
-  /**
-   * This method is meant to be called in a layer's `prerender` listener. It causes all collected
-   * declutter items to be decluttered and rendered on the map immediately. This is useful for
-   * layers that need to appear entirely above the decluttered items of layers lower in the layer
-   * stack.
-   * @api
-   */
-  flushDeclutterItems() {
-    const frameState = this.frameState_;
-    if (!frameState) {
-      return;
-    }
-    this.renderer_.flushDeclutterItems(frameState);
   }
 
   /**
@@ -1537,18 +1605,18 @@ class Map extends BaseObject {
     let frameState = null;
     if (size !== undefined && hasArea(size) && view && view.isDef()) {
       const viewHints = view.getHints(
-        this.frameState_ ? this.frameState_.viewHints : undefined
+        this.frameState_ ? this.frameState_.viewHints : undefined,
       );
       const viewState = view.getState();
       frameState = {
         animate: false,
         coordinateToPixelTransform: this.coordinateToPixelTransform_,
-        declutterTree: null,
+        declutter: null,
         extent: getForViewAndSize(
           viewState.center,
           viewState.resolution,
           viewState.rotation,
-          size
+          size,
         ),
         index: this.frameIndex_++,
         layerIndex: 0,
@@ -1575,7 +1643,7 @@ class Map extends BaseObject {
           viewState.nextCenter,
           viewState.nextResolution,
           rotation,
-          size
+          size,
         );
       }
     }
@@ -1589,7 +1657,7 @@ class Map extends BaseObject {
       }
       Array.prototype.push.apply(
         this.postRenderFunctions_,
-        frameState.postRenderFunctions
+        frameState.postRenderFunctions,
       );
 
       if (previousFrameState) {
@@ -1599,7 +1667,7 @@ class Map extends BaseObject {
             !equalsExtent(frameState.extent, this.previousExtent_));
         if (moveStart) {
           this.dispatchEvent(
-            new MapEvent(MapEventType.MOVESTART, this, previousFrameState)
+            new MapEvent(MapEventType.MOVESTART, this, previousFrameState),
           );
           this.previousExtent_ = createOrUpdateEmpty(this.previousExtent_);
         }
@@ -1613,7 +1681,7 @@ class Map extends BaseObject {
 
       if (idle) {
         this.dispatchEvent(
-          new MapEvent(MapEventType.MOVEEND, this, frameState)
+          new MapEvent(MapEventType.MOVEEND, this, frameState),
         );
         clone(frameState.extent, this.previousExtent_);
       }
@@ -1622,13 +1690,12 @@ class Map extends BaseObject {
     this.dispatchEvent(new MapEvent(MapEventType.POSTRENDER, this, frameState));
 
     this.renderComplete_ =
-      this.hasListener(MapEventType.LOADSTART) ||
-      this.hasListener(MapEventType.LOADEND) ||
-      this.hasListener(RenderEventType.RENDERCOMPLETE)
-        ? !this.tileQueue_.getTilesLoading() &&
-          !this.tileQueue_.getCount() &&
-          !this.getLoadingOrNotReady()
-        : undefined;
+      (this.hasListener(MapEventType.LOADSTART) ||
+        this.hasListener(MapEventType.LOADEND) ||
+        this.hasListener(RenderEventType.RENDERCOMPLETE)) &&
+      !this.tileQueue_.getTilesLoading() &&
+      !this.tileQueue_.getCount() &&
+      !this.getLoadingOrNotReady();
 
     if (!this.postRenderTimeoutHandle_) {
       this.postRenderTimeoutHandle_ = setTimeout(() => {
@@ -1664,6 +1731,9 @@ class Map extends BaseObject {
 
   /**
    * Set the target element to render this map into.
+   * For accessibility (focus and keyboard events for map navigation), the `target` element must have a
+   *  properly configured `tabindex` attribute. If the `target` element is inside a Shadow DOM, the
+   *  `tabindex` atribute must be set on the custom element's host element.
    * @param {HTMLElement|string} [target] The Element or id of the Element
    *     that the map is rendered in.
    * @observable
@@ -1675,7 +1745,7 @@ class Map extends BaseObject {
 
   /**
    * Set the view for this map.
-   * @param {View|Promise<import("./View.js").ViewOptions>} view The view that controls this map.
+   * @param {View|Promise<import("./View.js").ViewOptions>|null} view The view that controls this map.
    * It is also possible to pass a promise that resolves to options for constructing a view.  This
    * alternative allows view properties to be resolved by sources or other components that load
    * view-related metadata.
@@ -1705,21 +1775,29 @@ class Map extends BaseObject {
 
     let size = undefined;
     if (targetElement) {
-      const computedStyle = getComputedStyle(targetElement);
-      const width =
-        targetElement.offsetWidth -
-        parseFloat(computedStyle['borderLeftWidth']) -
-        parseFloat(computedStyle['paddingLeft']) -
-        parseFloat(computedStyle['paddingRight']) -
-        parseFloat(computedStyle['borderRightWidth']);
-      const height =
-        targetElement.offsetHeight -
-        parseFloat(computedStyle['borderTopWidth']) -
-        parseFloat(computedStyle['paddingTop']) -
-        parseFloat(computedStyle['paddingBottom']) -
-        parseFloat(computedStyle['borderBottomWidth']);
+      let width, height;
+      if (isCanvas(targetElement)) {
+        const transform = targetElement.getContext('2d').getTransform();
+        // Use scale components of the transform to calculate the size in CSS pixels
+        width = targetElement.width / transform.a;
+        height = targetElement.height / transform.d;
+      } else {
+        const computedStyle = getComputedStyle(targetElement);
+        width =
+          targetElement.offsetWidth -
+          parseFloat(computedStyle['borderLeftWidth']) -
+          parseFloat(computedStyle['paddingLeft']) -
+          parseFloat(computedStyle['paddingRight']) -
+          parseFloat(computedStyle['borderRightWidth']);
+        height =
+          targetElement.offsetHeight -
+          parseFloat(computedStyle['borderTopWidth']) -
+          parseFloat(computedStyle['paddingTop']) -
+          parseFloat(computedStyle['paddingBottom']) -
+          parseFloat(computedStyle['borderBottomWidth']);
+      }
       if (!isNaN(width) && !isNaN(height)) {
-        size = [width, height];
+        size = [Math.max(0, width), Math.max(0, height)];
         if (
           !hasArea(size) &&
           !!(
@@ -1729,7 +1807,7 @@ class Map extends BaseObject {
           )
         ) {
           warn(
-            "No map visible because the map container's width or height are 0."
+            "No map visible because the map container's width or height are 0.",
           );
         }
       }
@@ -1737,26 +1815,19 @@ class Map extends BaseObject {
 
     const oldSize = this.getSize();
     if (size && (!oldSize || !equals(size, oldSize))) {
+      this.updateViewportSize_(size);
       this.setSize(size);
-      this.updateViewportSize_();
     }
   }
 
   /**
    * Recomputes the viewport size and save it on the view object (if any)
+   * @param {import("./size.js").Size|undefined} size The size.
    * @private
    */
-  updateViewportSize_() {
+  updateViewportSize_(size) {
     const view = this.getView();
     if (view) {
-      let size = undefined;
-      const computedStyle = getComputedStyle(this.viewport_);
-      if (computedStyle.width && computedStyle.height) {
-        size = [
-          parseInt(computedStyle.width, 10),
-          parseInt(computedStyle.height, 10),
-        ];
-      }
       view.setViewportSize(size);
     }
   }
@@ -1808,13 +1879,13 @@ function createOptionsInternal(options) {
     } else {
       assert(
         typeof (/** @type {?} */ (options.controls).getArray) === 'function',
-        'Expected `controls` to be an array or an `ol/Collection.js`'
+        'Expected `controls` to be an array or an `ol/Collection.js`',
       );
       controls = options.controls;
     }
   }
 
-  /** @type {Collection<import("./interaction/Interaction").default>} */
+  /** @type {Collection<import("./interaction/Interaction.js").default>} */
   let interactions;
   if (options.interactions !== undefined) {
     if (Array.isArray(options.interactions)) {
@@ -1823,7 +1894,7 @@ function createOptionsInternal(options) {
       assert(
         typeof (/** @type {?} */ (options.interactions).getArray) ===
           'function',
-        'Expected `interactions` to be an array or an `ol/Collection.js`'
+        'Expected `interactions` to be an array or an `ol/Collection.js`',
       );
       interactions = options.interactions;
     }
@@ -1837,7 +1908,7 @@ function createOptionsInternal(options) {
     } else {
       assert(
         typeof (/** @type {?} */ (options.overlays).getArray) === 'function',
-        'Expected `overlays` to be an array or an `ol/Collection.js`'
+        'Expected `overlays` to be an array or an `ol/Collection.js`',
       );
       overlays = options.overlays;
     }

@@ -51,13 +51,15 @@ export type Options = {
  *
  * @api
  */
-declare class WKB extends FeatureFormat {
+declare class WKB extends FeatureFormat<Feature<import("../geom/Geometry.js").default, {
+    [x: string]: any;
+}>> {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options | undefined);
+    constructor(options?: Options);
     splitCollection: boolean;
-    viewCache_: DataView | null;
+    viewCache_: DataView<ArrayBufferLike> | null;
     hex_: boolean;
     littleEndian_: boolean;
     ewkb_: boolean;
@@ -72,8 +74,9 @@ declare class WKB extends FeatureFormat {
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
      * @return {import("../Feature.js").default} Feature.
      * @api
+     * @override
      */
-    readFeature(source: string | ArrayBuffer | ArrayBufferView, options?: import("./Feature.js").ReadOptions | undefined): import("../Feature.js").default;
+    override readFeature(source: string | ArrayBuffer | ArrayBufferView, options?: import("./Feature.js").ReadOptions): import("../Feature.js").default;
     /**
      * Read all features from a source.
      *
@@ -81,8 +84,9 @@ declare class WKB extends FeatureFormat {
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
      * @return {Array<import("../Feature.js").default>} Features.
      * @api
+     * @override
      */
-    readFeatures(source: string | ArrayBuffer | ArrayBufferView, options?: import("./Feature.js").ReadOptions | undefined): Array<import("../Feature.js").default>;
+    override readFeatures(source: string | ArrayBuffer | ArrayBufferView, options?: import("./Feature.js").ReadOptions): Array<import("../Feature.js").default>;
     /**
      * Read a single geometry from a source.
      *
@@ -90,16 +94,19 @@ declare class WKB extends FeatureFormat {
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
      * @return {import("../geom/Geometry.js").default} Geometry.
      * @api
+     * @override
      */
-    readGeometry(source: string | ArrayBuffer | ArrayBufferView, options?: import("./Feature.js").ReadOptions | undefined): import("../geom/Geometry.js").default;
+    override readGeometry(source: string | ArrayBuffer | ArrayBufferView, options?: import("./Feature.js").ReadOptions): import("../geom/Geometry.js").default;
     /**
      * Read the projection from a source.
      *
      * @param {string|ArrayBuffer|ArrayBufferView} source Source.
      * @return {import("../proj/Projection.js").default|undefined} Projection.
      * @api
+     * @override
      */
-    readProjection(source: string | ArrayBuffer | ArrayBufferView): import("../proj/Projection.js").default | undefined;
+    override readProjection(source: string | ArrayBuffer | ArrayBufferView): import("../proj/Projection.js").default | undefined;
 }
+import Feature from '../Feature.js';
 import FeatureFormat from './Feature.js';
 //# sourceMappingURL=WKB.d.ts.map

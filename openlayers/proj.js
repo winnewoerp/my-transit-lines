@@ -4,9 +4,9 @@
 
 /**
  * The ol/proj module stores:
- * * a list of {@link module:ol/proj/Projection~Projection}
+ * a list of {@link module:ol/proj/Projection~Projection}
  * objects, one for each projection supported by the application
- * * a list of transform functions needed to convert coordinates in one projection
+ * a list of transform functions needed to convert coordinates in one projection
  * into another.
  *
  * The static functions are the methods used to maintain these.
@@ -23,8 +23,8 @@
  * Proj4js, or create a custom build to support those projections you need; see
  * the Proj4js website for how to do this. You also need the Proj4js definitions
  * for the required projections. These definitions can be obtained from
- * https://epsg.io/, and are a JS function, so can be loaded in a script
- * tag (as in the examples) or pasted into your application.
+ * https://spatialreference.org/, and are a JS function, so can be loaded in a
+ * script tag (as in the examples) or pasted into your application.
  *
  * After all required projection definitions are added to proj4's registry (by
  * using `proj4.defs()`), simply call `register(proj4)` from the `ol/proj/proj4`
@@ -53,14 +53,18 @@
  * {@link module:ol/proj.addProjection}. See examples/wms-no-proj for an example of
  * this.
  */
+import {warn} from './console.js';
+import {equals, getWorldsAway} from './coordinate.js';
+import {applyTransform, getWidth} from './extent.js';
+import {clamp, modulo} from './math.js';
 import Projection from './proj/Projection.js';
+import {METERS_PER_UNIT} from './proj/Units.js';
 import {
   PROJECTIONS as EPSG3857_PROJECTIONS,
   fromEPSG4326,
   toEPSG4326,
 } from './proj/epsg3857.js';
 import {PROJECTIONS as EPSG4326_PROJECTIONS} from './proj/epsg4326.js';
-import {METERS_PER_UNIT} from './proj/Units.js';
 import {
   add as addProj,
   clear as clearProj,
@@ -71,11 +75,11 @@ import {
   clear as clearTransformFuncs,
   get as getTransformFunc,
 } from './proj/transforms.js';
-import {applyTransform, getWidth} from './extent.js';
-import {clamp, modulo} from './math.js';
-import {equals, getWorldsAway} from './coordinate.js';
+import {
+  makeProjection as makeUTMProjection,
+  makeTransforms as makeUTMTransforms,
+} from './proj/utm.js';
 import {getDistance} from './sphere.js';
-import {warn} from './console.js';
 
 /**
  * A projection as {@link module:ol/proj/Projection~Projection}, SRS identifier
@@ -85,12 +89,34 @@ import {warn} from './console.js';
  */
 
 /**
+ * @typedef {Object} Transforms
+ * @property {TransformFunction} forward The forward transform (from geographic).
+ * @property {TransformFunction} inverse The inverse transform (to geographic).
+ */
+
+/**
+ * @type {Array<function(Projection): Transforms|null>}
+ */
+const transformFactories = [makeUTMTransforms];
+
+/**
+ * @type {Array<function(string): Projection|null>}
+ */
+const projectionFactories = [makeUTMProjection];
+
+/**
  * A transform function accepts an array of input coordinate values, an optional
  * output array, and an optional dimension (default should be 2).  The function
  * transforms the input coordinate values, populates the output array, and
  * returns the output array.
  *
- * @typedef {function(Array<number>, Array<number>=, number=): Array<number>} TransformFunction
+ * @callback TransformFunction
+ * @param {Array<number>} input
+ * @param {Array<number>} [output]
+ * @param {number} [dimension]
+ * @param {number} [stride]
+ * @return {Array<number>}
+ *
  * @api
  */
 
@@ -101,7 +127,7 @@ export {Projection};
 let showCoordinateWarning = true;
 
 /**
- * @param {boolean} [disable = true] Disable console info about `useGeographic()`
+ * @param {boolean} [disable] Disable console info about `useGeographic()`
  */
 export function disableCoordinateWarning(disable) {
   const hide = disable === undefined ? true : disable;
@@ -170,9 +196,20 @@ export function addProjections(projections) {
  * @api
  */
 export function get(projectionLike) {
-  return typeof projectionLike === 'string'
-    ? getProj(/** @type {string} */ (projectionLike))
-    : /** @type {Projection} */ (projectionLike) || null;
+  if (!(typeof projectionLike === 'string')) {
+    return projectionLike;
+  }
+  const projection = getProj(projectionLike);
+  if (projection) {
+    return projection;
+  }
+  for (const makeProjection of projectionFactories) {
+    const projection = makeProjection(projectionLike);
+    if (projection) {
+      return projection;
+    }
+  }
+  return null;
 }
 
 /**
@@ -218,9 +255,9 @@ export function getPointResolution(projection, resolution, point, units) {
       // average of the width and height.
       const toEPSG4326 = getTransformFromProjections(
         projection,
-        get('EPSG:4326')
+        get('EPSG:4326'),
       );
-      if (toEPSG4326 === identityTransform && projUnits !== 'degrees') {
+      if (!toEPSG4326 && projUnits !== 'degrees') {
         // no transform is available
         pointResolution = resolution * projection.getMetersPerUnit();
       } else {
@@ -285,7 +322,7 @@ export function addEquivalentTransforms(
   projections1,
   projections2,
   forwardTransform,
-  inverseTransform
+  inverseTransform,
 ) {
   projections1.forEach(function (projection1) {
     projections2.forEach(function (projection2) {
@@ -330,17 +367,19 @@ export function createTransformFromCoordinateTransform(coordTransform) {
     /**
      * @param {Array<number>} input Input.
      * @param {Array<number>} [output] Output.
-     * @param {number} [dimension] Dimension.
+     * @param {number} [dimension] Dimensions that should be transformed.
+     * @param {number} [stride] Stride.
      * @return {Array<number>} Output.
      */
-    function (input, output, dimension) {
+    function (input, output, dimension, stride) {
       const length = input.length;
       dimension = dimension !== undefined ? dimension : 2;
+      stride = stride ?? dimension;
       output = output !== undefined ? output : new Array(length);
-      for (let i = 0; i < length; i += dimension) {
+      for (let i = 0; i < length; i += stride) {
         const point = coordTransform(input.slice(i, i + dimension));
         const pointLength = point.length;
-        for (let j = 0, jj = dimension; j < jj; ++j) {
+        for (let j = 0, jj = stride; j < jj; ++j) {
           output[i + j] = j >= pointLength ? input[i + j] : point[j];
         }
       }
@@ -377,12 +416,12 @@ export function addCoordinateTransforms(source, destination, forward, inverse) {
   addTransformFunc(
     sourceProj,
     destProj,
-    createTransformFromCoordinateTransform(forward)
+    createTransformFromCoordinateTransform(forward),
   );
   addTransformFunc(
     destProj,
     sourceProj,
-    createTransformFromCoordinateTransform(inverse)
+    createTransformFromCoordinateTransform(inverse),
   );
 }
 
@@ -400,7 +439,7 @@ export function fromLonLat(coordinate, projection) {
   return transform(
     coordinate,
     'EPSG:4326',
-    projection !== undefined ? projection : 'EPSG:3857'
+    projection !== undefined ? projection : 'EPSG:3857',
   );
 }
 
@@ -417,7 +456,7 @@ export function toLonLat(coordinate, projection) {
   const lonLat = transform(
     coordinate,
     projection !== undefined ? projection : 'EPSG:3857',
-    'EPSG:4326'
+    'EPSG:4326',
   );
   const lon = lonLat[0];
   if (lon < -180 || lon > 180) {
@@ -452,22 +491,86 @@ export function equivalent(projection1, projection2) {
  * Searches in the list of transform functions for the function for converting
  * coordinates from the source projection to the destination projection.
  *
- * @param {Projection} sourceProjection Source Projection object.
- * @param {Projection} destinationProjection Destination Projection
+ * @param {Projection} source Source Projection object.
+ * @param {Projection} destination Destination Projection
  *     object.
- * @return {TransformFunction} Transform function.
+ * @return {TransformFunction|null} Transform function.
  */
-export function getTransformFromProjections(
-  sourceProjection,
-  destinationProjection
-) {
-  const sourceCode = sourceProjection.getCode();
-  const destinationCode = destinationProjection.getCode();
+export function getTransformFromProjections(source, destination) {
+  const sourceCode = source.getCode();
+  const destinationCode = destination.getCode();
   let transformFunc = getTransformFunc(sourceCode, destinationCode);
-  if (!transformFunc) {
-    transformFunc = identityTransform;
+  if (transformFunc) {
+    return transformFunc;
   }
+
+  /**
+   * @type {Transforms|null}
+   */
+  let sourceTransforms = null;
+
+  /**
+   * @type {Transforms|null}
+   */
+  let destinationTransforms = null;
+
+  // lazily add projections if we have supported transforms
+  for (const makeTransforms of transformFactories) {
+    if (!sourceTransforms) {
+      sourceTransforms = makeTransforms(source);
+    }
+    if (!destinationTransforms) {
+      destinationTransforms = makeTransforms(destination);
+    }
+  }
+
+  if (!sourceTransforms && !destinationTransforms) {
+    return null;
+  }
+
+  const intermediateCode = 'EPSG:4326';
+  if (!destinationTransforms) {
+    const toDestination = getTransformFunc(intermediateCode, destinationCode);
+    if (toDestination) {
+      transformFunc = composeTransformFuncs(
+        sourceTransforms.inverse,
+        toDestination,
+      );
+    }
+  } else if (!sourceTransforms) {
+    const fromSource = getTransformFunc(sourceCode, intermediateCode);
+    if (fromSource) {
+      transformFunc = composeTransformFuncs(
+        fromSource,
+        destinationTransforms.forward,
+      );
+    }
+  } else {
+    transformFunc = composeTransformFuncs(
+      sourceTransforms.inverse,
+      destinationTransforms.forward,
+    );
+  }
+
+  if (transformFunc) {
+    addProjection(source);
+    addProjection(destination);
+    addTransformFunc(source, destination, transformFunc);
+  }
+
   return transformFunc;
+}
+
+/**
+ * @param {TransformFunction} t1 The first transform function.
+ * @param {TransformFunction} t2 The second transform function.
+ * @return {TransformFunction} The composed transform function.
+ */
+function composeTransformFuncs(t1, t2) {
+  return function (input, output, dimensions, stride) {
+    output = t1(input, output, dimensions, stride);
+    return t2(output, output, dimensions, stride);
+  };
 }
 
 /**
@@ -488,7 +591,9 @@ export function getTransform(source, destination) {
 
 /**
  * Transforms a coordinate from source projection to destination projection.
- * This returns a new coordinate (and does not modify the original).
+ * This returns a new coordinate (and does not modify the original). If there
+ * is no available transform between the two projection, the function will throw
+ * an error.
  *
  * See {@link module:ol/proj.transformExtent} for extent transformation.
  * See the transform method of {@link module:ol/geom/Geometry~Geometry} and its
@@ -502,6 +607,13 @@ export function getTransform(source, destination) {
  */
 export function transform(coordinate, source, destination) {
   const transformFunc = getTransform(source, destination);
+  if (!transformFunc) {
+    const sourceCode = get(source).getCode();
+    const destinationCode = get(destination).getCode();
+    throw new Error(
+      `No transform available between ${sourceCode} and ${destinationCode}`,
+    );
+  }
   return transformFunc(coordinate, undefined, coordinate.length);
 }
 
@@ -533,11 +645,11 @@ export function transformExtent(extent, source, destination, stops) {
 export function transformWithProjections(
   point,
   sourceProjection,
-  destinationProjection
+  destinationProjection,
 ) {
   const transformFunc = getTransformFromProjections(
     sourceProjection,
-    destinationProjection
+    destinationProjection,
   );
   return transformFunc(point);
 }
@@ -618,7 +730,7 @@ export function fromUserCoordinate(coordinate, destProjection) {
     ) {
       showCoordinateWarning = false;
       warn(
-        'Call useGeographic() from ol/proj once to work with [longitude, latitude] coordinates.'
+        'Call useGeographic() from ol/proj once to work with [longitude, latitude] coordinates.',
       );
     }
     return coordinate;
@@ -666,10 +778,10 @@ export function toUserResolution(resolution, sourceProjection) {
   if (!userProjection) {
     return resolution;
   }
-  const sourceUnits = get(sourceProjection).getUnits();
-  const userUnits = userProjection.getUnits();
-  return sourceUnits && userUnits
-    ? (resolution * METERS_PER_UNIT[sourceUnits]) / METERS_PER_UNIT[userUnits]
+  const sourceMetersPerUnit = get(sourceProjection).getMetersPerUnit();
+  const userMetersPerUnit = userProjection.getMetersPerUnit();
+  return sourceMetersPerUnit && userMetersPerUnit
+    ? (resolution * sourceMetersPerUnit) / userMetersPerUnit
     : resolution;
 }
 
@@ -685,10 +797,10 @@ export function fromUserResolution(resolution, destProjection) {
   if (!userProjection) {
     return resolution;
   }
-  const sourceUnits = get(destProjection).getUnits();
-  const userUnits = userProjection.getUnits();
-  return sourceUnits && userUnits
-    ? (resolution * METERS_PER_UNIT[userUnits]) / METERS_PER_UNIT[sourceUnits]
+  const destMetersPerUnit = get(destProjection).getMetersPerUnit();
+  const userMetersPerUnit = userProjection.getMetersPerUnit();
+  return destMetersPerUnit && userMetersPerUnit
+    ? (resolution * userMetersPerUnit) / destMetersPerUnit
     : resolution;
 }
 
@@ -744,7 +856,7 @@ export function addCommon() {
     EPSG4326_PROJECTIONS,
     EPSG3857_PROJECTIONS,
     fromEPSG4326,
-    toEPSG4326
+    toEPSG4326,
   );
 }
 

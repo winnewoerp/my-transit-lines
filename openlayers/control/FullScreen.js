@@ -1,18 +1,14 @@
 /**
  * @module ol/control/FullScreen
  */
-import Control from './Control.js';
-import EventType from '../events/EventType.js';
 import MapProperty from '../MapProperty.js';
 import {CLASS_CONTROL, CLASS_UNSELECTABLE, CLASS_UNSUPPORTED} from '../css.js';
-import {listen, unlistenByKey} from '../events.js';
 import {replaceNode} from '../dom.js';
+import {listen, unlistenByKey} from '../events.js';
+import EventType from '../events/EventType.js';
+import Control from './Control.js';
 
-const events = [
-  'fullscreenchange',
-  'webkitfullscreenchange',
-  'MSFullscreenChange',
-];
+const events = ['fullscreenchange', 'webkitfullscreenchange'];
 
 /**
  * @enum {string}
@@ -35,11 +31,11 @@ const FullScreenEventType = {
 
 /***
  * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes|
+ * @typedef {import("../Observable.js").OnSignature<import("../Observable.js").EventTypes|
  *     'enterfullscreen'|'leavefullscreen', import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|
- *     'enterfullscreen'|'leavefullscreen'|import("../ObjectEventType").Types, Return>} FullScreenOnSignature
+ *   import("../Observable.js").OnSignature<import("../ObjectEventType.js").Types, import("../Object.js").ObjectEvent, Return> &
+ *   import("../Observable.js").CombinedOnSignature<import("../Observable.js").EventTypes|
+ *     'enterfullscreen'|'leavefullscreen'|import("../ObjectEventType.js").Types, Return>} FullScreenOnSignature
  */
 
 /**
@@ -91,12 +87,12 @@ class FullScreen extends Control {
     });
 
     /***
-     * @type {FullScreenOnSignature<import("../events").EventsKey>}
+     * @type {FullScreenOnSignature<import("../events.js").EventsKey>}
      */
     this.on;
 
     /***
-     * @type {FullScreenOnSignature<import("../events").EventsKey>}
+     * @type {FullScreenOnSignature<import("../events.js").EventsKey>}
      */
     this.once;
 
@@ -193,7 +189,7 @@ class FullScreen extends Control {
     this.button_.addEventListener(
       EventType.CLICK,
       this.handleClick_.bind(this),
-      false
+      false,
     );
     this.setClassName_(this.button_, this.isInFullscreen_);
 
@@ -287,13 +283,14 @@ class FullScreen extends Control {
    * the map here.
    * @param {import("../Map.js").default|null} map Map.
    * @api
+   * @override
    */
   setMap(map) {
     const oldMap = this.getMap();
     if (oldMap) {
       oldMap.removeChangeListener(
         MapProperty.TARGET,
-        this.boundHandleMapTargetChange_
+        this.boundHandleMapTargetChange_,
       );
     }
 
@@ -303,7 +300,7 @@ class FullScreen extends Control {
     if (map) {
       map.addChangeListener(
         MapProperty.TARGET,
-        this.boundHandleMapTargetChange_
+        this.boundHandleMapTargetChange_,
       );
     }
   }
@@ -329,7 +326,7 @@ class FullScreen extends Control {
 
       for (let i = 0, ii = events.length; i < ii; ++i) {
         listeners.push(
-          listen(doc, events[i], this.handleFullScreenChange_, this)
+          listen(doc, events[i], this.handleFullScreenChange_, this),
         );
       }
       this.handleFullScreenChange_();
